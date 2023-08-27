@@ -6,7 +6,7 @@ import {url} from "@/utils/url";
  */
 export function logMoneyListData(query){
     return request({
-        url:url.game88PlatformAdminWeb+"/member/logMoney/list",
+        url:url.game99PlatformAdminWeb+"/member/logMoney/list",
         method:'get',
         params:query
     })
@@ -17,7 +17,7 @@ export function logMoneyListData(query){
  */
 export function logMoneyAllList(){
     return request({
-        url:url.game88PlatformAdminWeb+"/member/logMoney/tradeTypeAll",
+        url:url.game99PlatformAdminWeb+"/member/logMoney/tradeTypeAll",
         method:'get'
     })
 }
@@ -27,7 +27,7 @@ export function logMoneyAllList(){
  */
 export function moneyLogListCount(query){
     return request({
-        url:url.game88PlatformAdminWeb+"/member/logMoney/listCount",
+        url:url.game99PlatformAdminWeb+"/member/logMoney/listCount",
         method:'get',
         params:query
     })
@@ -38,7 +38,7 @@ export function moneyLogListCount(query){
  */
 export function tradeTypeTotalCount(query){
     return request({
-        url:url.game88PlatformAdminWeb+"/member/logMoney/totalCount",
+        url:url.game99PlatformAdminWeb+"/member/logMoney/totalCount",
         method:'get',
         params:query
     })
@@ -49,7 +49,7 @@ export function tradeTypeTotalCount(query){
  */
 export function logMoneyExport(query){
     return request({
-        url:url.game88PlatformAdminWeb+"/member/logMoney/export",
+        url:url.game99PlatformAdminWeb+"/member/logMoney/export",
         method: 'get',
         params: query,
         responseType: 'arraybuffer',

@@ -6,7 +6,7 @@ import {url} from "@/utils/url";
  */
 export function listLotteryRule(query){
     return request({
-        url:url.game88LotteryAdminWeb+"/lottery/lotteryRule/list",
+        url:url.game99LotteryAdminWeb+"/lottery/lotteryRule/list",
         method:'get',
         params:query
     })
@@ -17,7 +17,7 @@ export function listLotteryRule(query){
  */
 export function ExportLotteryRule(query){
     return request({
-        url:url.game88LotteryAdminWeb+"/lottery/lotteryRule/export",
+        url:url.game99LotteryAdminWeb+"/lottery/lotteryRule/export",
         method:'get',
         params:query,
         responseType: 'arraybuffer',
@@ -31,7 +31,7 @@ export function ExportLotteryRule(query){
 export function lotteryRuleById(id){
     console.log(id)
     return request({
-        url:url.game88LotteryAdminWeb+"/lottery/lotteryRule/"+id,
+        url:url.game99LotteryAdminWeb+"/lottery/lotteryRule/"+id,
         method:'get',
     })
 }
@@ -41,7 +41,7 @@ export function lotteryRuleById(id){
  */
 export function addLotteryRule(data){
     return request({
-        url:url.game88LotteryAdminWeb+"/lottery/lotteryRule",
+        url:url.game99LotteryAdminWeb+"/lottery/lotteryRule",
         method:'post',
         data:data
     })
@@ -52,7 +52,7 @@ export function addLotteryRule(data){
  */
 export function updateLotteryRule(data){
     return request({
-        url:url.game88LotteryAdminWeb+"/lottery/lotteryRule",
+        url:url.game99LotteryAdminWeb+"/lottery/lotteryRule",
         method:'put',
         data:data
     })
@@ -63,7 +63,7 @@ export function updateLotteryRule(data){
  */
 export function deleteLotteryRule(id){
     return request({
-        url:url.game88LotteryAdminWeb+"/lottery/lotteryRule/"+ id,
+        url:url.game99LotteryAdminWeb+"/lottery/lotteryRule/"+ id,
         method:'delete'
     })
 }

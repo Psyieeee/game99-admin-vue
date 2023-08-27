@@ -6,7 +6,7 @@ import request from "@/utils/request";
  */
 export function listMemberMoneyData(query){
     return request({
-        url:url.game88PlatformAdminWeb + "/member/money/list",
+        url:url.game99PlatformAdminWeb + "/member/money/list",
         method:'get',
         params:query
     })
@@ -16,13 +16,13 @@ export function listMemberMoneyData(query){
  * Upload excel file
  */
 export function uploadExcelUrl(){
-    return url.baseUrl + url.game88PlatformAdminWeb + "/member/memberInfo/batchUploadExcel";
+    return url.baseUrl + url.game99PlatformAdminWeb + "/member/memberInfo/batchUploadExcel";
 }
 
 
 export function handleCleanData() {
     return request({
-        url: url.game88PlatformAdminWeb + '/member/money/handleClean',
+        url: url.game99PlatformAdminWeb + '/member/money/handleClean',
         method: 'get'
     })
 }
@@ -30,7 +30,7 @@ export function handleCleanData() {
 /**  导出派送彩金暂存表  */
 export function exportMemberMoney(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/member/money/export',
+        url: url.game99PlatformAdminWeb + '/member/money/export',
         method: 'get',
         params: query,
         responseType: 'arraybuffer',
@@ -42,7 +42,7 @@ export function exportMemberMoney(query) {
 export function getMemberMoney(memberId) {
     console.log(memberId)
     return request({
-        url: url.game88PlatformAdminWeb + '/member/money/' + memberId,
+        url: url.game99PlatformAdminWeb + '/member/money/' + memberId,
         method: 'get'
     })
 }
@@ -50,7 +50,7 @@ export function getMemberMoney(memberId) {
 /**  修改派送彩金暂存表 */
 export function updateMemberMoney(data) {
     return request({
-        url: url.game88PlatformAdminWeb + '/member/money',
+        url: url.game99PlatformAdminWeb + '/member/money',
         method: 'put',
         data: data
     })
@@ -59,7 +59,7 @@ export function updateMemberMoney(data) {
 /** 新增派送彩金暂存表 */
 export function addMemberMoney(data) {
     return request({
-        url: url.game88PlatformAdminWeb + '/member/money',
+        url: url.game99PlatformAdminWeb + '/member/money',
         method: 'post',
         data: data
     })
@@ -68,14 +68,14 @@ export function addMemberMoney(data) {
 /** 删除派送彩金暂存表 */
 export function delMemberMoney(id) {
     return request({
-        url: url.game88PlatformAdminWeb + '/member/money/' + id,
+        url: url.game99PlatformAdminWeb + '/member/money/' + id,
         method: 'delete'
     })
 }
 
 export function count() {
     return request({
-        url: url.game88PlatformAdminWeb + '/member/money/count' ,
+        url: url.game99PlatformAdminWeb + '/member/money/count' ,
         method: 'get'
     })
 }
@@ -87,7 +87,7 @@ export function starSend(moneydes,googleAuthCode) {
         googleAuthCode
     }
     return request({
-        url: url.game88PlatformAdminWeb + '/member/money/starSend',
+        url: url.game99PlatformAdminWeb + '/member/money/starSend',
         method: 'post',
         data: data,
         timeout: 1000000

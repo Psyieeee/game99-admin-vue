@@ -7,7 +7,7 @@ import {url} from "@/utils/url";
  */
 export function getActivityInfoList(query){
     return request({
-        url:url.game88PlatformAdminWeb+"/activity/activityInfo/list",
+        url:url.game99PlatformAdminWeb+"/activity/activityInfo/list",
         method:'get',
         params:query
     })
@@ -18,7 +18,7 @@ export function getActivityInfoList(query){
  */
 export function activityInfoExport(query){
     return request({
-        url:url.game88PlatformAdminWeb+"/activity/activityInfo/export",
+        url:url.game99PlatformAdminWeb+"/activity/activityInfo/export",
         method:'get',
         params:query,
         responseType: 'arraybuffer',
@@ -31,7 +31,7 @@ export function activityInfoExport(query){
  */
 export function activityInfoFindById(id){
     return request({
-        url:url.game88PlatformAdminWeb+"/activity/activityInfo/"+id,
+        url:url.game99PlatformAdminWeb+"/activity/activityInfo/"+id,
         method:'get',
     })
 }
@@ -41,7 +41,7 @@ export function activityInfoFindById(id){
  */
 export function activityInfoAdd(data){
     return request({
-        url:url.game88PlatformAdminWeb+"/activity/activityInfo",
+        url:url.game99PlatformAdminWeb+"/activity/activityInfo",
         method:'post',
         data:data
     })
@@ -53,7 +53,7 @@ export function activityInfoAdd(data){
  */
 export function activityInfoUpdate(data){
     return request({
-        url:url.game88PlatformAdminWeb+"/activity/activityInfo",
+        url:url.game99PlatformAdminWeb+"/activity/activityInfo",
         method:'put',
         data:data
     })
@@ -64,7 +64,7 @@ export function activityInfoUpdate(data){
  */
 export function activityInfoDelete(id){
     return request({
-        url:url.game88PlatformAdminWeb+"/activity/activityInfo/"+id,
+        url:url.game99PlatformAdminWeb+"/activity/activityInfo/"+id,
         method:'delete',
     })
 }
@@ -75,7 +75,7 @@ export function activityInfoDelete(id){
  */
 export function activityInfoUpdateStatus(id,status){
     return request({
-        url:url.game88PlatformAdminWeb+"/activity/activityInfo/changeStatus/"+id+"/"+ status,
+        url:url.game99PlatformAdminWeb+"/activity/activityInfo/changeStatus/"+id+"/"+ status,
         method:'put',
     })
 }

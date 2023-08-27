@@ -7,7 +7,7 @@ import {url} from "@/utils/url";
  */
 export function listHomeNotice(query){
     return request({
-        url:url.game88PlatformAdminWeb+"/message/messageHomeNotice/list",
+        url:url.game99PlatformAdminWeb+"/message/messageHomeNotice/list",
         method:'get',
         params:query
     })
@@ -18,7 +18,7 @@ export function listHomeNotice(query){
  */
 export function deleteHomeNotice(id) {
     return request({
-        url: url.game88PlatformAdminWeb + '/message/messageHomeNotice/' + id,
+        url: url.game99PlatformAdminWeb + '/message/messageHomeNotice/' + id,
         method: 'delete'
     })
 }
@@ -29,7 +29,7 @@ export function deleteHomeNotice(id) {
  */
 export function exportHomeNotice(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/message/messageHomeNotice/export',
+        url: url.game99PlatformAdminWeb + '/message/messageHomeNotice/export',
         method: 'get',
         params: query,
         responseType: 'arraybuffer',
@@ -42,7 +42,7 @@ export function exportHomeNotice(query) {
  */
 export function addHomeNotice(data) {
     return request({
-        url: url.game88PlatformAdminWeb + '/message/messageHomeNotice',
+        url: url.game99PlatformAdminWeb + '/message/messageHomeNotice',
         method: 'post',
         data: data
     })
@@ -53,7 +53,7 @@ export function addHomeNotice(data) {
  */
 export function updateHomeNotice(data) {
     return request({
-        url: url.game88PlatformAdminWeb + '/message/messageHomeNotice',
+        url: url.game99PlatformAdminWeb + '/message/messageHomeNotice',
         method: 'put',
         data: data
     })
@@ -64,7 +64,7 @@ export function updateHomeNotice(data) {
  */
 export function getHomeNotice(id) {
     return request({
-        url: url.game88PlatformAdminWeb + '/message/messageHomeNotice/' + id,
+        url: url.game99PlatformAdminWeb + '/message/messageHomeNotice/' + id,
         method: 'get'
     })
 }
@@ -74,7 +74,7 @@ export function getHomeNotice(id) {
  */
 export function messageHomeNoticeStatus(id,status){
     return request({
-        url:url.game88PlatformAdminWeb+"/message/messageHomeNotice/changeStatus/"+id+"/"+ status,
+        url:url.game99PlatformAdminWeb+"/message/messageHomeNotice/changeStatus/"+id+"/"+ status,
         method:'put',
     })
 }

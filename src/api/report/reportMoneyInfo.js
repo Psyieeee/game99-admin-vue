@@ -7,7 +7,7 @@ import {url} from '@/utils/url'
  */
 export function listReportMoneyInfo(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/report/moneyInfo/list',
+        url: url.game99PlatformAdminWeb + '/report/moneyInfo/list',
         method: 'get',
         params: query
     })
@@ -19,7 +19,7 @@ export function listReportMoneyInfo(query) {
  */
 export function reportMoneyInfoCount(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/report/moneyInfo/count',
+        url: url.game99PlatformAdminWeb + '/report/moneyInfo/count',
         method: 'get',
         params: query
     })
@@ -31,7 +31,7 @@ export function reportMoneyInfoCount(query) {
  */
 export function reportMoneyInfoExport(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/report/moneyInfo/export',
+        url: url.game99PlatformAdminWeb + '/report/moneyInfo/export',
         method: 'get',
         params: query,
         responseType: 'arraybuffer',

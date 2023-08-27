@@ -4,7 +4,7 @@ import request from "@/utils/request";
 
 export function listMemberGameDatafix(query) {
     return request({
-        url: url.game88GameAdminWeb + '/game/memberGameDatafix/list',
+        url: url.game99GameAdminWeb + '/game/memberGameDatafix/list',
         method: 'get',
         params: query
     })
@@ -13,7 +13,7 @@ export function listMemberGameDatafix(query) {
 
 export function addMemberGameDatafix(data) {
     return request({
-        url: url.game88GameAdminWeb + '/game/memberGameDatafix',
+        url: url.game99GameAdminWeb + '/game/memberGameDatafix',
         method: 'post',
         data: data
     })
@@ -21,7 +21,7 @@ export function addMemberGameDatafix(data) {
 
 export function delMemberGameDatafix(id) {
     return request({
-        url: url.game88GameAdminWeb + '/game/memberGameDatafix/' + id,
+        url: url.game99GameAdminWeb + '/game/memberGameDatafix/' + id,
         method: 'delete'
     })
 }
@@ -29,7 +29,7 @@ export function delMemberGameDatafix(id) {
 // 导出游戏注单修复
 export function exportMemberGameDatafix(query) {
     return request({
-        url: url.game88GameAdminWeb + '/game/memberGameDatafix/export',
+        url: url.game99GameAdminWeb + '/game/memberGameDatafix/export',
         method: 'get',
         params: query,
         responseType: 'arraybuffer',

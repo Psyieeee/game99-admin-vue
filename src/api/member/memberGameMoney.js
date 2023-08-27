@@ -6,7 +6,7 @@ import {url} from "@/utils/url";
  */
 export function memberGameMoneyListData(query){
     return request({
-        url:url.game88GameAdminWeb + "/game/memberGameMoney/list",
+        url:url.game99GameAdminWeb + "/game/memberGameMoney/list",
         method:'get',
         params: query
     })

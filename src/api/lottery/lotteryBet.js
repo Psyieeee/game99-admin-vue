@@ -6,7 +6,7 @@ import {url} from "@/utils/url";
  */
 export function listLotteryBet(query){
     return request({
-        url:url.game88LotteryAdminWeb+"/lottery/lotteryBet/list",
+        url:url.game99LotteryAdminWeb+"/lottery/lotteryBet/list",
         method:'get',
         params:query
     })
@@ -17,7 +17,7 @@ export function listLotteryBet(query){
  */
 export function exportLotteryBet(query){
     return request({
-        url:url.game88LotteryAdminWeb+"/lottery/lotteryBet/export",
+        url:url.game99LotteryAdminWeb+"/lottery/lotteryBet/export",
         method: 'get',
         params: query,
         responseType: 'arraybuffer',
@@ -30,7 +30,7 @@ export function exportLotteryBet(query){
  */
 export function LotteryBetById(id){
     return request({
-        url:url.game88LotteryAdminWeb+"/lottery/lotteryBet/" + id,
+        url:url.game99LotteryAdminWeb+"/lottery/lotteryBet/" + id,
         method:'get',
     })
 }

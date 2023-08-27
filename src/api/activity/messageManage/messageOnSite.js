@@ -7,7 +7,7 @@ import {url} from "@/utils/url";
  */
 export function listMessageOnSite(query){
     return request({
-        url:url.game88PlatformAdminWeb+"/message/messageOnSite/list",
+        url:url.game99PlatformAdminWeb+"/message/messageOnSite/list",
         method:'get',
         params:query
     })
@@ -18,7 +18,7 @@ export function listMessageOnSite(query){
  */
 export function getMessageOnSite(id) {
     return request({
-        url: url.game88PlatformAdminWeb + '/message/messageOnSite/' + id,
+        url: url.game99PlatformAdminWeb + '/message/messageOnSite/' + id,
         method: 'get'
     })
 }
@@ -28,7 +28,7 @@ export function getMessageOnSite(id) {
  */
 export function addMessageOnSite(data) {
     return request({
-        url: url.game88PlatformAdminWeb + '/message/messageOnSite',
+        url: url.game99PlatformAdminWeb + '/message/messageOnSite',
         method: 'post',
         data: data
     })
@@ -39,7 +39,7 @@ export function addMessageOnSite(data) {
  */
 export function updateMessageOnSite(data) {
     return request({
-        url: url.game88PlatformAdminWeb + '/message/messageOnSite',
+        url: url.game99PlatformAdminWeb + '/message/messageOnSite',
         method: 'put',
         data: data
     })
@@ -51,7 +51,7 @@ export function updateMessageOnSite(data) {
  */
 export function deleteMessageOnSite(id) {
     return request({
-        url: url.game88PlatformAdminWeb + '/message/messageOnSite/' + id,
+        url: url.game99PlatformAdminWeb + '/message/messageOnSite/' + id,
         method: 'delete'
     })
 }
@@ -61,7 +61,7 @@ export function deleteMessageOnSite(id) {
  */
 export function exportMessageOnSite(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/message/messageOnSite/export',
+        url: url.game99PlatformAdminWeb + '/message/messageOnSite/export',
         method: 'get',
         params: query,
         responseType: 'arraybuffer',
@@ -72,7 +72,7 @@ export function exportMessageOnSite(query) {
 /** 新增站内信息 */
 export function addUserMessage(data) {
     return request({
-        url: url.game88PlatformAdminWeb + '/message/messageOnSite/sendUserMessage',
+        url: url.game99PlatformAdminWeb + '/message/messageOnSite/sendUserMessage',
         method: 'post',
         data: data
     })

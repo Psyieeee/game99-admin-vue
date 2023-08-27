@@ -4,7 +4,7 @@ import {url} from '@/utils/url'
 // 查询会员发言列表
 export function listLiveVideoChat(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/admin/liveVideoChat/list',
+        url: url.game99PlatformAdminWeb + '/admin/liveVideoChat/list',
         method: 'get',
         params: query
     })
@@ -13,7 +13,7 @@ export function listLiveVideoChat(query) {
 // 查询主播单聊列表
 export function listLiveVideoPushChat(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/admin/liveVideoChat/listLiveVideoPushChat',
+        url: url.game99PlatformAdminWeb + '/admin/liveVideoChat/listLiveVideoPushChat',
         method: 'get',
         params: query
     })
@@ -22,7 +22,7 @@ export function listLiveVideoPushChat(query) {
 // 查询会员发言详细
 export function getLiveVideoChat(id) {
     return request({
-        url: url.game88PlatformAdminWeb + '/admin/liveVideoChat/' + id,
+        url: url.game99PlatformAdminWeb + '/admin/liveVideoChat/' + id,
         method: 'get'
     })
 }
@@ -30,7 +30,7 @@ export function getLiveVideoChat(id) {
 // 新增会员发言
 export function addLiveVideoChat(data) {
     return request({
-        url: url.game88PlatformAdminWeb + '/admin/liveVideoChat',
+        url: url.game99PlatformAdminWeb + '/admin/liveVideoChat',
         method: 'post',
         data: data
     })
@@ -39,7 +39,7 @@ export function addLiveVideoChat(data) {
 // 修改会员发言
 export function updateLiveVideoChat(data) {
     return request({
-        url: url.game88PlatformAdminWeb + '/admin/liveVideoChat',
+        url: url.game99PlatformAdminWeb + '/admin/liveVideoChat',
         method: 'put',
         data: data
     })
@@ -48,7 +48,7 @@ export function updateLiveVideoChat(data) {
 // 删除会员发言
 export function delLiveVideoChat(id) {
     return request({
-        url: url.game88PlatformAdminWeb + '/admin/liveVideoChat/' + id,
+        url: url.game99PlatformAdminWeb + '/admin/liveVideoChat/' + id,
         method: 'delete'
     })
 }
@@ -56,7 +56,7 @@ export function delLiveVideoChat(id) {
 // 导出会员发言
 export function exportLiveVideoChat(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/admin/liveVideoChat/export',
+        url: url.game99PlatformAdminWeb + '/admin/liveVideoChat/export',
         method: 'get',
         params: query,
         responseType: 'arraybuffer',
@@ -66,7 +66,7 @@ export function exportLiveVideoChat(query) {
 
 export function suspendUser(data) {
     return request({
-        url: url.game88PlatformAdminWeb + '/admin/liveVideoChat/export',
+        url: url.game99PlatformAdminWeb + '/admin/liveVideoChat/export',
         method: 'post',
         data: data
     })
@@ -74,7 +74,7 @@ export function suspendUser(data) {
 
 export function forbid(data) {
     return request({
-        url: url.game88PlatformAdminWeb + '/admin/liveVideoChat/forbidSendMsg',
+        url: url.game99PlatformAdminWeb + '/admin/liveVideoChat/forbidSendMsg',
         method: 'post',
         data: data
     })

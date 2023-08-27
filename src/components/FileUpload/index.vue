@@ -71,8 +71,8 @@ const emit = defineEmits();
 const number = ref(0);
 const uploadList = ref([]);
 const uploadFileUrl = ref(props.modeId
-    ? (url.baseUrl + url.game88PlatformAdminWeb + '/upload/test/' + props.modeId)
-    : (url.baseUrl + url.game88PlatformAdminWeb + '/upload/' + props.path)); // 上传文件服务器地址
+    ? (url.baseUrl + url.game99PlatformAdminWeb + '/upload/test/' + props.modeId)
+    : (url.baseUrl + url.game99PlatformAdminWeb + '/upload/' + props.path)); // 上传文件服务器地址
 const headers = ref({ Authorization: "Bearer " + getToken() });
 const fileList = ref([]);
 const showTip = computed(

@@ -7,7 +7,7 @@ import {url} from "@/utils/url";
  */
 export function activityTypeListData(query){
     return request({
-        url:url.game88PlatformAdminWeb+"/activity/activityType/list",
+        url:url.game99PlatformAdminWeb+"/activity/activityType/list",
         method:'get',
         params:query
     })
@@ -18,7 +18,7 @@ export function activityTypeListData(query){
  */
 export function getActivityTypeAllList(){
     return request({
-        url:url.game88PlatformAdminWeb+"/activity/activityType/listAll",
+        url:url.game99PlatformAdminWeb+"/activity/activityType/listAll",
         method:'get',
     })
 }
@@ -28,7 +28,7 @@ export function getActivityTypeAllList(){
  */
 export function activityTypeDataById(id){
     return request({
-        url:url.game88PlatformAdminWeb+"/activity/activityType/"+id,
+        url:url.game99PlatformAdminWeb+"/activity/activityType/"+id,
         method:'get',
     })
 }
@@ -38,7 +38,7 @@ export function activityTypeDataById(id){
  */
 export function activityTypeExport(query){
     return request({
-        url:url.game88PlatformAdminWeb+"/activity/activityType/export",
+        url:url.game99PlatformAdminWeb+"/activity/activityType/export",
         method: 'get',
         params: query,
         responseType: 'arraybuffer',
@@ -51,7 +51,7 @@ export function activityTypeExport(query){
  */
 export function addActivityTypeData(data){
     return request({
-        url:url.game88PlatformAdminWeb+"/activity/activityType/",
+        url:url.game99PlatformAdminWeb+"/activity/activityType/",
         method:'post',
         data:data
     })
@@ -62,7 +62,7 @@ export function addActivityTypeData(data){
  */
 export function updateActivityType(data){
     return request({
-        url:url.game88PlatformAdminWeb+"/activity/activityType/",
+        url:url.game99PlatformAdminWeb+"/activity/activityType/",
         method:'put',
         data:data
     })
@@ -73,7 +73,7 @@ export function updateActivityType(data){
  */
 export  function deleteActivityType(id){
     return request({
-        url:url.game88PlatformAdminWeb+"/activity/activityType/"+id,
+        url:url.game99PlatformAdminWeb+"/activity/activityType/"+id,
         method:'delete',
     })
 }

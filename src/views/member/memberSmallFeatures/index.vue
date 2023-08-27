@@ -157,7 +157,7 @@ const data = reactive({
         safeBalanceTotalMoney: 0
       },
 
-      uploadFileUrl: "dev-api" + url.game88PlatformAdminWeb + "/member/memberInfo/batchInsertShops",
+      uploadFileUrl: "dev-api" + url.game99PlatformAdminWeb + "/member/memberInfo/batchInsertShops",
       headers: {
         Authorization: 'Bearer ' + getToken()
       },

@@ -3,7 +3,7 @@ import {url} from '@/utils/url'
 
 export function listSpeakIpBlackList(query) {
   return request({
-    url: url.game88PlatformAdminWeb + '/admin/speakIpBlackList/list',
+    url: url.game99PlatformAdminWeb + '/admin/speakIpBlackList/list',
     method: 'get',
     params: query
   })
@@ -11,14 +11,14 @@ export function listSpeakIpBlackList(query) {
 
 export function getSpeakIpBlackList(id) {
   return request({
-    url: url.game88PlatformAdminWeb + '/admin/speakIpBlackList/' + id,
+    url: url.game99PlatformAdminWeb + '/admin/speakIpBlackList/' + id,
     method: 'get'
   })
 }
 
 export function addSpeakIpBlackList(data) {
   return request({
-    url: url.game88PlatformAdminWeb + '/admin/speakIpBlackList',
+    url: url.game99PlatformAdminWeb + '/admin/speakIpBlackList',
     method: 'post',
     data: data
   })
@@ -27,7 +27,7 @@ export function addSpeakIpBlackList(data) {
 // 修改【请填写功能名称】
 export function  updateSpeakIpBlackList(data) {
   return request({
-    url: url.game88PlatformAdminWeb + '/admin/speakIpBlackList',
+    url: url.game99PlatformAdminWeb + '/admin/speakIpBlackList',
     method: 'put',
     data: data
   })
@@ -35,7 +35,7 @@ export function  updateSpeakIpBlackList(data) {
 
 export function delSpeakIpBlackList(id) {
   return request({
-    url: url.game88PlatformAdminWeb + '/admin/speakIpBlackList/' + id,
+    url: url.game99PlatformAdminWeb + '/admin/speakIpBlackList/' + id,
     method: 'delete'
   })
 }
@@ -43,7 +43,7 @@ export function delSpeakIpBlackList(id) {
 // 导出【请填写功能名称】
 export function exportSpeakIpBlackList(query) {
   return request({
-    url: url.game88PlatformAdminWeb + '/admin/speakIpBlackList/export',
+    url: url.game99PlatformAdminWeb + '/admin/speakIpBlackList/export',
     method: 'get',
     params: query,
     responseType: 'arraybuffer',

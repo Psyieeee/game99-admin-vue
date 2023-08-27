@@ -6,7 +6,7 @@ import {url} from "@/utils/url";
  */
 export function listMemberGameData(query) {
     return request({
-        url: url.game88GameAdminWeb + '/member/memberGameData/list',
+        url: url.game99GameAdminWeb + '/member/memberGameData/list',
         method: 'get',
         params: query
     })
@@ -17,7 +17,7 @@ export function listMemberGameData(query) {
  */
 export function memberGameDataCount(query){
     return request({
-        url: url.game88GameAdminWeb + '/member/memberGameData/getCount',
+        url: url.game99GameAdminWeb + '/member/memberGameData/getCount',
         method: 'get',
         params: query
     })
@@ -28,7 +28,7 @@ export function memberGameDataCount(query){
  */
 export function memberGameDataExport(query){
     return request({
-        url: url.game88GameAdminWeb + '/member/memberGameData/export',
+        url: url.game99GameAdminWeb + '/member/memberGameData/export',
         method:'get',
         params:query,
         responseType: 'arraybuffer',
@@ -39,7 +39,7 @@ export function memberGameDataExport(query){
 /** 查询对局详情列表  */
 export function memberGameDateRecordList(query){
     return request({
-        url: url.game88GameAdminWeb + '/member/memberGameData/recordList',
+        url: url.game99GameAdminWeb + '/member/memberGameData/recordList',
         method: 'get',
         params: query
     })
@@ -48,7 +48,7 @@ export function memberGameDateRecordList(query){
  /** 查询对局详情列表  */
 export function memberGameDateDetailsList(query){
     return request({
-        url: url.game88GameAdminWeb + '/member/memberGameData/detailList',
+        url: url.game99GameAdminWeb + '/member/memberGameData/detailList',
         method: 'get',
         params: query
     })
@@ -56,7 +56,7 @@ export function memberGameDateDetailsList(query){
 
 export function gameRecordList(query) {
     return request({
-        url: url.game88GameAdminWeb + '/member/memberGameData/recordList',
+        url: url.game99GameAdminWeb + '/member/memberGameData/recordList',
         method: 'get',
         params: query,
         timeout: 60000
@@ -64,7 +64,7 @@ export function gameRecordList(query) {
 }
 export function gameDetailList(query) {
     return request({
-        url: url.game88GameAdminWeb + '/member/memberGameData/detailList',
+        url: url.game99GameAdminWeb + '/member/memberGameData/detailList',
         method: 'get',
         params: query,
         timeout: 60000
@@ -73,7 +73,7 @@ export function gameDetailList(query) {
 //查询平台列表
 export function gamePlatformList(query) {
     return request({
-        url: url.game88GameAdminWeb + '/member/memberGameData/platformList',
+        url: url.game99GameAdminWeb + '/member/memberGameData/platformList',
         method: 'get',
         params: query
     })

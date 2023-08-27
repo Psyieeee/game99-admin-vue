@@ -6,7 +6,7 @@ import {url} from '@/utils/url'
  */
 export function listLotteryInfo(query) {
     return request({
-        url: url.game88LotteryAdminWeb + '/lottery/lotteryInfo/list',
+        url: url.game99LotteryAdminWeb + '/lottery/lotteryInfo/list',
         method: 'get',
         params: query
     })
@@ -14,7 +14,7 @@ export function listLotteryInfo(query) {
 
 export function listAllLotteryInfo() {
     return request({
-        url: url.game88LotteryAdminWeb + '/lottery/lotteryInfo/listAll',
+        url: url.game99LotteryAdminWeb + '/lottery/lotteryInfo/listAll',
         method: 'get',
     })
 }
@@ -24,7 +24,7 @@ export function listAllLotteryInfo() {
  */
 export function getLotteryInfo(id) {
     return request({
-        url: url.game88LotteryAdminWeb + '/lottery/lotteryInfo/' + id,
+        url: url.game99LotteryAdminWeb + '/lottery/lotteryInfo/' + id,
         method: 'get'
     })
 }
@@ -34,7 +34,7 @@ export function getLotteryInfo(id) {
  */
 export function addLotteryInfo(data) {
     return request({
-        url: url.game88LotteryAdminWeb + '/lottery/lotteryInfo',
+        url: url.game99LotteryAdminWeb + '/lottery/lotteryInfo',
         method: 'post',
         data: data
     })
@@ -45,7 +45,7 @@ export function addLotteryInfo(data) {
  */
 export function updateLotteryInfo(data) {
     return request({
-        url: url.game88LotteryAdminWeb + '/lottery/lotteryInfo',
+        url: url.game99LotteryAdminWeb + '/lottery/lotteryInfo',
         method: 'put',
         data: data
     })
@@ -54,7 +54,7 @@ export function updateLotteryInfo(data) {
 // 修改主播禁播状态- Lottery Status Handler Url
 export function lotteryInfoUpdateStatus(id,effect) {
     return request({
-        url: url.game88LotteryAdminWeb + '/lottery/lotteryInfo/changeStatus/'+ id + "/"+ effect,
+        url: url.game99LotteryAdminWeb + '/lottery/lotteryInfo/changeStatus/'+ id + "/"+ effect,
         method: 'put',
     })
 }
@@ -65,7 +65,7 @@ export function lotteryInfoUpdateStatus(id,effect) {
  */
 export function LotteryInfoExport(query){
     return request({
-        url:url.game88PlatformAdminWeb+"/lottery/lotteryInfo/export",
+        url:url.game99PlatformAdminWeb+"/lottery/lotteryInfo/export",
         method: 'get',
         params: query,
         responseType: 'arraybuffer',
@@ -78,7 +78,7 @@ export function LotteryInfoExport(query){
  */
 export function deleteLotteryInfo(id) {
     return request({
-        url: url.game88LotteryAdminWeb + '/lottery/lotteryInfo/' + id,
+        url: url.game99LotteryAdminWeb + '/lottery/lotteryInfo/' + id,
         method: 'delete'
     })
 }

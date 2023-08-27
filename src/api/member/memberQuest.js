@@ -4,7 +4,7 @@ import {url} from '@/utils/url'
 // 查询会员任务列表
 export function listMemberQuest(query) {
   return request({
-    url: url.game88PlatformAdminWeb + '/member/memberQuest/list',
+    url: url.game99PlatformAdminWeb + '/member/memberQuest/list',
     method: 'get',
     params: query
   })
@@ -18,7 +18,7 @@ export function addMemberScore(id,status,curNum) {
     curNum
   }
   return request({
-    url: url.game88PlatformAdminWeb + '/member/memberQuest/addScore',
+    url: url.game99PlatformAdminWeb + '/member/memberQuest/addScore',
     method: 'post',
     data: data
   })
@@ -27,7 +27,7 @@ export function addMemberScore(id,status,curNum) {
 // 查询会员任务详详情
 export function getMemberQuest(id) {
   return request({
-    url: url.game88PlatformAdminWeb + '/member/memberQuest/' + id,
+    url: url.game99PlatformAdminWeb + '/member/memberQuest/' + id,
     method: 'get'
   })
 }
@@ -35,7 +35,7 @@ export function getMemberQuest(id) {
 // 新增会员任务
 export function addMemberQuest(data) {
   return request({
-    url: url.game88PlatformAdminWeb + '/member/memberQuest',
+    url: url.game99PlatformAdminWeb + '/member/memberQuest',
     method: 'post',
     data: data
   })
@@ -44,7 +44,7 @@ export function addMemberQuest(data) {
 // 修改会员任务
 export function updateMemberQuest(data) {
   return request({
-    url: url.game88PlatformAdminWeb + '/member/memberQuest',
+    url: url.game99PlatformAdminWeb + '/member/memberQuest',
     method: 'put',
     data: data
   })
@@ -53,7 +53,7 @@ export function updateMemberQuest(data) {
 // 删除会员任务
 export function delMemberQuest(id) {
   return request({
-    url: url.game88PlatformAdminWeb + '/member/memberQuest/' + id,
+    url: url.game99PlatformAdminWeb + '/member/memberQuest/' + id,
     method: 'delete'
   })
 }
@@ -61,7 +61,7 @@ export function delMemberQuest(id) {
 // 导出会员任务列表
 export function exportMemberQuest(query) {
   return request({
-    url: url.game88PlatformAdminWeb + '/member/memberQuest/export',
+    url: url.game99PlatformAdminWeb + '/member/memberQuest/export',
     method: 'get',
     params: query,
     responseType: 'arraybuffer',

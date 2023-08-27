@@ -6,7 +6,7 @@ import request from "@/utils/request";
  */
 export function configVpiDataList(query){
     return request({
-        url:url.game88PlatformAdminWeb+"/config/vip/list",
+        url:url.game99PlatformAdminWeb+"/config/vip/list",
         method:'get',
         params:query
     })
@@ -17,7 +17,7 @@ export function configVpiDataList(query){
  */
 export function configVipDataExport(query){
     return request({
-        url:url.game88PlatformAdminWeb+"/config/vip/export",
+        url:url.game99PlatformAdminWeb+"/config/vip/export",
         method:'get',
         params:query,
         responseType:'arrayBuffer',
@@ -30,7 +30,7 @@ export function configVipDataExport(query){
  */
 export function configVipDataById(id){
     return request({
-        url:url.game88PlatformAdminWeb+"/config/vip/"+id,
+        url:url.game99PlatformAdminWeb+"/config/vip/"+id,
         method:'get'
     })
 }
@@ -40,7 +40,7 @@ export function configVipDataById(id){
  */
 export function addConfigVipData(values){
     return request({
-        url:url.game88PlatformAdminWeb+"/config/vip",
+        url:url.game99PlatformAdminWeb+"/config/vip",
         method:'post',
         data:values
     })
@@ -51,7 +51,7 @@ export function addConfigVipData(values){
  */
 export function configVipEdit(data){
     return request({
-        url:url.game88PlatformAdminWeb+"/config/vip",
+        url:url.game99PlatformAdminWeb+"/config/vip",
         method:'put',
         data:data
     })
@@ -62,7 +62,7 @@ export function configVipEdit(data){
  */
 export function configVipDelete(id){
     return request({
-        url:url.game88PlatformAdminWeb+"/config/vip/"+id,
+        url:url.game99PlatformAdminWeb+"/config/vip/"+id,
         method:'delete',
     })
 }

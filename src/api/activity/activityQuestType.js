@@ -7,7 +7,7 @@ import {url} from "@/utils/url";
  */
 export function activityQuestTypeListData(query){
     return request({
-        url:url.game88PlatformAdminWeb+"/activity/activityQuestType/list",
+        url:url.game99PlatformAdminWeb+"/activity/activityQuestType/list",
         method:'get',
         params:query
     })
@@ -19,7 +19,7 @@ export function activityQuestTypeListData(query){
  */
 export function activityQuestTypeListDataAll(){
     return request({
-        url:url.game88PlatformAdminWeb+"/activity/activityQuestType/listAll",
+        url:url.game99PlatformAdminWeb+"/activity/activityQuestType/listAll",
         method:'get',
     })
 }
@@ -29,7 +29,7 @@ export function activityQuestTypeListDataAll(){
  */
 export function activityQuestTypeExport(query){
     return request({
-        url:url.game88PlatformAdminWeb+"/activity/activityQuestType/export",
+        url:url.game99PlatformAdminWeb+"/activity/activityQuestType/export",
         method:'get',
         params:query,
         responseType: 'arraybuffer',
@@ -42,7 +42,7 @@ export function activityQuestTypeExport(query){
  */
 export function activityQuestTypeByID(id){
     return request({
-        url:url.game88PlatformAdminWeb+"/activity/activityQuestType/"+id,
+        url:url.game99PlatformAdminWeb+"/activity/activityQuestType/"+id,
         method:'get',
     })
 }
@@ -52,7 +52,7 @@ export function activityQuestTypeByID(id){
  */
 export function addActivityQuestType(data){
     return request({
-        url:url.game88PlatformAdminWeb+"/activity/activityQuestType/",
+        url:url.game99PlatformAdminWeb+"/activity/activityQuestType/",
         method:'post',
         data:data
     })
@@ -63,7 +63,7 @@ export function addActivityQuestType(data){
  */
 export function updateActivityQuestType(data){
     return request({
-        url:url.game88PlatformAdminWeb+"/activity/activityQuestType/",
+        url:url.game99PlatformAdminWeb+"/activity/activityQuestType/",
         method:'put',
         data:data
     })
@@ -74,7 +74,7 @@ export function updateActivityQuestType(data){
  */
 export function activityQuestTypeDelete(id){
     return request({
-        url:url.game88PlatformAdminWeb+"/activity/activityQuestType/"+id,
+        url:url.game99PlatformAdminWeb+"/activity/activityQuestType/"+id,
         method:'delete',
     })
 }

@@ -6,7 +6,7 @@ import {url} from "@/utils/url";
  */
 export function commissionRecordListData(query){
     return request({
-        url:url.game88PlatformAdminWeb+"/member/commissionRecords/list",
+        url:url.game99PlatformAdminWeb+"/member/commissionRecords/list",
         method:'get',
         params:query
     })
@@ -17,7 +17,7 @@ export function commissionRecordListData(query){
  */
 export function commissionRecordDataExport(query){
     return request({
-        url:url.game88PlatformAdminWeb+"/member/commissionRecords/export",
+        url:url.game99PlatformAdminWeb+"/member/commissionRecords/export",
         method:'get',
         params:query,
         responseType:'arrayBuffers',

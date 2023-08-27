@@ -7,7 +7,7 @@ import {url} from "@/utils/url";
  */
 export function configRecommendListData(query){
     return request({
-        url:url.game88PlatformAdminWeb+"/config/recommend/list",
+        url:url.game99PlatformAdminWeb+"/config/recommend/list",
         method:'get',
         params:query
     })
@@ -18,7 +18,7 @@ export function configRecommendListData(query){
  */
 export function exportConfigRecommend(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/recommend/export',
+        url: url.game99PlatformAdminWeb + '/config/recommend/export',
         method: 'get',
         params: query,
         responseType: 'arraybuffer',
@@ -31,7 +31,7 @@ export function exportConfigRecommend(query) {
  */
 export  function  configRecommendById(id){
     return request({
-        url: url.game88PlatformAdminWeb + '/config/recommend/'+id,
+        url: url.game99PlatformAdminWeb + '/config/recommend/'+id,
         method: 'get',
     })
 }
@@ -41,7 +41,7 @@ export  function  configRecommendById(id){
  */
 export function addConfigRecommend(values){
     return request({
-        url:url.game88PlatformAdminWeb+ "/config/recommend",
+        url:url.game99PlatformAdminWeb+ "/config/recommend",
         method:'post',
         data:values
     })
@@ -52,7 +52,7 @@ export function addConfigRecommend(values){
  */
 export function updateConfigRecommend(values){
     return request({
-        url:url.game88PlatformAdminWeb+ "/config/recommend",
+        url:url.game99PlatformAdminWeb+ "/config/recommend",
         method:'put',
         data:values
     })
@@ -63,7 +63,7 @@ export function updateConfigRecommend(values){
  */
 export function deleteConfigRecommend(id){
     return request({
-        url:url.game88PlatformAdminWeb+"/config/recommend/"+id,
+        url:url.game99PlatformAdminWeb+"/config/recommend/"+id,
         method:'delete'
     })
 }

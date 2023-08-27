@@ -7,7 +7,7 @@ import {url} from '@/utils/url'
  */
 export function listReportPlamGameChild(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/report/plamGamesChilds/list',
+        url: url.game99PlatformAdminWeb + '/report/plamGamesChilds/list',
         method: 'get',
         params: query
     })

@@ -4,7 +4,7 @@ import {url} from '@/utils/url'
 //会员小功能之批量手机号更新密码
 export function updatePhones(query) {
   return request({
-    url: url.game88PlatformAdminWeb + '/member/memberInfo/memberSmallFeatures',
+    url: url.game99PlatformAdminWeb + '/member/memberInfo/memberSmallFeatures',
     method: 'post',
     params: query
   })
@@ -17,7 +17,7 @@ export function queryPhones(userIds,googleAuthCode) {
     googleAuthCode: googleAuthCode
   }
   return request({
-    url: url.game88PlatformAdminWeb + '/member/memberInfo/queryPhones',
+    url: url.game99PlatformAdminWeb + '/member/memberInfo/queryPhones',
     method: 'post',
     data: data
   })
@@ -32,7 +32,7 @@ export function commitMoney(memberIds,money,googleAuthCode) {
     googleAuthCode: googleAuthCode
   }
   return request({
-    url: url.game88PlatformAdminWeb + '/member/memberInfo/commitMoney',
+    url: url.game99PlatformAdminWeb + '/member/memberInfo/commitMoney',
     method: 'post',
     data: data
   })

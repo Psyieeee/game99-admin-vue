@@ -90,8 +90,8 @@ const uploadList = ref([]);
 const dialogImageUrl = ref("");
 const dialogVisible = ref(false);
 const uploadImgUrl = ref(props.modeId
-    ? (url.baseUrl + url.game88PlatformAdminWeb + '/upload/test/' + props.modeId)
-    : (url.baseUrl + url.game88PlatformAdminWeb + '/upload/' + props.path)); // 上传的图片服务器地址
+    ? (url.baseUrl + url.game99PlatformAdminWeb + '/upload/test/' + props.modeId)
+    : (url.baseUrl + url.game99PlatformAdminWeb + '/upload/' + props.path)); // 上传的图片服务器地址
 const headers = ref({Authorization: "Bearer " + getToken()});
 const fileList = ref([]);
 const showTip = computed(

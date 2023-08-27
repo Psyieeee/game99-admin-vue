@@ -4,7 +4,7 @@ import {url} from '@/utils/url'
 // 查询常见问题列表
 export function listCommonProblem(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/message/commonProblem/list',
+        url: url.game99PlatformAdminWeb + '/message/commonProblem/list',
         method: 'get',
         params: query
     })
@@ -13,7 +13,7 @@ export function listCommonProblem(query) {
 // 查询常见问题详细
 export function getCommonProblem(id) {
     return request({
-        url: url.game88PlatformAdminWeb + '/message/commonProblem/' + id,
+        url: url.game99PlatformAdminWeb + '/message/commonProblem/' + id,
         method: 'get'
     })
 }
@@ -21,7 +21,7 @@ export function getCommonProblem(id) {
 // 新增常见问题
 export function addCommonProblem(data) {
     return request({
-        url: url.game88PlatformAdminWeb + '/message/commonProblem',
+        url: url.game99PlatformAdminWeb + '/message/commonProblem',
         method: 'post',
         data: data
     })
@@ -30,7 +30,7 @@ export function addCommonProblem(data) {
 // 修改常见问题
 export function updateCommonProblem(data) {
     return request({
-        url: url.game88PlatformAdminWeb + '/message/commonProblem',
+        url: url.game99PlatformAdminWeb + '/message/commonProblem',
         method: 'put',
         data: data
     })
@@ -39,7 +39,7 @@ export function updateCommonProblem(data) {
 // 删除常见问题
 export function delCommonProblem(id) {
     return request({
-        url: url.game88PlatformAdminWeb + '/message/commonProblem/' + id,
+        url: url.game99PlatformAdminWeb + '/message/commonProblem/' + id,
         method: 'delete'
     })
 }
@@ -47,7 +47,7 @@ export function delCommonProblem(id) {
 // 导出常见问题
 export function exportCommonProblem(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/message/commonProblem/export',
+        url: url.game99PlatformAdminWeb + '/message/commonProblem/export',
         method: 'get',
         params: query,
         responseType: 'arraybuffer',
@@ -57,7 +57,7 @@ export function exportCommonProblem(query) {
 
 export function changeStatusCommonProblem(id, effect) {
     return request({
-        url: url.game88PlatformAdminWeb + '/message/commonProblem/changeStatus/' + id + "/" + effect,
+        url: url.game99PlatformAdminWeb + '/message/commonProblem/changeStatus/' + id + "/" + effect,
         method: 'put'
     })
 }

@@ -4,7 +4,7 @@ import {url} from "@/utils/url";
 /** 查询会员推广管理列表 */
 export function listActivityMemberInfo(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/activity/memberInfo/list',
+        url: url.game99PlatformAdminWeb + '/activity/memberInfo/list',
         method: 'get',
         params: query
     })
@@ -13,7 +13,7 @@ export function listActivityMemberInfo(query) {
  /** 查询会员ip重复 */
 export function ipListData(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/activity/memberInfo/ipList',
+        url: url.game99PlatformAdminWeb + '/activity/memberInfo/ipList',
         method: 'get',
         params: query
     })
@@ -22,7 +22,7 @@ export function ipListData(query) {
  /** 查询会员推广管理详细 */
 export function getActivityMemberInfo(id) {
     return request({
-        url: url.game88PlatformAdminWeb + '/activity/memberInfo/' + id,
+        url: url.game99PlatformAdminWeb + '/activity/memberInfo/' + id,
         method: 'get'
     })
 }
@@ -31,7 +31,7 @@ export function getActivityMemberInfo(id) {
  /** 导出会员推广管理 */
 export function exportActivityMemberInfo(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/activity/memberInfo/export',
+        url: url.game99PlatformAdminWeb + '/activity/memberInfo/export',
         method: 'get',
         params: query,
         responseType: 'arraybuffer',

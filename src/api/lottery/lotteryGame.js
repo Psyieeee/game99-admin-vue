@@ -6,7 +6,7 @@ import request from "@/utils/request";
  */
 export function listLotteryGameData(query){
     return request({
-        url:url.game88LotteryAdminWeb + "/lottery/game/list",
+        url:url.game99LotteryAdminWeb + "/lottery/game/list",
         method: 'get',
         params:query
     })
@@ -17,7 +17,7 @@ export function listLotteryGameData(query){
  */
 export function lotteryGameByIdData(id){
     return request({
-        url:url.game88LotteryAdminWeb + "/lottery/game/"+id,
+        url:url.game99LotteryAdminWeb + "/lottery/game/"+id,
         method: 'get',
     })
 }
@@ -27,7 +27,7 @@ export function lotteryGameByIdData(id){
  */
 export function editLotteryGame(data){
     return request({
-        url:url.game88LotteryAdminWeb + "/lottery/game",
+        url:url.game99LotteryAdminWeb + "/lottery/game",
         method: 'put',
         data:data
     })

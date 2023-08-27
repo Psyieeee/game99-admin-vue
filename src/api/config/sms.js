@@ -5,7 +5,7 @@ import {url} from "@/utils/url";
 // 查询SMS短信服务配置列表
 export function listSms(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/sms/list',
+        url: url.game99PlatformAdminWeb + '/config/sms/list',
         method: 'get',
         params: query
     })
@@ -14,7 +14,7 @@ export function listSms(query) {
 // 查询SMS短信服务配置详细
 export function getSmsById(id) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/sms/' + id,
+        url: url.game99PlatformAdminWeb + '/config/sms/' + id,
         method: 'get'
     })
 }
@@ -22,7 +22,7 @@ export function getSmsById(id) {
 // 新增SMS短信服务配置
 export function addSms(data) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/sms',
+        url: url.game99PlatformAdminWeb + '/config/sms',
         method: 'post',
         data: data
     })
@@ -31,7 +31,7 @@ export function addSms(data) {
 // 修改SMS短信服务配置
 export function updateSms(data) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/sms',
+        url: url.game99PlatformAdminWeb + '/config/sms',
         method: 'put',
         data: data
     })
@@ -40,7 +40,7 @@ export function updateSms(data) {
 // 删除SMS短信服务配置
 export function delSms(id) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/sms/' + id,
+        url: url.game99PlatformAdminWeb + '/config/sms/' + id,
         method: 'delete'
     })
 }
@@ -48,7 +48,7 @@ export function delSms(id) {
 // 激活SMS短信服务配置
 export function effectSms(id) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/sms/effect/' + id,
+        url: url.game99PlatformAdminWeb + '/config/sms/effect/' + id,
         method: 'put'
     })
 }
@@ -56,7 +56,7 @@ export function effectSms(id) {
 //取消激活SMS短信服务配置
 export function noEffectSms(id) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/sms/noEffect/' + id,
+        url: url.game99PlatformAdminWeb + '/config/sms/noEffect/' + id,
         method: 'put'
     })
 }
@@ -64,7 +64,7 @@ export function noEffectSms(id) {
 //测试SMS短信服务配置
 export function smsTest(id, mobile) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/sms/smsTest/' + id + '/' + mobile,
+        url: url.game99PlatformAdminWeb + '/config/sms/smsTest/' + id + '/' + mobile,
         method: 'put'
     })
 }

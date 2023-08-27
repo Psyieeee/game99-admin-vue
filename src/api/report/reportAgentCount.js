@@ -7,7 +7,7 @@ import {url} from '@/utils/url'
  */
 export function ReportRecordPost(data) {
     return request({
-        url: url.game88PlatformAdminWeb + '/report/agentCount/record',
+        url: url.game99PlatformAdminWeb + '/report/agentCount/record',
         method: 'post',
         data: data
     })
@@ -18,7 +18,7 @@ export function ReportRecordPost(data) {
  */
 export function listReportAgentCountData(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/report/agentCount/list',
+        url: url.game99PlatformAdminWeb + '/report/agentCount/list',
         method: 'get',
         params: query
     })
@@ -30,7 +30,7 @@ export function listReportAgentCountData(query) {
  */
 export function reportGenerateData(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/report/agentCount/generateData',
+        url: url.game99PlatformAdminWeb + '/report/agentCount/generateData',
         method: 'get',
         params: query
     })
@@ -42,7 +42,7 @@ export function reportGenerateData(query) {
  */
 export function reportAgentCountExport(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/report/agentCount/export',
+        url: url.game99PlatformAdminWeb + '/report/agentCount/export',
         method: 'get',
         params: query,
         responseType: 'arraybuffer',

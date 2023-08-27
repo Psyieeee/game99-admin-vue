@@ -4,7 +4,7 @@ import {url} from "@/utils/url";
 // 查询【请填写功能名称】列表
 export function listConfigEnvironment(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/env/list',
+        url: url.game99PlatformAdminWeb + '/config/env/list',
         method: 'get',
         params: query
     })
@@ -12,7 +12,7 @@ export function listConfigEnvironment(query) {
 
 export function listConfigEnvironmentPic(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/env/listRecommendPic',
+        url: url.game99PlatformAdminWeb + '/config/env/listRecommendPic',
         method: 'get',
         params: query
     })
@@ -21,7 +21,7 @@ export function listConfigEnvironmentPic(query) {
 export function updateConfigEnvironmentPic(data) {
 
     return request({
-        url: url.game88PlatformAdminWeb + '/config/env/updateRecommendPic',
+        url: url.game99PlatformAdminWeb + '/config/env/updateRecommendPic',
         method: 'put',
         data: data
     })
@@ -30,7 +30,7 @@ export function updateConfigEnvironmentPic(data) {
 // 查询【请填写功能名称】详细
 export function getConfigEnvironment(envCode) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/env/' + envCode,
+        url: url.game99PlatformAdminWeb + '/config/env/' + envCode,
         method: 'get'
     })
 }
@@ -38,7 +38,7 @@ export function getConfigEnvironment(envCode) {
 // 新增【请填写功能名称】
 export function addConfigEnvironment(data) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/env',
+        url: url.game99PlatformAdminWeb + '/config/env',
         method: 'post',
         data: data
     })
@@ -47,7 +47,7 @@ export function addConfigEnvironment(data) {
 // 修改【请填写功能名称】
 export function updateConfigEnvironmentApi(data) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/env',
+        url: url.game99PlatformAdminWeb + '/config/env',
         method: 'put',
         data: data
     })
@@ -56,7 +56,7 @@ export function updateConfigEnvironmentApi(data) {
 // 修改状态
 export function changeStatus(data) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/env/changeStatus',
+        url: url.game99PlatformAdminWeb + '/config/env/changeStatus',
         method: 'put',
         data: data
     })
@@ -65,7 +65,7 @@ export function changeStatus(data) {
 // 批量修改【请填写功能名称】
 export function updateConfigEnvironmentList(data) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/env/editList',
+        url: url.game99PlatformAdminWeb + '/config/env/editList',
         method: 'post',
         data: data
     })
@@ -74,7 +74,7 @@ export function updateConfigEnvironmentList(data) {
 // 批量修改【请填写功能名称】
 export function getTitleIndex(data) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/env/getTitleIndex',
+        url: url.game99PlatformAdminWeb + '/config/env/getTitleIndex',
         method: 'get',
         params: data
     })
@@ -83,7 +83,7 @@ export function getTitleIndex(data) {
 // 删除【请填写功能名称】
 export function delConfigEnvironment(envCode) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/env/' + envCode,
+        url: url.game99PlatformAdminWeb + '/config/env/' + envCode,
         method: 'delete'
     })
 }
@@ -91,7 +91,7 @@ export function delConfigEnvironment(envCode) {
 // 导出【请填写功能名称】
 export function exportConfigEnvironment(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/env/export',
+        url: url.game99PlatformAdminWeb + '/config/env/export',
         method: 'get',
         params: query,
         responseType: 'arraybuffer',

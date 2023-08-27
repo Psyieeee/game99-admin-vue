@@ -5,7 +5,7 @@ import {changeEffectStatus} from "@/api/game/type";
 // 查询游戏平台列表
 export function listPlatform(query) {
     return request({
-        url: url.game88GameAdminWeb + '/game/platform/list',
+        url: url.game99GameAdminWeb + '/game/platform/list',
         method: 'get',
         params: query
     })
@@ -14,7 +14,7 @@ export function listPlatform(query) {
 // 查询游戏平台列表
 export function listAllPlatform() {
     return request({
-        url: url.game88GameAdminWeb + '/game/platform/listAll',
+        url: url.game99GameAdminWeb + '/game/platform/listAll',
         method: 'get'
     })
 }
@@ -22,7 +22,7 @@ export function listAllPlatform() {
 // 查询游戏平台列表
 export function gameCategoryAll() {
     return request({
-        url: url.game88GameAdminWeb + '/game/platform/gameCategoryAll',
+        url: url.game99GameAdminWeb + '/game/platform/gameCategoryAll',
         method: 'get'
     })
 }
@@ -30,7 +30,7 @@ export function gameCategoryAll() {
 // 查询游戏平台详细
 export function getPlatform(id) {
     return request({
-        url: url.game88GameAdminWeb + '/game/platform/' + id,
+        url: url.game99GameAdminWeb + '/game/platform/' + id,
         method: 'get'
     })
 }
@@ -38,7 +38,7 @@ export function getPlatform(id) {
 // 新增游戏平台
 export function addPlatform(data) {
     return request({
-        url: url.game88GameAdminWeb + '/game/platform',
+        url: url.game99GameAdminWeb + '/game/platform',
         method: 'post',
         data: data
     })
@@ -47,7 +47,7 @@ export function addPlatform(data) {
 // 修改游戏平台
 export function updatePlatform(data) {
     return request({
-        url: url.game88GameAdminWeb + '/game/platform',
+        url: url.game99GameAdminWeb + '/game/platform',
         method: 'put',
         data: data
     })
@@ -56,20 +56,20 @@ export function updatePlatform(data) {
 // 删除游戏平台
 export function delPlatform(id) {
     return request({
-        url: url.game88GameAdminWeb + '/game/platform/' + id,
+        url: url.game99GameAdminWeb + '/game/platform/' + id,
         method: 'delete'
     })
 }
 
 export function changeEffectStatusPlatform(id, effect) {
     return request({
-        url: url.game88GameAdminWeb + '/game/platform/changeEffect/' + id + '/' + effect,
+        url: url.game99GameAdminWeb + '/game/platform/changeEffect/' + id + '/' + effect,
         method: 'put'
     })
 }
 export function changeMaintainStatusPlatform(id, maintain) {
     return request({
-        url: url.game88GameAdminWeb + '/game/platform/changeMaintain/' + id + '/' + maintain,
+        url: url.game99GameAdminWeb + '/game/platform/changeMaintain/' + id + '/' + maintain,
         method: 'put'
     })
 }

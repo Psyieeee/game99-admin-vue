@@ -6,7 +6,7 @@ import {url} from "@/utils/url";
  */
 export function listLotteryHistory(query){
     return request({
-        url:url.game88LotteryAdminWeb+"/lottery/lotteryHistory/list",
+        url:url.game99LotteryAdminWeb+"/lottery/lotteryHistory/list",
         method:'get',
         params:query
     })

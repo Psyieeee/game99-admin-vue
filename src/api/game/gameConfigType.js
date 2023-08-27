@@ -4,7 +4,7 @@ import {url} from '@/utils/url'
 // 查询游戏信息列表
 export function listGameConfigType(query) {
     return request({
-        url: url.game88GameAdminWeb + '/game/configGameType/list',
+        url: url.game99GameAdminWeb + '/game/configGameType/list',
         method: 'get',
         params: query
     })
@@ -13,7 +13,7 @@ export function listGameConfigType(query) {
 
 export function GameConfigTypeInfo(id) {
     return request({
-        url: url.game88GameAdminWeb + '/game/configGameType/'+id,
+        url: url.game99GameAdminWeb + '/game/configGameType/'+id,
         method: 'get',
     })
 }
@@ -21,7 +21,7 @@ export function GameConfigTypeInfo(id) {
 
 export function addGameConfigType(data) {
     return request({
-        url: url.game88GameAdminWeb + '/game/configGameType',
+        url: url.game99GameAdminWeb + '/game/configGameType',
         method: 'post',
         data: data
     })
@@ -29,7 +29,7 @@ export function addGameConfigType(data) {
 
 export function updateGameConfigType(data) {
     return request({
-        url: url.game88GameAdminWeb + '/game/configGameType',
+        url: url.game99GameAdminWeb + '/game/configGameType',
         method: 'put',
         data: data
     })
@@ -38,7 +38,7 @@ export function updateGameConfigType(data) {
 
 export function delGameConfigType(id) {
     return request({
-        url: url.game88GameAdminWeb + '/game/configGameType/' + id,
+        url: url.game99GameAdminWeb + '/game/configGameType/' + id,
         method: 'delete'
     })
 }

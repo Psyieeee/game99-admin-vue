@@ -7,7 +7,7 @@ import {url} from '@/utils/url'
  */
 export function listCom(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/report/report-plam-com/list',
+        url: url.game99PlatformAdminWeb + '/report/report-plam-com/list',
         method: 'get',
         params: query
     })
@@ -15,7 +15,7 @@ export function listCom(query) {
 
 export function exportReportPlamCom(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/report/report-plam-com/export',
+        url: url.game99PlatformAdminWeb + '/report/report-plam-com/export',
         method: 'get',
         params: query,
         responseType: 'arraybuffer',

@@ -7,7 +7,7 @@ import {url} from "@/utils/url";
  */
 export function activityQuestInfoListData(query) {
     return request({
-        url: url.game88PlatformAdminWeb + "/activity/activityQuestInfo/list",
+        url: url.game99PlatformAdminWeb + "/activity/activityQuestInfo/list",
         method: 'get',
         params: query
     })
@@ -18,7 +18,7 @@ export function activityQuestInfoListData(query) {
  */
 export function activityQuestInfoExport(query) {
     return request({
-        url: url.game88PlatformAdminWeb + "/activity/activityQuestInfo/export",
+        url: url.game99PlatformAdminWeb + "/activity/activityQuestInfo/export",
         method: 'get',
         params: query,
         responseType: 'arraybuffer',
@@ -31,7 +31,7 @@ export function activityQuestInfoExport(query) {
  */
 export function activityQuestInfoDataById(id) {
     return request({
-        url: url.game88PlatformAdminWeb + "/activity/activityQuestInfo/" + id,
+        url: url.game99PlatformAdminWeb + "/activity/activityQuestInfo/" + id,
         method: 'get',
     })
 }
@@ -41,7 +41,7 @@ export function activityQuestInfoDataById(id) {
  */
 export function addActivityQuestInfoData(data) {
     return request({
-        url: url.game88PlatformAdminWeb + "/activity/activityQuestInfo/",
+        url: url.game99PlatformAdminWeb + "/activity/activityQuestInfo/",
         method: 'post',
         data: data
     })
@@ -52,7 +52,7 @@ export function addActivityQuestInfoData(data) {
  */
 export function updateActivityQuestInfo(data) {
     return request({
-        url: url.game88PlatformAdminWeb + "/activity/activityQuestInfo/",
+        url: url.game99PlatformAdminWeb + "/activity/activityQuestInfo/",
         method: 'put',
         data: data
     })
@@ -63,7 +63,7 @@ export function updateActivityQuestInfo(data) {
  */
 export function deleteActivityQuestInfo(id) {
     return request({
-        url: url.game88PlatformAdminWeb + "/activity/activityQuestInfo/" + id,
+        url: url.game99PlatformAdminWeb + "/activity/activityQuestInfo/" + id,
         method: 'delete',
     })
 }
@@ -74,7 +74,7 @@ export function deleteActivityQuestInfo(id) {
  */
 export function activityQuestInfoChangeStatus(id, effect) {
     return request({
-        url: url.game88PlatformAdminWeb + "/activity/activityQuestInfo/changeStatus/" + id + "/" + effect,
+        url: url.game99PlatformAdminWeb + "/activity/activityQuestInfo/changeStatus/" + id + "/" + effect,
         method: 'put',
     })
 }

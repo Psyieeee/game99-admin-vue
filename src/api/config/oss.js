@@ -4,7 +4,7 @@ import {url} from "@/utils/url";
 // 查询oss文件存储服务配置列表
 export function listOss(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/oss/list',
+        url: url.game99PlatformAdminWeb + '/config/oss/list',
         method: 'get',
         params: query
     })
@@ -13,7 +13,7 @@ export function listOss(query) {
 // 查询oss文件存储服务配置详细
 export function getOss(id) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/oss/' + id,
+        url: url.game99PlatformAdminWeb + '/config/oss/' + id,
         method: 'get'
     })
 }
@@ -21,7 +21,7 @@ export function getOss(id) {
 // 新增oss文件存储服务配置
 export function addOss(data) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/oss',
+        url: url.game99PlatformAdminWeb + '/config/oss',
         method: 'post',
         data: data
     })
@@ -30,7 +30,7 @@ export function addOss(data) {
 // 修改oss文件存储服务配置
 export function updateOss(data) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/oss',
+        url: url.game99PlatformAdminWeb + '/config/oss',
         method: 'put',
         data: data
     })
@@ -39,7 +39,7 @@ export function updateOss(data) {
 // 删除oss文件存储服务配置
 export function delOss(id) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/oss/' + id,
+        url: url.game99PlatformAdminWeb + '/config/oss/' + id,
         method: 'delete'
     })
 }
@@ -47,7 +47,7 @@ export function delOss(id) {
 // 激活oss文件存储服务配置
 export function effectOss(id) {
     return request({
-        url: url.game88PlatformAdminWeb + '/config/oss/effect/' + id,
+        url: url.game99PlatformAdminWeb + '/config/oss/effect/' + id,
         method: 'patch'
     })
 }

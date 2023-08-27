@@ -59,7 +59,7 @@ export default {
                 uploadImage: {
                     // 小于该值就插入 base64 格式（而不上传），默认为 0
                     // base64LimitSize: 2 * 1024, // 2kb
-                    server: url.baseUrl + url.game88PlatformAdminWeb + '/upload/' + props.imagePath,
+                    server: url.baseUrl + url.game99PlatformAdminWeb + '/upload/' + props.imagePath,
                     fieldName: 'file',
                     // 单个文件的最大体积限制，默认为 2M
                     maxFileSize: 10 * 1024 * 1024, // 10M

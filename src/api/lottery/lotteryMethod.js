@@ -6,7 +6,7 @@ import request from "@/utils/request";
  */
 export function listLotteryMethodData(query){
     return request({
-        url: url.game88LotteryAdminWeb + "/lottery/method/list",
+        url: url.game99LotteryAdminWeb + "/lottery/method/list",
         method: 'get',
         params:query
     })

@@ -6,7 +6,7 @@ import {url} from '@/utils/url'
  */
 export function listReportIncomeDay(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/report/incomeDay/list',
+        url: url.game99PlatformAdminWeb + '/report/incomeDay/list',
         method: 'get',
         params: query
     })
@@ -17,7 +17,7 @@ export function listReportIncomeDay(query) {
  */
 export function CountReportIncomeDay(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/report/incomeDay/count',
+        url: url.game99PlatformAdminWeb + '/report/incomeDay/count',
         method: 'get',
         params: query
     })
@@ -28,7 +28,7 @@ export function CountReportIncomeDay(query) {
  */
 export function ExportReportIncomeDay(query) {
     return request({
-        url: url.game88PlatformAdminWeb + '/report/incomeDay/export',
+        url: url.game99PlatformAdminWeb + '/report/incomeDay/export',
         method: 'get',
         params: query,
         responseType: 'arraybuffer',

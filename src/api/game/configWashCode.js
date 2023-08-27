@@ -4,7 +4,7 @@ import {url} from '@/utils/url'
 // 查询游戏类型列表
 export function listConfigWashCode(query) {
     return request({
-        url: url.game88GameAdminWeb + '/game/configWashCode/list',
+        url: url.game99GameAdminWeb + '/game/configWashCode/list',
         method: 'get',
         params: query
     })
@@ -13,7 +13,7 @@ export function listConfigWashCode(query) {
 // 查询游戏类型详细
 export function getConfigWashCodeInfo(id) {
     return request({
-        url: url.game88GameAdminWeb + '/game/configWashCode/' + id,
+        url: url.game99GameAdminWeb + '/game/configWashCode/' + id,
         method: 'get'
     })
 }
@@ -21,7 +21,7 @@ export function getConfigWashCodeInfo(id) {
 // 新增游戏类型
 export function addConfigWashCode(data) {
     return request({
-        url: url.game88GameAdminWeb + '/game/configWashCode/',
+        url: url.game99GameAdminWeb + '/game/configWashCode/',
         method: 'post',
         data: data
     })
@@ -30,7 +30,7 @@ export function addConfigWashCode(data) {
 // 修改游戏类型
 export function updateConfigWashCode(data) {
     return request({
-        url: url.game88GameAdminWeb + '/game/configWashCode/',
+        url: url.game99GameAdminWeb + '/game/configWashCode/',
         method: 'put',
         data: data
     })
@@ -39,14 +39,14 @@ export function updateConfigWashCode(data) {
 // 删除游戏类型
 export function deleteConfigWashCode(id) {
     return request({
-        url: url.game88GameAdminWeb + '/game/configWashCode/' + id,
+        url: url.game99GameAdminWeb + '/game/configWashCode/' + id,
         method: 'delete'
     })
 }
 
 export function changeConfigWashCodeEffect(id, effect) {
     return request({
-        url: url.game88GameAdminWeb + '/game/configWashCode/changeEffect/' + id + '/' + effect,
+        url: url.game99GameAdminWeb + '/game/configWashCode/changeEffect/' + id + '/' + effect,
         method: 'put'
     })
 
@@ -54,7 +54,7 @@ export function changeConfigWashCodeEffect(id, effect) {
 }
 export function exportConfigWashCode(query) {
     return request({
-        url: url.game88GameAdminWeb + '/game/configWashCode/export',
+        url: url.game99GameAdminWeb + '/game/configWashCode/export',
         method: 'get',
         params: query,
         responseType: "arraybuffer",
