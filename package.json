@@ -1,8 +1,8 @@
 {
-  "name": "game88",
+  "name": "game99",
   "version": "1.0",
-  "description": "88棋牌后台管理系统",
-  "author": "MengJun",
+  "description": "99棋牌后台管理系统",
+  "author": "Rajesh",
   "scripts": {
     "dev": "vite",
     "build:prod": "vite build",

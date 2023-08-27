@@ -23,8 +23,7 @@
             icon="Plus"
             size="small"
             @click="handleAdd"
-            v-hasPermi="['activity:activityType:add']"
-        >新增
+            v-hasPermi="['activity:activityType:add']">新增
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -35,8 +34,7 @@
             size="small"
             :disabled="single"
             @click="handleUpdate"
-            v-hasPermi="['activity:activityType:edit']"
-        >修改
+            v-hasPermi="['activity:activityType:edit']">修改
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -47,8 +45,7 @@
             size="small"
             :disabled="multiple"
             @click="handleDelete"
-            v-hasPermi="['activity:activityType:remove']"
-        >删除
+            v-hasPermi="['activity:activityType:remove']">删除
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -58,8 +55,7 @@
             icon="Download"
             size="small"
             @click="handleExport"
-            v-hasPermi="['activity:activityType:export']"
-        >导出
+            v-hasPermi="['activity:activityType:export']">导出
         </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
@@ -79,8 +75,7 @@
               link
               icon="Edit"
               @click="handleUpdate(scope.row)"
-              v-hasPermi="['activity:activityType:edit']"
-          >修改
+              v-hasPermi="['activity:activityType:edit']">修改
           </el-button>
           <el-button
               size="small"
@@ -89,8 +84,7 @@
               icon="Delete"
               style="color:#ec9090"
               @click="handleDelete(scope.row)"
-              v-hasPermi="['activity:activityType:remove']"
-          >删除
+              v-hasPermi="['activity:activityType:remove']">删除
           </el-button>
         </template>
       </el-table-column>
@@ -100,8 +94,7 @@
         :total="total"
         v-model:page="queryParams.pageNum"
         v-model:limit="queryParams.pageSize"
-        @pagination="getList"
-    />
+        @pagination="getList"/>
 
     <!-- 添加或修改活动类型对话框 added new activity type-->
     <el-dialog :close-on-click-modal="false" :title="title" v-model="open" width="450px"

@@ -4,5 +4,5 @@ export const url = {
     game99PlatformAdminWeb: '/game99-platform-admin-web',
     game99PayAdminWeb: '/game99-pay-admin-web',
     game99GameAdminWeb: '/game99-game-admin-web',
-    game99LotteryAdminWeb: '/game99-lottery-admin-web',
+    // game99LotteryAdminWeb: '/game99-lottery-admin-web',
 }
