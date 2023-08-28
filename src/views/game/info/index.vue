@@ -48,6 +48,16 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item label="Sort by" prop="effect">
+        <el-select placeholder="Select field" clearable>
+          <el-option
+              v-for="option in data.sortChoices"
+              :key="option.value"
+              :label="option.label"
+              :value="option.value"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" size="small" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" size="small" @click="resetQuery">重置</el-button>
@@ -262,6 +272,11 @@ const gameTypeList = ref([]);
 
 const data = reactive({
   form: {},
+  sortChoices: [
+    { label: 'Recent', value: 0 },
+    { label: 'Favorite', value: 1 },
+    { label: 'Free to play', value: 2 }
+  ],
   queryParams: {
     pageNum: 1,
     pageSize: 20,
