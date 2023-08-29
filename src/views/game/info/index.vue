@@ -48,13 +48,13 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="Sort by" prop="effect">
-        <el-select placeholder="Select field" clearable>
+      <el-form-item label="是否可以自由玩耍" prop="sortChoices">
+        <el-select v-model="queryParams.freeToPlay" placeholder="请选择游戏类型" clearable>
           <el-option
-              v-for="option in data.sortChoices"
-              :key="option.value"
-              :label="option.label"
-              :value="option.value"
+              v-for="dict in sys_effect_type"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
           />
         </el-select>
       </el-form-item>
@@ -124,6 +124,16 @@
           <div v-for="(item, index) in gameTypeList">
             <span v-if="item.id === scope.row.typeId">{{ item.name }}</span>
           </div>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否可以自由玩耍" align="center" prop="freeToPlay" min-width="100">
+        <template #default="scope">
+          <el-switch
+              v-model="scope.row.freeToPlay"
+              :active-value="true"
+              :inactive-value="false"
+              @change="handleFreeToPlayChange(scope.row)"
+          ></el-switch>
         </template>
       </el-table-column>
       <el-table-column label="是否热门" align="center" prop="recommend" min-width="100">
@@ -245,6 +255,7 @@
 import {
   addGameInfo,
   changeEffectStatusInfo,
+  changeFreeToPlayStatus,
   changeMaintainStatusInfo,
   changeRecommendStatusInfo,
   delGameInfo,
@@ -272,17 +283,13 @@ const gameTypeList = ref([]);
 
 const data = reactive({
   form: {},
-  sortChoices: [
-    { label: 'Recent', value: 0 },
-    { label: 'Favorite', value: 1 },
-    { label: 'Free to play', value: 2 }
-  ],
   queryParams: {
     pageNum: 1,
     pageSize: 20,
     name: null,
     platformId: null,
     effect: null,
+    choice: null,
   },
   rules: {}
 });
@@ -327,6 +334,7 @@ function reset() {
     icon: null,
     largeIcon: null,
     recommend: null,
+    freeToPlay: null,
     maintain: null,
     effect: null,
     createTime: null
@@ -444,6 +452,17 @@ function handleRecommendChange(row) {
     proxy.$modal.msgSuccess(res.msg);
   }).catch(function () {
     row.recommend = !row.recommend;
+  });
+}
+
+function handleFreeToPlayChange(row) {
+  let text = row.freeToPlay === true ? "免费游戏" : "付费游戏";
+  proxy.$modal.confirm('确认要' + text + '"' + row.name + '"吗?').then(function () {
+    return changeFreeToPlayStatus(row.id, row.freeToPlay);
+  }).then((res) => {
+    proxy.$modal.msgSuccess(res.msg);
+  }).catch(function () {
+    row.freeToPlay = !row.freeToPlay;
   });
 }
 

@@ -75,3 +75,9 @@ export function changeRecommendStatusInfo(id, recommend) {
         method: 'put'
     })
 }
+export function changeFreeToPlayStatus(id, freeToPlay) {
+    return request({
+        url: url.game99GameAdminWeb + '/game/info/changeFreeToPlay/' + id + '/' + freeToPlay,
+        method: 'put'
+    })
+}
