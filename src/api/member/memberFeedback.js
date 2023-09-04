@@ -10,9 +10,13 @@ export function listMemberFeedback(query) {
     })
 }
 
-export function updateFeedbackState(data) {
+export function updateFeedbackState( states, id ) {
+    const data = {
+        states,
+        id
+    }
     return request({
-        url: url.game99PlatformAdminWeb + '/member/memberFeedback/edit',
+        url: url.game99PlatformAdminWeb + '/member/memberFeedback',
         method: 'put',
         data: data
     })

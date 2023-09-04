@@ -54,14 +54,14 @@
               type="success"
               plain
               icon="plus"
-              @click="updateState( 'Accepted' )"
+              @click="updateState( 'Accepted', scope.row )"
           >采纳
           </el-button>
           <el-button
               type="danger"
               plain
               icon="remove"
-              @click="updateState( 'Declined' )"
+              @click="updateState( 'Declined', scope.row )"
           >忽略
           </el-button>
         </template>
@@ -121,6 +121,7 @@ const data = reactive({
         pageNum: 1,
         pageSize: 20,
         memberId: null,
+        id: null,
         states: "Pending"
       },
       // 表单参数
@@ -142,8 +143,9 @@ function getList() {
   });
 }
 
-function updateState( state ){
-  updateFeedbackState( state ).then( res => {
+function updateState( state, row ){
+  updateFeedbackState( state, row.id ).then( res => {
+    console.log("Response: " + res)
     if (res.code === 200) {
       proxy.$modal.msgSuccess(res.msg)
       open.value = false;
