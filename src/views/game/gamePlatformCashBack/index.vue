@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="88px">
-      <el-form-item label="平台名称" prop="gamePlatformId" class="input-wd25">
-        <el-select v-model="queryParams.gamePlatformId" placeholder="请选择平台名称" clearable>
+    <el-form v-show="showSearch" ref="queryRef" :inline="true" :model="queryParams" label-width="88px">
+      <el-form-item class="input-wd25" label="平台名称" prop="gamePlatformId">
+        <el-select v-model="queryParams.gamePlatformId" clearable placeholder="请选择平台名称">
           <el-option
               v-for="dict in platformTypeList"
               :key="dict.id"
@@ -11,8 +11,8 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="游戏类型" prop="gameTypeId" class="input-wd25">
-        <el-select v-model="queryParams.gameTypeId" placeholder="请选择平台 游戏类型" clearable>
+      <el-form-item class="input-wd25" label="游戏类型" prop="gameTypeId">
+        <el-select v-model="queryParams.gameTypeId" clearable placeholder="请选择平台 游戏类型">
           <el-option
               v-for="dict in gameTypeList"
               :key="dict.id"
@@ -21,7 +21,7 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="现金返还等级" prop="level" class="input-wd25">
+      <el-form-item class="input-wd20" label="现金返还等级" prop="level">
         <el-select v-model.trim="queryParams.level" placeholder="请输入现金返还等级">
           <el-option
               v-for="dict in game_platform_cash_back_level"
@@ -32,7 +32,7 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="Search" size="small" @click="handleQuery">搜索</el-button>
+        <el-button icon="Search" size="small" type="primary" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" size="small" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
@@ -40,61 +40,60 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            type="primary"
-            plain
-            icon="Plus"
-            size="small"
-            @click="handleAdd"
             v-hasPermi="['game:gamePlatformCashBack:add']"
+            icon="Plus"
+            plain
+            size="small"
+            type="primary"
+            @click="handleAdd"
         >新增
         </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-            type="danger"
-            plain
-            icon="Delete"
-            size="small"
-            :disabled="multiple"
-            @click="handleDelete"
             v-hasPermi="['game:gamePlatformCashBack:remove']"
+            :disabled="multiple"
+            icon="Delete"
+            plain
+            size="small"
+            type="danger"
+            @click="handleDelete"
         >删除
         </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-            type="warning"
-            plain
-            icon="Download"
-            size="small"
-            @click="handleExport"
             v-hasPermi="['game:gamePlatformCashBack:export']"
+            icon="Download"
+            plain
+            size="small"
+            type="warning"
+            @click="handleExport"
         >导出
         </el-button>
       </el-col>
-
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="gamePlatformCashBackList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="ID" align="center" prop="id"/>
-      <el-table-column label="平台名称" align="center" prop="gamePlatformId" min-width="120">
+      <el-table-column align="center" type="selection" width="55"/>
+      <el-table-column align="center" label="ID" prop="id"/>
+      <el-table-column align="center" label="平台名称" min-width="120" prop="gamePlatformId">
         <template #default="scope">
           <div v-for="(item, index) in platformTypeList">
             <span v-if="item.id === scope.row.gamePlatformId">{{ item.name }}</span>
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="游戏类型名称" align="center" prop="gameTypeId" min-width="120">
+      <el-table-column align="center" label="游戏类型名称" min-width="120" prop="gameTypeId">
         <template #default="scope">
           <div v-for="(item, index) in gameTypeList">
             <span v-if="item.id === scope.row.gameTypeId">{{ item.name }}</span>
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="现金返还级别" align="center" prop="level"/>
-      <el-table-column label="状态" align="center" prop="effect">
+      <el-table-column align="center" label="现金返还级别" prop="level"/>
+      <el-table-column align="center" label="状态" prop="effect" width="120">
         <template #default="scope">
           <el-switch
               v-model="scope.row.effect"
@@ -104,28 +103,28 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="投注" align="center" prop="bet"/>
-      <el-table-column label="返现百分比" align="center" prop="rebatePercentage"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="120">
+      <el-table-column align="center" label="投注" prop="bet"/>
+      <el-table-column align="center" label="返现百分比" prop="rebatePercentage"/>
+      <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" width="120">
         <template #default="scope">
           <el-button
+              v-hasPermi="['game:gamePlatformCashBack:edit']"
+              icon="Edit"
+              link
               size="small"
               type="primary"
-              link
-              icon="Edit"
               @click="handleUpdate(scope.row)"
-              v-hasPermi="['game:gamePlatformCashBack:edit']"
           >修改
           </el-button>
           <el-button
-              fixed="right"
-              size="small"
-              type="danger"
-              link
-              icon="Delete"
-              style="color: #FF5722"
-              @click="handleDelete(scope.row)"
               v-hasPermi="['game:gamePlatformCashBack:remove']"
+              fixed="right"
+              icon="Delete"
+              link
+              size="small"
+              style="color: #FF5722"
+              type="danger"
+              @click="handleDelete(scope.row)"
           >删除
           </el-button>
         </template>
@@ -134,17 +133,17 @@
 
     <pagination
         v-show="total"
-        :total="total"
-        v-model:page="queryParams.pageNum"
         v-model:limit="queryParams.pageSize"
+        v-model:page="queryParams.pageNum"
         :page-sizes="[20,30,50,100]"
+        :total="total"
         @pagination="getList"/>
 
-    <el-dialog :title="title" v-model="open" width="600px" style="padding-bottom: 20px"
-               append-to-body>
-      <el-form ref="gamePlatformCashBackFormRef" :model="form" :rules="rules" label-width="88px">
-        <el-form-item label="平台名称" prop="platformId">
-          <el-select v-model="form.platformId" placeholder="请输入平台 ID">
+    <el-dialog v-model="open" :title="title" append-to-body style="padding-bottom: 20px"
+               width="600px">
+      <el-form ref="gamePlatformCashBackFormRef" :model="form" :rules="rules" label-width="120px">
+        <el-form-item label="平台名称" prop="gamePlatformId">
+          <el-select v-model="form.gamePlatformId" placeholder="请输入平台 ID">
             <el-option
                 v-for="dict in platformTypeList"
                 :key="dict.id"
@@ -153,7 +152,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="游戏类型 ID" prop="gameTypeId" class="input-wd25">
+        <el-form-item class="input-wd25" label="游戏类型 ID" prop="gameTypeId">
           <el-select v-model="form.gameTypeId" placeholder="请输入平台 ID">
             <el-option
                 v-for="dict in gameTypeList"
@@ -176,19 +175,19 @@
         <el-form-item label="投注" prop="bet" style="min-width: 290px">
           <el-input
               v-model="form.bet"
-              placeholder="请输入返利百分比"
               clearable
+              placeholder="请输入返利百分比"
           />
         </el-form-item>
         <el-form-item label="歌曲名称" prop="rebatePercentage" style="min-width: 290px">
           <el-input
               v-model="form.rebatePercentage"
-              placeholder="请输入投注"
               clearable
+              placeholder="请输入投注"
           />
         </el-form-item>
       </el-form>
-      <el-form-item label="活跃" prop="effect">
+      <el-form-item label="活跃" label-width="120px" prop="effect" style="min-width: 290px">
         <template #default="scope">
           <el-switch
               v-model="form.effect"
@@ -207,15 +206,15 @@
   </div>
 </template>
 
-<script setup name="GamePlatformCashBack">
+<script name="GamePlatformCashBack" setup>
 import {
+  addGamePlatformCashBack,
+  changeGamePlatformCashBackStatus,
+  deleteGamePlatformCashBack,
+  exportMemberGamePlatformCashBack,
   gamePlatformCashBackListData,
   getGamePlatformCashBackData,
-  exportMemberGamePlatformCashBack,
-  addGamePlatformCashBack,
-  updateGamePlatformCashBack,
-  deleteGamePlatformCashBack,
-  changeGamePlatformCashBackStatus
+  updateGamePlatformCashBack
 } from "@/api/game/gamePlatformCashBack";
 
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
@@ -223,7 +222,11 @@ import {listAllPlatform} from "@/api/game/platform";
 import {listAllType} from "@/api/game/type";
 
 const {proxy} = getCurrentInstance()
-const {sys_effect_type, game_show_type, game_platform_cash_back_level} = proxy.useDict('sys_effect_type', "game_show_type", "game_platform_cash_back_level");
+const {
+  sys_effect_type,
+  game_show_type,
+  game_platform_cash_back_level
+} = proxy.useDict('sys_effect_type', "game_show_type", "game_platform_cash_back_level");
 
 const platformTypeList = ref([])
 const gamePlatformCashBackList = ref([])
@@ -254,11 +257,20 @@ const data = reactive({
     effect: null
   },
   rules: {
-    money: [
-      {required: true, message: '派送金额不能为空', trigger: 'blur'}
+    bet: [
+      {required: true, message: '投注不能为空', trigger: 'blur'}
     ],
     rebatePercentage: [
-      {required: true, message: '需要返还百分比', trigger: 'blur'}
+      {required: true, message: '退还百分比 为必填项', trigger: 'blur'}
+    ],
+    gameTypeId: [
+      {required: true, message: '游戏类型 ID 为必填项', trigger: 'blur'}
+    ],
+    platformId: [
+      {required: true, message: '需要平台 ID', trigger: 'blur'}
+    ],
+    level: [
+      {required: true, message: '需要投注水平', trigger: 'blur'}
     ],
   },
   form: {}
@@ -316,7 +328,7 @@ function handleUpdate(row) {
   getGamePlatformCashBackData(id).then(response => {
     form.value = response.data;
     open.value = true;
-    title.value = "修改游戏配置类型";
+    title.value = "修改游戏平台回扣百分比";
   });
 }
 
@@ -349,7 +361,7 @@ function submitForm() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const id = row.id || ids.value;
-  proxy.$modal.confirm('是否确认删除【请填写功能名称】编号为"' + id + '"的数据项?', "警告", {
+  proxy.$modal.confirm('是否确认删除编号为"' + id + '"的数据项?', "警告", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning"
@@ -397,19 +409,6 @@ function getGamePlatformList() {
 function getGameTypeList() {
   listAllType().then(response => {
     gameTypeList.value = response.data
-  })
-}
-
-function handleExport() {
-  proxy.$confirm('确认处理Excel并下载，数据量大的时候会延迟，请耐心等待...', '警告', {
-    confirmButtonText: '确认',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(function () {
-    return exportMemberGamePlatformCashBack(queryParams.value)
-  }).then(response => {
-    downloadExcel(response, '公司入款银行')
-  }).catch(() => {
   })
 }
 

@@ -1,31 +1,31 @@
 <template>
   <div class="app-container">
     <!--    search form-->
-    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="98px">
+    <el-form v-show="showSearch" ref="queryForm" :inline="true" :model="queryParams" label-width="98px">
       <el-form-item label="歌曲名称" prop="title" style="min-width: 290px">
         <el-input
             v-model="queryParams.title"
-            placeholder="请输入歌曲名称"
             clearable
+            placeholder="请输入歌曲名称"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="艺术家" prop="artist" style="min-width: 290px">
         <el-input
             v-model="queryParams.artist"
-            placeholder="请输入艺术家"
             clearable
+            placeholder="请输入艺术家"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item prop="effect">
-        <el-select v-model="queryParams.effect" placeholder="状态" clearable>
-          <el-option value="true" label="激活"></el-option>
-          <el-option value="false" label="停用"></el-option>
+        <el-select v-model="queryParams.effect" clearable placeholder="状态">
+          <el-option label="激活" value="true"></el-option>
+          <el-option label="停用" value="false"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="Search" size="small" @click="handleQuery">搜索</el-button>
+        <el-button icon="Search" size="small" type="primary" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" size="small" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
@@ -34,35 +34,35 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            type="primary"
-            plain
-            icon="Plus"
-            size="small"
-            @click="handleAdd"
             v-hasPermi="['member:memberMusic:add']"
+            icon="Plus"
+            plain
+            size="small"
+            type="primary"
+            @click="handleAdd"
         >新增
         </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-            type="danger"
-            plain
-            icon="Delete"
-            size="small"
-            :disabled="multiple"
-            @click="handleDelete"
             v-hasPermi="['member:memberMusic:remove']"
+            :disabled="multiple"
+            icon="Delete"
+            plain
+            size="small"
+            type="danger"
+            @click="handleDelete"
         >删除
         </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-            type="warning"
-            plain
-            icon="Download"
-            size="small"
-            @click="handleExport"
             v-hasPermi="['member:memberMusic:export']"
+            icon="Download"
+            plain
+            size="small"
+            type="warning"
+            @click="handleExport"
         >导出
         </el-button>
       </el-col>
@@ -71,23 +71,23 @@
 
     <!--    display data in table -->
     <el-table v-loading="loading" :data="memberMusicList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="艺术家" align="center" prop="artist" min-width="120"/>
-      <el-table-column label="歌曲名称" align="center" prop="title" min-width="180"/>
-      <el-table-column label="网址" :show-overflow-tooltip="true" min-width="180" align="center" prop="url">
+      <el-table-column align="center" type="selection" width="55"/>
+      <el-table-column align="center" label="艺术家" min-width="120" prop="artist"/>
+      <el-table-column align="center" label="歌曲名称" min-width="180" prop="title"/>
+      <el-table-column :show-overflow-tooltip="true" align="center" label="网址" min-width="180" prop="url">
         <template #default="scope">
           <div>
             <a
                 v-if="scope.row.url !== ''"
                 :href="scope.row.url"
-                target="_blank"
                 style="color: #409eff; font-size: 12px"
+                target="_blank"
             >下载
             </a>
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="状态" align="center" prop="effect">
+      <el-table-column align="center" label="状态" prop="effect">
         <template #default="scope">
           <el-switch
               v-model="scope.row.effect"
@@ -97,22 +97,22 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="150">
+      <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
+              v-hasPermi="['member:memberMusic:update']"
+              icon="Edit" link
               size="small"
-              type="primary" link
-              icon="Edit"
-              @click="handleUpdate(scope.row)"
-              v-hasPermi="['member:memberMusic:update']">修改
+              type="primary"
+              @click="handleUpdate(scope.row)">修改
           </el-button>
           <el-button
+              v-hasPermi="['member:memberMusic:remove']"
+              icon="Delete" link
               size="small"
-              type="danger" link
               style="color: #e05e5e"
-              icon="Delete"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['member:memberMusic:remove']">删除
+              type="danger"
+              @click="handleDelete(scope.row)">删除
           </el-button>
         </template>
       </el-table-column>
@@ -120,34 +120,34 @@
 
     <pagination
         v-show="total"
-        :total="total"
-        v-model:page="queryParams.pageNum"
         v-model:limit="queryParams.pageSize"
+        v-model:page="queryParams.pageNum"
         :page-sizes="[20,30,50]"
+        :total="total"
         @pagination="getList"
     />
 
     <!-- 添加或修改公司入款银行列表对话框 Add or modify company deposit bank list dialog-->
-    <el-dialog :close-on-click-modal="false" :title="title" v-model="open" width="700px" style="padding-bottom: 20px"
-               append-to-body>
-      <el-form ref="memberMusicRef" :model="form" :rules="rules" label-width="100px">
+    <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
+               width="700px">
+      <el-form ref="memberMusicRef" :model="form" :rules="rules" label-width="120px">
         <div class="el-row">
           <div class="el-col-lg-12">
             <el-form-item label="歌曲名称" prop="title" style="min-width: 290px">
               <el-input
                   v-model="form.title"
-                  placeholder="请输入歌曲名称"
                   clearable
+                  placeholder="请输入歌曲名称"
               />
             </el-form-item>
             <el-form-item label="艺术家" prop="artist" style="min-width: 290px">
               <el-input
                   v-model="form.artist"
-                  placeholder="请输入艺术家"
                   clearable
+                  placeholder="请输入艺术家"
               />
             </el-form-item>
-            <el-form-item label="活跃" prop="effect"  v-hasPermi="['member:memberMusic:update']" >
+            <el-form-item v-hasPermi="['member:memberMusic:update']" label="活跃" prop="effect">
               <template #default="scope">
                 <el-switch
                     v-model="form.effect"
@@ -158,25 +158,24 @@
             </el-form-item>
             <el-form-item>
               <el-upload
-                  drag
-
-                  :multiple="false"
-                  :limit="1"
-                  :on-exceed="handleExceed"
-                  class="upload-demo"
                   ref="upload"
+
                   :action="uploadFileUrl"
-                  :headers="headers"
-                  name="musicFile"
-                  :on-preview="handlePreview"
-                  :on-remove="handleRemove"
-                  :on-change="selectFile1"
-                  :on-error="uploadFalse"
-                  :on-success="uploadSuccess"
                   :auto-upload="false"
                   :before-upload="beforeAvatarUpload"
+                  :headers="headers"
+                  :limit="1"
+                  :multiple="false"
+                  :on-change="selectFile1"
+                  :on-error="uploadFalse"
+                  :on-exceed="handleExceed"
+                  :on-preview="handlePreview"
+                  :on-remove="handleRemove"
+                  :on-success="uploadSuccess"
+                  class="upload-demo"
+                  drag
+                  name="musicFile"
               >
-                <!--                <el-button slot="trigger" type="primary" size="default" @click="submitUpload">上传音乐文件</el-button>-->
                 <div class="el-upload__text">Drop file here or <em>点击上传</em></div>
                 <div class="el-upload__tip">
                   最大文件大小为 100 MB
@@ -193,10 +192,10 @@
       </div>
     </el-dialog>
 
-    <el-dialog :title="title" v-model="openText" width="600px" :close-on-click-modal="false" append-to-body>
+    <el-dialog v-model="openText" :close-on-click-modal="false" :title="title" append-to-body width="600px">
       <el-form ref="textFormRef" :model="form" :rules="rulesFormText" label-width="80px">
         <el-form-item label="文本2 " prop="text2">
-          <el-input v-model="form.text2" placeholder=" 请输入文本2 " type="textarea" rows="4"/>
+          <el-input v-model="form.text2" placeholder=" 请输入文本2 " rows="4" type="textarea"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -214,33 +213,25 @@ import {
   addMusic,
   changeMusicStatus,
   deleteMusic,
-  exportMemberMusic, fileUpload, getMusicData,
+  exportMemberMusic,
+  fileUpload,
+  getMusicData,
   musicListData,
   updateMusic
 } from "@/api/member/memberMusic";
-// import  {jsmediatags} from "jsmediatags";
+import {reactive, ref, toRefs} from "vue";
+import {url} from "@/utils/url";
+import {getToken} from "@/utils/auth";
 
 const router = useRouter();
 const {proxy} = getCurrentInstance();
 const formData = new FormData();
 
-import {reactive, ref, toRefs} from "vue";
-import {downloadExcel} from "@/utils/common";
-import {getToken} from "@/utils/auth";
-import {uploadExcelUrl} from "@/api/member/memberMoney";
-import {url} from "@/utils/url";
-
 const memberMusicList = ref([]);
-// const bankListOptions = ref([]);
 const ids = ref([]);
-
-
 const title = ref('');
 const total = ref(0);
-// const fileToUpload = ref([]);
-
 const open = ref(false);
-// 查询参数
 const openText = ref(false);
 const showSearch = ref(true);
 const single = ref(true);
@@ -305,9 +296,7 @@ function reset() {
     upload: null,
     url: null,
     effect: null,
-    createBy: null,
     createTime: null,
-    updateBy: null,
     updateTime: null
   }
   proxy.resetForm('memberMusicRef')
@@ -345,39 +334,28 @@ function handleAdd() {
 function submitForm() {
   proxy.$refs['memberMusicRef'].validate(async valid => {
     if (valid) {
+      const params = {
+        title: form.value.title,
+        artist: form.value.artist,
+        effect: form.value.effect,
+        url: null
+      }
+
+      if (formData.get("file") != null) {
+        await fileUpload(formData).then(res => params.url = res.data);
+      }
+
       if (form.value.id != null) {
-        fileUpload(formData).then(res => {
-          console.log("res " + res.data);
-
-          const params = {
-            title: form.value.title,
-            artist: form.value.artist,
-            effect: form.value.effect,
-            url: res.data,
-          }
-
-          updateMusic(form.value).then(response => {
-            proxy.$modal.msgSuccess('修改成功')
-            open.value = false
-            getList()
-          })
+        updateMusic(form.value).then(response => {
+          proxy.$modal.msgSuccess('修改成功')
+          open.value = false
+          getList()
         })
       } else {
-        fileUpload(formData).then(res => {
-          console.log("res " + res.data);
-
-          const params = {
-            title: form.value.title,
-            artist: form.value.artist,
-            effect: form.value.effect,
-            url: res.data,
-          }
-
-          addMusic(params).then(response => {
-            proxy.$modal.msgSuccess('新增成功')
-            open.value = false
-            getList()
-          })
+        addMusic(params).then(response => {
+          proxy.$modal.msgSuccess('新增成功')
+          open.value = false
+          getList()
         })
       }
     }
@@ -465,33 +443,6 @@ function handlePreview(file) {
   }
 }
 
-
-function handleChange(file) {
-  // const file = event.target.files[0];
-  console.log("awww");
-  const reader = new FileReader();
-
-  reader.onload = (e) => {
-    const arrayBuffer = e.target.result;
-    const buffer = new Uint8Array(arrayBuffer);
-
-    // Parse the MP3 file and retrieve the metadata
-    const metadata = this.parseMP3Metadata(buffer);
-
-    // Access the metadata fields (e.g., title, artist, album)
-    const title = metadata.title;
-    const artist = metadata.artist;
-    const album = metadata.album;
-
-    // Do something with the metadata
-    console.log("Title:", title);
-    console.log("Artist:", artist);
-    console.log("Album:", album);
-  };
-
-  reader.readAsArrayBuffer(file);
-}
-
 function handleRemove() {
   proxy.$modal.msgSuccess('移除成功')
 }
@@ -531,42 +482,11 @@ function submitUpload() {
   proxy.$refs.upload.submit()
 }
 
-function parseMP3Metadata(buffer) {
-  return new Promise((resolve, reject) => {
-    jsmediatags.read(buffer, {
-      onSuccess: (tag) => {
-        const metadata = {
-          title: tag.tags.title,
-          artist: tag.tags.artist,
-          album: tag.tags.album,
-          // Add more metadata fields as needed
-        };
-        // console.log("title "  + tag.tags.title);
-        resolve(metadata);
-      },
-      onError: (error) => {
-        reject(error);
-      }
-    });
-  });
-}
-
 function selectFile1(file, fileList) {
-  // const fileName = file.name.substring(file.name.lastIndexOf(".") + 1);
-  console.log("file, ", file);
-  console.log("fileList, ", fileList);
   this.fileToUpload = file;
-
   formData.append("file", file.raw)
   formData.append("name", file.name)
-
-  // console.log("fileName " + fileName);
-  console.log("fileList " + fileList, fileList);
-  console.log("file " + file, file);
-  console.log("fileToUpload " + fileToUpload, fileToUpload);
-  // memberMusicRef.title = fileName;
 }
-
 
 getList()
 </script>
