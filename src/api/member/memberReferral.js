@@ -61,4 +61,17 @@ export function changeMemberReferralStatus(id, effect) {
     })
 }
 
+export function getScheduledCommissionTime() {
+    return request({
+        url: url.game99PlatformAdminWeb + '/member/memberReferral/getCommissionTime/',
+        method: 'post',
+    })
+}
 
+export function updateScheduledCommissionTime(data) {
+    return request({
+        url: url.game99PlatformAdminWeb + '/member/memberReferral/updateCommissionTime/',
+        method: 'put',
+        data : data
+    })
+}

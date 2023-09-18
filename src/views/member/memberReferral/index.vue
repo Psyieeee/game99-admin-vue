@@ -143,7 +143,7 @@
         </el-form-item>
         <el-form-item label="Level" prop="level" style="min-width: 290px">
           <template #default="scope">
-            <el-input-number v-model="form.level" :min="1" :max="3"  />
+            <el-input-number v-model="form.level" :min="1" :max="3"/>
           </template>
         </el-form-item>
         <el-form-item label="referralAmountPercentage" prop="referralAmountPercentage" style="min-width: 290px">
@@ -179,26 +179,31 @@
     </el-dialog>
 
 
-    <el-dialog v-model="scheduleDialog" title="更新调度程序" append-to-body style="padding-bottom: 20px"
+    <el-dialog v-model="scheduleDialog" title="Scheduler更新调度程序" append-to-body style="padding-bottom: 20px"
                width="600px">
-      <el-form ref="scheduleForm" :model="form" label-width="120px">
-        <el-form-item class="input-wd25" label="游戏类型 ID" prop="schedule">
-          <template>
+      <el-form ref="scheduleTimerForm" :model="scheduleForm" label-width="120px">
+        <el-form-item label-width="120px" label="Schedule Time" prop="schedule" >
+          <el-col >
+<!--            <el-time-picker v-model="schedule.commissionTimer" type="fixed-time" placeholder="Pick a time"-->
+<!--                            style="width: 100%;"/>-->
+
             <el-time-select
-                v-model="schedule"
+                v-model="scheduleForm.commissionTimer"
                 start="00:00"
                 step="00:30"
                 end="23:59"
                 placeholder="Select time"
-                format="hh:mm A"
+                format="hh:mm"
             />
-          </template>
+          </el-col>
         </el-form-item>
+
+
       </el-form>
       <el-form-item label="活跃" label-width="120px" prop="effect" style="min-width: 290px">
         <template #default="scope">
           <el-switch
-              v-model="form.effect"
+              v-model="scheduleForm.effect"
               :active-value="1"
               :inactive-value="0"
           ></el-switch>
@@ -211,8 +216,6 @@
         </div>
       </template>
     </el-dialog>
-
-
   </div>
 </template>
 
@@ -224,7 +227,9 @@ import {
   exportMemberReferral,
   memberReferralListData,
   getMemberReferralData,
-  updateMemberReferral
+  updateMemberReferral,
+  getScheduledCommissionTime,
+  updateScheduledCommissionTime
 } from "@/api/member/memberReferral";
 
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
@@ -257,9 +262,6 @@ const multiple = ref(true)
 /** 显示搜索条件 */
 const showSearch = ref(true)
 
-let schedule = ref('');
-
-
 const data = reactive({
   queryParams: {
     pageNum: 1,
@@ -281,9 +283,13 @@ const data = reactive({
     ],
   },
   form: {},
-  scheduleForm: {}
+  scheduleForm: {
+    id: null,
+    commissionTimer: '02:00',
+    effect: 1
+  }
 });
-const {queryParams, rules, form, scheduleForm} = toRefs(data)
+const {queryParams, rules, form, scheduleForm, schedule} = toRefs(data)
 
 /**
  * 查询游戏字典列表 list of data
@@ -294,6 +300,26 @@ function getList() {
     loading.value = false
     memberReferralList.value = res.data
     total.value = res.total
+  })
+}
+
+function getScheduledTime() {
+  loading.value = true
+  // scheduleForm.value.commissionTimer = "12:00"
+  getScheduledCommissionTime(scheduleForm).then(res => {
+    loading.value = false
+    scheduleForm.value = res.data;
+  })
+}
+
+function editScheduler() {
+  loading.value = true
+  console.log('schedule ' + scheduleForm.value.commissionTimer);
+  updateScheduledCommissionTime(scheduleForm.value).then(res => {
+    loading.value = false;
+    proxy.$modal.msgSuccess("成功修改佣金时间");
+    scheduleDialog.value = false;
+    getScheduledTime();
   })
 }
 
@@ -341,9 +367,7 @@ function handleUpdate(row) {
   });
 }
 
-function editScheduler() {
 
-}
 /** 提交按钮 */
 function submitForm() {
   proxy.$refs["memberReferralFormRef"].validate(valid => {
@@ -390,10 +414,9 @@ function handleExport() {
 }
 
 function handleSetScheduler() {
+  getScheduledTime();
   scheduleDialog.value = true;
-
 }
-
 
 
 function handleSelectionChange(selection) {
@@ -438,4 +461,11 @@ function getGameTypeList() {
 // getGamePlatformList();
 getGameTypeList();
 getList();
+
 </script>
+
+<style>
+.example-basic .el-date-editor {
+  margin: 8px;
+}
+</style>
