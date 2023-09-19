@@ -17,14 +17,14 @@
         >
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="Transaction Type" style="">
+      <el-form-item label="Transaction Type" label-width="130px">
         <el-select v-model="queryParams.transactionType" clearable placeholder="Please select transaction type">
           <el-option label="DEPOSIT" value="DEPOSIT"></el-option>
           <el-option label="WITHDRAW" value="WITHDRAW"></el-option>
           <el-option label="RECEIVE" value="RECEIVE"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="Member Id" prop="memberId" style="width: 235px">
+      <el-form-item label="Member Id" prop="memberId" label-width="90px">
         <el-input
             v-model.trim="queryParams.memberId"
             placeholder="Please enter your member ID"
