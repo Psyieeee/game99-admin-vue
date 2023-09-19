@@ -182,13 +182,12 @@
     <el-dialog v-model="scheduleDialog" title="Scheduler更新调度程序" append-to-body style="padding-bottom: 20px"
                width="600px">
       <el-form ref="scheduleTimerForm" :model="scheduleForm" label-width="120px">
-        <el-form-item label-width="120px" label="Schedule Time" prop="schedule" >
-          <el-col >
+        <el-form-item label-width="120px" label="Start Time" prop="schedule">
+          <el-col>
 <!--            <el-time-picker v-model="schedule.commissionTimer" type="fixed-time" placeholder="Pick a time"-->
 <!--                            style="width: 100%;"/>-->
-
             <el-time-select
-                v-model="scheduleForm.commissionTimer"
+                v-model="scheduleForm.startTimer"
                 start="00:00"
                 step="00:30"
                 end="23:59"
@@ -197,7 +196,18 @@
             />
           </el-col>
         </el-form-item>
-
+        <el-form-item label-width="120px" label="End Time" prop="schedule" >
+          <el-col >
+            <el-time-select
+                v-model="scheduleForm.endTimer"
+                start="00:00"
+                step="00:30"
+                end="23:59"
+                placeholder="Select time"
+                format="hh:mm"
+            />
+          </el-col>
+        </el-form-item>
 
       </el-form>
       <el-form-item label="活跃" label-width="120px" prop="effect" style="min-width: 290px">
@@ -285,7 +295,8 @@ const data = reactive({
   form: {},
   scheduleForm: {
     id: null,
-    commissionTimer: '02:00',
+    startTimer: '00:00',
+    endTimer: '00:00',
     effect: 1
   }
 });
@@ -314,7 +325,8 @@ function getScheduledTime() {
 
 function editScheduler() {
   loading.value = true
-  console.log('schedule ' + scheduleForm.value.commissionTimer);
+  console.log('schedule ' + scheduleForm.value.startTimer);
+  console.log('end ' + scheduleForm.value.endTimer);
   updateScheduledCommissionTime(scheduleForm.value).then(res => {
     loading.value = false;
     proxy.$modal.msgSuccess("成功修改佣金时间");
