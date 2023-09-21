@@ -274,6 +274,86 @@
                 </el-table>
               </el-form-item>
             </div>
+            <div v-if="form.typeId === 2">
+              <el-form-item label="Sign Method" prop="signMethod">
+                <el-select
+                    filterable
+                    v-model="form.bonusMethod"
+                    placeholder="Please select sign method"
+                    clearable
+                    style="width: 350px">
+                  <el-option
+                      label="Continuous Check-ins"
+                      value="continuous"
+                  ></el-option>
+                  <el-option
+                      label="Cumulative Check-ins"
+                      value="cumulative"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="Cycle" prop="cycle">
+                  <el-input style="width: 350px" v-model="form.cycle" placeholder="Please enter a number of days" @change="signInConfig(form.cycle)"/>
+              </el-form-item>
+              <el-form-item>
+                <el-table :data="signInData" style="width: 70%" >
+                  <el-table-column label="Day" width="70" align="center" prop="day">
+                    <template #default="scope">
+                      {{ scope.row.day }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="Type" width="100px" align="center"  prop="type">
+                    <template #default="scope">
+                      <el-select
+                          filterable
+                          v-model="scope.row.type"
+                          style="width: 100px"
+                          @change="handleChangeType(scope)"
+                      >
+                        <el-option
+                            label="Fixed"
+                            value="1"
+                        ></el-option>
+                        <el-option
+                            label="Random"
+                            value="2"
+                        ></el-option>
+                      </el-select>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="Reward Amount" width="130" align="center">
+                    <template #default="scope">
+                      <template v-if="scope.row.type === '1'">
+                        <el-input v-model="scope.row.rewardAmount.max"/>
+                      </template>
+                      <template v-else>
+                        <el-input style="width: 50px" v-model="scope.row.rewardAmount.min"/>
+                        <el-input style="width: 50px; left: 10px" v-model="scope.row.rewardAmount.max"/>
+                      </template>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="Top-up Requirement" width="160" align="center"  prop="topUpRequirement">
+                    <template #default="scope">
+                      <el-input v-model="scope.row.topUpRequirement"/>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="Coding Requirement" width="160" align="center"  prop="codingRequirement">
+                    <template #default="scope">
+                      <el-input v-model="scope.row.codingRequirement"/>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="Check-in Icon" width="120px" align="center">
+                    <template #default="scope">
+                      <div class="demo-image">
+                        <el-image style="width: 100px; height: 100px" :src="scope.row.iconUrl" fit="fill" />
+                      </div>
+                    </template>
+
+                  </el-table-column>
+                </el-table>
+              </el-form-item>
+            </div>
+
         </div>
           <div class="el-col el-col-8">
             <el-form-item label="图标" prop="icon">
@@ -293,8 +373,6 @@
         </el-form-item>
         <el-form-item label="跳转链接" prop="url" v-if="form.type == 1">
           <el-input v-model="form.url" placeholder="请输入图标跳转链接"/>
-        </el-form-item>
-        <el-form-item label="跳转链接" prop="url" v-if="form.type == 1">
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -335,6 +413,7 @@ const tableData = ref([
     activityDescription: null,
   }
 ]);
+const signInData = ref([]);
 
 /** 非单个禁用 */
 const single = ref(true)
@@ -396,6 +475,25 @@ function getList(){
   })
 }
 
+function signInConfig(days){
+  signInData.value = []
+  for ( let i = signInData.value.length; i < days; i++ ) {
+    signInData.value.push(
+        {
+          day: i+1,
+          type: '1',
+          rewardAmount: {
+            min: 0.01,
+            max: 1
+          },
+          topUpRequirement: 0,
+          codingRequirement: 0,
+          iconUrl: 'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb1.png'
+        }
+    )
+  }
+}
+
 function addDepositConfig(){
   tableData.value.push(
       {
@@ -416,6 +514,14 @@ function activityTypeList(){
   getActivityTypeAllList().then((res)=>{
     activityTypeOptions.value = res
   })
+}
+
+function handleChangeType(scope){
+  if( scope.row.type === '1' ) {
+    scope.row.iconUrl = 'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb1.png';
+  } else {
+    scope.row.iconUrl = 'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdbx1.png';
+  }
 }
 
 /**  多选框选中数据 select multiple rows*/
@@ -471,7 +577,9 @@ function reset() {
     scope: null,
     depositMethod: null,
     bonusMethod: null,
-    notifySwitch: true
+    notifySwitch: true,
+    signMethod: null,
+    cycle: null,
   };
   proxy.resetForm("activityForm");
 }
@@ -571,5 +679,23 @@ activityTypeList()
 <style scoped>
 .dialog-footer{
   float: right;
+}
+.demo-image {
+  padding: 30px 0;
+  text-align: center;
+  border-right: solid 1px var(--el-border-color);
+  display: inline-block;
+  width: 20%;
+  box-sizing: border-box;
+  vertical-align: top;
+}
+.demo-image {
+  border-right: none;
+}
+.demo-image{
+  display: block;
+  color: var(--el-text-color-secondary);
+  font-size: 14px;
+  margin-bottom: 20px;
 }
 </style>
