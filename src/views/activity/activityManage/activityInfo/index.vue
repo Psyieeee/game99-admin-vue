@@ -296,7 +296,6 @@
         </el-form-item>
         <el-form-item label="跳转链接" prop="url" v-if="form.type == 1">
         </el-form-item>
-        <el-button type="primary" @click="showTableData">确 定</el-button>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -395,10 +394,6 @@ function getList(){
     total.value = res.total
     loading.value = false
   })
-}
-
-function showTableData(){
-    console.log(tableData.value)
 }
 
 function addDepositConfig(){
