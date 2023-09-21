@@ -147,20 +147,17 @@
     />
 
     <!-- 添加或修改活动信息对话框  add or update -->
-    <el-dialog :title="title" v-model="open" width="700px" style="height: auto;padding-bottom: 20px" append-to-body>
-      <el-form ref="activityForm" :model="form" :rules="rules" label-width="90px">
+    <el-dialog :title="title" v-model="open" width="80%" style="height: auto;padding-bottom: 20px" append--body>
+      <el-form ref="activityForm" :model="form" :rules="rules" label-width="120">
         <div class="el-row">
-          <div class="el-col el-col-12">
-            <el-form-item label="标题" prop="title">
-              <el-input v-model="form.title" placeholder="请输入标题"/>
-            </el-form-item> <br>
+          <div class="el-col el-col-14">
             <el-form-item label="活动类型" prop="typeId">
               <el-select
                   filterable
                   v-model="form.typeId"
                   placeholder="请选择活动类型"
                   clearable
-                  style="width: 240px">
+                  style="width: 350px">
                 <el-option
                     v-for="activityType in activityTypeOptions"
                     :key="activityType.id"
@@ -168,10 +165,116 @@
                     :value="activityType.id"/>
               </el-select>
             </el-form-item><br>
-            <el-form-item label="排序" prop="sort">
-              <el-input v-model="form.sort" placeholder="请输入排序" type="number"/>
+            <el-form-item label="标题" prop="title">
+              <el-input style="width: 350px" v-model="form.title" placeholder="请输入标题"/>
+            </el-form-item> <br>
+
+<!--            <el-form-item label="排序" prop="sort">-->
+<!--              <el-input v-model="form.sort" placeholder="请输入排序" type="number"/>-->
+<!--            </el-form-item>-->
+
+            <el-form-item label="Schedule" prop="schedule">
+              <div>
+                <el-date-picker type="daterange"
+                                v-model="selectDate"
+                                start-placeholder="开始时间"
+                                end-placeholder="开始时间"
+                                range-separator="至"
+                                clearable
+                />
+              </div>
             </el-form-item>
-          </div>
+<!--         入款优惠 DEPOSIT TYPE -->
+            <div v-if="form.typeId === 1">
+              <el-form-item label="Scope" prop="scope">
+                <el-select
+                    filterable
+                    v-model="form.scope"
+                    placeholder="Please select deposit type"
+                    clearable
+                    style="width: 350px">
+                  <el-option
+                      label="First Deposit"
+                      value="firstDeposit"
+                  ></el-option>
+                  <el-option
+                      label="Total Deposit"
+                      value="totalDeposit"
+                  ></el-option>
+                  <el-option
+                      label="Single Recharge"
+                      value="singleRecharge"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="Deposit Method" prop="depositMethod">
+                <el-select
+                    filterable
+                    v-model="form.depositMethod"
+                    placeholder="Please select deposit method"
+                    clearable
+                    style="width: 350px">
+                  <el-option
+                      label="USDT"
+                      value="usdt"
+                  ></el-option>
+                  <el-option
+                      label="BTC"
+                      value="btc"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="Bonus Method" prop="bonusMethod">
+                <el-select
+                    filterable
+                    v-model="form.bonusMethod"
+                    placeholder="Please select bonus method"
+                    clearable
+                    style="width: 350px">
+                  <el-option
+                      label="Fixed Amount"
+                      value="fixed"
+                  ></el-option>
+                  <el-option
+                      label="Random Amount"
+                      value="random"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="Home Popup" label-width="120">
+                <el-switch
+                    v-model="form.notifySwitch"
+                    class="ml-2"
+                    style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+                />
+              </el-form-item>
+              <el-form-item>
+                <el-table :data="tableData" style="width: 70%" >
+                  <el-table-column label="Deposit Amount" width="150" align="center" prop="depositAmount">
+                    <template #default="scope">
+                      <el-input v-model="scope.row.depositAmount" placeholder="Deposit Amount"/>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="Bonus Amount" width="150" align="center"  prop="bonusAmount">
+                    <template #default="scope">
+                      <el-input v-model="scope.row.bonusAmount" placeholder="Bonus Amount"/>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="Activity Description" width="150" align="center"  prop="activityDescription">
+                    <template #default="scope">
+                      <el-input v-model="scope.row.activityDescription" placeholder="Example Example"/>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="Operation" width="200" align="center" >
+                    <template #default="scope">
+                      <el-button @click="addDepositConfig">Add</el-button>
+                      <el-button :disabled="tableData.length === 1" @click="removeDepositConfig( scope.$index )">Remove</el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </el-form-item>
+            </div>
+        </div>
           <div class="el-col el-col-8">
             <el-form-item label="图标" prop="icon">
               <imageUpload v-model="form.icon" path="ActivityInfo"/>
@@ -191,7 +294,9 @@
         <el-form-item label="跳转链接" prop="url" v-if="form.type == 1">
           <el-input v-model="form.url" placeholder="请输入图标跳转链接"/>
         </el-form-item>
-
+        <el-form-item label="跳转链接" prop="url" v-if="form.type == 1">
+        </el-form-item>
+        <el-button type="primary" @click="showTableData">确 定</el-button>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -205,7 +310,6 @@
 <script name="ActivityInfo" setup>
 
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
-import {getDefaultTime, pickerDateTimeShortcuts} from "@/utils/dateUtils";
 import {
   activityInfoAdd,
   activityInfoDelete,
@@ -222,10 +326,16 @@ const {proxy} = getCurrentInstance();
 const activityInfoList = ref([]);
 /** 活动类型 activity type list */
 const activityTypeOptions = ref([]);
-
 const ids = ref([]);
 const total = ref(0);
 const title = ref();
+const tableData = ref([
+  {
+    depositAmount: null,
+    bonusAmount: null,
+    activityDescription: null,
+  }
+]);
 
 /** 非单个禁用 */
 const single = ref(true)
@@ -236,6 +346,7 @@ const showSearch = ref(true)
 
 const loading = ref(true)
 const open = ref(false)
+const selectDate = ref(false)
 
 const data =  reactive({
   /**查询参数 */
@@ -249,6 +360,7 @@ const data =  reactive({
     type:null,
     typeId:null
   },
+  selectDate: [],
   form:{},
 
   rules:{
@@ -284,6 +396,26 @@ function getList(){
     loading.value = false
   })
 }
+
+function showTableData(){
+    console.log(tableData.value)
+}
+
+function addDepositConfig(){
+  tableData.value.push(
+      {
+        depositAmount: null,
+        bonusAmount: null,
+        activityDescription: null,
+      }
+  )
+}
+
+function removeDepositConfig(index){
+  console.log( index )
+  tableData.value.splice( index, 1 )
+}
+
 
 function activityTypeList(){
   getActivityTypeAllList().then((res)=>{
@@ -340,7 +472,11 @@ function reset() {
     content: '',
     url: null,
     icon:null,
-    sort : null
+    sort : null,
+    scope: null,
+    depositMethod: null,
+    bonusMethod: null,
+    notifySwitch: true
   };
   proxy.resetForm("activityForm");
 }

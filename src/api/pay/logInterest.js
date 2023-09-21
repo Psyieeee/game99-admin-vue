@@ -13,7 +13,7 @@ export function exportLogInterest(queryParams){
     return request({
         url: url.game99PayAdminWeb + '/log/interest/export',
         method: 'get',
-        data: queryParams,
+        params: queryParams,
         responseType: 'arraybuffer',
         timeout: 60000
     })
