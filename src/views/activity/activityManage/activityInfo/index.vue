@@ -168,11 +168,6 @@
             <el-form-item label="标题" prop="title">
               <el-input style="width: 350px" v-model="form.title" placeholder="请输入标题"/>
             </el-form-item> <br>
-
-<!--            <el-form-item label="排序" prop="sort">-->
-<!--              <el-input v-model="form.sort" placeholder="请输入排序" type="number"/>-->
-<!--            </el-form-item>-->
-
             <el-form-item label="Schedule" prop="schedule">
               <div>
                 <el-date-picker type="daterange"
@@ -186,67 +181,53 @@
             </el-form-item>
 <!--         入款优惠 DEPOSIT TYPE -->
             <div v-if="form.typeId === 1">
+              <el-form-item label="Reset Cycle" prop="resetCycle" @change="handleResetCycleChange(form.resetCycle)">
+                <el-radio-group v-model="form.resetCycle">
+                  <el-radio label="1">Single</el-radio>
+                  <el-radio label="2">Daily</el-radio>
+                  <el-radio label="3">Weekly</el-radio>
+                </el-radio-group>
+              </el-form-item>
+              <el-form-item v-if="form.resetCycle !== '1'" label="Limited Recharge" label-width="160">
+                <el-switch
+                    v-model="form.limitedRechargeSwitch"
+                    class="ml-2"
+                    style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+                />
+              </el-form-item>
               <el-form-item label="Scope" prop="scope">
-                <el-select
-                    filterable
-                    v-model="form.scope"
-                    placeholder="Please select deposit type"
-                    clearable
-                    style="width: 350px">
-                  <el-option
-                      label="First Deposit"
-                      value="firstDeposit"
-                  ></el-option>
-                  <el-option
-                      label="Total Deposit"
-                      value="totalDeposit"
-                  ></el-option>
-                  <el-option
-                      label="Single Recharge"
-                      value="singleRecharge"
-                  ></el-option>
-                </el-select>
+                <el-radio-group v-model="form.scope">
+                  <el-radio v-if="form.resetCycle === '1'" label="1">First Deposit</el-radio>
+                  <el-radio label="2">Total Deposit</el-radio>
+                  <el-radio label="3">Single Recharge</el-radio>
+                </el-radio-group>
               </el-form-item>
-              <el-form-item label="Deposit Method" prop="depositMethod">
-                <el-select
-                    filterable
-                    v-model="form.depositMethod"
-                    placeholder="Please select deposit method"
-                    clearable
-                    style="width: 350px">
-                  <el-option
-                      label="USDT"
-                      value="usdt"
-                  ></el-option>
-                  <el-option
-                      label="BTC"
-                      value="btc"
-                  ></el-option>
-                </el-select>
+
+              <el-form-item v-if="form.scope !== '1'" label-width="120" label="Deposit Method" prop="depositMethod">
+                <el-checkbox v-model="form.depositSelectAll" @change="handleDepositSelectAll" style="padding-right: 10px">Select All</el-checkbox>
+                  <el-checkbox-group v-model="form.depositMethod">
+                    <el-checkbox v-for="item in depositOptions"
+                                 :label="item.value"
+                                 size="large"
+                                 style="width: auto"
+                    >
+                      {{ item.name }}
+                    </el-checkbox>
+                  </el-checkbox-group>
               </el-form-item>
-              <el-form-item label="Bonus Method" prop="bonusMethod">
-                <el-select
-                    filterable
-                    v-model="form.bonusMethod"
-                    placeholder="Please select bonus method"
-                    clearable
-                    style="width: 350px">
-                  <el-option
-                      label="Fixed Amount"
-                      value="fixed"
-                  ></el-option>
-                  <el-option
-                      label="Random Amount"
-                      value="random"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="Home Popup" label-width="120">
+              <el-form-item v-if="form.scope === '1' " label="Home Popup" label-width="120">
                 <el-switch
                     v-model="form.notifySwitch"
                     class="ml-2"
                     style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
                 />
+              </el-form-item>
+              <el-form-item label="Bonus Method" prop="bonusMethod">
+                <el-radio-group v-model="form.bonusMethod">
+                  <el-radio label="1">Fixed Amount</el-radio>
+                  <el-radio label="2">Random Amount</el-radio>
+                  <el-radio label="3">Ratio Amount</el-radio>
+                </el-radio-group>
               </el-form-item>
               <el-form-item>
                 <el-table :data="tableData" style="width: 70%" >
@@ -255,11 +236,27 @@
                       <el-input v-model="scope.row.depositAmount" placeholder="Deposit Amount"/>
                     </template>
                   </el-table-column>
-                  <el-table-column label="Bonus Amount" width="150" align="center"  prop="bonusAmount">
+                  <el-table-column label="Bonus Amount" width="150" align="center">
                     <template #default="scope">
-                      <el-input v-model="scope.row.bonusAmount" placeholder="Bonus Amount"/>
+                      <template v-if="form.bonusMethod === '1'">
+                        <el-input v-model="scope.row.bonusAmount.max"/>
+                      </template>
+                      <template v-else-if="form.bonusMethod === '2'">
+                        <el-input style="width: 50px; right: 5px" v-model="scope.row.bonusAmount.min"/>
+                        -
+                        <el-input style="width: 50px; left: 5px" v-model="scope.row.bonusAmount.max"/>
+                      </template>
+                      <template v-else>
+                        <el-input style="width: 65px" v-model="scope.row.bonusAmount.min"/>
+                        <el-input :disabled="true" placeholder="%" style="width: 35px"  v-model="scope.row.bonusAmount.max"/>
+                      </template>
                     </template>
                   </el-table-column>
+                    <el-table-column v-if="form.bonusMethod === '3'" label="Reward Limit" width="110px" align="center" prop="rewardLimit">
+                      <template #default="scope">
+                        <el-input v-model="scope.row.rewardLimit"/>
+                      </template>
+                    </el-table-column>
                   <el-table-column label="Activity Description" width="150" align="center"  prop="activityDescription">
                     <template #default="scope">
                       <el-input v-model="scope.row.activityDescription" placeholder="Example Example"/>
@@ -277,27 +274,16 @@
 <!--         SIGN IN -->
             <div v-if="form.typeId === 2">
               <el-form-item label="Sign Method" prop="signMethod">
-                <el-select
-                    filterable
-                    v-model="form.bonusMethod"
-                    placeholder="Please select sign method"
-                    clearable
-                    style="width: 350px">
-                  <el-option
-                      label="Continuous Check-ins"
-                      value="continuous"
-                  ></el-option>
-                  <el-option
-                      label="Cumulative Check-ins"
-                      value="cumulative"
-                  ></el-option>
-                </el-select>
+                <el-radio-group v-model="form.signMethod">
+                  <el-radio label="1">Continuous</el-radio>
+                  <el-radio label="2">Cumulative</el-radio>
+                </el-radio-group>
               </el-form-item>
               <el-form-item label="Cycle" prop="cycle">
                   <el-input style="width: 350px" v-model="form.cycle" placeholder="Please enter a number of days" @change="signInConfig(form.cycle)"/>
               </el-form-item>
               <el-form-item>
-                <el-table :data="signInData" style="width: 70%" >
+                <el-table :data="signInData" style="width: 80%" >
                   <el-table-column label="Day" width="70" align="center" prop="day">
                     <template #default="scope">
                       {{ scope.row.day }}
@@ -322,14 +308,15 @@
                       </el-select>
                     </template>
                   </el-table-column>
-                  <el-table-column label="Reward Amount" width="130" align="center">
+                  <el-table-column label="Reward Amount" width="150" align="center">
                     <template #default="scope">
                       <template v-if="scope.row.type === '1'">
                         <el-input v-model="scope.row.rewardAmount.max"/>
                       </template>
                       <template v-else>
-                        <el-input style="width: 50px" v-model="scope.row.rewardAmount.min"/>
-                        <el-input style="width: 50px; left: 10px" v-model="scope.row.rewardAmount.max"/>
+                        <el-input style="width: 50px; right: 5px" v-model="scope.row.rewardAmount.min"/>
+                        -
+                        <el-input style="width: 50px; left: 5px" v-model="scope.row.rewardAmount.max"/>
                       </template>
                     </template>
                   </el-table-column>
@@ -434,13 +421,38 @@ const treasureIcons = ref([
   'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdbx2.png',
   'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdbx3.png',
 ])
-
+const depositOptions = ref([
+  {
+    name: 'PIX',
+    value: 2
+  },
+  {
+    name: 'USDT-Trc20',
+    value: 3
+  },
+  {
+    name: 'BRL',
+    value: 4
+  },
+  {
+    name: 'USDC-Trc20',
+    value: 5
+  },
+  {
+    name: 'BTC-Bitcoin',
+    value: 6
+  }
+])
 
 const tableData = ref([
   {
     depositAmount: null,
-    bonusAmount: null,
+    bonusAmount: {
+      min: null,
+      max: null
+    },
     activityDescription: null,
+    rewardLimit: null
   }
 ]);
 const signInData = ref([]);
@@ -528,8 +540,12 @@ function addDepositConfig(){
   tableData.value.push(
       {
         depositAmount: null,
-        bonusAmount: null,
+        bonusAmount: {
+          min: null,
+          max: null
+        },
         activityDescription: null,
+        rewardLimit: null
       }
   )
 }
@@ -595,17 +611,20 @@ function reset() {
     title: null,
     createTime: null,
     type: null,
-    typeId:null,
+    typeId: 1,
     content: '',
     url: null,
     icon:null,
     sort : null,
-    scope: null,
-    depositMethod: null,
-    bonusMethod: null,
+    scope: '1',
+    depositMethod: [],
+    bonusMethod: '1',
     notifySwitch: true,
-    signMethod: null,
+    limitedRechargeSwitch: false,
+    signMethod: '1',
     cycle: null,
+    resetCycle: '1',
+    depositSelectAll: false,
   };
   proxy.resetForm("activityForm");
 }
@@ -617,6 +636,17 @@ function handleAdd(){
   title.value = "添加活动信息"
 }
 
+function handleResetCycleChange(resetCycle) {
+  form.value.scope = (resetCycle === '1') ? '1' : '2'
+}
+
+function handleDepositSelectAll(){
+  if ( form.value.depositSelectAll) {
+    form.value.depositMethod = depositOptions.value.map(item => item.value)
+  } else {
+    form.value.depositMethod = []
+  }
+}
 
 /** 修改按钮操作 handle update*/
 function handleUpdate(row){
