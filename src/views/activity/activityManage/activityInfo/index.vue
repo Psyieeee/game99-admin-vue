@@ -274,6 +274,7 @@
                 </el-table>
               </el-form-item>
             </div>
+<!--         SIGN IN -->
             <div v-if="form.typeId === 2">
               <el-form-item label="Sign Method" prop="signMethod">
                 <el-select
@@ -342,13 +343,26 @@
                       <el-input v-model="scope.row.codingRequirement"/>
                     </template>
                   </el-table-column>
-                  <el-table-column label="Check-in Icon" width="120px" align="center">
+                  <el-table-column label="Check-in Icon" align="center" width="180">
                     <template #default="scope">
-                      <div class="demo-image">
-                        <el-image style="width: 100px; height: 100px" :src="scope.row.iconUrl" fit="fill" />
-                      </div>
+                      <el-select
+                          filterable
+                          v-model="scope.row.iconUrl"
+                          style="width: 120px"
+                      >
+                        <template #prefix>
+                          <el-image style="width: 80px; height: 80px; margin-left: 10px" :src="scope.row.iconUrl"/>
+                        </template>
+                        <el-option
+                            label=" "
+                            v-for="icon in ( scope.row.type === '1' ? coinIcons : treasureIcons)"
+                            :value="icon"
+                            style="width: 120px; height: 100px; margin-left: -15px"
+                        >
+                          <el-image style="width: 100px; height: 100px" :src="icon" fit="fill" />
+                        </el-option>
+                      </el-select>
                     </template>
-
                   </el-table-column>
                 </el-table>
               </el-form-item>
@@ -406,6 +420,22 @@ const activityTypeOptions = ref([]);
 const ids = ref([]);
 const total = ref(0);
 const title = ref();
+
+const coinIcons = ref([
+    'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb1.png',
+    'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb2.png',
+    'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb3.png',
+    'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb4.png',
+    'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb5.png',
+    'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb6.png'
+])
+const treasureIcons = ref([
+  'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdbx1.png',
+  'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdbx2.png',
+  'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdbx3.png',
+])
+
+
 const tableData = ref([
   {
     depositAmount: null,
@@ -488,7 +518,7 @@ function signInConfig(days){
           },
           topUpRequirement: 0,
           codingRequirement: 0,
-          iconUrl: 'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb1.png'
+          iconUrl: coinIcons.value[0]
         }
     )
   }
@@ -517,11 +547,7 @@ function activityTypeList(){
 }
 
 function handleChangeType(scope){
-  if( scope.row.type === '1' ) {
-    scope.row.iconUrl = 'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb1.png';
-  } else {
-    scope.row.iconUrl = 'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdbx1.png';
-  }
+  scope.row.iconUrl = ( scope.row.type === '1' ? coinIcons : treasureIcons ).value[0]
 }
 
 /**  多选框选中数据 select multiple rows*/
