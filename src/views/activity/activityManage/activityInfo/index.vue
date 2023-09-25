@@ -378,7 +378,7 @@
             </div>
             <label style="font-size: 20px">Preview</label>
 
-            <div v-if="createBanner.type === '1'">
+            <div v-loading="loading" v-if="createBanner.type === '1'">
               <div class="preview" style="position: relative" id="original">
                 <div :style="`background-color: ${createBanner.customImage.background}`">
                   <div style="display: inline-flex; justify-content: center; height: 250px; align-items: center">
@@ -410,10 +410,12 @@
                     <img :src="icon" alt="Icon" style="max-height: 70px; max-width: 70px;" />
                   </div>
                 </div>
-                <div class="pagination">
-                  <button style="margin-top: 10px" @click="prevPage(1)">Previous</button>
+                <div class="pagination" style="margin-top: 10px">
+                  <button @click="prevPage(1)">Previous</button>
                   <button style="margin-left: 10px" @click="nextPage(1)">Next</button>
                   <span> Page:  {{ createBanner.icon_currentPage  }} / {{Math.ceil(icons.length / createBanner.iconsPerPage)}}</span>
+                  <input style="float: right" type="file" id="imageUpload" accept="image/* " @change="populateForm">
+                  <button style="float: right; margin-right: 10px" class="upload-button" @click="removeImage(1)">Remove</button>
                 </div>
               </div><hr>
 
@@ -458,10 +460,12 @@
                     <img :src="image" alt="Banner" style="max-height: 250px; max-width: 300px" />
                   </div>
                 </div>
-                <div class="pagination">
-                  <button style="margin-top: 10px" @click="prevPage(2)">Previous</button>
+                <div class="pagination" style="margin-top: 10px">
+                  <button @click="prevPage(2)">Previous</button>
                   <button style="margin-left: 10px" @click="nextPage(2)">Next</button>
                   <span> Page:  {{ createBanner.banner_currentPage  }} / {{Math.ceil(banners.length / createBanner.bannersPerPage)}}</span>
+                  <input style="float: right" type="file" id="imageUpload" accept="image/* " @change="populateForm">
+                  <button style="float: right; margin-right: 10px" class="upload-button" @click="removeImage">Remove</button>
                 </div>
               </div><hr>
               <imageUpload v-model="form.icon" path="ActivityInfo"/>
@@ -483,9 +487,17 @@ import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {
   activityInfoAdd,
   activityInfoDelete,
-  activityInfoExport, activityInfoFindById, activityInfoUpdate,
+  activityInfoExport,
+  activityInfoFindById,
+  activityInfoUpdate,
   activityInfoUpdateStatus,
-  getActivityInfoList, getAllEventsBanner, getAllEventsIcon
+  getActivityInfoList,
+  getAllEventsBanner,
+  getAllEventsIcon,
+  removeEventsBanner,
+  removeEventsIcon,
+  uploadEventsBanner,
+  uploadEventsIcon
 } from "@/api/activity/ativityInfo";
 import html2canvas from 'html2canvas';
 import {getActivityTypeAllList} from "@/api/activity/activityType";
@@ -661,7 +673,7 @@ const data =  reactive({
 });
 const {queryParams,form,rules, banner, events, createBanner} = toRefs(data);
 const {activityInfo_status} = proxy.useDict("activityInfo_status")
-
+const formData = new FormData();
 
 /**
  * 查询活动信息列表 get list of data
@@ -785,8 +797,6 @@ function handleAdd(){
   open.value = true
   title.value = "添加活动信息"
   getAllEventsIcon().then(res => {
-    console.log(res.data)
-
     icons.value = res.data;
     createBanner.value.customImage.icon = icons.value[0]
     createBanner.value.iconCollection = icons.value.slice(0,10)
@@ -867,6 +877,31 @@ function nextPage(actionType) {
   }
 }
 
+function populateForm( event ) {
+  loading.value = true
+  formData.set( "file", event.currentTarget.files[0] )
+  if ( createBanner.value.type === 1 ) {
+    uploadEventsIcon( formData ).then( res => {
+      getAllEventsIcon().then(res => {
+        icons.value = res.data;
+        createBanner.value.customImage.icon = icons.value[0]
+        createBanner.value.iconCollection = icons.value.slice(0,10)
+        loading.value = false
+      })
+    })
+  } else {
+    uploadEventsBanner( formData ).then( res => {
+      getAllEventsBanner().then(res => {
+        banners.value = res.data;
+        banner.value = banners.value[0];
+        createBanner.value.bannerCollection = banners.value.slice(0,6);
+        loading.value = false
+      })
+    })
+  }
+
+}
+
 function selectIcon (icon){
   createBanner.value.selectedIcon = icon
   createBanner.value.customImage.icon = icon
@@ -942,9 +977,7 @@ function convert() {
   event.preventDefault();
   const original = document.querySelector('#original')
   const canvasContainer = document.querySelector('#canvas-container')
-
   const iconImage = original.querySelector('img');
-
   iconImage.onload = () => {
     html2canvas(original, {
       useCORS: false
@@ -956,10 +989,31 @@ function convert() {
       canvasContainer.appendChild(img)
     })
   }
-
-
 }
 
+function removeImage(type){
+  event.preventDefault();
+  loading.value = true
+  if ( createBanner.value.type === 1 ) {
+    removeEventsIcon(createBanner.value.selectedIcon).then( res => {
+      getAllEventsIcon().then(res => {
+        icons.value = res.data;
+        createBanner.value.customImage.icon = icons.value[0]
+        createBanner.value.iconCollection = icons.value.slice(0,10)
+        loading.value = false
+      })
+    })
+  } else {
+    removeEventsBanner(createBanner.value.selectedBanner).then( res => {
+      getAllEventsBanner().then(res => {
+        banners.value = res.data;
+        banner.value = banners.value[0];
+        createBanner.value.bannerCollection = banners.value.slice(0,6);
+        loading.value = false
+      })
+    })
+  }
+}
 
 /**  0停用1启用 */
 function handleEffectChange(row){
@@ -1025,7 +1079,7 @@ img {
 }
 .preview {
   height: 300px;
-  width: 600px;
+  max-width: 600px;
   margin-top: 10px;
   padding: 20px;
   border: 1px solid #ccc;
@@ -1053,5 +1107,7 @@ img {
   height: 300px;
   width: 300px;
 }
+
+
 
 </style>

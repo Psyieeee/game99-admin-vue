@@ -86,9 +86,50 @@ export function getAllEventsIcon(){
     })
 }
 
+export function uploadEventsIcon(data){
+    return request({
+        url:url.game99PlatformAdminWeb+"/activity/activityInfo/uploadEventsIcon",
+        method:'post',
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        },
+        data
+    })
+}
+export function removeEventsIcon(imageUrl){
+    return request({
+        url:url.game99PlatformAdminWeb+"/activity/activityInfo/removeEventsIcon",
+        method:'post',
+        data: {
+            url: imageUrl
+        }
+    })
+}
+
 export function getAllEventsBanner(){
     return request({
         url:url.game99PlatformAdminWeb+"/activity/activityInfo/getAllEventsBanner"
+    })
+}
+
+export function uploadEventsBanner(data){
+    return request({
+        url:url.game99PlatformAdminWeb+"/activity/activityInfo/uploadEventsBanner",
+        method:'post',
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        },
+        data
+    })
+}
+
+export function removeEventsBanner(imageUrl){
+    return request({
+        url:url.game99PlatformAdminWeb+"/activity/activityInfo/removeEventsBanner",
+        method:'post',
+        data: {
+            url: imageUrl
+        }
     })
 }
 
