@@ -80,7 +80,17 @@ export function activityInfoUpdateStatus(id,status){
     })
 }
 
+export function getAllEventsIcon(){
+    return request({
+        url:url.game99PlatformAdminWeb+"/activity/activityInfo/getAllEventsIcon"
+    })
+}
 
+export function getAllEventsBanner(){
+    return request({
+        url:url.game99PlatformAdminWeb+"/activity/activityInfo/getAllEventsBanner"
+    })
+}
 
 
 
