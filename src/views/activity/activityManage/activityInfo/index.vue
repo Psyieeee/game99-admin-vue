@@ -379,7 +379,7 @@
             <label style="font-size: 20px">Preview</label>
 
             <div v-if="createBanner.type === '1'">
-              <div class="preview" style="position: relative">
+              <div class="preview" style="position: relative" id="original">
                 <div :style="`background-color: ${createBanner.customImage.background}`">
                   <div style="display: inline-flex; justify-content: center; height: 250px; align-items: center">
                     <img :src="createBanner.customImage.icon" style=" margin-right: 10px;width: 230px; height: 230px"/>
@@ -387,6 +387,13 @@
                   <pre :style="`display: inline-block; margin-top: 20px; position: absolute; color: ${createBanner.textStyle.color}; font-family: ${createBanner.textStyle.font}; font-size: ${createBanner.textStyle.size}px`">{{createBanner.customImage.text}}</pre>
                 </div>
               </div><hr style="margin-top: 20px">
+              <div id="canvas-container">
+              </div>
+              <button @click="convert">Convert</button>
+
+
+
+
               <div class="form-group">
                 <label for="background">Background Color:</label>
                 <input style="margin-left: 10px; width: 100px; border: 2px solid #000000"
@@ -480,7 +487,7 @@ import {
   activityInfoUpdateStatus,
   getActivityInfoList, getAllEventsBanner, getAllEventsIcon
 } from "@/api/activity/ativityInfo";
-import * as imgConverter from 'https://html2canvas.hertzen.com/dist/html2canvas.min.js'
+import html2canvas from 'html2canvas';
 import {getActivityTypeAllList} from "@/api/activity/activityType";
 import WangEditor from "@/components/WangEditor";
 
@@ -931,6 +938,28 @@ function handleExport(){
   })
 }
 
+function convert() {
+  event.preventDefault();
+  const original = document.querySelector('#original')
+  const canvasContainer = document.querySelector('#canvas-container')
+
+  const iconImage = original.querySelector('img');
+
+  iconImage.onload = () => {
+    html2canvas(original, {
+      useCORS: false
+    }).then( canvas => {
+      const imgData = canvas.toDataURL('image/png');
+      const img = document.createElement('img');
+      img.src = imgData;
+      canvasContainer.innerHTML = '';
+      canvasContainer.appendChild(img)
+    })
+  }
+
+
+}
+
 
 /**  0停用1启用 */
 function handleEffectChange(row){
@@ -1010,6 +1039,19 @@ img {
 
 .selected-image {
   border: 2px solid #00dfff;
+}
+
+#original {
+  position: relative;
+  overflow: hidden;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 20px;
+  height: 300px;
+  width: 300px;
 }
 
 </style>
