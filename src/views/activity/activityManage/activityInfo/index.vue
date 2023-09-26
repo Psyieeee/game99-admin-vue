@@ -384,7 +384,7 @@
                   <div style="display: inline-flex; justify-content: center; height: 250px; align-items: center">
                     <img :src="createBanner.customImage.icon" style=" margin-right: 10px;width: 230px; height: 230px"/>
                   </div>
-                  <pre :style="`display: inline-block; margin-top: 20px; position: absolute; color: ${createBanner.textStyle.color}; font-family: ${createBanner.textStyle.font}; font-size: ${createBanner.textStyle.size}px`">{{createBanner.customImage.text}}</pre>
+                  <pre :style="`display: inline-block; margin-top: 20px; position: absolute; color: ${createBanner.customImage.textStyle.color}; font-family: ${createBanner.customImage.textStyle.font}; font-size: ${createBanner.customImage.textStyle.size}px`">{{createBanner.customImage.text}}</pre>
                 </div>
               </div><hr style="margin-top: 20px">
               <div id="canvas">
@@ -418,15 +418,15 @@
               <div class="form-group">
                 <p>Event Description:</p>
                 <label for="font">Font: </label>
-                <el-select style="width: 200px" v-model="createBanner.textStyle.font">
+                <el-select style="width: 200px" v-model="createBanner.customImage.textStyle.font">
                   <el-option v-for="font in fontOptions" :key="font" :label="font" :value="font"></el-option>
                 </el-select>
                 <label for="text" style="margin-left: 20px">Font Color:</label>
-                <input style="margin-left: 10px; width: 100px; border: 2px solid #000000" v-model="createBanner.textStyle.color" type="color" id="text"/>
+                <input style="margin-left: 10px; width: 100px; border: 2px solid #000000" v-model="createBanner.customImage.textStyle.color" type="color" id="text"/>
                 <div style="margin-top: 10px">
                   <label for="text">Text Size: </label>
                   <el-slider
-                      v-model="createBanner.textStyle.size"
+                      v-model="createBanner.customImage.textStyle.size"
                       :min="8"
                       :max="48"
                       style="width: 300px"
@@ -639,15 +639,15 @@ const data =  reactive({
     banner_currentPage: 1,
     bannersPerPage: 6,
     selectedBanner: null,
-    textStyle: {
-      font: "Arial, sans-serif",
-      size: 30,
-      color: '#ffffff'
-    },
     customImage: {
       background: '#030303',
       icon: null,
       text: 'PUT TEXT HERE',
+      textStyle: {
+        font: "Arial, sans-serif",
+        size: 30,
+        color: '#ffffff'
+      },
     },
   },
   banner: null,
@@ -936,7 +936,12 @@ function submitForm(){
           form.value.event = events.value.signIn
           break;
       }
-      form.value.configString = JSON.stringify( form.value.event )
+
+      let config = {
+        eventConfig: form.value.event,
+        customBannerConfig: createBanner.value.customImage
+      }
+      form.value.configString = JSON.stringify( config )
       if (form.value.id != null) {
         activityInfoUpdate(form.value).then(response => {
           proxy.$modal.msgSuccess("修改成功");
