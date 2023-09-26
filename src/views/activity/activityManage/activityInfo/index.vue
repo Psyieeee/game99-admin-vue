@@ -195,15 +195,15 @@
                     style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
                 />
               </el-form-item>
-              <el-form-item label="Scope" prop="scope">
-                <el-radio-group v-model="events.deposit.scope">
+              <el-form-item label="Activity Condition" prop="activityCondition">
+                <el-radio-group v-model="events.deposit.activityCondition">
                   <el-radio v-if="events.deposit.resetCycle === '1'" label="1">First Deposit</el-radio>
                   <el-radio label="2">Total Deposit</el-radio>
                   <el-radio label="3">Single Recharge</el-radio>
                 </el-radio-group>
               </el-form-item>
 
-              <el-form-item v-if="events.deposit.scope !== '1'" label-width="120" label="Deposit Method" prop="depositMethod">
+              <el-form-item v-if="events.deposit.activityCondition !== '1'" label-width="120" label="Deposit Method" prop="depositMethod">
                 <el-checkbox v-model="selectAllDepositMethod" @change="handleDepositSelectAll" style="padding-right: 10px">Select All</el-checkbox>
                   <el-checkbox-group v-model="events.deposit.depositMethod">
                     <el-checkbox v-for="item in depositOptions"
@@ -215,7 +215,7 @@
                     </el-checkbox>
                   </el-checkbox-group>
               </el-form-item>
-              <el-form-item v-if="events.deposit.scope === '1' " label="Home Popup" label-width="120">
+              <el-form-item v-if="events.deposit.activityCondition === '1' " label="Home Popup" label-width="120">
                 <el-switch
                     v-model="events.deposit.notifySwitch"
                     class="ml-2"
@@ -387,13 +387,9 @@
                   <pre :style="`display: inline-block; margin-top: 20px; position: absolute; color: ${createBanner.textStyle.color}; font-family: ${createBanner.textStyle.font}; font-size: ${createBanner.textStyle.size}px`">{{createBanner.customImage.text}}</pre>
                 </div>
               </div><hr style="margin-top: 20px">
-              <div id="canvas-container">
+              <div id="canvas">
               </div>
               <button @click="convert">Convert</button>
-
-
-
-
               <div class="form-group">
                 <label for="background">Background Color:</label>
                 <input style="margin-left: 10px; width: 100px; border: 2px solid #000000"
@@ -483,6 +479,7 @@
 </template>
 
 <script name="ActivityInfo" setup>
+import {url} from "@/utils/url";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {
   activityInfoAdd,
@@ -620,7 +617,7 @@ const data =  reactive({
     deposit: {
       resetCycle: '1',
       limitedRechargeSwitch: false,
-      scope: '1',
+      activityCondition: '1',
       depositMethod: [],
       notifySwitch: false,
       bonusMethod: '1',
@@ -784,6 +781,7 @@ function reset() {
     url: null,
     typeId: 1,
     event: null,
+    configString: '',
     icon: null,
     sort : null,
     creationType: '1'
@@ -797,6 +795,7 @@ function handleAdd(){
   open.value = true
   title.value = "添加活动信息"
   getAllEventsIcon().then(res => {
+    res.data = res.data.map( img => prependActivityInfoImageBaseURI( img ) )
     icons.value = res.data;
     createBanner.value.customImage.icon = icons.value[0]
     createBanner.value.iconCollection = icons.value.slice(0,10)
@@ -809,9 +808,13 @@ function handleAdd(){
   })
 }
 
+function prependActivityInfoImageBaseURI(img) {
+  return url.baseUrl + url.game99PlatformAdminWeb + "/activity/activityInfo/image?url=" + img;
+}
+
 function handleResetCycleChange(resetCycle) {
   if ( resetCycle === '2') {
-    events.value.deposit.scope = '2'
+    events.value.deposit.activityCondition = '2'
   }
 }
 
@@ -913,18 +916,27 @@ function selectBanner (image){
 
 /** 提交按钮 submit form*/
 function submitForm(){
-  form.value.icon = createBanner.value.type === '1' ? 'peke' :  banner.value
-  switch ( form.value.typeId ) {
-    case 1:
-      form.value.event = events.value.deposit
-      break;
-    case 2:
-      form.value.event = events.value.signIn
-      break;
-  }
-
-  proxy.$refs["activityForm"].validate(valid => {
+  proxy.$refs["activityForm"].validate(async valid => {
     if (valid) {
+      if ( createBanner.value.type === '1' ) {
+        const container = document.getElementById('original');
+        await html2canvas( container ).then( function (canvas) {
+          form.value.icon = canvas.toDataURL('image/png');
+        });
+      } else {
+        form.value.creationType = createBanner.value.type
+        form.value.icon = banner.value
+      }
+
+      switch ( form.value.typeId ) {
+        case 1:
+          form.value.event = events.value.deposit
+          break;
+        case 2:
+          form.value.event = events.value.signIn
+          break;
+      }
+      form.value.configString = JSON.stringify( form.value.event )
       if (form.value.id != null) {
         activityInfoUpdate(form.value).then(response => {
           proxy.$modal.msgSuccess("修改成功");
@@ -932,7 +944,6 @@ function submitForm(){
           getList();
         });
       } else {
-
         activityInfoAdd(form.value).then(response => {
           proxy.$modal.msgSuccess("新增成功");
           open.value = false;
@@ -975,23 +986,17 @@ function handleExport(){
 
 function convert() {
   event.preventDefault();
-  const original = document.querySelector('#original')
-  const canvasContainer = document.querySelector('#canvas-container')
-  const iconImage = original.querySelector('img');
-  iconImage.onload = () => {
-    html2canvas(original, {
-      useCORS: false
-    }).then( canvas => {
-      const imgData = canvas.toDataURL('image/png');
-      const img = document.createElement('img');
-      img.src = imgData;
-      canvasContainer.innerHTML = '';
-      canvasContainer.appendChild(img)
-    })
-  }
+  const container = document.getElementById('original');
+  html2canvas(container).then( function (canvas) {
+    const dataURL = canvas.toDataURL('image/png');
+    const img = new Image();
+    img.src = dataURL;
+    document.body.appendChild(img);
+    console.log(img)
+  });
 }
 
-function removeImage(type){
+function removeImage(){
   event.preventDefault();
   loading.value = true
   if ( createBanner.value.type === 1 ) {
