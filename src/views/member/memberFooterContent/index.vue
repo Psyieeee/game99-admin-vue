@@ -70,15 +70,10 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="memberFooterList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="类型" min-width="180" prop="type"/>
-      <el-table-column align="center" label="名称" min-width="180" prop="name"/>
-      <el-table-column align="center" label="现状" min-width="180" prop="status"/>
-      <el-table-column align="center" label="分类" min-width="180" prop="sort"/>
-      <el-table-column align="center" label="路径" min-width="180" prop="path"/>
-      <el-table-column align="center" label="创建的" min-width="180" prop="createdBy"/>
-      <el-table-column align="center" label="创建时间" min-width="180" prop="createdTime"/>
-      <el-table-column align="center" label="更新时间" min-width="180" prop="updatedBy"/>
-      <el-table-column align="center" label="更新时间" min-width="180" prop="updatedTime"/>
+      <el-table-column align="center" label="类型" min-width="180" prop="id"/>
+      <el-table-column align="center" label="名称" min-width="180" prop="content"/>
+      <el-table-column align="center" label="现状" min-width="180" prop="createdBy"/>
+      <el-table-column align="center" label="分类" min-width="180" prop="createdAt"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
@@ -169,15 +164,10 @@ const {proxy} = getCurrentInstance();
 
 const memberFooterList = ref([]);
 const ids = ref([]);
-const type = ref('-');
-const name = ref('-');
-const status = ref('-');
-const sort = ref('-');
-const path = ref('-');
+const id = ref('-');
+const content = ref('-');
 const createdBy = ref('-');
-const createdTime = ref('-');
-const updatedBy = ref('-');
-const updatedTime = ref('-');
+const createdAt = ref('-');
 const title = ref('');
 const total = ref(0);
 const open = ref(false);
