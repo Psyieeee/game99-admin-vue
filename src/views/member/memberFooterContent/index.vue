@@ -108,13 +108,6 @@
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="700px">
       <el-form :inline="true" ref="addMemberFooter" :model="form" :rules="rules" label-width="100px">
-            <el-form-item label="ID" prop="id" style="min-width: 290px">
-              <el-input
-                  v-model="form.id"
-                  clearable
-                  placeholder="id"
-              />
-            </el-form-item>
             <el-form-item label="Content" prop="content" style="min-width: 290px">
               <el-input
                   v-model="form.content"
@@ -122,26 +115,11 @@
                   placeholder="content"
               />
             </el-form-item>
-            <el-form-item label="Created By" prop="createdBy" style="min-width: 290px">
-              <el-input
-                  v-model="form.createdBy"
-                  clearable
-                  placeholder="Created By"
-              />
-            </el-form-item>
-            <el-form-item label="Created At" prop="createdAt" style="min-width: 290px">
-              <el-input
-                  v-model="form.createdAt"
-                  clearable
-                  placeholder="Created At"
-              />
-            </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" v-if="data.showAddButton" @click="submitForm">提交</el-button>
         <el-button type="primary" v-if="data.showEditButton" @click="handleUpdate">编辑</el-button>
         <el-button @click="open=false">取 消</el-button>
-
       </div>
     </el-dialog>
 
