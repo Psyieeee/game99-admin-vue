@@ -25,44 +25,10 @@
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item prop="分类" style="min-width: 50px">
-        <el-input
-            v-model="queryParams.sort"
-            clearable
-            placeholder="分类"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <div>
-        <el-form-item prop="路径" style="min-width: 50px">
-          <el-input
-              v-model="queryParams.path"
-              clearable
-              placeholder="路径"
-              @keyup.enter.native="handleQuery"
-          />
-        </el-form-item>
-        <el-form-item prop="创建的" style="min-width: 50px">
-          <el-input
-              v-model="queryParams.createdBy"
-              clearable
-              placeholder="创建的"
-              @keyup.enter.native="handleQuery"
-          />
-        </el-form-item>
-        <el-form-item prop="创建时间" style="min-width: 50px">
-          <el-input
-              v-model="queryParams.createdTime"
-              clearable
-              placeholder="创建时间"
-              @keyup.enter.native="handleQuery"
-          />
-        </el-form-item>
         <el-form-item>
         <el-button icon="Search" size="small" type="primary" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" size="small" @click="resetQuery">重置</el-button>
       </el-form-item>
-      </div>
     </el-form>
 
     <!--    button on the table for query-->
