@@ -168,7 +168,7 @@
             <el-form-item label="标题" prop="title">
               <el-input style="width: 350px" v-model="form.title" placeholder="请输入标题"/>
             </el-form-item> <br>
-            <el-form-item label="Schedule" prop="schedule">
+            <el-form-item label="Schedule" prop="selectDate">
               <div>
                 <el-date-picker type="daterange"
                                 v-model="form.selectDate"
@@ -652,6 +652,9 @@ const data =  reactive({
   },
   banner: null,
   rules:{
+    selectDate:[
+      { type: 'array', required: true, message: '请选择时间范围', trigger: 'change' },
+    ],
     title: [
       {required: true, message: "标题不能为空", trigger: "blur"}
     ],
@@ -833,13 +836,26 @@ function handleDepositSelectAll(){
 /** 修改按钮操作 handle update*/
 function handleUpdate(row){
   reset();
+  listImageCollection();
   const id = row.id ||ids.value
   activityInfoFindById(id).then(response => {
     response.data.type = response.data.type + ""
+    let config = JSON.parse( response.data.configString )
+    console.log(config)
+    switch ( response.data.typeId ) {
+      case 1:
+        depositData.value = config.eventConfig.tableData;
+        break;
+      case 2:
+        signInData.value = config.eventConfig.signInData;
+        break;
+    }
+    createBanner.value.customImage = config.customBannerConfig;
+    createBanner.value.type = config.customBannerConfig !== null ? '1' : '2' ;
+    form.value.creationType = createBanner.value.type
     form.value = response.data;
     open.value = true;
     title.value = "修改活动信息";
-    listImageCollection();
   });
 }
 
@@ -920,18 +936,23 @@ function selectBanner (image){
 }
 
 /** 提交按钮 submit form*/
-function submitForm(){
+function submitForm() {
   proxy.$refs["activityForm"].validate(async valid => {
     if (valid) {
+      let config = {
+        eventConfig: null,
+        customBannerConfig: createBanner.value.customImage
+      }
       if ( createBanner.value.type === '1' ) {
         const container = document.getElementById('original');
         await html2canvas( container ).then( function (canvas) {
-          form.value.icon = canvas.toDataURL('image/png');
+          form.value.icon = canvas.toDataURL( 'image/png' );
         });
       } else {
-        form.value.creationType = createBanner.value.type
         form.value.icon = banner.value
+        config.customBannerConfig = null
       }
+      form.value.creationType = createBanner.value.type
 
       switch ( form.value.typeId ) {
         case 1:
@@ -942,10 +963,7 @@ function submitForm(){
           break;
       }
 
-      let config = {
-        eventConfig: form.value.event,
-        customBannerConfig: createBanner.value.customImage
-      }
+      config.eventConfig = form.value.event
       form.value.configString = JSON.stringify( config )
       if (form.value.id != null) {
         activityInfoUpdate(form.value).then(response => {
@@ -1055,24 +1073,8 @@ activityTypeList()
 .dialog-footer{
   float: right;
 }
-.demo-image {
-  padding: 30px 0;
-  text-align: center;
-  border-right: solid 1px var(--el-border-color);
-  display: inline-block;
-  width: 20%;
-  box-sizing: border-box;
-  vertical-align: top;
-}
-.demo-image {
-  border-right: none;
-}
-.demo-image{
-  display: block;
-  color: var(--el-text-color-secondary);
-  font-size: 14px;
-  margin-bottom: 20px;
-}
+
+
 body {
   font-family: 'LocalMarket-Bold';
 }
@@ -1099,13 +1101,6 @@ img {
   padding: 20px;
   border: 1px solid #ccc;
 }
-.icon {
-  font-size: 24px;
-}
-.text {
-  font-size: 18px;
-}
-
 .selected-image {
   border: 2px solid #00dfff;
 }
@@ -1114,15 +1109,5 @@ img {
   position: relative;
   overflow: hidden;
 }
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-right: 20px;
-  height: 300px;
-  width: 300px;
-}
-
-
 
 </style>
