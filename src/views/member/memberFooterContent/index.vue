@@ -43,7 +43,7 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['footerContent:menu:add']"
+            v-hasPermi="['footer:content:add']"
             icon="Plus"
             plain
             size="small"
@@ -54,7 +54,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['footerContent:menu:remove']"
+            v-hasPermi="['footer:content:remove']"
             :disabled="multiple"
             icon="Delete"
             plain
@@ -77,14 +77,14 @@
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
-              v-hasPermi="['footerContent:menu:edit']"
+              v-hasPermi="['footer:content:edit']"
               icon="Edit" link
               size="small"
               type="primary"
               @click="handleUpdate(scope.row)">修改
           </el-button>
           <el-button
-              v-hasPermi="['footerContent:menu:remove']"
+              v-hasPermi="['footer:content:remove']"
               icon="Delete" link
               size="small"
               style="color: #e05e5e"
