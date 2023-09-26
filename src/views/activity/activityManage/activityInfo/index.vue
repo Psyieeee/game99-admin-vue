@@ -794,6 +794,10 @@ function handleAdd(){
   reset()
   open.value = true
   title.value = "添加活动信息"
+  listImageCollection();
+}
+
+function listImageCollection(){
   getAllEventsIcon().then(res => {
     res.data = res.data.map( img => prependActivityInfoImageBaseURI( img ) )
     icons.value = res.data;
@@ -835,6 +839,7 @@ function handleUpdate(row){
     form.value = response.data;
     open.value = true;
     title.value = "修改活动信息";
+    listImageCollection();
   });
 }
 
