@@ -140,13 +140,6 @@
                   placeholder="path"
               />
             </el-form-item>
-            <el-form-item label="Created By" prop="createdBy" style="min-width: 290px">
-              <el-input
-                  v-model="form.createdBy"
-                  clearable
-                  placeholder="createdBy"
-              />
-            </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" v-if="data.showAddButton" @click="submitForm">提交</el-button>
