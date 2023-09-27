@@ -453,7 +453,7 @@
                        @click="selectBanner(image)"
                        :class="{ 'selected-image': image === createBanner.selectedBanner }"
                        style="cursor: pointer;">
-                    <img :src="image" alt="Banner" style="max-height: 250px; max-width: 300px" />
+                    <img :src="image" alt="Banner" style="max-height: 150px; max-width: 200px" />
                   </div>
                 </div>
                 <div class="pagination" style="margin-top: 10px">
@@ -664,12 +664,12 @@ const data =  reactive({
     typeId: [
       {required: true, message: "活动类型不能为空", trigger: "blur"}
     ],
+    /*Jump Type*/
     type: [
       {required: true, message: "跳转类型不能为空", trigger: "blur"}
     ]
   },
   /** updateTime */
-  // updateTime: [proxy.parseTime(proxy.getTodayStartTime()), proxy.parseTime(proxy.getTodayEndTime())],
 });
 const {queryParams,form,rules, banner, events, createBanner} = toRefs(data);
 const {activityInfo_status} = proxy.useDict("activityInfo_status")
@@ -841,7 +841,6 @@ function handleUpdate(row){
   activityInfoFindById(id).then(response => {
     response.data.type = response.data.type + ""
     let config = JSON.parse( response.data.configString )
-    console.log(config)
     switch ( response.data.typeId ) {
       case 1:
         depositData.value = config.eventConfig.tableData;
@@ -850,8 +849,14 @@ function handleUpdate(row){
         signInData.value = config.eventConfig.signInData;
         break;
     }
-    createBanner.value.customImage = config.customBannerConfig;
-    createBanner.value.type = config.customBannerConfig !== null ? '1' : '2' ;
+
+    if ( config.customBannerConfig !== null ) {
+      createBanner.value.customImage = config.customBannerConfig;
+      createBanner.value.type = '1'
+    } else {
+      createBanner.value.type = '2'
+    }
+
     form.value.creationType = createBanner.value.type
     form.value = response.data;
     open.value = true;
