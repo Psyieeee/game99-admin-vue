@@ -442,7 +442,7 @@
 
             <div v-if="createBanner.type === '2'">
               <div class="preview">
-                <img :src="banner" style="width: 560px "/>
+                <img :src="banner" style="width: 510px "/>
               </div><hr style="margin-top: 20px; margin-bottom: 20px" >
 
               <div class="form-group">
