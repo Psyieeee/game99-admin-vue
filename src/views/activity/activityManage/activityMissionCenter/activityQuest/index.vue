@@ -146,41 +146,80 @@
 
     <el-dialog v-model="settingsOpen" :close-on-click-modal="false" title="汪跃度设署" append-to-body
                style="padding-bottom: 20px"
-               width="700px">
-      <el-form :inline="true" ref="settingsRef" :model="settingsForm" :rules="rules" label-width="100px">
-        <el-form-item label="Quest Cycle" prop="reset" style="min-width: 290px">
-          <el-select clearable placeholder="Reset Time">
-            <el-option label="每日周期（重置为 0:00）" value="0"></el-option>
-            <el-option label="每周循环（周一0:00重置）" value="1"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Repeat Chest Open Cycle Time" prop="repeatOpenSwitch" style="min-width: 290px">
-          <el-select clearable placeholder="状态">
-            <el-option label="每日周期（重置为 0:00）" value="0"></el-option>
-            <el-option label="每周循环（周一0:00重置）" value="1"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Audit Multiplier" prop="auditMultiplier" style="min-width: 290px">
-          <el-input
-              clearable
-              placeholder="enter audit multiplier"
-          />
-        </el-form-item>
-        <el-form-item label="Audit Restricted Platform" prop="auditPlatformSwitch" style="min-width: 290px">
-          <el-select clearable placeholder="状态">
-            <el-option label="每日周期（重置为 0:00）" value="0"></el-option>
-            <el-option label="每周循环（周一0:00重置）" value="1"></el-option>
-          </el-select>
-        </el-form-item>
-<!--        <el-form-item :v-model="settingsForm.auditRestrictedPlatformsSwitch=1" prop="auditPlatformRestricted" style="min-width: 290px">-->
-<!--          <template>-->
-<!--            <el-tree-->
-<!--                show-checkbox-->
-<!--                node-key="data"-->
-<!--                :data="settingsForm.auditPlatformRestricted"-->
-<!--            />-->
-<!--          </template>-->
-<!--        </el-form-item>-->
+               width="800px">
+      <el-form :inline="true" ref="settingsRef" :model="settingsForm" :rules="rules" label-width="500px">
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="Quest Cycle (每日周期（重置为 0:00）or 每周循环（周一0:00重置）" prop="reset"
+                          style="min-width: 290px">
+              <template #default="scope">
+                <el-switch
+                    v-model="settingsForm.reset"
+                    :active-value="1"
+                    :inactive-value="0"
+                ></el-switch>
+              </template>
+              <!--          <el-select clearable placeholder="Reset Time">-->
+              <!--            <el-option label="每日周期（重置为 0:00）" value="0"></el-option>-->
+              <!--            <el-option label="每周循环（周一0:00重置）" value="1"></el-option>-->
+              <!--          </el-select>-->
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="Repeat Chest Open Cycle Time" prop="repeatOpenSwitch" style="min-width: 290px">
+              <template #default="scope">
+                <el-switch
+                    v-model="settingsForm.repeatOpenSwitch"
+                    :active-value="1"
+                    :inactive-value="0"
+                ></el-switch>
+              </template>
+              <!--          <el-select clearable placeholder="状态">-->
+              <!--            <el-option label="每日周期（重置为 0:00）" value="0"></el-option>-->
+              <!--            <el-option label="每周循环（周一0:00重置）" value="1"></el-option>-->
+              <!--          </el-select>-->
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="Audit Multiplier" prop="auditMultiplier" style="min-width: 290px">
+              <el-input
+                  v-model="settingsForm.auditMultiplier"
+                  clearable
+                  placeholder="enter audit multiplier"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="Audit Restricted Platform" prop="auditPlatformSwitch" style="min-width: 290px">
+              <template #default="scope">
+                <el-switch
+                    v-model="settingsForm.auditPlatformSwitch"
+                    :active-value="1"
+                    :inactive-value="0"
+                ></el-switch>
+              </template>
+              <!--          <el-select clearable placeholder="状态">-->
+              <!--            <el-option label="每日周期（重置为 0:00）" value="0"></el-option>-->
+              <!--            <el-option label="每周循环（周一0:00重置）" value="1"></el-option>-->
+              <!--          </el-select>-->
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <!--        <el-form-item :v-model="settingsForm.auditRestrictedPlatformsSwitch=1" prop="auditPlatformRestricted" style="min-width: 290px">-->
+        <!--          <template>-->
+        <!--            <el-tree-->
+        <!--                show-checkbox-->
+        <!--                node-key="auditRestrictedPlatform"-->
+        <!--                :data="settingsForm.auditPlatformRestricted"-->
+        <!--            />-->
+        <!--          </template>-->
+        <!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitSettingsForm">确 定</el-button>
@@ -362,15 +401,14 @@ function submitSettingsForm() {
       //   status: 0,
       //
       // }
-        updateQuestActivitySettings(settingsForm.value).then(response => {
-          proxy.$modal.msgSuccess('修改成功')
-          open.value = false
-          getList()
+      updateQuestActivitySettings(settingsForm.value).then(response => {
+        proxy.$modal.msgSuccess('修改成功')
+        settingsOpen.value = false
+        getList()
       })
     }
   })
 }
-
 
 
 /** handle update data */
