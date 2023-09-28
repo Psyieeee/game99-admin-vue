@@ -179,6 +179,17 @@
                 />
               </div>
             </el-form-item>
+            <el-form-item label="Showtime" prop="showTime">
+              <div>
+                <el-date-picker type="daterange"
+                                v-model="form.showTime"
+                                start-placeholder="开始时间"
+                                end-placeholder="开始时间"
+                                range-separator="至"
+                                clearable
+                />
+              </div>
+            </el-form-item>
 <!--         入款优惠 DEPOSIT TYPE -->
             <div v-if="form.typeId === 1">
               <el-form-item label="Reset Cycle" prop="resetCycle" @change="handleResetCycleChange(events.deposit.resetCycle)">
@@ -597,6 +608,7 @@ const showSearch = ref(true)
 const loading = ref(true)
 const open = ref(false)
 const selectDate = ref(false)
+const showTime = ref(false)
 const selectAllDepositMethod = ref(false)
 
 const data =  reactive({
@@ -612,6 +624,7 @@ const data =  reactive({
     typeId:null
   },
   selectDate: [],
+  showTime: [],
   form:{},
   events: {
     deposit: {
@@ -653,6 +666,9 @@ const data =  reactive({
   banner: null,
   rules:{
     selectDate:[
+      { type: 'array', required: true, message: '请选择时间范围', trigger: 'change' },
+    ],
+    showTime:[
       { type: 'array', required: true, message: '请选择时间范围', trigger: 'change' },
     ],
     title: [
@@ -779,6 +795,7 @@ function reset() {
   form.value = {
     title: null,
     selectDate: [],
+    showTime:[],
     type: null,
     content: '',
     url: null,
