@@ -221,11 +221,10 @@
         </div>
           <el-form-item label="Audit Restricted Platform" label-width="150px">
             <div class="mb-2 flex items-center text-sm">
-              <el-radio-group v-model="data.collectionMethodOption" class="ml-4">
+              <el-radio-group v-model="data.auditRestrictedOption" class="ml-4">
                 <el-radio label="1" size="large">Not Limited</el-radio>
                 <el-radio label="2" size="large">Only for the following checked platforms</el-radio>
-
-                <el-tabs type="border-card">
+                <el-tabs type="border-card" :disabled="data.auditRestrictedOption === '2'">
                   <el-tab-pane label="Chess">
                     <el-checkbox-group v-model="chess" label="Select Currency">
                       <el-checkbox v-for="item in data.platformList"
@@ -288,25 +287,45 @@
         <div>
           <el-form-item label="Task Duration" label-width="150px">
             <div class="mb-2 flex items-center text-sm">
-              <el-radio-group v-model="data.collectionMethodOption" class="ml-4">
+              <el-radio-group v-model="data.taskDurationOption" class="ml-4">
                 <el-radio label="1" size="large">Long</el-radio>
                 <el-radio label="2" size="large">Limited Time</el-radio>
                 <el-input
-                  v-model="input1"
+                  v-model="limitedTimeInput"
                   class="w-50 m-2"
-                  max="9999"
-                  min="1"
+                  :disabled=" data.taskDurationOption === '1' "
                   size="large"
                   placeholder="Please Input"
+                  @input="handleInput"
                 />
               </el-radio-group>
             </div>
           </el-form-item>
         </div>
+          <el-form-item label="Participating Members" label-width="150px">
+            <el-checkbox
+                label="Select All"
+                v-model="data.selectAll"
+                @change="handleCheckAllChange"/>
+            <el-checkbox-group v-model="data.participants" label="Select Currency">
+              <div>
+                <el-checkbox v-for="i in participatingMembers"
+                             :label ="i.val"
+                             size="large"
+                             style="width: auto">
+                  {{i.item}}
+                </el-checkbox>
+              </div>
+            </el-checkbox-group>
+          </el-form-item>
+        <div>
+          <el-form-item label="Withdrawal limit reminder" label-width="150px">
+            <el-switch v-model="value1" />
+          </el-form-item>
+        </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" v-if="data.showAddButton" @click="submitForm">提交</el-button>
-        <el-button type="primary" v-if="data.showEditButton" @click="handleUpdate">编辑</el-button>
+        <el-button type="primary" @click="handleUpdate">编辑</el-button>
         <el-button @click="open=false">取 消</el-button>
 
       </div>
@@ -357,13 +376,45 @@ const electronics = ref([]);
 const real = ref([]);
 const sports = ref([]);
 const blockchain = ref([]);
+const limitedTimeInput = ref('');
+const participating = ref([])
+const participatingMembers = ref([
+  {
+    item: 'Default Tier',
+    val: 1
+  },
+  {
+    item: 'Hundred Dollar Player',
+    val: 2
+  },
+  {
+    item: 'Million Dollar Player',
+    val: 3
+  },
+  {
+    item: 'First Charge Players',
+    val: 4
+  },
+  {
+    item: 'Thousand Player',
+    val: 5
+  },
+  {
+    item: '50,000 Player',
+    val: 6
+  }
+]);
+const checkAll = ref(false);
 //endregion
 const data = reactive({
-
+  selectAll: false,
   showAddButton: false,
   showEditButton: false,
   ruleDescriptionOption: '1',
   collectionMethodOption: '1',
+  taskDurationOption: '1',
+  auditRestrictedOption: '1',
+  participants: [],
   auditInput: null,
   platformList: {},
   /** 查询参数 query params*/
@@ -387,8 +438,16 @@ const data = reactive({
 });
 const {queryParams, form, rules, headers} = toRefs(data);
 
-function handleInput() {
+function handleCheckAllChange() {
+  if( data.selectAll ){
+    data.participants = participatingMembers.value.map( kek => kek.val )
+  }else {
+    data.participants = [];
+  }
+}
 
+function handleInput() {
+  limitedTimeInput.value = limitedTimeInput.value.replace(/[^0-9]/g, '');
 }
 
 function handleEffectChange(row) {
