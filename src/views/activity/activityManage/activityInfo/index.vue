@@ -561,7 +561,6 @@ const fontOptions = ref([
   "MS Serif, serif",
 ])
 
-
 const depositOptions = ref([
   {
     name: 'PIX',
@@ -926,7 +925,7 @@ function nextPage(actionType) {
 function populateForm( event ) {
   loading.value = true
   formData.set( "file", event.currentTarget.files[0] )
-  if ( createBanner.value.type === 1 ) {
+  if ( createBanner.value.type === '1' ) {
     uploadEventsIcon( formData ).then( res => {
       getAllEventsIcon().then(res => {
         icons.value = res.data;
@@ -1049,7 +1048,7 @@ function convert() {
 function removeImage(){
   event.preventDefault();
   loading.value = true
-  if ( createBanner.value.type === 1 ) {
+  if ( createBanner.value.type === '1' ) {
     removeEventsIcon(createBanner.value.selectedIcon).then( res => {
       getAllEventsIcon().then(res => {
         icons.value = res.data;
