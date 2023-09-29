@@ -122,7 +122,7 @@
                width="700px">
       <el-form ref="memberAdvertisementRef" :model="form" :rules="rules" label-width="100px">
         <div class="el-row">
-          <div class="el-col-lg-12">
+          <div class="el-col-lg-24">
             <el-form-item label="广告标题" prop="title" style="min-width: 290px">
               <el-input
                   v-model="form.title"
