@@ -958,6 +958,7 @@ function selectBanner (image){
 /** 提交按钮 submit form*/
 function submitForm() {
   proxy.$refs["activityForm"].validate(async valid => {
+    loading.value = true;
     if (valid) {
       let config = {
         eventConfig: null,
@@ -999,6 +1000,7 @@ function submitForm() {
         });
       }
     }
+    loading.value = false;
   });
 }
 
