@@ -39,10 +39,3 @@ export function changeNewbieStatus(id, effect) {
     })
 }
 
-export function newbiePlatformList(query){
-    return request({
-        url:url.game99PlatformAdminWeb+"/newbieBenefits/platformList",
-        method:'get',
-        params:query
-    })
-}

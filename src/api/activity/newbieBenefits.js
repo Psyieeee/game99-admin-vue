@@ -27,8 +27,40 @@ export function addNewbieBenefits(data){
 export function updateNewbieBenefits(data){
     return request({
         url:url.game99PlatformAdminWeb+"/newbieBenefits/edit",
+        method:'put',
+        data : data
+    })
+}
+
+export function updateNewbieSettings(data){
+    return request({
+        url:url.game99PlatformAdminWeb+"/newbieBenefits/editSettings",
         method:'post',
         data : data
+    })
+}
+
+export function newbieSettingsOtherDataList(query){
+    return request({
+        url:url.game99PlatformAdminWeb+"/newbieBenefits/settingsOtherList",
+        method:'get',
+        params:query
+    })
+}
+
+export function newbieSettingsDataList(query){
+    return request({
+        url:url.game99PlatformAdminWeb+"/newbieBenefits/settingsList",
+        method:'get',
+        params:query
+    })
+}
+
+export function getGamePlatformGameTypeList(query){
+    return request({
+        url:url.game99PlatformAdminWeb+"/questRepeat/getAllGameTypeAndPlatform",
+        method:'get',
+        params:query
     })
 }
 
