@@ -475,7 +475,6 @@
                   <button style="float: right; margin-right: 10px" class="upload-button" @click="removeImage">Remove</button>
                 </div>
               </div><hr>
-              <imageUpload v-model="form.icon" path="ActivityInfo"/>
             </div>
           </div>
         </div>
