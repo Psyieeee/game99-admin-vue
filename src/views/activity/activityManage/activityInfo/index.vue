@@ -400,7 +400,6 @@
               </div><hr style="margin-top: 20px">
               <div id="canvas">
               </div>
-              <button @click="convert">Convert</button>
               <div class="form-group">
                 <label for="background">Background Color:</label>
                 <input style="margin-left: 10px; width: 100px; border: 2px solid #000000"
@@ -1032,18 +1031,6 @@ function handleExport(){
     proxy.downloadExcel(response, '活动信息')
   }).catch(() => {
   })
-}
-
-function convert() {
-  event.preventDefault();
-  const container = document.getElementById('original');
-  html2canvas(container).then( function (canvas) {
-    const dataURL = canvas.toDataURL('image/png');
-    const img = new Image();
-    img.src = dataURL;
-    document.body.appendChild(img);
-    console.log(img)
-  });
 }
 
 function removeImage(){
