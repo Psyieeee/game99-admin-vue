@@ -115,11 +115,11 @@
               placeholder="name"
           />
         </el-form-item>
-        <el-form-item label="Name" prop="requiredActivityLevel" style="min-width: 290px">
+        <el-form-item label="Required Activity Level" prop="requiredActivityLevel" style="min-width: 290px">
           <el-input
               v-model="form.requiredActivityLevel"
               clearable
-              placeholder="name"
+              placeholder="Please enter Required Activity Level"
           />
         </el-form-item>
         <el-form-item label="Reward Type" prop="rewardType" style="min-width: 290px">
