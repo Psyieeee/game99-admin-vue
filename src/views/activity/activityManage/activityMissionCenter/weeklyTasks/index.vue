@@ -1,6 +1,7 @@
 <template>
   <div class="app-container">
-    <el-form label="Weekly Tasks" v-show="showSearch" ref="queryForm" :inline="true" :model="queryParams" label-width="98px">
+    <el-form label="Weekly Tasks" v-show="showSearch" ref="queryForm" :inline="true" :model="queryParams"
+             label-width="98px">
       <el-form-item prop="现状" style="min-width: 50px">
         <el-input
             v-model="queryParams.taskCode"
@@ -19,7 +20,7 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['mission:newbieBenefits:add']"
+            v-hasPermi="['mission:questRepeat:add']"
             icon="Plus"
             plain
             size="small"
@@ -30,7 +31,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['mission:newbieBenefits:delete']"
+            v-hasPermi="['mission:questRepeat:delete']"
             :disabled="multiple"
             icon="Delete"
             plain
@@ -47,13 +48,18 @@
     <el-table v-loading="loading" :data="questRepeatLists" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="ID" min-width="70" prop="id"/>
-      <el-table-column align="center" label="Task Currency"       min-width="180" prop="taskCurrency"/>
+      <el-table-column align="center" label="Task Currency" min-width="180" prop="taskCurrency"/>
       <el-table-column align="center" label="Task Classification" min-width="180" prop="taskClassification"/>
-      <el-table-column align="center" label="Reward Amount"       min-width="180" prop="rewardAmount"/>
+      <el-table-column align="center" label="Reward Amount" min-width="180" prop="rewardAmount"/>
       <el-table-column align="center" label="Mission Target" min-width="180" prop="missionObjectives"/>
       <el-table-column align="center" label="Reward Activity" min-width="180" prop="rewardActivity"/>
-      <el-table-column align="center" label="Mission Introduction" min-width="180" prop="missionObjectives"/>
-      <el-table-column align="center" min-width="150" label="Whether to turn on" prop="status">
+      <el-table-column align="center" label="Mission Introduction" min-width="180">
+        <template #default="scope">
+          <!-- Display both ID and Task Currency in the same cell -->
+          累计充值${{ scope.row.cumulativeRechargeAmount }}, 奖励${{ scope.row.rewardAmount }}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" min-width="150" label="Status" prop="status">
         <template #default="scope">
           <el-switch
               v-model="scope.row.status"
@@ -68,14 +74,14 @@
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
-              v-hasPermi="['mission:newbieBenefits:edit']"
+              v-hasPermi="['mission:questRepeat:edit']"
               icon="Edit" link
               size="small"
               type="primary"
               @click="handleUpdate(scope.row)">修改
           </el-button>
           <el-button
-              v-hasPermi="['mission:newbieBenefits:delete']"
+              v-hasPermi="['mission:questRepeat:delete']"
               icon="Delete" link
               size="small"
               style="color: #e05e5e"
@@ -98,61 +104,170 @@
     <!-- 添加或修改公司入款银行列表对话框 Add or modify company deposit bank list dialog-->
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="700px">
-      <el-form :inline="true" ref="newbieBenefits" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="Name" prop="name" style="min-width: 290px">
-          <el-input
-              v-model="form.name"
-              clearable
-              placeholder="name"
-          />
+      <el-form ref="questRepeatRef" :model="form" :rules="rules" label-width="300px">
+        <el-form-item label="Currency" prop="currency" style=" min-width: 290px">
+          <el-checkbox
+              v-model="selectAll"
+              @change="handleCheckAllChange"
+          >Check all
+          </el-checkbox>
         </el-form-item>
-        <el-form-item label="Created By" prop="updateBy" style="min-width: 290px">
-          <el-input
-              v-model="form.createdBy"
-              clearable
-              placeholder="createdBy"
-          />
+        <el-form-item label="Currency" prop="currency" style="min-width: 290px">
+          <el-checkbox-group
+              v-model="checkedCurrency"
+              @change="handleCheckedCurrencyChange">
+            <el-checkbox v-for="item in activity_quest_currency"
+                         :key="item.value"
+                         :label="item.label">{{ item.label }}
+            </el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="任务分类" prop="taskClassification" style="min-width: 290px">
+          <el-select v-model="form.taskClassification" placeholder="任务分类" clearable>
+            <el-option
+                v-for="dict in activity_quest_task_classification"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Mission Objectives" prop="missionObjectives" style="min-width: 290px">
+          <el-select v-model="form.missionObjectives" >
+            <el-option
+                v-for="dict in activity_quest_mission_objectives"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="form.missionObjectives === '累计充值'" label="Recharge Category"
+                      prop="accumulatedRechargeSource" style="min-width: 290px">
+          <el-select v-model="form.accumulatedRechargeSource" multiple>
+            <el-option
+                v-for="dict in pay_online_recharge_category"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <div v-if="form.missionObjectives != '累计充值'">
+          <el-form-item label="Game Type" prop="gameType" style="min-width: 290px">
+            <el-select v-model="form.gameType" @change="handleGameTypeChange">
+              <el-option
+                  v-for="dict in gameTypeList"
+                  :key="dict.id"
+                  :label="dict.name"
+                  :value="dict.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item
+              label="Platform Type" prop="platformType" style="min-width: 290px">
+            <el-select v-model="form.platformType" @change="handleGamePlatformChange">
+              <el-option
+                  v-for="dict in platformTypeList"
+                  :key="dict.id"
+                  :label="dict.name"
+                  :value="dict.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="Game" prop="gameName" style="min-width: 290px">
+            <el-select v-model="form.gameName">
+              <el-option
+                  v-for="dict in gameList"
+                  :key="dict.id"
+                  :label="dict.name"
+                  :value="dict.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </div>
+        <el-form-item label="累计补给量Cumulative Recharge Amount" prop="cumulativeRechargeAmount">
+          <el-input type="number" v-model="form.cumulativeRechargeAmount" placeholder="输入累计充值金额"
+                    @change="handleComposeMission"/>
+        </el-form-item>
+        <el-form-item label="reward奖励金额" prop="rewardAmount">
+          <el-input type="number" v-model="form.rewardAmount" placeholder="请输入奖励金额"
+                    @change="handleComposeMission"/>
+        </el-form-item>
+        <el-form-item label="activity奖励活动" prop="rewardActivity">
+          <el-input type="number" v-model="form.rewardActivity" placeholder="请输入奖励活动"/>
+        </el-form-item>
+        <el-form-item label="missionIntro任务简介" prop="missionIntroduction">
+          <el-input v-model="mission" placeholder="输入累计充值金额" disabled/>
+        </el-form-item>
+        <el-form-item label="活跃" prop="status" style="min-width: 290px">
+          <template #default="scope">
+            <el-switch
+                v-model="form.status"
+                :active-value="1"
+                :inactive-value="0"
+            ></el-switch>
+          </template>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" v-if="data.showAddButton" @click="submitForm">提交</el-button>
-        <el-button type="primary" v-if="data.showEditButton" @click="handleUpdate">编辑</el-button>
-        <el-button @click="open=false">取 消</el-button>
-
-      </div>
+      <template #footer>
+        <div>
+          <el-button type="primary" @click="submitForm">确 定</el-button>
+          <el-button @click="open=false">取 消</el-button>
+        </div>
+      </template>
     </el-dialog>
 
   </div>
 </template>
 
-<script name="weeklyTasks" setup>
+<script name="weeklyTask" setup>
 
 import {
   questRepeatList,
-  deleteQuestRepeat,
-  addQuestRepeat,
+  getQuestRepeatList,
   updateQuestRepeat,
-  changeNewbieStatus
+  addQuestRepeat,
+  deleteQuestRepeat,
+  changeQuestRepeatStatus, getPlatformList, gameInfoList
 } from "@/api/activity/questRepeat";
 
-import {reactive, ref, toRefs} from "vue";
+import {computed, getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {getToken} from "@/utils/auth";
 
 const router = useRouter();
+import {useRouter} from "vue-router";
+import {listAllType} from "@/api/game/type";
+
+const {proxy} = getCurrentInstance();
+
+
+const {
+  activity_quest_currency
+  , activity_quest_task_classification
+  , activity_quest_mission_objectives
+  , pay_online_recharge_category
+} = proxy.useDict(
+    'activity_quest_currency'
+    , 'activity_quest_task_classification'
+    , 'activity_quest_mission_objectives'
+    , 'pay_online_recharge_category');
+const checkedCurrency = ref([]);
+const selectAll = ref(true);
+const platformTypeList = ref([])
+const gameTypeList = ref([])
+const gameList = ref([])
+const mission = ref('')
+
 
 const questRepeatLists = ref([]);
 const ids = ref([]);
 const id = ref('');
-const taskCode = ref('');
-const taskConditions = ref('');
-const questSettingsId = ref('');
 const rewards = ref('');
-const rewardActivity = ref('');
 const status = ref(1);
-const tipBubbleSwitch = ref('');
 const updateTime = ref('');
 const updateBy = ref('');
-const description = ref('');
 const title = ref('');
 const total = ref(0);
 const open = ref(false);
@@ -163,48 +278,63 @@ const loading = ref(true);
 
 const data = reactive({
 
-  showAddButton: false,
-  showEditButton: false,
-  /** 查询参数 query params*/
-  queryParams: {
-    questRepeatType: 2,
-    pageNum: 1,
-    pageSize: 20,
-    type: null,
-    effect: null,
-    taskCode: null,
-    tipBubbleSwitch: null
-  },
+      showAddButton: false,
+      showEditButton: false,
+      /** 查询参数 query params*/
+      queryParams: {
+        questRepeatType: 2,
+        pageNum: 1,
+        pageSize: 20,
+        type: null,
+        effect: null,
+        taskCode: null,
+        tipBubbleSwitch: null
+      },
 
-  /** 表单参数 form parameter*/
-  form: {},
+      rules: {
+        cumulativeRechargeAmount:
+            [
+              {required: true, message: '不能为空', trigger: 'blur'}
+            ],
+        rewardAmount:
+            [
+              {required: true, message: '不能为空', trigger: 'blur'}
+            ],
+        rewardActivity:
+            [
+              {required: true, message: '不能为空', trigger: 'blur'}
+            ]
+      },
 
-  headers: {
-    Authorization: 'Bearer ' + getToken()
-  },
+      /** 表单参数 form parameter*/
+      form: {}
+      ,
 
-});
+      headers: {
+        Authorization: 'Bearer ' + getToken()
+      }
+      ,
+    })
+;
 const {queryParams, form, rules, headers} = toRefs(data);
 
 function handleEffectChange(row) {
   let text = row.tipBubbleSwitch === '1' ? '启用' : '停用'
-  console.log("@*)@*)@")
-  proxy.$confirm('确认要' + text + '"' + row.title + '"吗?', '警告', {
+  proxy.$confirm('确认要' + text + '"' + row.taskClassification + '"吗?', '警告', {
     confirmButtonText: '确定',
     cancelButtonText: '取消'
   }).then(function () {
-    const tipBubbleSwitch = changeNewbieStatus(row.id, row.tipBubbleSwitch);
-    console.log( tipBubbleSwitch + "@@@@");
+    const status = changeQuestRepeatStatus(row.id, row.status);
     loading.value = true
-    if (tipBubbleSwitch) {
+    if (status) {
       loading.value = false
-      return tipBubbleSwitch
+      return status
     }
   }).then(() => {
     proxy.$modal.msgSuccess(text + '成功')
     getList()
   }).catch(function () {
-    row.effect = row.effect === '0' ? '1' : '0'
+    row.status = row.status === '0' ? '1' : '0'
   })
 }
 
@@ -221,10 +351,9 @@ function handleQuery() {
 
 /** fetch all data from back-end as getList */
 function getList() {
-  console.log(queryParams.value + " &@&(@&$(")
   loading.value = true;
   questRepeatList(queryParams.value).then(response => {
-    console.log( response.data )
+    console.log(response.data)
     questRepeatLists.value = response.data;
     total.value = response.total;
     loading.value = false;
@@ -234,9 +363,23 @@ function getList() {
 // 表单重置
 function reset() {
   form.value = {
-
+    currency: null,
+    currencyAll: null,
+    selectAll: null,
+    checkedCurrency: activity_quest_currency.value.slice(0, 1),
+    taskClassification: activity_quest_task_classification.value[0].label,
+    missionObjectives: activity_quest_mission_objectives.value[0].label,
+    accumulatedRechargeSource: pay_online_recharge_category,
+    gameType: null,
+    platformType: null,
+    gameName: null,
+    cumulativeRechargeAmount: null,
+    rewardActivity: null,
+    rewardAmount: null,
+    missionIntroduction: null,
+    status: null
   }
-  proxy.resetForm('newbieBenefits');
+  proxy.resetForm('questRepeatRef');
 }
 
 /** 重置按钮操作 handle reset query*/
@@ -248,45 +391,98 @@ function resetQuery() {
 
 /** handle add new data */
 function handleAdd() {
-  data.showAddButton = true
-  data.showEditButton = false
   reset()
   open.value = true
-  title.value = '添加页脚'
+  title.value = '添加每日任务'
+  selectAll.value = true;
+  handleCheckAllChange();
 }
 
 /** submit new data and handle insert data api*/
 function submitForm() {
-  proxy.$refs['addMemberFooter'].validate(async valid => {
+  proxy.$refs['questRepeatRef'].validate(async valid => {
     if (valid) {
-      const params = {
+      let params = {
+        id: checkedCurrency.value.id,
+        questRepeatType: 1,
+        questSettingsId: 2,
+        // taskCurrency : checkedCurrency.value.toString(),
+        taskCurrency: checkedCurrency.value.map((item) => item).join(','),
+        taskClassification: form.value.taskClassification,
+        rewardAmount: form.value.rewardAmount,
+        missionObjectives: form.value.missionObjectives,
+        cumulativeRechargeAmount: form.value.cumulativeRechargeAmount,
+        rewardActivity: form.value.rewardActivity,
+        status: form.value.status,
+      }
+      console.log("1121 " + form.value.missionObjectives)
 
+      if (form.value.missionObjectives == '累计充值') {
+        console.log("aa " + form.value.accumulatedRechargeSource.map((item) => item.label).join(','))
+        params = {
+          accumulatedRechargeSource: form.value.accumulatedRechargeSource.map((item) => item.label).join(','),
+          platformId: null,
+          gameTypeId: null,
+          gameId: null,
+
+          id: checkedCurrency.value.id,
+          questRepeatType: 2,
+          questSettingsId: 3,
+          // taskCurrency : checkedCurrency.value.toString(),
+          taskCurrency: checkedCurrency.value.map((item) => item).join(','),
+          taskClassification: form.value.taskClassification,
+          rewardAmount: form.value.rewardAmount,
+          missionObjectives: form.value.missionObjectives,
+          cumulativeRechargeAmount: form.value.cumulativeRechargeAmount,
+          rewardActivity: form.value.rewardActivity,
+          status: form.value.status,
+        }
+      } else {
+        params = {
+          accumulatedRechargeSource: null,
+          platformId: form.value.platformType,
+          gameTypeId: form.value.gameType,
+          gameId: form.value.gameType,
+
+          id: checkedCurrency.value.id,
+          questRepeatType: 2,
+          questSettingsId: 3,
+          // taskCurrency : checkedCurrency.value.toString(),
+          taskCurrency: checkedCurrency.value.map((item) => item).join(','),
+          taskClassification: form.value.taskClassification,
+          rewardAmount: form.value.rewardAmount,
+          missionObjectives: form.value.missionObjectives,
+          cumulativeRechargeAmount: form.value.cumulativeRechargeAmount,
+          rewardActivity: form.value.rewardActivity,
+          status: form.value.status,
+        }
       }
 
       if (form.value.id != null) {
-        updateNewbieBenefits(form.value).then(response => {
+        updateQuestRepeat(params).then(response => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
-          getList()
         })
       } else {
-        addNewbieBenefits(params).then(response => {
+        addQuestRepeat(params).then(response => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
-          getList()
         })
       }
+      getList()
     }
   })
 }
 
 /** handle update data */
 function handleUpdate(row) {
-  data.showEditButton = true
-  data.showAddButton = false
-  form.value = row
-  open.value = true
-  title.value = '添加页脚'
+  reset()
+  const id = row.id || this.ids
+  getQuestRepeatList(id).then(response => {
+    form.value = response.data
+    open.value = true
+    title.value = '编辑每日任务'
+  })
 }
 
 /**  删除按钮操作 handle delete */
@@ -297,15 +493,93 @@ function handleDelete(row) {
     cancelButtonText: '取消',
     type: 'warning'
   }).then(function () {
-    return deleteNewbie(idss)
+    return deleteQuestRepeat(idss)
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess('删除成功')
   })
 }
 
+function handleCheckAllChange() {
+  if (selectAll.value) {
+    checkedCurrency.value = activity_quest_currency.value.map(kek => kek.label)
+  } else {
+    checkedCurrency.value = [];
+  }
+}
 
-getList()
+function handleCheckedCurrencyChange() {
+  if (checkedCurrency.value.length === activity_quest_currency.value.length) {
+    selectAll.value = true;
+  } else {
+    selectAll.value = false;
+  }
+}
+
+function handleComposeMission() {
+  if (!isNullOrEmpty(form.value.cumulativeRechargeAmount) && !isNullOrEmpty(form.value.rewardAmount)) {
+    mission.value = "累计充值" + form.value.cumulativeRechargeAmount + "，奖励" + form.value.rewardAmount;
+  } else {
+    mission.value = "";
+  }
+}
+
+function isNullOrEmpty(value) {
+  return value === null || value.trim() === '';
+}
+
+function handleGameTypeChange() {
+  getGamePlatformList();
+  getGameTypeList();
+}
+
+function handleGamePlatformChange() {
+  getGameTypeList();
+}
+
+function getGameTypeList() {
+  listAllType().then(res => {
+    const allType = {
+      id: 0,
+      name: "All",
+      icon: ""
+    };
+    gameTypeList.value = [allType, ...res.data ];
+  })
+}
+function getGamePlatformList() {
+  const param = {
+    id: form.gameType
+  }
+  getPlatformList(param).then(res => {
+    const allPlatform = {
+      id: 0,
+      name: "All",
+      icon: ""
+    };
+    platformTypeList.value = [allPlatform, ...res.data ];
+  })
+}
+function getGameList() {
+  const param = {
+    id: form.gameType,
+    pid: form.platformType,
+  }
+  gameInfoList(param).then(res => {
+    const allGame = {
+      id: 0,
+      name: "All",
+      icon: ""
+    };
+    gameList.value = [allGame, ...res.data ];
+  })
+}
+
+getGameTypeList();
+getGamePlatformList();
+getGameList();
+getList();
+
 </script>
 
 <style>

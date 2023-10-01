@@ -9,9 +9,16 @@ export function questRepeatList(query){
     })
 }
 
-export function deleteQuestRepeat(mobile){
+export function getQuestRepeatList(id){
     return request({
-        url:url.game99PlatformAdminWeb+"/questRepeat/"+mobile,
+        url:url.game99PlatformAdminWeb+"/questRepeat/" + id,
+        method:'get'
+    })
+}
+
+export function deleteQuestRepeat(id){
+    return request({
+        url:url.game99PlatformAdminWeb+"/questRepeat/"+id,
         method:'delete',
     })
 }
@@ -32,10 +39,26 @@ export function updateQuestRepeat(data){
     })
 }
 
-export function changeNewbieStatus(id, effect) {
+export function changeQuestRepeatStatus(id, status) {
     return request({
-        url: url.game99PlatformAdminWeb + '/newbieBenefits/changeStatus/'+ id + "/" + effect,
+        url: url.game99PlatformAdminWeb + '/questRepeat/changeStatus/'+ id + "/" + status,
         method: 'put',
     })
 }
 
+
+export function getPlatformList(data){
+    return request({
+        url:url.game99PlatformAdminWeb+"/questRepeat/platformList",
+        method:'post',
+        data:data
+    })
+}
+
+export function gameInfoList(data){
+    return request({
+        url:url.game99PlatformAdminWeb+"/questRepeat/gameInfoList",
+        method:'post',
+        data:data
+    })
+}

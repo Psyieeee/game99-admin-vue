@@ -3,30 +3,37 @@ import request from "@/utils/request";
 
 export function newbieListData(query){
     return request({
-        url:url.game99PlatformAdminWeb+"/newbieBenefits/list",
+        url:url.game99PlatformAdminWeb+"/questNewbie/list",
         method:'get',
         params:query
     })
 }
 
+export function getQuestNewbie(id){
+    return request({
+        url:url.game99PlatformAdminWeb+"/questNewbie/" + id,
+        method:'get'
+    })
+}
+
 export function deleteNewbie(mobile){
     return request({
-        url:url.game99PlatformAdminWeb+"/newbieBenefits/"+mobile,
+        url:url.game99PlatformAdminWeb+"/questNewbie/"+mobile,
         method:'delete',
     })
 }
 
-export function addNewbieBenefits(data){
+export function addQuestNewbie(data){
     return request({
-        url:url.game99PlatformAdminWeb+"/newbieBenefits/add",
+        url:url.game99PlatformAdminWeb+"/questNewbie/add",
         method:'post',
         data : data
     })
 }
 
-export function updateNewbieBenefits(data){
+export function updateQuestNewbie(data){
     return request({
-        url:url.game99PlatformAdminWeb+"/newbieBenefits/edit",
+        url:url.game99PlatformAdminWeb+"/questNewbie/edit",
         method:'put',
         data : data
     })
@@ -34,7 +41,7 @@ export function updateNewbieBenefits(data){
 
 export function updateNewbieSettings(data){
     return request({
-        url:url.game99PlatformAdminWeb+"/newbieBenefits/editSettings",
+        url:url.game99PlatformAdminWeb+"/questNewbie/editSettings",
         method:'post',
         data : data
     })
@@ -42,7 +49,7 @@ export function updateNewbieSettings(data){
 
 export function newbieSettingsOtherDataList(query){
     return request({
-        url:url.game99PlatformAdminWeb+"/newbieBenefits/settingsOtherList",
+        url:url.game99PlatformAdminWeb+"/questNewbie/settingsOtherList",
         method:'get',
         params:query
     })
@@ -50,7 +57,7 @@ export function newbieSettingsOtherDataList(query){
 
 export function newbieSettingsDataList(query){
     return request({
-        url:url.game99PlatformAdminWeb+"/newbieBenefits/settingsList",
+        url:url.game99PlatformAdminWeb+"/questNewbie/settingsList",
         method:'get',
         params:query
     })
@@ -66,7 +73,14 @@ export function getGamePlatformGameTypeList(query){
 
 export function changeNewbieStatus(id, effect) {
     return request({
-        url: url.game99PlatformAdminWeb + '/newbieBenefits/changeStatus/'+ id + "/" + effect,
+        url: url.game99PlatformAdminWeb + '/questNewbie/changeStatus/'+ id + "/" + effect,
+        method: 'put',
+    })
+}
+
+export function changeNewbiesTipBubble(id, tipBubble) {
+    return request({
+        url: url.game99PlatformAdminWeb + '/questNewbie/changeTipBubble/'+ id + "/" + tipBubble,
         method: 'put',
     })
 }
