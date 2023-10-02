@@ -288,7 +288,7 @@ function submitForm() {
 
 function handleDelete(row) {
   const memberQuestIds = row.id || ids.value;
-  proxy.$modal.$confirm('是否确认删除【请填写功能名称】编号为"' + memberQuestIds + '"的数据项?', "警告", {
+  proxy.$modal.confirm('是否确认删除【请填写功能名称】编号为"' + memberQuestIds + '"的数据项?', "警告", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning"
@@ -303,7 +303,7 @@ function handleDelete(row) {
 
 function handleExport() {
   // const queryParams = queryParams;
-  proxy.$modal.$confirm('确认处理Excel并下载，数据量大的时候会延迟，请耐心等待...', "警告", {
+  proxy.$modal.confirm('确认处理Excel并下载，数据量大的时候会延迟，请耐心等待...', "警告", {
     confirmButtonText: "确认",
     cancelButtonText: "取消",
     type: "warning"

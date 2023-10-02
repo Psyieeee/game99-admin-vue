@@ -624,6 +624,7 @@ function handleUpdate(row) {
     open.value = true
     title.value = '添加页脚'
   })
+  console.log( form.value + " @@@@@@")
 }
 
 /** submit new data and handle insert data api*/
