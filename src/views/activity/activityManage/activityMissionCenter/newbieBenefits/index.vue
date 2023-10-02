@@ -199,31 +199,35 @@
         </el-form-item>
         <div>
           <el-form-item label="Event Collection Entrance" label-width="150px">
-            <el-checkbox-group label="Select Currency">
+            <el-checkbox-group label="Select Currency" v-model="data.newcomerSettings.selectedEvents">
               <div>
-                <el-checkbox :checked="data.newcomerSettings.pc === 1">{{ data.newcomerSettings.pc }}</el-checkbox>
-                <el-checkbox label="H5" :checked="data.newcomerSettings.h5 === 1"/>
+                <el-checkbox label="PC">PC</el-checkbox>
+                <el-checkbox label="H5">H5</el-checkbox>
               </div>
-              <el-checkbox label="Each browser fingerprint is limited to 1 redemption"
-                           :checked="data.newcomerSettings.browserFingerprint === 1"/>
+              <el-checkbox label="Fingerprint">
+                Each browser fingerprint is limited to 1 redemption
+              </el-checkbox>
               <div>
-                <el-checkbox label="Android" :checked="data.newcomerSettings.android === 1"/>
-                <el-checkbox label="IOS" :checked="data.newcomerSettings.ios === 1"/>
+                <el-checkbox label="ANDROID">
+                  Android
+                </el-checkbox>
+                <el-checkbox label="IOS">
+                  IOS
+                </el-checkbox>
               </div>
-              <el-checkbox label="Each login device number can only be claimed once"
-                           :checked="data.newcomerSettings.deviceId === 1"/>
+              <el-checkbox label="Device">
+                Each login device number can only be claimed once"
+              </el-checkbox>
             </el-checkbox-group>
           </el-form-item>
         </div>
         <el-form-item label="More Collection Restrictions" label-width="150px">
-          <el-checkbox-group label="Select Currency">
+          <el-checkbox-group label="Select Collection" v-model="data.newcomerSettings.selectedCollection">
             <div>
-              <el-checkbox :checked="data.newcomerSettings.collectDevice === 1"
-                           label="Only registered device number can be collected"/>
-              <el-checkbox :checked="data.newcomerSettings.collectPay === 1" label="Payment method hase been bound"/>
+              <el-checkbox label="Registered">Only registered device number can be collected</el-checkbox>
+              <el-checkbox label="Payment">Payment method phase been bound</el-checkbox>
             </div>
-            <el-checkbox :checked="data.newcomerSettings.collectLogin === 1"
-                         label="Each login IP number is limited to 1 claim"/>
+              <el-checkbox label="Limited">Each login IP number is limited to 1 claim</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
         <div>
@@ -390,6 +394,8 @@ const data = reactive({
     duration: null,
     multiplier: null,
     limitReminder: null,
+    selectedEvents:[],
+    selectedCollection:[],
   },
 
   /** 查询参数 query params*/
@@ -539,22 +545,42 @@ function getSettingsList() {
     data.newbieSettingsOtherList = response.data.filter(item => item.questSettingsId === 1);
 
     //Currency
-    data.currencyCheck = data.newbieSettingsOtherList.find(k => k.questSettingsValue === 'BRL')
+    if( data.newbieSettingsOtherList.find(k => k.questSettingsValue === 'BRL').status === 1 ){
+      data.currencyCheck.push( 'BRL' )
+    }
 
     //Event Collection
     data.container = data.newbieSettingsOtherList.filter(k => k.questSettingsCode === 'EVENT_COLLECTION_ENTRANCE')
-    data.newcomerSettings.pc = data.container.find(v => v.questSettingsValue === 'PC').status
-    data.newcomerSettings.h5 = data.container.find(v => v.questSettingsValue === 'H5').status
-    data.newcomerSettings.browserFingerprint = data.container.find(v => v.questSettingsValue === 'BROWSER_FINGERPRINT').status
-    data.newcomerSettings.android = data.container.find(v => v.questSettingsValue === 'ANDROID').status
-    data.newcomerSettings.ios = data.container.find(v => v.questSettingsValue === 'IOS').status
-    data.newcomerSettings.deviceId = data.container.find(v => v.questSettingsValue === 'DEVICE_ID').status
+    if( data.container.find(v => v.questSettingsValue === 'PC').status === 1 ) {
+      data.newcomerSettings.selectedEvents.push('PC')
+    }
+    if( data.container.find(v => v.questSettingsValue === 'H5').status === 1 ){
+      data.newcomerSettings.selectedEvents.push('H5')
+    }
+    if( data.container.find(v => v.questSettingsValue === 'BROWSER_FINGERPRINT').status === 1 ){
+      data.newcomerSettings.selectedEvents.push('Fingerprint')
+    }
+    if( data.container.find(v => v.questSettingsValue === 'ANDROID').status === 1 ) {
+      data.newcomerSettings.selectedEvents.push('ANDROID')
+    }
+    if( data.container.find(v => v.questSettingsValue === 'IOS').status === 1 ){
+      data.newcomerSettings.selectedEvents.push('IOS')
+    }
+    if( data.container.find(v => v.questSettingsValue === 'DEVICE_ID').status === 1 ){
+      data.newcomerSettings.selectedEvents.push('Device')
+    }
 
     //Collection Restriction
     data.container = data.newbieSettingsOtherList.filter(k => k.questSettingsCode === 'COLLECTION_RESTRICTION')
-    data.newcomerSettings.collectPay = data.container.find(v => v.questSettingsValue === 'PAYMENT_METHOD_BOUND').status
-    data.newcomerSettings.collectLogin = data.container.find(v => v.questSettingsValue === 'IP_LOGIN_ONE_CLAIM_LIMIT').status
-    data.newcomerSettings.collectDevice = data.container.find(v => v.questSettingsValue === 'REGISTERED_DEVICE_NUMBER').status
+    if( data.container.find(v => v.questSettingsValue === 'PAYMENT_METHOD_BOUND').status === 1 ){
+      data.newcomerSettings.selectedCollection.push('Payment')
+    }
+    if( data.container.find(v => v.questSettingsValue === 'IP_LOGIN_ONE_CLAIM_LIMIT').status === 1 ){
+      data.newcomerSettings.selectedCollection.push('Limited')
+    }
+    if( data.container.find(v => v.questSettingsValue === 'REGISTERED_DEVICE_NUMBER').status === 1 ){
+      data.newcomerSettings.selectedCollection.push('Registered')
+    }
 
     //Audit Platforms
     data.newcomerSettings.auditStatus = data.newbieSettingsOtherList.find(k => k.questSettingsCode === 'AUDIT_RESTRICTED_PLATFORM').status
