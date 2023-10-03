@@ -267,6 +267,14 @@
             </el-form-item>
           </el-col>
           <el-col>
+            <el-form-item label="Collection Method">
+              <el-radio-group v-model="settingsForm.collectionMethodSwitch" class="ml-4">
+                <el-radio :label="0" size="large">Direct to Account</el-radio>
+                <el-radio :label="1" size="large">Manual Collection</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col>
             <el-form-item label="More Collection Restrictions">
               <el-checkbox-group
                   v-model="checkedCollectionRestriction">
