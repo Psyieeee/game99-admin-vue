@@ -62,3 +62,18 @@ export function gameInfoList(data){
         data:data
     })
 }
+
+export function getSettings(id) {
+    return request({
+        url: url.game99PlatformAdminWeb + '/questRepeat/getSettings/' + id,
+        method: 'get',
+    })
+}
+
+export function updateSettings(data) {
+    return request({
+        url: url.game99PlatformAdminWeb + '/questRepeat/updateSettings',
+        method: 'post',
+        data: data
+    })
+}

@@ -43,13 +43,13 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['mission:questNewbie:edit']"
+            v-hasPermi="['mission:questNewbie:settings']"
             icon="Edit"
             plain
             size="small"
             type="primary"
-            @click="handleNewbieSettings"
-        >Newcomer Welfare Settings
+            @click="handleSettings"
+        >Newbie Settings
         </el-button>
       </el-col>
       <right-toolbar v-model="showSearch" @queryTable="getList"/>
@@ -120,11 +120,12 @@
     />
 
     <!--Add Newbie Benefits-->
-    <el-dialog v-model="open" :close-on-click-modal="false"  :title="title" append-to-body style="padding-bottom: 20px"
+    <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="700px">
-      <el-form ref="newbieBenefitsRef" :model="form" :rules="rules" label-width="200px">
-        <el-form-item label="任务分类" prop="taskConditions" style="min-width: 290px">
-          <el-input v-model="form.taskConditions" placeholder="请输入奖励金额" @change="handleComposeMission" :disabled="editTaskConditions"/>
+      <el-form ref="newbieBenefitsRef" :model="form" :rules="rules" label-width="300px">
+        <el-form-item label="任务分类" prop="taskConditions">
+          <el-input v-model="form.taskConditions" placeholder="请输入奖励金额" @change="handleComposeMission"
+                    :disabled="editTaskConditions"/>
         </el-form-item>
         <el-form-item label="reward奖励金额" prop="rewardAmount">
           <el-input type="number" v-model="form.reward" placeholder="请输入奖励金额"
@@ -134,7 +135,7 @@
           <el-input type="number" v-model="form.rewardActivity" placeholder="请输入奖励活动"/>
         </el-form-item>
 
-        <el-form-item label="活跃" prop="status" style="min-width: 290px">
+        <el-form-item label="活跃" prop="status">
           <template #default="scope">
             <el-switch
                 v-model="form.status"
@@ -143,7 +144,7 @@
             ></el-switch>
           </template>
         </el-form-item>
-        <el-form-item label="活跃" prop="tipBubble" style="min-width: 290px">
+        <el-form-item label="活跃" prop="tipBubble">
           <template #default="scope">
             <el-switch
                 v-model="form.tipBubble"
@@ -164,148 +165,148 @@
       </template>
     </el-dialog>
 
+    <el-dialog v-model="settingsOpen" v-loading="settingsLoading" :close-on-click-modal="false"
+               :title="title"
+               style="padding-bottom: 30px; padding-left: 30px"
+               width="1200px">
 
-    <!--Modify Newbie Settings-->
-    <el-dialog v-model="settingsOpen" :close-on-click-modal="false" :title="title" append-to-body
-               style="padding-bottom: 20px"
-               width="1000px">
-      <el-form :inline="true"  ref="newbieSettingsRef" :model="settingsForm" label-width="100px">
-        <el-form-item label="Select Currency" label-width="150px">
-          <el-checkbox
-              label="Select All"
-              v-model="data.newcomerSettingsCurrency"
-              @change="handleCheckAllChange"/>
-          <div/>
-          <el-checkbox v-model="data.currencyCheck" :label="'BRL'"/>
-        </el-form-item>
-        <div>
-          <el-form-item label="Rule Description" label-width="150px">
-            <div class="mb-2 flex items-center text-sm">
-              <el-radio-group v-model="data.newcomerSettings.rules" class="ml-4">
-                <el-radio :label="0" size="large">Professional Translation</el-radio>
-                <el-radio :label="1" size="large">Customized Translation</el-radio>
+      <el-form :inline="true" ref="settingsRef" :rules="settingsRules" form="settingsForm" :model="settingsForm"
+               label-width="250px">
+        <el-row>
+          <el-col>
+            <el-form-item label="Currency" prop="currency">
+              <el-checkbox
+                  v-model="selectAll"
+                  @change="handleCheckAllSettingsChange"
+              ><b>Check all</b>
+              </el-checkbox>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label=" " prop="checkedCurrency">
+              <el-checkbox-group
+                  v-model="checkedCurrency"
+                  @change="handleCheckedSettingsCurrencyChange">
+                <el-checkbox v-for="currency in currencyCollection" :key="currency.id" :label="currency">
+                  {{ currency.questSettingsValue }}
+                </el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+          </el-col>
+
+          <el-col>
+            <el-form-item label="Rule Description">
+              <el-input type="textarea" rows="5" cols="100" v-model="settingsForm.ruleDescriptionTranslated"
+                        prop="ruleDescriptionTranslated"/>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label="Collection Method">
+              <el-radio-group v-model="settingsForm.collectionMethodSwitch" class="ml-4">
+                <el-radio :label="0" size="large">Direct to Account</el-radio>
+                <el-radio :label="1" size="large">Manual Collection</el-radio>
               </el-radio-group>
-              <el-input v-model="data.newcomerSettings.ruleDescription" :disabled="data.newcomerSettings.rules === 0"/>
-            </div>
-          </el-form-item>
-        </div>
-        <el-form-item label="Collection Method" label-width="150px">
-          <div class="mb-2 flex items-center text-sm">
-            <el-radio-group v-model="data.newcomerSettings.collectionMethod" class="ml-4">
-              <el-radio :label="0" size="large">Direct to Account</el-radio>
-              <el-radio :label="1" size="large">Manual Collection</el-radio>
-            </el-radio-group>
-          </div>
-        </el-form-item>
-        <div>
-          <el-form-item label="Event Collection Entrance" label-width="150px">
-            <el-checkbox-group label="Select Currency" v-model="data.newcomerSettings.selectedEvents">
-              <div>
-                <el-checkbox label="PC">PC</el-checkbox>
-                <el-checkbox label="H5">H5</el-checkbox>
-              </div>
-              <el-checkbox label="Fingerprint">
-                Each browser fingerprint is limited to 1 redemption
-              </el-checkbox>
-              <div>
-                <el-checkbox label="ANDROID">
-                  Android
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label="Event Collection Entrance" prop="eventCollection">
+              <el-checkbox-group disabled
+                                 v-model="checkedEventCollection">
+                <el-checkbox v-for="ec in eventCollection" :key="ec.id" :label="ec">
+                  {{ ec.questSettingsValue }}
                 </el-checkbox>
-                <el-checkbox label="IOS">
-                  IOS
+              </el-checkbox-group>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label="More Collection Restrictions">
+              <el-checkbox-group
+                  v-model="checkedCollectionRestriction">
+                <el-checkbox v-for="cc in collectionRestriction" :key="cc.id" :label="cc">
+                  {{ cc.questSettingsValue }}
                 </el-checkbox>
-              </div>
-              <el-checkbox label="Device">
-                Each login device number can only be claimed once"
-              </el-checkbox>
-            </el-checkbox-group>
-          </el-form-item>
-        </div>
-        <el-form-item label="More Collection Restrictions" label-width="150px">
-          <el-checkbox-group label="Select Collection" v-model="data.newcomerSettings.selectedCollection">
-            <div>
-              <el-checkbox label="Registered">Only registered device number can be collected</el-checkbox>
-              <el-checkbox label="Payment">Payment method phase been bound</el-checkbox>
-            </div>
-              <el-checkbox label="Limited">Each login IP number is limited to 1 claim</el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-        <div>
-          <el-form-item label="Audit Multiple" label-width="150px">
-            <div class="mb-2 flex items-center text-sm">
+              </el-checkbox-group>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label="Audit Multiple">
               <el-input
                   class="w-50 m-2"
-                  v-model="data.newcomerSettings.multiplier"
+                  v-model="settingsForm.auditMultiplier"
+                  prop="auditMultiplier"
                   size="large"
                   placeholder="Please Input"
-                  @input="handleInput"/>
-            </div>
-          </el-form-item>
-        </div>
-        <el-form-item label="Audit Restricted Platform" label-width="150px">
-          <div class="mb-2 flex items-center text-sm">
-            <el-radio-group v-model="data.newcomerSettings.auditStatus " class="ml-4">
-              <el-radio :label="0" size="large">Not Limited</el-radio>
-              <el-radio :label="1" size="large">Only for the following checked platforms</el-radio>
-            </el-radio-group>
-            <el-tabs type="border-card" :class="{ hidden: data.newcomerSettings.auditStatus === 0 }">
-              <el-tab-pane v-for="tab in data.auditRestrictedTabs" :key="tab.gameTypeName" :label="tab.gameTypeName">
-                <el-checkbox-group v-model="tab.selectedCheckboxes">
-                  <el-checkbox v-for="plat in tab.gamePlatformList"
-                               :key="plat.status"
-                               :checked="plat.status === 1"
-                               :label="plat.gamePlatformName"
-                               size="large"
-                               style="width: auto">
-                    {{ plat.gamePlatformName }}
-                  </el-checkbox>
-                </el-checkbox-group>
-              </el-tab-pane>
-            </el-tabs>
-          </div>
-        </el-form-item>
-        <div>
-          <el-form-item label="Task Duration" label-width="150px">
-            <div class="mb-2 flex items-center text-sm">
-              <el-radio-group v-model="data.newcomerSettings.duration" class="ml-4">
+                  type="number"/>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label="Audit Restricted Platform">
+              <el-radio-group v-model="settingsForm.auditRestrictedPlatformsSwitch" class="ml-4">
+                <el-radio :label="0" size="large">Not Limited</el-radio>
+                <el-radio :label="1" size="large">Only for the following checked platforms</el-radio>
+              </el-radio-group>
+
+              <el-tabs type="border-card" v-if="settingsForm.auditRestrictedPlatformsSwitch === 1">
+                <el-tab-pane v-for="tab in data.auditRestrictedTabs" :key="tab.gameTypeName" :label="tab.gameTypeName">
+                  <el-checkbox-group v-model="tab.selectedCheckboxes">
+                    <el-checkbox v-for="plat in tab.gamePlatformList"
+                                 :key="plat.status"
+                                 :checked="plat.status === 1"
+                                 :label="plat.gamePlatformName"
+                                 size="large"
+                                 style="width: auto">
+                      {{ plat.gamePlatformName }}
+                    </el-checkbox>
+                  </el-checkbox-group>
+                </el-tab-pane>
+              </el-tabs>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label="Task Duration">
+              <el-radio-group v-model="settingsForm.taskDurationSwitch">
                 <el-radio :label="0" size="large">Long</el-radio>
                 <el-radio :label="1" size="large">Limited Time</el-radio>
-                <el-input
-                    v-model="limitedTimeInput"
-                    class="w-50 m-2"
-                    :disabled=" data.newcomerSettings.duration === 0 "
-                    size="large"
-                    placeholder="Please Input"
-                    @input="handleInput"
-                />
               </el-radio-group>
-            </div>
-          </el-form-item>
-        </div>
-        <el-form-item label="Participating Members" label-width="150px">
-          <el-checkbox
-              label="Select All"
-              v-model="data.selectAll"
-              @change="handleCheckAllChange"/>
-          <el-checkbox-group v-model="data.participants" label="Select Currency">
-            <div>
-              <el-checkbox v-for="i in activity_quest_participating_members"
-                           :label="i.label"
-                           size="large"
-                           style="width: auto">
-                {{ i.label }}
-              </el-checkbox>
-            </div>
-          </el-checkbox-group>
-        </el-form-item>
-        <div>
-          <el-form-item label="Withdrawal limit reminder" label-width="150px">
-            <el-switch v-model="data.newcomerSettings.limitReminder"/>
-          </el-form-item>
-        </div>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item prop="taskDuration" label=" ">
+              <el-input
+                  v-model="settingsForm.taskDuration"
+                  class="w-50 m-2"
+                  :disabled="settingsForm.taskDurationSwitch === 0"
+                  size="large"
+                  placeholder="Please Input Task Duration(days)"
+                  type="number"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label="Participating Members" disabled="true">
+              <el-checkbox disabled
+                           label="Select All"
+                           v-model="data.selectAll"
+                           @change="handleCheckAllSettingsChange"/>
+              <el-checkbox-group v-model="data.participants" disabled>
+                <el-checkbox v-for="i in activity_quest_participating_members"
+                             :label="i.label"
+                             size="large"
+                             style="width: auto">
+                  {{ i.label }}
+                </el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label="Withdrawal limit reminder">
+              <el-switch v-model="settingsForm.withdrawalLimitReminderSwitch"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleNewcomerUpdate">编辑</el-button>
+        <el-button type="primary" @click="submitSettings">编辑</el-button>
         <el-button @click="settingsOpen=false">取 消</el-button>
       </div>
     </el-dialog>
@@ -313,48 +314,36 @@
 </template>
 
 <script name="newbieBenefits" setup>
-//region
 import {
   newbieListData,
   deleteNewbie,
   addQuestNewbie,
   updateQuestNewbie,
   changeNewbieStatus,
-  updateNewbieSettings,
-  newbieSettingsDataList,
-  newbieSettingsOtherDataList,
-  getGamePlatformGameTypeList, changeNewbiesTipBubble, getQuestNewbie
+  getGamePlatformGameTypeList,
+  changeNewbiesTipBubble,
+  getQuestNewbie,
+  getSettings,
+  updateSettings
 } from "@/api/activity/newbieBenefits";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {getToken} from "@/utils/auth";
-import {getQuestActivitySettings} from "@/api/activity/activityQuest";
-import {getQuestRepeatList} from "@/api/activity/questRepeat";
+import {useRouter} from "vue-router";
 
 const {proxy} = getCurrentInstance();
-const {
-  activity_quest_participating_members
-//   , activity_quest_currency
-//   , activity_quest_task_classification
-//   , activity_quest_mission_objectives
-//   , pay_online_recharge_category
-} = proxy.useDict('activity_quest_participating_members'
-//     , 'activity_quest_currency'
-//     , 'activity_quest_task_classification'
-//     , 'activity_quest_mission_objectives'
-//     , 'pay_online_recharge_category'
-    );
+const {activity_quest_participating_members} = proxy.useDict('activity_quest_participating_members');
 
-
+const settingsId = ref(1);
 const router = useRouter();
 
 const newbieBenefitsList = ref([]);
+
 const ids = ref([]);
 const id = ref('');
 const status = ref('');
 const mission = ref('')
 const updateTime = ref('');
 const updateBy = ref('');
-const description = ref('');
 const title = ref('');
 const total = ref(0);
 const open = ref(false);
@@ -364,40 +353,19 @@ const showSearch = ref(true);
 const single = ref(true);
 const multiple = ref(true);
 const loading = ref(true);
+const settingsLoading = ref(true);
 
-const currency = ref([]);
-const limitedTimeInput = ref('');
-const collectionButton = ref('');
-const rulesOption = ref('1');
-//endregion
+const currencyCollection = ref([]);
+const checkedCurrency = ref([]);
+const eventCollection = ref([]);
+const checkedEventCollection = ref([]);
+const collectionRestriction = ref([]);
+const checkedCollectionRestriction = ref([]);
+
+const settingsForm = ref([]);
+const selectAll = ref(true);
 const data = reactive({
-  newbieSettingsOtherList: [],
-  newbieSettingsList: [],
-  auditRestrictedTabs: [],
-  newcomerSettingsCurrency: false,
-  currencyCheck: [],
-
-  newcomerSettings: {
-    currency: '',
-    rules: '1',
-    ruleDescription: '',
-    collectionMethod: '',
-    pc: null,
-    h5: null,
-    browserFingerprint: null,
-    android: null,
-    ios: null,
-    deviceId: null,
-    collectDevice: null,
-    collectPay: null,
-    collectLogin: null,
-    duration: null,
-    multiplier: null,
-    limitReminder: null,
-    selectedEvents:[],
-    selectedCollection:[],
-  },
-
+  auditRestrictedTabs: [], //TODO: to delete
   /** 查询参数 query params*/
   queryParams: {
     pageNum: 1,
@@ -408,60 +376,43 @@ const data = reactive({
     tipBubbleSwitch: null,
     status: null,
   },
-  settingsForm: {
-    questSettingsId: 1,
+
+  settingsRules: {
+    ruleDescriptionTranslated:
+        [
+          {required: true, message: 'Description Should not be empty', trigger: 'blur'}
+        ],
+    auditMultiplier:
+        [
+          {required: true, message: 'Audit Multiplier Should not be empty', trigger: 'blur'}
+        ],
+    taskDuration:
+        [
+          {required: true, message: 'Task Duration Should not be empty', trigger: 'blur'}
+        ]
   },
-  /** 表单参数 form parameter*/
+
+  rules: {
+    cumulativeRechargeAmount:
+        [
+          {required: true, message: '不能为空', trigger: 'blur'}
+        ],
+    rewardAmount:
+        [
+          {required: true, message: '不能为空', trigger: 'blur'}
+        ],
+    rewardActivity:
+        [
+          {required: true, message: '不能为空', trigger: 'blur'}
+        ]
+  },
+
   form: {},
   headers: {
     Authorization: 'Bearer ' + getToken()
   },
-
 });
-const {queryParams, form, rules, headers, settingsForm} = toRefs(data);
-
-function handleCheckAllChange() {
-  if (data.selectAll) {
-    data.participants = activity_quest_participating_members.value.map(kek => kek.label)
-  } else {
-    data.participants = [];
-  }
-  if (data.newcomerSettingsCurrency) {
-    data.currencyCheck = ['BRL']
-  } else {
-    data.currencyCheck = []
-  }
-}
-
-/*
-     CURRENCY: data.currencyCheck
-     DESCRIPTION: {
-                   radio: data.newcomerSettings.rules
-                   text: data.newcomerSettings.ruleDescription
-                   }
-     COLLECTION METHOD: data.newcomerSettings.collectionMethod
-     EVENT COLLECTION: data.newcomerSettings.pc
-                       data.newcomerSettings.h5
-                       data.newcomerSettings.browserFingerprint
-                       data.newcomerSettings.android
-                       data.newcomerSettings.ios
-                       data.newcomerSettings.deviceId
-     MORE COLLECTION: data.newcomerSettings.collectPay
-                      data.newcomerSettings.collectLogin
-                      data.newcomerSettings.collectDevice
-     AUDIT MULTIPLIER: data.newcomerSettings.multiplier
-     AUDIT RESTRICTED: JSON.stringify(data.auditRestrictedTabs)
-     TASK DURATION: data.newcomerSettings.duration
-     PARTICIPATING MEMBERS: data.participants
-     WITHDRAWAL: data.newcomerSettings.limitReminder
-
-*/
-
-function handleInput() {
-  data.newcomerSettings.multiplier = data.newcomerSettings.multiplier
-      .replace(/[^\d.]/g, '')
-      .replace(/(\.\d\d).+/g, '$1');
-}
+const {queryParams, form, settingsRules, rules, headers} = toRefs(data);
 
 function handleEffectChange(row) {
   let text = row.status === '1' ? '启用' : '停用'
@@ -505,7 +456,7 @@ function handleTipBubbleChange(row) {
 
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id);
-  single.value = selection.length != 1;
+  single.value = selection.length !== 1;
   multiple.value = !selection.length;
 }
 
@@ -521,69 +472,6 @@ function getList() {
     newbieBenefitsList.value = response.data;
     total.value = response.total;
     loading.value = false;
-  });
-}
-
-function getSettingsList() {
-  newbieSettingsDataList(settingsForm.value).then(response => {
-    data.newbieSettingsList = response.data;
-    let results = data.newbieSettingsList.find(k => k.ruleDescription === 'newbie')
-    data.newcomerSettings.rules = results.ruleDescriptionTranslationSwitch
-    data.newcomerSettings.ruleDescription = results.ruleDescriptionTranslated
-    data.newcomerSettings.collectionMethod = results.collectionMethodSwitch
-    collectionButton.value = results.collectionMethodSwitch
-    data.newcomerSettings.multiplier = results.auditMultiplier
-
-    //Task Duration
-    data.newcomerSettings.duration = results.taskDurationSwitch
-
-    //Withdrawal Limit Reminder
-    data.newcomerSettings.limitReminder = results.withdrawalLimitReminderSwitch === 1 ? true : false
-  });
-
-  newbieSettingsOtherDataList(settingsForm.value).then(response => {
-    data.newbieSettingsOtherList = response.data.filter(item => item.questSettingsId === 1);
-
-    //Currency
-    if( data.newbieSettingsOtherList.find(k => k.questSettingsValue === 'BRL').status === 1 ){
-      data.currencyCheck.push( 'BRL' )
-    }
-
-    //Event Collection
-    data.container = data.newbieSettingsOtherList.filter(k => k.questSettingsCode === 'EVENT_COLLECTION_ENTRANCE')
-    if( data.container.find(v => v.questSettingsValue === 'PC').status === 1 ) {
-      data.newcomerSettings.selectedEvents.push('PC')
-    }
-    if( data.container.find(v => v.questSettingsValue === 'H5').status === 1 ){
-      data.newcomerSettings.selectedEvents.push('H5')
-    }
-    if( data.container.find(v => v.questSettingsValue === 'BROWSER_FINGERPRINT').status === 1 ){
-      data.newcomerSettings.selectedEvents.push('Fingerprint')
-    }
-    if( data.container.find(v => v.questSettingsValue === 'ANDROID').status === 1 ) {
-      data.newcomerSettings.selectedEvents.push('ANDROID')
-    }
-    if( data.container.find(v => v.questSettingsValue === 'IOS').status === 1 ){
-      data.newcomerSettings.selectedEvents.push('IOS')
-    }
-    if( data.container.find(v => v.questSettingsValue === 'DEVICE_ID').status === 1 ){
-      data.newcomerSettings.selectedEvents.push('Device')
-    }
-
-    //Collection Restriction
-    data.container = data.newbieSettingsOtherList.filter(k => k.questSettingsCode === 'COLLECTION_RESTRICTION')
-    if( data.container.find(v => v.questSettingsValue === 'PAYMENT_METHOD_BOUND').status === 1 ){
-      data.newcomerSettings.selectedCollection.push('Payment')
-    }
-    if( data.container.find(v => v.questSettingsValue === 'IP_LOGIN_ONE_CLAIM_LIMIT').status === 1 ){
-      data.newcomerSettings.selectedCollection.push('Limited')
-    }
-    if( data.container.find(v => v.questSettingsValue === 'REGISTERED_DEVICE_NUMBER').status === 1 ){
-      data.newcomerSettings.selectedCollection.push('Registered')
-    }
-
-    //Audit Platforms
-    data.newcomerSettings.auditStatus = data.newbieSettingsOtherList.find(k => k.questSettingsCode === 'AUDIT_RESTRICTED_PLATFORM').status
   });
 }
 
@@ -624,7 +512,7 @@ function handleUpdate(row) {
     open.value = true
     title.value = '添加页脚'
   })
-  console.log( form.value + " @@@@@@")
+  console.log(form.value + " @@@@@@")
 }
 
 /** submit new data and handle insert data api*/
@@ -640,13 +528,13 @@ function submitForm() {
         tipBubbleSwitch: form.value.tipBubbleSwitch,
       }
       if (form.value.id != null) {
-        updateQuestNewbie(form.value).then(response => {
+        updateQuestNewbie(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
         })
       } else {
-        addQuestNewbie(params).then(response => {
+        addQuestNewbie(params).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
@@ -657,20 +545,33 @@ function submitForm() {
 }
 
 /** handle update data */
-function handleNewcomerUpdate() {
-  console.log(settingsForm)
-  proxy.$refs['newbieSettingsRef'].validate(async valid => {
+function submitSettings() {
+  proxy.$refs['settingsRef'].validate(async valid => {
 
-    settingsForm.value = {}
+    if (checkedCurrency.value.length <= 0) {
+      proxy.$modal.msgError('Currency is required')
+      return;
+    }
 
     if (valid) {
-      if (settingsForm.value != null) {
-        updateNewbieSettings(settingsForm.value).then(response => {
-          proxy.$modal.msgSuccess('修改成功')
-          settings.value = false
-          getList()
-        })
+      const params = {
+        id: 1,
+        ruleDescriptionTranslationSwitch: settingsForm.value.ruleDescriptionTranslationSwitch,
+        ruleDescription: settingsForm.value.ruleDescription,
+        ruleDescriptionTranslated: settingsForm.value.ruleDescriptionTranslated,
+        collectionMethodSwitch: settingsForm.value.collectionMethodSwitch,
+        taskDurationSwitch: settingsForm.value.taskDurationSwitch,
+        taskDuration: settingsForm.value.taskDuration,
+        withdrawalLimitReminderSwitch: settingsForm.value.withdrawalLimitReminderSwitch ? 1 : 0,
+        auditRestrictedPlatformsSwitch: settingsForm.value.auditRestrictedPlatformsSwitch,
+        auditMultiplier: settingsForm.value.auditMultiplier,
+        questSettingsOtherList: checkedCurrency.value.concat(checkedEventCollection.value).concat(checkedCollectionRestriction.value)
       }
+      updateSettings(params).then(() => {
+        proxy.$modal.msgSuccess('修改成功')
+        settingsOpen.value = false;
+        getList()
+      })
     }
   })
 }
@@ -690,10 +591,28 @@ function handleDelete(row) {
   })
 }
 
-function handleNewbieSettings() {
-  proxy.resetForm('newbieSettingsRef');
-  getSettingsList();
-  settingsOpen.value = true;
+function handleSettings() {
+  settingsLoading.value = true
+  proxy.resetForm('settingsRef');
+  getSettings(settingsId.value).then(response => {
+    settingsForm.value = response.data;
+    total.value = response.total;
+    settingsLoading.value = false;
+
+    populateCheckList(currencyCollection, checkedCurrency, 'CURRENCY');
+    populateCheckList(eventCollection, checkedEventCollection, 'EVENT_COLLECTION_ENTRANCE');
+    populateCheckList(collectionRestriction, checkedCollectionRestriction, 'COLLECTION_RESTRICTION');
+
+    handleCheckedSettingsCurrencyChange();
+    settingsOpen.value = true;
+  });
+}
+
+function populateCheckList(collection, checkedList, key) {
+  collection.value = settingsForm.value.questSettingsOtherList
+      .filter(q => q.questSettingsCode === key)
+  checkedList.value = settingsForm.value.questSettingsOtherList
+      .filter(k => k.questSettingsCode === key && k.status === 1)
 }
 
 function handleGamePlatformGameTypeList() {
@@ -703,17 +622,22 @@ function handleGamePlatformGameTypeList() {
 }
 
 function handleComposeMission() {
-  if (!isNullOrEmpty(form.value.taskConditions) && !isNullOrEmpty(form.value.reward)) {
-    mission.value = form.value.taskConditions + ", 您可以收到" + form.value.reward;
-  } else {
-    mission.value = "";
-  }
+  mission.value = !isNullOrEmpty(form.value.taskConditions) && !isNullOrEmpty(form.value.reward)
+      ? form.value.taskConditions + ", 您可以收到" + form.value.reward
+      : "";
 }
 
 function isNullOrEmpty(value) {
   return value === null || value.trim() === '';
 }
 
+function handleCheckAllSettingsChange() {
+  checkedCurrency.value = selectAll.value ? currencyCollection.value : [];
+}
+
+function handleCheckedSettingsCurrencyChange() {
+  selectAll.value = checkedCurrency.value.length === currencyCollection.value.length;
+}
 
 handleGamePlatformGameTypeList();
 getList();
@@ -721,7 +645,4 @@ getList();
 </script>
 
 <style>
-.hidden {
-  display: none;
-}
 </style>

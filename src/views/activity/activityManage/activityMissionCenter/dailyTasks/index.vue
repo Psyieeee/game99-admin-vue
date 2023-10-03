@@ -31,7 +31,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['mission:questRepeat:delete']"
+            v-hasPermi="['mission:questRepeat:remove']"
             :disabled="multiple"
             icon="Delete"
             plain
@@ -39,6 +39,17 @@
             type="danger"
             @click="handleDelete"
         >删除
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+            v-hasPermi="['mission:questNewbie:settings']"
+            icon="Edit"
+            plain
+            size="small"
+            type="primary"
+            @click="handleSettings"
+        >Daily Task Settings
         </el-button>
       </el-col>
       <right-toolbar v-model="showSearch" @queryTable="getList"></right-toolbar>
@@ -81,7 +92,7 @@
               @click="handleUpdate(scope.row)">修改
           </el-button>
           <el-button
-              v-hasPermi="['mission:questRepeat:delete']"
+              v-hasPermi="['mission:questRepeat:remove']"
               icon="Delete" link
               size="small"
               style="color: #e05e5e"
@@ -133,7 +144,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="Mission Objectives" prop="missionObjectives" style="min-width: 290px">
-          <el-select v-model="form.missionObjectives" >
+          <el-select v-model="form.missionObjectives">
             <el-option
                 v-for="dict in activity_quest_mission_objectives"
                 :key="dict.value"
@@ -153,7 +164,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <div v-if="form.missionObjectives != '累计充值'">
+        <div v-if="form.missionObjectives !== '累计充值'">
           <el-form-item label="Game Type" prop="gameType" style="min-width: 290px">
             <el-select v-model="form.gameType" @change="handleGameTypeChange">
               <el-option
@@ -219,6 +230,104 @@
       </template>
     </el-dialog>
 
+
+    <el-dialog v-model="settingsOpen" v-loading="settingsLoading" :close-on-click-modal="false"
+               :title="title"
+               style="padding-bottom: 30px; padding-left: 30px"
+               width="1200px">
+
+      <el-form :inline="true" ref="settingsRef" :rules="settingsRules" form="settingsForm" :model="settingsForm"
+               label-width="250px">
+        <el-row>
+          <el-col>
+            <el-form-item label="Rule Description">
+              <el-input type="textarea" rows="5" cols="100" v-model="settingsForm.ruleDescriptionTranslated"
+                        prop="ruleDescriptionTranslated"/>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label="Participating Members" disabled="true">
+              <el-checkbox disabled
+                           label="Select All"
+                           v-model="data.selectAll"
+                           @change="handleCheckAllSettingsChange"/>
+              <el-checkbox-group v-model="data.participants" disabled>
+                <el-checkbox v-for="i in activity_quest_participating_members"
+                             :label="i.label"
+                             size="large"
+                             style="width: auto">
+                  {{ i.label }}
+                </el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label="Event Collection Entrance" prop="eventCollection">
+              <el-checkbox-group disabled
+                                 v-model="checkedEventCollection">
+                <el-checkbox v-for="ec in eventCollection" :key="ec.id" :label="ec">
+                  {{ ec.questSettingsValue }}
+                </el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label="More Collection Restrictions">
+              <el-checkbox-group
+                  v-model="checkedCollectionRestriction">
+                <el-checkbox v-for="cc in collectionRestriction" :key="cc.id" :label="cc">
+                  {{ cc.questSettingsValue }}
+                </el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label="Homepage pop-up prompt">
+              <el-switch v-model="settingsForm.homePagePromptSwitch"/>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label="Audit Multiple">
+              <el-input
+                  class="w-50 m-2"
+                  v-model="settingsForm.auditMultiplier"
+                  prop="auditMultiplier"
+                  size="large"
+                  placeholder="Please Input"
+                  type="number"/>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label="Audit Restricted Platform">
+              <el-radio-group v-model="settingsForm.auditRestrictedPlatformsSwitch" class="ml-4">
+                <el-radio :label="0" size="large">Not Limited</el-radio>
+                <el-radio :label="1" size="large">Only for the following checked platforms</el-radio>
+              </el-radio-group>
+
+              <el-tabs type="border-card" v-if="settingsForm.auditRestrictedPlatformsSwitch === 1">
+                <el-tab-pane v-for="tab in data.auditRestrictedTabs" :key="tab.gameTypeName" :label="tab.gameTypeName">
+                  <el-checkbox-group v-model="tab.selectedCheckboxes">
+                    <el-checkbox v-for="plat in tab.gamePlatformList"
+                                 :key="plat.status"
+                                 :checked="plat.status === 1"
+                                 :label="plat.gamePlatformName"
+                                 size="large"
+                                 style="width: auto">
+                      {{ plat.gamePlatformName }}
+                    </el-checkbox>
+                  </el-checkbox-group>
+                </el-tab-pane>
+              </el-tabs>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitSettings">编辑</el-button>
+        <el-button @click="settingsOpen=false">取 消</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -230,18 +339,24 @@ import {
   updateQuestRepeat,
   addQuestRepeat,
   deleteQuestRepeat,
-  changeQuestRepeatStatus, getPlatformList, gameInfoList
+  changeQuestRepeatStatus,
+  getPlatformList,
+  gameInfoList,
+  getSettings,
+  updateSettings
 } from "@/api/activity/questRepeat";
 
-import {computed, getCurrentInstance, reactive, ref, toRefs} from "vue";
+import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {getToken} from "@/utils/auth";
 
 const router = useRouter();
 import {useRouter} from "vue-router";
 import {listAllType} from "@/api/game/type";
+import {getGamePlatformGameTypeList} from "@/api/activity/newbieBenefits";
 
 const {proxy} = getCurrentInstance();
 
+const {activity_quest_participating_members} = proxy.useDict('activity_quest_participating_members');
 
 const {
   activity_quest_currency
@@ -253,6 +368,7 @@ const {
     , 'activity_quest_task_classification'
     , 'activity_quest_mission_objectives'
     , 'pay_online_recharge_category');
+
 const checkedCurrency = ref([]);
 const selectAll = ref(true);
 const platformTypeList = ref([])
@@ -271,10 +387,22 @@ const updateBy = ref('');
 const title = ref('');
 const total = ref(0);
 const open = ref(false);
+const settingsOpen = ref(false);
 const showSearch = ref(true);
 const single = ref(true);
 const multiple = ref(true);
 const loading = ref(true);
+const settingsLoading = ref(true);
+const settingsForm = ref([]);
+
+// const currencyCollection = ref([]);
+// const checkedCurrency = ref([]);
+const settingsId = ref(2);
+const eventCollection = ref([]);
+const checkedEventCollection = ref([]);
+const collectionRestriction = ref([]);
+const checkedCollectionRestriction = ref([]);
+
 
 const data = reactive({
 
@@ -287,6 +415,21 @@ const data = reactive({
         effect: null,
         taskCode: null,
         tipBubbleSwitch: null
+      },
+
+      settingsRules: {
+        ruleDescriptionTranslated:
+            [
+              {required: true, message: 'Description Should not be empty', trigger: 'blur'}
+            ],
+        auditMultiplier:
+            [
+              {required: true, message: 'Audit Multiplier Should not be empty', trigger: 'blur'}
+            ],
+        taskDuration:
+            [
+              {required: true, message: 'Task Duration Should not be empty', trigger: 'blur'}
+            ]
       },
 
       rules: {
@@ -338,7 +481,7 @@ function handleEffectChange(row) {
 
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id);
-  single.value = selection.length != 1;
+  single.value = selection.length !== 1;
   multiple.value = !selection.length;
 }
 
@@ -413,9 +556,7 @@ function submitForm() {
         rewardActivity: form.value.rewardActivity,
         status: form.value.status,
       }
-      console.log("1121 " + form.value.missionObjectives)
-
-      if (form.value.missionObjectives == '累计充值') {
+      if (form.value.missionObjectives === '累计充值') {
         console.log("aa " + form.value.accumulatedRechargeSource.map((item) => item.label).join(','))
         params = {
           accumulatedRechargeSource: form.value.accumulatedRechargeSource.map((item) => item.label).join(','),
@@ -498,20 +639,73 @@ function handleDelete(row) {
   })
 }
 
+function handleSettings() {
+  settingsLoading.value = true
+  proxy.resetForm('settingsRef');
+  getSettings(settingsId.value).then(response => {
+    settingsForm.value = response.data;
+    total.value = response.total;
+    settingsLoading.value = false;
+
+    // populateCheckList(currencyCollection, checkedCurrency, 'CURRENCY');
+    populateCheckList(eventCollection, checkedEventCollection, 'EVENT_COLLECTION_ENTRANCE');
+    populateCheckList(collectionRestriction, checkedCollectionRestriction, 'COLLECTION_RESTRICTION');
+
+    // handleCheckedSettingsCurrencyChange();
+    settingsOpen.value = true;
+  });
+}
+
+function populateCheckList(collection, checkedList, key) {
+  collection.value = settingsForm.value.questSettingsOtherList
+      .filter(q => q.questSettingsCode === key)
+  checkedList.value = settingsForm.value.questSettingsOtherList
+      .filter(k => k.questSettingsCode === key && k.status === 1)
+}
+
+function handleGamePlatformGameTypeList() {
+  getGamePlatformGameTypeList().then(res => {
+    data.auditRestrictedTabs = res.data
+  })
+}
+
+/** handle update data */
+function submitSettings() {
+  proxy.$refs['settingsRef'].validate(async valid => {
+    if (valid) {
+      const params = {
+        id: settingsId.value,
+        ruleDescriptionTranslationSwitch: settingsForm.value.ruleDescriptionTranslationSwitch,
+        ruleDescription: settingsForm.value.ruleDescription,
+        ruleDescriptionTranslated: settingsForm.value.ruleDescriptionTranslated,
+        auditRestrictedPlatformsSwitch: settingsForm.value.auditRestrictedPlatformsSwitch,
+        auditRestrictedPlatformsJson: settingsForm.value.auditRestrictedPlatformsJson,
+        auditMultiplier: settingsForm.value.auditMultiplier,
+        questSettingsOtherList: checkedEventCollection.value.concat(checkedCollectionRestriction.value)
+      }
+      updateSettings(params).then(() => {
+        proxy.$modal.msgSuccess('修改成功')
+        settingsOpen.value = false;
+        getList()
+      })
+    }
+  })
+}
+
+function handleCheckAllSettingsChange() {
+  checkedCurrency.value = selectAll.value ? currencyCollection.value : [];
+}
+
+function handleCheckedSettingsCurrencyChange() {
+  selectAll.value = checkedCurrency.value.length === currencyCollection.value.length;
+}
+
 function handleCheckAllChange() {
-  if (selectAll.value) {
-    checkedCurrency.value = activity_quest_currency.value.map(kek => kek.label)
-  } else {
-    checkedCurrency.value = [];
-  }
+  checkedCurrency.value = selectAll.value ? activity_quest_currency.value.map(kek => kek.label) : [];
 }
 
 function handleCheckedCurrencyChange() {
-  if (checkedCurrency.value.length === activity_quest_currency.value.length) {
-    selectAll.value = true;
-  } else {
-    selectAll.value = false;
-  }
+  selectAll.value = checkedCurrency.value.length === activity_quest_currency.value.length;
 }
 
 function handleComposeMission() {
@@ -542,9 +736,10 @@ function getGameTypeList() {
       name: "All",
       icon: ""
     };
-    gameTypeList.value = [allType, ...res.data ];
+    gameTypeList.value = [allType, ...res.data];
   })
 }
+
 function getGamePlatformList() {
   const param = {
     id: form.gameType
@@ -555,9 +750,10 @@ function getGamePlatformList() {
       name: "All",
       icon: ""
     };
-    platformTypeList.value = [allPlatform, ...res.data ];
+    platformTypeList.value = [allPlatform, ...res.data];
   })
 }
+
 function getGameList() {
   const param = {
     id: form.gameType,
@@ -569,7 +765,7 @@ function getGameList() {
       name: "All",
       icon: ""
     };
-    gameList.value = [allGame, ...res.data ];
+    gameList.value = [allGame, ...res.data];
   })
 }
 
