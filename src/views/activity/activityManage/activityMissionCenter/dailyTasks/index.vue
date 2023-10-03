@@ -306,20 +306,22 @@
                 <el-radio :label="1" size="large">Only for the following checked platforms</el-radio>
               </el-radio-group>
 
-              <el-tabs type="border-card" v-if="settingsForm.auditRestrictedPlatformsSwitch === 1">
-                <el-tab-pane v-for="tab in data.auditRestrictedTabs" :key="tab.gameTypeName" :label="tab.gameTypeName">
-                  <el-checkbox-group v-model="tab.selectedCheckboxes">
-                    <el-checkbox v-for="plat in tab.gamePlatformList"
-                                 :key="plat.status"
-                                 :checked="plat.status === 1"
-                                 :label="plat.gamePlatformName"
-                                 size="large"
-                                 style="width: auto">
-                      {{ plat.gamePlatformName }}
-                    </el-checkbox>
-                  </el-checkbox-group>
-                </el-tab-pane>
-              </el-tabs>
+              <el-col>
+                <el-tabs type="border-card" v-if="settingsForm.auditRestrictedPlatformsSwitch === 1">
+                  <el-tab-pane v-for="tab in data.auditRestrictedTabs" :key="tab.gameType" :label="tab.gameType">
+                    <el-checkbox-group v-model="tab.selectedCheckboxes">
+                      <el-checkbox v-for="plat in tab.platforms"
+                                   :key="plat.status"
+                                   :checked="plat.status === 1"
+                                   :label="plat.platform"
+                                   size="large"
+                                   style="width: auto">
+                        {{ plat.platform }}
+                      </el-checkbox>
+                    </el-checkbox-group>
+                  </el-tab-pane>
+                </el-tabs>
+              </el-col>
             </el-form-item>
           </el-col>
         </el-row>
@@ -345,14 +347,14 @@ import {
   getPlatformList,
   gameInfoList,
   getSettings,
-  updateSettings
+  updateSettings,
+  getGamePlatformGameTypeList
 } from "@/api/activity/questRepeat";
 
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {getToken} from "@/utils/auth";
 import {useRouter} from "vue-router";
 import {listAllType} from "@/api/game/type";
-import {getGamePlatformGameTypeList} from "@/api/activity/newbieBenefits";
 
 const router = useRouter();
 const {proxy} = getCurrentInstance();
@@ -450,8 +452,10 @@ const data = reactive({
       },
 
       /** 表单参数 form parameter*/
-      form: {}
-      ,
+      form: {},
+      auditParams: {
+        id:2,
+      },
 
       headers: {
         Authorization: 'Bearer ' + getToken()
@@ -460,6 +464,16 @@ const data = reactive({
     })
 ;
 const {queryParams, form, rules, headers, settingsRules} = toRefs(data);
+
+function handleGamePlatformGameTypeList() {
+  getGamePlatformGameTypeList(data.auditParams).then(res => {
+    data.auditRestrictedTabs = res.data
+    data.auditRestrictedTabs = JSON.parse( data.auditRestrictedTabs.map( m => m.auditRestrictedPlatformsJson ) )
+
+    data.auditRestrictedTabs = data.auditRestrictedTabs.auditRestrictedPlatform
+    console.log( JSON.stringify(data.auditRestrictedTabs) + " 23232" )
+  })
+}
 
 function handleEffectChange(row) {
   let text = row.tipBubbleSwitch === '1' ? '启用' : '停用'
@@ -665,12 +679,6 @@ function populateCheckList(collection, checkedList, key) {
       .filter(k => k.questSettingsCode === key && k.status === 1)
 }
 
-function handleGamePlatformGameTypeList() {
-  getGamePlatformGameTypeList().then(res => {
-    data.auditRestrictedTabs = res.data
-  })
-}
-
 /** handle update data */
 function submitSettings() {
   proxy.$refs['settingsRef'].validate(async valid => {
@@ -772,6 +780,7 @@ function getGameList() {
   })
 }
 
+handleGamePlatformGameTypeList();
 getGameTypeList();
 getGamePlatformList();
 getGameList();
