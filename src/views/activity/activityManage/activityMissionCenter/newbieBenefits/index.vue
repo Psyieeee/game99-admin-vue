@@ -241,21 +241,22 @@
           </el-col>
           <el-col>
             <el-form-item label="Audit Restricted Platform">
-              <el-radio-group v-model="settingsForm.auditRestrictedPlatformsSwitch" class="ml-4">
-                <el-radio :label="0" size="large">Not Limited</el-radio>
-                <el-radio :label="1" size="large">Only for the following checked platforms</el-radio>
-              </el-radio-group>
-
+              <el-col>
+                <el-radio-group v-model="settingsForm.auditRestrictedPlatformsSwitch" class="ml-4">
+                  <el-radio :label="0" size="large">Not Limited</el-radio>
+                  <el-radio :label="1" size="large">Only for the following checked platforms</el-radio>
+                </el-radio-group>
+              </el-col>
               <el-tabs type="border-card" v-if="settingsForm.auditRestrictedPlatformsSwitch === 1">
-                <el-tab-pane v-for="tab in data.auditRestrictedTabs" :key="tab.gameTypeName" :label="tab.gameTypeName">
+                <el-tab-pane v-for="tab in data.auditRestrictedTabs" :key="tab.gameType" :label="tab.gameType">
                   <el-checkbox-group v-model="tab.selectedCheckboxes">
-                    <el-checkbox v-for="plat in tab.gamePlatformList"
+                    <el-checkbox v-for="plat in tab.platforms"
                                  :key="plat.status"
                                  :checked="plat.status === 1"
-                                 :label="plat.gamePlatformName"
+                                 :label="plat.platform"
                                  size="large"
                                  style="width: auto">
-                      {{ plat.gamePlatformName }}
+                      {{ plat.platform }}
                     </el-checkbox>
                   </el-checkbox-group>
                 </el-tab-pane>
@@ -371,7 +372,9 @@ const selectAll = ref(true);
 const data = reactive({
   auditRestrictedTabs: [], //TODO: to delete
   /** 查询参数 query params*/
+
   queryParams: {
+    id:1,
     pageNum: 1,
     pageSize: 20,
     type: null,
@@ -417,6 +420,15 @@ const data = reactive({
   },
 });
 const {queryParams, form, settingsRules, rules, headers} = toRefs(data);
+
+function handleGamePlatformGameTypeList() {
+  getGamePlatformGameTypeList(data.queryParams).then(res => {
+    data.auditRestrictedTabs = res.data
+    data.auditRestrictedTabs = JSON.parse( data.auditRestrictedTabs.map( m => m.auditRestrictedPlatformsJson ) )
+    data.auditRestrictedTabs = data.auditRestrictedTabs.auditRestrictedPlatform
+    console.log( data.auditRestrictedTabs.auditRestrictedPlatform )
+  })
+}
 
 function handleEffectChange(row) {
   let text = row.status === '1' ? '启用' : '停用'
@@ -619,12 +631,6 @@ function populateCheckList(collection, checkedList, key) {
       .filter(k => k.questSettingsCode === key && k.status === 1)
 }
 
-function handleGamePlatformGameTypeList() {
-  getGamePlatformGameTypeList().then(res => {
-    data.auditRestrictedTabs = res.data
-  })
-}
-
 function handleComposeMission() {
   mission.value = !isNullOrEmpty(form.value.taskConditions) && !isNullOrEmpty(form.value.reward)
       ? form.value.taskConditions + ", 您可以收到" + form.value.reward
@@ -642,6 +648,7 @@ function handleCheckAllSettingsChange() {
 function handleCheckedSettingsCurrencyChange() {
   selectAll.value = checkedCurrency.value.length === currencyCollection.value.length;
 }
+
 
 handleGamePlatformGameTypeList();
 getList();

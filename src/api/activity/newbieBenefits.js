@@ -41,7 +41,7 @@ export function updateQuestNewbie(data) {
 
 export function getGamePlatformGameTypeList(query) {
     return request({
-        url: url.game99PlatformAdminWeb + "/questRepeat/getAllGameTypeAndPlatform",
+        url: url.game99PlatformAdminWeb + "/questNewbie/settingsList",
         method: 'get',
         params: query
     })
