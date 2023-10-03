@@ -16,6 +16,13 @@ export function getQuestNewbie(id) {
     })
 }
 
+export function getMemberTierList(query) {
+    return request({
+        url: url.game99PlatformAdminWeb + "/member/memberTier/list",
+        method: 'get'
+    })
+}
+
 export function deleteNewbie(mobile) {
     return request({
         url: url.game99PlatformAdminWeb + "/questNewbie/" + mobile,

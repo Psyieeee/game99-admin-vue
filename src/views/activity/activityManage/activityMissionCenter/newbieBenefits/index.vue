@@ -192,7 +192,6 @@
               </el-checkbox-group>
             </el-form-item>
           </el-col>
-
           <el-col>
             <el-form-item label="Rule Description">
               <el-input type="textarea" rows="5" cols="100" v-model="settingsForm.ruleDescriptionTranslated"
@@ -288,14 +287,18 @@
                            label="Select All"
                            v-model="data.selectAll"
                            @change="handleCheckAllSettingsChange"/>
-              <el-checkbox-group v-model="data.participants" disabled>
-                <el-checkbox v-for="i in activity_quest_participating_members"
-                             :label="i.label"
-                             size="large"
-                             style="width: auto">
-                  {{ i.label }}
-                </el-checkbox>
-              </el-checkbox-group>
+              <el-col>
+                <el-checkbox-group v-model="data.participants" disabled>
+                  <el-checkbox v-for="i in data.memberTierList"
+                               :label="i.levelName"
+                               :key="i.status"
+                               :checked="i.status === 1"
+                               size="large"
+                               style="width: auto">
+                    {{ i.levelName }}
+                  </el-checkbox>
+                </el-checkbox-group>
+              </el-col>
             </el-form-item>
           </el-col>
           <el-col>
@@ -327,7 +330,8 @@ import {
   changeNewbiesTipBubble,
   getQuestNewbie,
   getSettings,
-  updateSettings
+  updateSettings,
+  getMemberTierList
 } from "@/api/activity/newbieBenefits";
 
 import {
@@ -339,7 +343,6 @@ import {getToken} from "@/utils/auth";
 import {useRouter} from "vue-router";
 
 const {proxy} = getCurrentInstance();
-const {activity_quest_participating_members} = proxy.useDict('activity_quest_participating_members');
 
 const settingsId = ref(1);
 const router = useRouter();
@@ -363,6 +366,7 @@ const multiple = ref(true);
 const loading = ref(true);
 const settingsLoading = ref(true);
 
+const memberTier = ref([]);
 const currencyCollection = ref([]);
 const checkedCurrency = ref([]);
 const eventCollection = ref([]);
@@ -374,10 +378,10 @@ const settingsForm = ref([]);
 const selectAll = ref(true);
 const data = reactive({
   auditRestrictedTabs: [], //TODO: to delete
+  memberTierList: [],
   /** 查询参数 query params*/
 
   queryParams: {
-    id:1,
     pageNum: 1,
     pageSize: 20,
     type: null,
@@ -385,6 +389,10 @@ const data = reactive({
     taskCode: null,
     tipBubbleSwitch: null,
     status: null,
+  },
+
+  auditParams: {
+    id:1,
   },
 
   settingsRules: {
@@ -422,14 +430,20 @@ const data = reactive({
     Authorization: 'Bearer ' + getToken()
   },
 });
-const {queryParams, form, settingsRules, rules, headers} = toRefs(data);
+const {auditParams, queryParams, form, settingsRules, rules, headers} = toRefs(data);
+
+function handleMemberTierList() {
+  getMemberTierList(data.queryParams).then(res => {
+    data.memberTierList = res.data
+    console.log( data.memberTierList )
+  })
+}
 
 function handleGamePlatformGameTypeList() {
-  getGamePlatformGameTypeList(data.queryParams).then(res => {
+  getGamePlatformGameTypeList(data.auditParams).then(res => {
     data.auditRestrictedTabs = res.data
     data.auditRestrictedTabs = JSON.parse( data.auditRestrictedTabs.map( m => m.auditRestrictedPlatformsJson ) )
     data.auditRestrictedTabs = data.auditRestrictedTabs.auditRestrictedPlatform
-    console.log( data.auditRestrictedTabs.auditRestrictedPlatform )
   })
 }
 
@@ -652,8 +666,8 @@ function handleCheckedSettingsCurrencyChange() {
   selectAll.value = checkedCurrency.value.length === currencyCollection.value.length;
 }
 
-
-handleGamePlatformGameTypeList()
+handleMemberTierList();
+handleGamePlatformGameTypeList();
 getList();
 
 </script>

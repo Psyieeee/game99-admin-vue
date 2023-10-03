@@ -329,14 +329,18 @@
                            label="Select All"
                            v-model="data.selectAll"
                            @change="handleCheckAllSettingsChange"/>
-              <el-checkbox-group v-model="data.participants" disabled>
-                <el-checkbox v-for="i in activity_quest_participating_members"
-                             :label="i.label"
-                             size="large"
-                             style="width: auto">
-                  {{ i.label }}
-                </el-checkbox>
-              </el-checkbox-group>
+              <el-col>
+                <el-checkbox-group v-model="data.participants" disabled>
+                  <el-checkbox v-for="i in data.memberTierList"
+                               :label="i.levelName"
+                               :key="i.status"
+                               :checked="i.status === 1"
+                               size="large"
+                               style="width: auto">
+                    {{ i.levelName }}
+                  </el-checkbox>
+                </el-checkbox-group>
+              </el-col>
             </el-form-item>
           </el-col>
           <el-col>
@@ -406,6 +410,7 @@ import {getToken} from "@/utils/auth";
 const router = useRouter();
 import {useRouter} from "vue-router";
 import {listAllType} from "@/api/game/type";
+import {getMemberTierList} from "@/api/activity/newbieBenefits";
 
 const {proxy} = getCurrentInstance();
 
@@ -508,6 +513,13 @@ const data = reactive({
     })
 ;
 const {queryParams, form, rules, settingsRules, headers} = toRefs(data);
+
+function handleMemberTierList() {
+  getMemberTierList(data.queryParams).then(res => {
+    data.memberTierList = res.data
+    console.log( data.memberTierList )
+  })
+}
 
 function handleEffectChange(row) {
   let text = row.tipBubbleSwitch === '1' ? '启用' : '停用'
@@ -828,6 +840,7 @@ function getGameList() {
   })
 }
 
+handleMemberTierList();
 handleGamePlatformGameTypeList();
 getGameTypeList();
 getGamePlatformList();
