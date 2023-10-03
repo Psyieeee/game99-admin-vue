@@ -300,7 +300,11 @@
           </el-col>
           <el-col>
             <el-form-item label="Withdrawal limit reminder">
-              <el-switch v-model="settingsForm.withdrawalLimitReminderSwitch"/>
+              <el-switch
+                  v-model="settingsForm.withdrawalLimitReminderSwitch"
+                  :active-value="1"
+                  :inactive-value="0"
+              />
             </el-form-item>
           </el-col>
         </el-row>

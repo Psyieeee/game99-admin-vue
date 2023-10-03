@@ -31,7 +31,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['mission:questRepeat:delete']"
+            v-hasPermi="['mission:questRepeat:remove']"
             :disabled="multiple"
             icon="Delete"
             plain
@@ -39,6 +39,17 @@
             type="danger"
             @click="handleDelete"
         >删除
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+            v-hasPermi="['mission:questRepeat:settings']"
+            icon="Edit"
+            plain
+            size="small"
+            type="primary"
+            @click="handleSettings"
+        >Three day Task Settings
         </el-button>
       </el-col>
       <right-toolbar v-model="showSearch" @queryTable="getList"></right-toolbar>
@@ -131,7 +142,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="Mission Objectives" prop="missionObjectives" style="min-width: 290px">
-          <el-select v-model="form.missionObjectives" >
+          <el-select v-model="form.missionObjectives">
             <el-option
                 v-for="dict in activity_quest_mission_objectives"
                 :key="dict.value"
@@ -151,7 +162,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <div v-if="form.missionObjectives != '累计充值'">
+        <div v-if="form.missionObjectives !== '累计充值'">
           <el-form-item label="Game Type" prop="gameType" style="min-width: 290px">
             <el-select v-model="form.gameType" @change="handleGameTypeChange">
               <el-option
@@ -217,6 +228,150 @@
       </template>
     </el-dialog>
 
+    <el-dialog v-model="settingsOpen" v-loading="settingsLoading" :close-on-click-modal="false"
+               :title="title"
+               style="padding-bottom: 30px; padding-left: 30px"
+               width="1200px">
+
+      <el-form :inline="true" ref="settingsRef" :rules="settingsRules" form="settingsForm" :model="settingsForm"
+               label-width="250px">
+        <el-row>
+          <el-col>
+            <el-form-item label="Currency" prop="currency">
+              <el-checkbox
+                  v-model="selectAll"
+                  @change="handleCheckAllSettingsChange"
+              ><b>Check all</b>
+              </el-checkbox>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label=" " prop="checkedCurrency">
+              <el-checkbox-group
+                  v-model="checkedCurrency"
+                  @change="handleCheckedSettingsCurrencyChange">
+                <el-checkbox v-for="currency in currencyCollection" :key="currency.id" :label="currency">
+                  {{ currency.questSettingsValue }}
+                </el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label="Event Collection Entrance" prop="eventCollection">
+              <el-checkbox-group disabled
+                                 v-model="checkedEventCollection">
+                <el-checkbox v-for="ec in eventCollection" :key="ec.id" :label="ec">
+                  {{ ec.questSettingsValue }}
+                </el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label="More Collection Restrictions">
+              <el-checkbox-group
+                  v-model="checkedCollectionRestriction">
+                <el-checkbox v-for="cc in collectionRestriction" :key="cc.id" :label="cc">
+                  {{ cc.questSettingsValue }}
+                </el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label="Homepage pop-up prompt" prop="homePagePromptSwitch">
+              <el-switch
+                  v-model="settingsForm.homePagePromptSwitch"
+                  :active-value="1"
+                  :inactive-value="0"
+              ></el-switch>
+            </el-form-item>
+          </el-col>
+
+          <el-col>
+            <el-form-item label="Final Mystery Jackpot" prop="finalMysteryJackpotSwitch">
+              <el-switch
+                  v-model="settingsForm.finalMysteryJackpotSwitch"
+                  :active-value="1"
+                  :inactive-value="0"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label=" " >
+              <el-input :disabled="!settingsForm.finalMysteryJackpotSwitch"
+                  v-model="settingsForm.finalMysteryJackpotMin"
+                  prop="finalMysteryJackpotMin"
+                  placeholder="Please Input Min Jackpot"
+                  type="number" /> -
+              <el-input :disabled="!settingsForm.finalMysteryJackpotSwitch"
+                  v-model="settingsForm.finalMysteryJackpotMax"
+                  prop="finalMysteryJackpotMax"
+                  placeholder="Please Input Max Jackpot"
+                  type="number"/>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label="Rule Description">
+              <el-input type="textarea" rows="5" cols="100" v-model="settingsForm.ruleDescriptionTranslated"
+                        prop="ruleDescriptionTranslated"/>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label="Participating Members" disabled="true">
+              <el-checkbox disabled
+                           label="Select All"
+                           v-model="data.selectAll"
+                           @change="handleCheckAllSettingsChange"/>
+              <el-checkbox-group v-model="data.participants" disabled>
+                <el-checkbox v-for="i in activity_quest_participating_members"
+                             :label="i.label"
+                             size="large"
+                             style="width: auto">
+                  {{ i.label }}
+                </el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label="Audit Multiple">
+              <el-input
+                  class="w-50 m-2"
+                  v-model="settingsForm.auditMultiplier"
+                  prop="auditMultiplier"
+                  size="large"
+                  placeholder="Please Input"
+                  type="number"/>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item label="Audit Restricted Platform">
+              <el-radio-group v-model="settingsForm.auditRestrictedPlatformsSwitch" class="ml-4">
+                <el-radio :label="0" size="large">Not Limited</el-radio>
+                <el-radio :label="1" size="large">Only for the following checked platforms</el-radio>
+              </el-radio-group>
+
+              <el-tabs type="border-card" v-if="settingsForm.auditRestrictedPlatformsSwitch === 1">
+                <el-tab-pane v-for="tab in data.auditRestrictedTabs" :key="tab.gameTypeName" :label="tab.gameTypeName">
+                  <el-checkbox-group v-model="tab.selectedCheckboxes">
+                    <el-checkbox v-for="plat in tab.gamePlatformList"
+                                 :key="plat.status"
+                                 :checked="plat.status === 1"
+                                 :label="plat.gamePlatformName"
+                                 size="large"
+                                 style="width: auto">
+                      {{ plat.gamePlatformName }}
+                    </el-checkbox>
+                  </el-checkbox-group>
+                </el-tab-pane>
+              </el-tabs>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitSettings">编辑</el-button>
+        <el-button @click="settingsOpen=false">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -228,10 +383,14 @@ import {
   updateQuestRepeat,
   addQuestRepeat,
   deleteQuestRepeat,
-  changeQuestRepeatStatus, getPlatformList, gameInfoList
+  changeQuestRepeatStatus,
+  getPlatformList,
+  gameInfoList,
+  getSettings,
+  updateSettings
 } from "@/api/activity/questRepeat";
 
-import {computed, getCurrentInstance, reactive, ref, toRefs} from "vue";
+import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {getToken} from "@/utils/auth";
 
 const router = useRouter();
@@ -251,7 +410,6 @@ const {
     , 'activity_quest_task_classification'
     , 'activity_quest_mission_objectives'
     , 'pay_online_recharge_category');
-const checkedCurrency = ref([]);
 const selectAll = ref(true);
 const platformTypeList = ref([])
 const gameTypeList = ref([])
@@ -274,9 +432,19 @@ const single = ref(true);
 const multiple = ref(true);
 const loading = ref(true);
 
-const data = reactive({
+const settingsLoading = ref(true);
+const settingsForm = ref([]);
 
-      /** 查询参数 query params*/
+const currencyCollection = ref([]);
+const checkedCurrency = ref([]);
+const settingsOpen = ref(false);
+const settingsId = ref(4);
+const eventCollection = ref([]);
+const checkedEventCollection = ref([]);
+const collectionRestriction = ref([]);
+const checkedCollectionRestriction = ref([]);
+
+const data = reactive({
       queryParams: {
         questRepeatType: 3,
         pageNum: 1,
@@ -285,6 +453,21 @@ const data = reactive({
         effect: null,
         taskCode: null,
         tipBubbleSwitch: null
+      },
+
+      settingsRules: {
+        ruleDescriptionTranslated:
+            [
+              {required: true, message: 'Description Should not be empty', trigger: 'blur'}
+            ],
+        auditMultiplier:
+            [
+              {required: true, message: 'Audit Multiplier Should not be empty', trigger: 'blur'}
+            ],
+        taskDuration:
+            [
+              {required: true, message: 'Task Duration Should not be empty', trigger: 'blur'}
+            ]
       },
 
       rules: {
@@ -302,7 +485,6 @@ const data = reactive({
             ]
       },
 
-      /** 表单参数 form parameter*/
       form: {}
       ,
 
@@ -312,7 +494,7 @@ const data = reactive({
       ,
     })
 ;
-const {queryParams, form, rules, headers} = toRefs(data);
+const {queryParams, form, rules, settingsRules, headers} = toRefs(data);
 
 function handleEffectChange(row) {
   let text = row.tipBubbleSwitch === '1' ? '启用' : '停用'
@@ -336,7 +518,7 @@ function handleEffectChange(row) {
 
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id);
-  single.value = selection.length != 1;
+  single.value = selection.length !== 1;
   multiple.value = !selection.length;
 }
 
@@ -412,7 +594,7 @@ function submitForm() {
         status: form.value.status,
       }
 
-      if (form.value.missionObjectives == '累计充值') {
+      if (form.value.missionObjectives === '累计充值') {
         console.log("aa " + form.value.accumulatedRechargeSource.map((item) => item.label).join(','))
         params = {
           accumulatedRechargeSource: form.value.accumulatedRechargeSource.map((item) => item.label).join(','),
@@ -448,12 +630,12 @@ function submitForm() {
       }
 
       if (form.value.id != null) {
-        updateQuestRepeat(params).then(response => {
+        updateQuestRepeat(params).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
         })
       } else {
-        addQuestRepeat(params).then(response => {
+        addQuestRepeat(params).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
         })
@@ -489,6 +671,62 @@ function handleDelete(row) {
   })
 }
 
+function handleSettings() {
+  settingsLoading.value = true
+  proxy.resetForm('settingsRef');
+  getSettings(settingsId.value).then(response => {
+    settingsForm.value = response.data;
+    total.value = response.total;
+    settingsLoading.value = false;
+
+    populateCheckList(currencyCollection, checkedCurrency, 'CURRENCY');
+    populateCheckList(eventCollection, checkedEventCollection, 'EVENT_COLLECTION_ENTRANCE');
+    populateCheckList(collectionRestriction, checkedCollectionRestriction, 'COLLECTION_RESTRICTION');
+
+    handleCheckedSettingsCurrencyChange();
+    settingsOpen.value = true;
+  });
+}
+
+function populateCheckList(collection, checkedList, key) {
+  collection.value = settingsForm.value.questSettingsOtherList
+      .filter(q => q.questSettingsCode === key)
+  checkedList.value = settingsForm.value.questSettingsOtherList
+      .filter(k => k.questSettingsCode === key && k.status === 1)
+}
+
+function submitSettings() {
+  proxy.$refs['settingsRef'].validate(async valid => {
+
+    if (checkedCurrency.value.length <= 0) {
+      proxy.$modal.msgError('Currency is required')
+      return;
+    }
+
+    if (valid) {
+      const params = {
+        id: settingsId.value,
+        ruleDescriptionTranslationSwitch: settingsForm.value.ruleDescriptionTranslationSwitch,
+        ruleDescription: settingsForm.value.ruleDescription,
+        ruleDescriptionTranslated: settingsForm.value.ruleDescriptionTranslated,
+        homePagePromptSwitch: settingsForm.value.homePagePromptSwitch ? 1 : 0,
+        finalMysteryJackpotSwitch: settingsForm.value.finalMysteryJackpotSwitch ? 1 : 0,
+        finalMysteryJackpotMin: settingsForm.value.finalMysteryJackpotMin,
+        finalMysteryJackpotMax: settingsForm.value.finalMysteryJackpotMax,
+        auditMultiplier: settingsForm.value.auditMultiplier,
+        auditRestrictedPlatformsSwitch: settingsForm.value.auditRestrictedPlatformsSwitch,
+        auditRestrictedPlatformsJson: settingsForm.value.auditRestrictedPlatformsJson,
+        questSettingsOtherList: checkedCurrency.value.concat(checkedEventCollection.value).concat(checkedCollectionRestriction.value)
+      }
+      updateSettings(params).then(() => {
+        proxy.$modal.msgSuccess('修改成功')
+        settingsOpen.value = false;
+        getList()
+      })
+    }
+  })
+}
+
 function handleCheckAllChange() {
   if (selectAll.value) {
     checkedCurrency.value = activity_quest_currency.value.map(kek => kek.label)
@@ -498,12 +736,9 @@ function handleCheckAllChange() {
 }
 
 function handleCheckedCurrencyChange() {
-  if (checkedCurrency.value.length === activity_quest_currency.value.length) {
-    selectAll.value = true;
-  } else {
-    selectAll.value = false;
-  }
+  selectAll.value = checkedCurrency.value.length === activity_quest_currency.value.length;
 }
+
 function handleComposeMission() {
   if (!isNullOrEmpty(form.value.cumulativeRechargeAmount) && !isNullOrEmpty(form.value.rewardAmount)) {
     mission.value = "累计充值" + form.value.cumulativeRechargeAmount + "，奖励" + form.value.rewardAmount;
@@ -515,6 +750,15 @@ function handleComposeMission() {
 function isNullOrEmpty(value) {
   return value === null || value.trim() === '';
 }
+
+function handleCheckAllSettingsChange() {
+  checkedCurrency.value = selectAll.value ? currencyCollection.value : [];
+}
+
+function handleCheckedSettingsCurrencyChange() {
+  selectAll.value = checkedCurrency.value.length === currencyCollection.value.length;
+}
+
 function handleGameTypeChange() {
   getGamePlatformList();
   getGameTypeList();
@@ -523,6 +767,7 @@ function handleGameTypeChange() {
 function handleGamePlatformChange() {
   getGameTypeList();
 }
+
 function getGameTypeList() {
   listAllType().then(res => {
     const allType = {
@@ -530,9 +775,10 @@ function getGameTypeList() {
       name: "All",
       icon: ""
     };
-    gameTypeList.value = [allType, ...res.data ];
+    gameTypeList.value = [allType, ...res.data];
   })
 }
+
 function getGamePlatformList() {
   const param = {
     id: form.gameType
@@ -543,9 +789,10 @@ function getGamePlatformList() {
       name: "All",
       icon: ""
     };
-    platformTypeList.value = [allPlatform, ...res.data ];
+    platformTypeList.value = [allPlatform, ...res.data];
   })
 }
+
 function getGameList() {
   const param = {
     id: form.gameType,
@@ -557,9 +804,10 @@ function getGameList() {
       name: "All",
       icon: ""
     };
-    gameList.value = [allGame, ...res.data ];
+    gameList.value = [allGame, ...res.data];
   })
 }
+
 getGameTypeList();
 getGamePlatformList();
 getGameList();

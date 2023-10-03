@@ -283,7 +283,9 @@
           </el-col>
           <el-col>
             <el-form-item label="Homepage pop-up prompt">
-              <el-switch v-model="settingsForm.homePagePromptSwitch"/>
+              <el-switch v-model="settingsForm.homePagePromptSwitch"
+                         :active-value="1"
+                         :inactive-value="0"/>
             </el-form-item>
           </el-col>
           <el-col>
@@ -348,12 +350,11 @@ import {
 
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {getToken} from "@/utils/auth";
-
-const router = useRouter();
 import {useRouter} from "vue-router";
 import {listAllType} from "@/api/game/type";
 import {getGamePlatformGameTypeList} from "@/api/activity/newbieBenefits";
 
+const router = useRouter();
 const {proxy} = getCurrentInstance();
 
 const {activity_quest_participating_members} = proxy.useDict('activity_quest_participating_members');
@@ -387,7 +388,7 @@ const updateBy = ref('');
 const title = ref('');
 const total = ref(0);
 const open = ref(false);
-const settingsOpen = ref(false);
+
 const showSearch = ref(true);
 const single = ref(true);
 const multiple = ref(true);
@@ -397,6 +398,7 @@ const settingsForm = ref([]);
 
 // const currencyCollection = ref([]);
 // const checkedCurrency = ref([]);
+const settingsOpen = ref(false);
 const settingsId = ref(2);
 const eventCollection = ref([]);
 const checkedEventCollection = ref([]);
@@ -457,7 +459,7 @@ const data = reactive({
       ,
     })
 ;
-const {queryParams, form, rules, headers} = toRefs(data);
+const {queryParams, form, rules, headers, settingsRules} = toRefs(data);
 
 function handleEffectChange(row) {
   let text = row.tipBubbleSwitch === '1' ? '启用' : '停用'
@@ -598,12 +600,12 @@ function submitForm() {
       }
 
       if (form.value.id != null) {
-        updateQuestRepeat(params).then(response => {
+        updateQuestRepeat(params).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
         })
       } else {
-        addQuestRepeat(params).then(response => {
+        addQuestRepeat(params).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
         })
@@ -681,6 +683,7 @@ function submitSettings() {
         auditRestrictedPlatformsSwitch: settingsForm.value.auditRestrictedPlatformsSwitch,
         auditRestrictedPlatformsJson: settingsForm.value.auditRestrictedPlatformsJson,
         auditMultiplier: settingsForm.value.auditMultiplier,
+        homePagePromptSwitch: settingsForm.value.homePagePromptSwitch ? 1 : 0,
         questSettingsOtherList: checkedEventCollection.value.concat(checkedCollectionRestriction.value)
       }
       updateSettings(params).then(() => {
