@@ -349,20 +349,22 @@
                 <el-radio :label="1" size="large">Only for the following checked platforms</el-radio>
               </el-radio-group>
 
-              <el-tabs type="border-card" v-if="settingsForm.auditRestrictedPlatformsSwitch === 1">
-                <el-tab-pane v-for="tab in data.auditRestrictedTabs" :key="tab.gameTypeName" :label="tab.gameTypeName">
-                  <el-checkbox-group v-model="tab.selectedCheckboxes">
-                    <el-checkbox v-for="plat in tab.gamePlatformList"
-                                 :key="plat.status"
-                                 :checked="plat.status === 1"
-                                 :label="plat.gamePlatformName"
-                                 size="large"
-                                 style="width: auto">
-                      {{ plat.gamePlatformName }}
-                    </el-checkbox>
-                  </el-checkbox-group>
-                </el-tab-pane>
-              </el-tabs>
+              <el-col>
+                <el-tabs type="border-card" v-if="settingsForm.auditRestrictedPlatformsSwitch === 1">
+                  <el-tab-pane v-for="tab in data.auditRestrictedTabs" :key="tab.gameType" :label="tab.gameType">
+                    <el-checkbox-group v-model="tab.selectedCheckboxes">
+                      <el-checkbox v-for="plat in tab.platforms"
+                                   :key="plat.status"
+                                   :checked="plat.status === 1"
+                                   :label="plat.platform"
+                                   size="large"
+                                   style="width: auto">
+                        {{ plat.platform }}
+                      </el-checkbox>
+                    </el-checkbox-group>
+                  </el-tab-pane>
+                </el-tabs>
+              </el-col>
             </el-form-item>
           </el-col>
         </el-row>
@@ -387,7 +389,7 @@ import {
   getPlatformList,
   gameInfoList,
   getSettings,
-  updateSettings
+  updateSettings, getGamePlatformGameTypeList
 } from "@/api/activity/questRepeat";
 
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
@@ -485,8 +487,11 @@ const data = reactive({
             ]
       },
 
-      form: {}
-      ,
+      form: {},
+
+      auditParams: {
+        id: 4,
+      },
 
       headers: {
         Authorization: 'Bearer ' + getToken()
@@ -531,7 +536,6 @@ function handleQuery() {
 function getList() {
   loading.value = true;
   questRepeatList(queryParams.value).then(response => {
-    console.log(response.data)
     questRepeatLists.value = response.data;
     total.value = response.total;
     loading.value = false;
@@ -595,7 +599,6 @@ function submitForm() {
       }
 
       if (form.value.missionObjectives === '累计充值') {
-        console.log("aa " + form.value.accumulatedRechargeSource.map((item) => item.label).join(','))
         params = {
           accumulatedRechargeSource: form.value.accumulatedRechargeSource.map((item) => item.label).join(','),
           platformId: null,
@@ -768,6 +771,15 @@ function handleGamePlatformChange() {
   getGameTypeList();
 }
 
+function handleGamePlatformGameTypeList() {
+  getGamePlatformGameTypeList(data.auditParams).then(res => {
+    data.auditRestrictedTabs = res.data
+    data.auditRestrictedTabs = JSON.parse( data.auditRestrictedTabs.map( m => m.auditRestrictedPlatformsJson ) )
+    data.auditRestrictedTabs = data.auditRestrictedTabs.auditRestrictedPlatform
+    console.log( JSON.stringify(data.auditRestrictedTabs) + " 23232" )
+  })
+}
+
 function getGameTypeList() {
   listAllType().then(res => {
     const allType = {
@@ -808,6 +820,7 @@ function getGameList() {
   })
 }
 
+handleGamePlatformGameTypeList();
 getGameTypeList();
 getGamePlatformList();
 getGameList();

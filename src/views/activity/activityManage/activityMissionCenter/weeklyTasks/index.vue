@@ -85,7 +85,6 @@
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
-              v-hasPermi="['mission:questRepeat:edit']"
               icon="Edit" link
               size="small"
               type="primary"
@@ -305,21 +304,22 @@
                 <el-radio :label="0" size="large">Not Limited</el-radio>
                 <el-radio :label="1" size="large">Only for the following checked platforms</el-radio>
               </el-radio-group>
-
-              <el-tabs type="border-card" v-if="settingsForm.auditRestrictedPlatformsSwitch === 1">
-                <el-tab-pane v-for="tab in data.auditRestrictedTabs" :key="tab.gameTypeName" :label="tab.gameTypeName">
-                  <el-checkbox-group v-model="tab.selectedCheckboxes">
-                    <el-checkbox v-for="plat in tab.gamePlatformList"
-                                 :key="plat.status"
-                                 :checked="plat.status === 1"
-                                 :label="plat.gamePlatformName"
-                                 size="large"
-                                 style="width: auto">
-                      {{ plat.gamePlatformName }}
-                    </el-checkbox>
-                  </el-checkbox-group>
-                </el-tab-pane>
-              </el-tabs>
+              <el-col>
+                <el-tabs type="border-card" v-if="settingsForm.auditRestrictedPlatformsSwitch === 1">
+                  <el-tab-pane v-for="tab in data.auditRestrictedTabs" :key="tab.gameType" :label="tab.gameType">
+                    <el-checkbox-group v-model="tab.selectedCheckboxes">
+                      <el-checkbox v-for="plat in tab.platforms"
+                                   :key="plat.status"
+                                   :checked="plat.status === 1"
+                                   :label="plat.platform"
+                                   size="large"
+                                   style="width: auto">
+                        {{ plat.platform }}
+                      </el-checkbox>
+                    </el-checkbox-group>
+                  </el-tab-pane>
+                </el-tabs>
+              </el-col>
             </el-form-item>
           </el-col>
         </el-row>
@@ -341,7 +341,12 @@ import {
   updateQuestRepeat,
   addQuestRepeat,
   deleteQuestRepeat,
-  changeQuestRepeatStatus, getPlatformList, gameInfoList, getSettings, updateSettings
+  changeQuestRepeatStatus,
+  getPlatformList,
+  gameInfoList,
+  getSettings,
+  updateSettings,
+  getGamePlatformGameTypeList
 } from "@/api/activity/questRepeat";
 
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
@@ -412,6 +417,10 @@ const data = reactive({
         tipBubbleSwitch: null
       },
 
+      auditParams: {
+        id:3
+      },
+
       settingsRules: {
         ruleDescriptionTranslated:
             [
@@ -443,8 +452,7 @@ const data = reactive({
       },
 
       /** 表单参数 form parameter*/
-      form: {}
-      ,
+      form: {},
 
       headers: {
         Authorization: 'Bearer ' + getToken()
@@ -452,7 +460,17 @@ const data = reactive({
       ,
     })
 ;
-const {queryParams, form, rules, headers, settingsRules} = toRefs(data);
+const {queryParams, form, rules, headers, settingsRules, auditParams} = toRefs(data);
+
+function handleGamePlatformGameTypeList() {
+  getGamePlatformGameTypeList(data.auditParams).then(res => {
+    data.auditRestrictedTabs = res.data
+    data.auditRestrictedTabs = JSON.parse( data.auditRestrictedTabs.map( m => m.auditRestrictedPlatformsJson ) )
+
+    data.auditRestrictedTabs = data.auditRestrictedTabs.auditRestrictedPlatform
+    console.log( JSON.stringify(data.auditRestrictedTabs) + " 23232" )
+  })
+}
 
 function handleEffectChange(row) {
   let text = row.tipBubbleSwitch === '1' ? '启用' : '停用'
@@ -489,7 +507,6 @@ function handleQuery() {
 function getList() {
   loading.value = true;
   questRepeatList(queryParams.value).then(response => {
-    console.log(response.data)
     questRepeatLists.value = response.data;
     total.value = response.total;
     loading.value = false;
@@ -539,17 +556,6 @@ function submitForm() {
   proxy.$refs['questRepeatRef'].validate(async valid => {
     if (valid) {
       let params = {
-        id: checkedCurrency.value.id,
-        questRepeatType: 1,
-        questSettingsId: 2,
-        // taskCurrency : checkedCurrency.value.toString(),
-        taskCurrency: checkedCurrency.value.map((item) => item).join(','),
-        taskClassification: form.value.taskClassification,
-        rewardAmount: form.value.rewardAmount,
-        missionObjectives: form.value.missionObjectives,
-        cumulativeRechargeAmount: form.value.cumulativeRechargeAmount,
-        rewardActivity: form.value.rewardActivity,
-        status: form.value.status,
       }
       console.log("1121 " + form.value.missionObjectives)
 
@@ -765,6 +771,7 @@ function handleCheckedSettingsCurrencyChange() {
   selectAll.value = checkedCurrency.value.length === currencyCollection.value.length;
 }
 
+handleGamePlatformGameTypeList();
 getGameTypeList();
 getGamePlatformList();
 getGameList();

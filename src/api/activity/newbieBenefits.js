@@ -39,13 +39,7 @@ export function updateQuestNewbie(data) {
     })
 }
 
-export function getGamePlatformGameTypeList(query) {
-    return request({
-        url: url.game99PlatformAdminWeb + "/questNewbie/settingsList",
-        method: 'get',
-        params: query
-    })
-}
+
 
 export function changeNewbieStatus(id, effect) {
     return request({

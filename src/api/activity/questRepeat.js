@@ -77,3 +77,12 @@ export function updateSettings(data) {
         data: data
     })
 }
+
+export function getGamePlatformGameTypeList(query) {
+    return request({
+        url: url.game99PlatformAdminWeb + "/questRepeat/settingsList",
+        method: 'get',
+        params: query
+    })
+}
+

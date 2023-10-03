@@ -43,7 +43,6 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['mission:questNewbie:settings']"
             icon="Edit"
             plain
             size="small"
@@ -325,12 +324,16 @@ import {
   addQuestNewbie,
   updateQuestNewbie,
   changeNewbieStatus,
-  getGamePlatformGameTypeList,
   changeNewbiesTipBubble,
   getQuestNewbie,
   getSettings,
   updateSettings
 } from "@/api/activity/newbieBenefits";
+
+import {
+  getGamePlatformGameTypeList
+} from "@/api/activity/questRepeat";
+
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {getToken} from "@/utils/auth";
 import {useRouter} from "vue-router";
@@ -650,7 +653,7 @@ function handleCheckedSettingsCurrencyChange() {
 }
 
 
-handleGamePlatformGameTypeList();
+handleGamePlatformGameTypeList()
 getList();
 
 </script>
