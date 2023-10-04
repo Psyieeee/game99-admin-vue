@@ -176,6 +176,8 @@
                                 end-placeholder="开始时间"
                                 range-separator="至"
                                 clearable
+                                format="YYYY-MM-DD"
+                                value-format="YYYY-MM-DD HH:mm:ss"
                 />
               </div>
             </el-form-item>
@@ -187,6 +189,8 @@
                                 end-placeholder="开始时间"
                                 range-separator="至"
                                 clearable
+                                format="YYYY-MM-DD"
+                                value-format="YYYY-MM-DD HH:mm:ss"
                 />
               </div>
             </el-form-item>
@@ -873,6 +877,8 @@ function handleUpdate(row){
 
     form.value.creationType = createBanner.value.type
     form.value = response.data;
+    form.value.selectDate = [ response.data.startEffect, response.data.endEffect ]
+    form.value.showTime = [ response.data.startShow, response.data.endShow ]
     open.value = true;
     title.value = "修改活动信息";
   });
@@ -982,6 +988,11 @@ function submitForm() {
           form.value.event = events.value.signIn
           break;
       }
+
+      form.value.startEffect = form.value.selectDate[0]
+      form.value.endEffect = form.value.selectDate[1]
+      form.value.startShow = form.value.showTime[0]
+      form.value.endShow = form.value.showTime[1]
 
       config.eventConfig = form.value.event
       form.value.configString = JSON.stringify( config )
