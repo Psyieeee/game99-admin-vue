@@ -66,14 +66,14 @@
 
     <!-- 添加或修改公司入款银行列表对话框 Add or modify company deposit bank list dialog-->
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
-               width="700px">
+               width="400px">
       <el-form :inline="true" ref="addRechargeCommission" :model="form" :rules="rules" label-width="100px">
         <div class="centered-form">
           <el-form-item label="Level" prop="playerCount">
-            <el-input v-model="form.level" placeholder="Level"/>
+            <el-input type="number" v-model="form.level" placeholder="Level"/>
           </el-form-item>
           <el-form-item label="Player Count" prop="playerCount">
-            <el-input v-model="form.playerCount" placeholder="Player Count"/>
+            <el-input type="number" v-model="form.playerCount" placeholder="Player Count"/>
           </el-form-item>
           <el-col>
             <el-form-item label="Commission Rate" prop="commissionRate" >
@@ -168,7 +168,8 @@ function getList() {
 function reset() {
   form.value = {
     playerCount: null,
-    commissionRate: null
+    commissionRate: null,
+    level: null
   }
   proxy.resetForm('addRechargeCommission');
 }
@@ -246,7 +247,7 @@ getList()
 
 <style>
 .centered-form {
-  margin-left: 150px;
+  margin-left: 50px;
   max-width: 400px;
 }
 </style>

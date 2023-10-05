@@ -76,3 +76,15 @@ export function updateSettings(data) {
         data: data
     })
 }
+
+export function fileUpload(data) {
+    return request({
+        url: url.game99PlatformAdminWeb + '/questNewbie/uploadFile',
+        method: 'post',
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        },
+        data
+    })
+}
+

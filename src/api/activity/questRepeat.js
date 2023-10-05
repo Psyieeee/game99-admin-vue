@@ -86,3 +86,14 @@ export function getGamePlatformGameTypeList(query) {
     })
 }
 
+export function fileUpload(data) {
+    return request({
+        url: url.game99PlatformAdminWeb + '/questNewbie/uploadFile',
+        method: 'post',
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        },
+        data
+    })
+}
+

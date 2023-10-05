@@ -114,8 +114,8 @@
 
     <!-- 添加或修改公司入款银行列表对话框 Add or modify company deposit bank list dialog-->
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
-               width="700px">
-      <el-form ref="questRepeatRef" :model="form" :rules="rules" label-width="300px">
+               width="800px">
+      <el-form ref="questRepeatRef" :model="form" :rules="rules" label-width="200px">
         <el-form-item label="Currency" prop="currency" style=" min-width: 290px">
           <el-checkbox
               v-model="selectAll"
@@ -212,6 +212,19 @@
         <el-form-item label="missionIntro任务简介" prop="missionIntroduction">
           <el-input v-model="mission" placeholder="输入累计充值金额" disabled/>
         </el-form-item>
+        <el-table-column :show-overflow-tooltip="true" align="center" label="URL" min-width="180" prop="icon">
+          <template #default="scope">
+            <div>
+              <a
+                  v-if="scope.row.icon !== ''"
+                  :href="scope.row.icon"
+                  style="color: #409eff; font-size: 12px"
+                  target="_blank"
+              >{{ scope.row.icon }}
+              </a>
+            </div>
+          </template>
+        </el-table-column>
         <el-form-item label="活跃" prop="status" style="min-width: 290px">
           <template #default="scope">
             <el-switch

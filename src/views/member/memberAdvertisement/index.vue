@@ -240,7 +240,7 @@ const data = reactive({
   }
 
 });
-const {queryParams, form, rules, rulesFormText, headers, uploadFileUrl, fileToUpload} = toRefs(data);
+const {queryParams, form, rules, rulesFormText, headers, uploadFileUrl} = toRefs(data);
 
 
 /** fetch all data from back-end as getList */
@@ -463,8 +463,7 @@ function parseMP3Metadata(buffer) {
   });
 }
 
-function selectFile1(file, fileList) {
-  this.fileToUpload = file;
+function selectFile1(file) {
   formData.append("file", file.raw)
   formData.append("name", file.name)
 }

@@ -88,6 +88,19 @@
       </el-table-column>
       <el-table-column align="center" label="Operator" min-width="180" prop="updateBy"/>
       <el-table-column align="center" label="Operating Time" min-width="180" prop="updateTime"/>
+      <el-table-column :show-overflow-tooltip="true" align="center" label="URL" min-width="180" prop="icon">
+        <template #default="scope">
+          <div>
+            <a
+                v-if="scope.row.icon !== ''"
+                :href="scope.row.icon"
+                style="color: #409eff; font-size: 12px"
+                target="_blank"
+            >{{ scope.row.icon }}
+            </a>
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="Description" min-width="180" prop="description"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
@@ -121,14 +134,12 @@
     <!--Add Newbie Benefits-->
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="700px">
-      <el-form ref="newbieBenefitsRef" :model="form" :rules="rules" label-width="300px">
+      <el-form ref="newbieBenefitsRef" :model="form" :rules="rules" label-width="180px">
         <el-form-item label="任务分类" prop="taskConditions">
-          <el-input v-model="form.taskConditions" placeholder="请输入奖励金额" @change="handleComposeMission"
-                    :disabled="editTaskConditions"/>
+          <el-input v-model="form.taskConditions" placeholder="请输入奖励金额"/>
         </el-form-item>
-        <el-form-item label="reward奖励金额" prop="rewardAmount">
-          <el-input type="number" v-model="form.reward" placeholder="请输入奖励金额"
-                    @change="handleComposeMission"/>
+        <el-form-item label="reward奖励金额" prop="reward">
+          <el-input type="number" v-model="form.reward" placeholder="请输入奖励金额"/>
         </el-form-item>
         <el-form-item label="activity奖励活动" prop="rewardActivity">
           <el-input type="number" v-model="form.rewardActivity" placeholder="请输入奖励活动"/>
@@ -154,6 +165,31 @@
         </el-form-item>
         <el-form-item label="missionIntro任务简介" prop="missionIntroduction">
           <el-input v-model="mission" placeholder="输入累计充值金额" disabled/>
+        </el-form-item>
+        <el-form-item>
+          <el-upload
+              ref="upload"
+              :action="uploadFileUrl"
+              :auto-upload="false"
+              :before-upload="beforeAvatarUpload"
+              :headers="headers"
+              :limit="1"
+              :multiple="false"
+              :on-change="selectFile"
+              :on-error="uploadFalse"
+              :on-exceed="uploadExceed"
+              :on-preview="handlePreview"
+              :on-remove="handleRemove"
+              :on-success="uploadSuccess"
+              class="upload-demo"
+              drag
+              name="advertisementFile"
+          >
+            <div class="el-upload__text">Drop file here or <em>点击上传</em></div>
+            <div class="el-upload__tip">
+              最大文件大小为 100 MB
+            </div>
+          </el-upload>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -321,17 +357,19 @@
 </template>
 
 <script name="newbieBenefits" setup>
+//region
 import {
-  newbieListData,
-  deleteNewbie,
-  addQuestNewbie,
-  updateQuestNewbie,
-  changeNewbieStatus,
-  changeNewbiesTipBubble,
-  getQuestNewbie,
-  getSettings,
-  updateSettings,
-  getMemberTierList
+    newbieListData,
+    deleteNewbie,
+    addQuestNewbie,
+    updateQuestNewbie,
+    changeNewbieStatus,
+    changeNewbiesTipBubble,
+    getQuestNewbie,
+    getSettings,
+    updateSettings,
+    getMemberTierList,
+    fileUpload
 } from "@/api/activity/newbieBenefits";
 
 import {
@@ -341,6 +379,7 @@ import {
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {getToken} from "@/utils/auth";
 import {useRouter} from "vue-router";
+import {url} from "@/utils/url";
 
 const {proxy} = getCurrentInstance();
 
@@ -376,6 +415,8 @@ const checkedCollectionRestriction = ref([]);
 
 const settingsForm = ref([]);
 const selectAll = ref(true);
+const formData = new FormData();
+//endregion
 const data = reactive({
   auditRestrictedTabs: [], //TODO: to delete
   memberTierList: [],
@@ -415,28 +456,82 @@ const data = reactive({
         [
           {required: true, message: '不能为空', trigger: 'blur'}
         ],
-    rewardAmount:
+    reward:
         [
           {required: true, message: '不能为空', trigger: 'blur'}
         ],
     rewardActivity:
         [
           {required: true, message: '不能为空', trigger: 'blur'}
+        ],
+    taskConditions:
+        [
+          {required: true, message: '不能为空', trigger: 'blur'}
         ]
   },
+
+  uploadFileUrl: uploadAdvertisementUrl(),
 
   form: {},
   headers: {
     Authorization: 'Bearer ' + getToken()
   },
 });
-const {auditParams, queryParams, form, settingsRules, rules, headers} = toRefs(data);
+const {auditParams, uploadFileUrl, queryParams, form, settingsRules, rules, headers} = toRefs(data);
 
 function handleMemberTierList() {
   getMemberTierList(data.queryParams).then(res => {
     data.memberTierList = res.data
     console.log( data.memberTierList )
   })
+}
+
+function uploadAdvertisementUrl() {
+  return url.baseUrl + url.game99PlatformAdminWeb + "/questNewbie/uploadFile";
+}
+
+function beforeAvatarUpload(file) {
+  const fileExtension = file.name.split('.')[1]
+  const isLt2M = file.size / 1024 / 1024 < 100
+  if (fileExtension != 'jpg' &&
+      fileExtension != 'png' &&
+      fileExtension != 'bmp') {
+    proxy.$modal.msgError('无效音乐')
+  } else if (!isLt2M) {
+    proxy.$modal.msgError('上传模板大小不能超过100MB!')
+  }
+}
+
+function handleRemove() {
+  proxy.$modal.msgSuccess('移除成功')
+}
+
+function uploadSuccess() {
+  proxy.$modal.msgSuccess('文件上传成功');
+  queryParams.memberId = null
+  queryParams.pageNum = 1
+  getList()
+}
+
+function selectFile( file ) {
+  formData.append("file", file.raw)
+  formData.append("name", file.name)
+}
+
+function uploadFalse() {
+  proxy.$modal.msgError(' 上传音乐文件失败')
+}
+
+function uploadExceed() {
+  proxy.$modal.msgError('只能选择一个音乐文件，如果要更改，请退出并重新选择。')
+}
+
+function handlePreview(file) {
+  if (file.response.status) {
+    proxy.$modal.msgSuccess('此文件导入成功')
+  } else {
+    proxy.$modal.msgError('此文件导入失败')
+  }
 }
 
 function handleGamePlatformGameTypeList() {
@@ -559,7 +654,13 @@ function submitForm() {
         reward: form.value.reward,
         status: form.value.status,
         tipBubbleSwitch: form.value.tipBubbleSwitch,
+        icon: null,
       }
+
+      if (formData.get("file") != null) {
+        await fileUpload(formData).then(res => params.icon = res.data);
+      }
+
       if (form.value.id != null) {
         updateQuestNewbie(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
@@ -649,8 +750,8 @@ function populateCheckList(collection, checkedList, key) {
 }
 
 function handleComposeMission() {
-  mission.value = !isNullOrEmpty(form.value.taskConditions) && !isNullOrEmpty(form.value.reward)
-      ? form.value.taskConditions + ", 您可以收到" + form.value.reward
+  mission.value = !isNullOrEmpty(form.value.taskConditions)
+      ? form.value.taskConditions + ", 您可以收到"
       : "";
 }
 
