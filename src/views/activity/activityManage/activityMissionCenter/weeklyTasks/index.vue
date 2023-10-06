@@ -20,7 +20,7 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['mission:questRepeat:add']"
+            v-hasPermi="['mission:repeat:add']"
             icon="Plus"
             plain
             size="small"
@@ -31,7 +31,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['mission:questRepeat:remove']"
+            v-hasPermi="['mission:repeat:remove']"
             :disabled="multiple"
             icon="Delete"
             plain
@@ -43,7 +43,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['mission:questNewbie:settings']"
+            v-hasPermi="['mission:repeat:settings']"
             icon="Edit"
             plain
             size="small"
@@ -56,12 +56,13 @@
     </el-row>
 
     <!--    display data in table -->
-    <el-table v-loading="loading" :data="questRepeatLists" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="missionRepeatLists" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="ID" min-width="70" prop="id"/>
       <el-table-column align="center" label="Task Currency" min-width="180" prop="taskCurrency"/>
       <el-table-column align="center" label="Task Classification" min-width="180" prop="taskClassification"/>
       <el-table-column align="center" label="Reward Amount" min-width="180" prop="rewardAmount"/>
+      <el-table-column align="center" label="Completion Count" min-width="180" prop="completionCount"/>
       <el-table-column align="center" label="Mission Target" min-width="180" prop="missionObjectives"/>
       <el-table-column align="center" label="Reward Activity" min-width="180" prop="rewardActivity"/>
       <el-table-column align="center" label="Mission Introduction" min-width="180">
@@ -85,13 +86,14 @@
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
+              v-hasPermi="['mission:repeat:update']"
               icon="Edit" link
               size="small"
               type="primary"
               @click="handleUpdate(scope.row)">修改
           </el-button>
           <el-button
-              v-hasPermi="['mission:questRepeat:delete']"
+              v-hasPermi="['mission:repeat:remove']"
               icon="Delete" link
               size="small"
               style="color: #e05e5e"
@@ -114,7 +116,7 @@
     <!-- 添加或修改公司入款银行列表对话框 Add or modify company deposit bank list dialog-->
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="700px">
-      <el-form ref="questRepeatRef" :model="form" :rules="rules" label-width="300px">
+      <el-form ref="missionRepeatRef" :model="form" :rules="rules" label-width="300px">
         <el-form-item label="Currency" prop="currency" style=" min-width: 290px">
           <el-checkbox
               v-model="selectAll"
@@ -126,7 +128,7 @@
           <el-checkbox-group
               v-model="checkedCurrency"
               @change="handleCheckedCurrencyChange">
-            <el-checkbox v-for="item in activity_quest_currency"
+            <el-checkbox v-for="item in activity_mission_currency"
                          :key="item.value"
                          :label="item.label">{{ item.label }}
             </el-checkbox>
@@ -135,7 +137,7 @@
         <el-form-item label="任务分类" prop="taskClassification" style="min-width: 290px">
           <el-select v-model="form.taskClassification" placeholder="任务分类" clearable>
             <el-option
-                v-for="dict in activity_quest_task_classification"
+                v-for="dict in activity_mission_task_classification"
                 :key="dict.value"
                 :label="dict.label"
                 :value="dict.value"
@@ -145,7 +147,7 @@
         <el-form-item label="Mission Objectives" prop="missionObjectives" style="min-width: 290px">
           <el-select v-model="form.missionObjectives">
             <el-option
-                v-for="dict in activity_quest_mission_objectives"
+                v-for="dict in activity_mission_objectives"
                 :key="dict.value"
                 :label="dict.label"
                 :value="dict.value"
@@ -204,6 +206,9 @@
         <el-form-item label="reward奖励金额" prop="rewardAmount">
           <el-input type="number" v-model="form.rewardAmount" placeholder="请输入奖励金额"
                     @change="handleComposeMission"/>
+        </el-form-item>
+        <el-form-item label="Completion Count" prop="completionCount">
+          <el-input type="number" v-model="form.completionCount" placeholder="请输入奖励金额"/>
         </el-form-item>
         <el-form-item label="activity奖励活动" prop="rewardActivity">
           <el-input type="number" v-model="form.rewardActivity" placeholder="请输入奖励活动"/>
@@ -277,7 +282,7 @@
               <el-checkbox-group disabled
                                  v-model="checkedEventCollection">
                 <el-checkbox v-for="ec in eventCollection" :key="ec.id" :label="ec">
-                  {{ ec.questSettingsValue }}
+                  {{ ec.missionSettingsValue }}
                 </el-checkbox>
               </el-checkbox-group>
             </el-form-item>
@@ -287,7 +292,7 @@
               <el-checkbox-group
                   v-model="checkedCollectionRestriction">
                 <el-checkbox v-for="cc in collectionRestriction" :key="cc.id" :label="cc">
-                  {{ cc.questSettingsValue }}
+                  {{ cc.missionSettingsValue }}
                 </el-checkbox>
               </el-checkbox-group>
             </el-form-item>
@@ -348,18 +353,18 @@
 <script name="weeklyTask" setup>
 
 import {
-  questRepeatList,
-  getQuestRepeatList,
-  updateQuestRepeat,
-  addQuestRepeat,
-  deleteQuestRepeat,
-  changeQuestRepeatStatus,
+  missionRepeatList,
+  getMissionRepeatList,
+  updateMissionRepeat,
+  addMissionRepeat,
+  deleteMissionRepeat,
+  changeMissionRepeatStatus,
   getPlatformList,
   gameInfoList,
   getSettings,
   updateSettings,
   getGamePlatformGameTypeList
-} from "@/api/activity/questRepeat";
+} from "@/api/activity/missionRepeat";
 
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {getToken} from "@/utils/auth";
@@ -371,14 +376,14 @@ const router = useRouter();
 const {proxy} = getCurrentInstance();
 
 const {
-  activity_quest_currency
-  , activity_quest_task_classification
-  , activity_quest_mission_objectives
+  activity_mission_currency
+  , activity_mission_task_classification
+  , activity_mission_objectives
   , pay_online_recharge_category
 } = proxy.useDict(
-    'activity_quest_currency'
-    , 'activity_quest_task_classification'
-    , 'activity_quest_mission_objectives'
+    'activity_mission_currency'
+    , 'activity_mission_task_classification'
+    , 'activity_mission_objectives'
     , 'pay_online_recharge_category');
 const checkedCurrency = ref([]);
 const selectAll = ref(true);
@@ -388,7 +393,7 @@ const gameList = ref([])
 const mission = ref('')
 
 
-const questRepeatLists = ref([]);
+const missionRepeatLists = ref([]);
 const ids = ref([]);
 const id = ref('');
 const rewards = ref('');
@@ -421,7 +426,7 @@ const data = reactive({
       showEditButton: false,
       /** 查询参数 query params*/
       queryParams: {
-        questRepeatType: 2,
+        missionRepeatType: 2,
         pageNum: 1,
         pageSize: 20,
         type: null,
@@ -451,6 +456,10 @@ const data = reactive({
 
       rules: {
         cumulativeRechargeAmount:
+            [
+              {required: true, message: '不能为空', trigger: 'blur'}
+            ],
+        completionCount:
             [
               {required: true, message: '不能为空', trigger: 'blur'}
             ],
@@ -499,7 +508,7 @@ function handleEffectChange(row) {
     confirmButtonText: '确定',
     cancelButtonText: '取消'
   }).then(function () {
-    const status = changeQuestRepeatStatus(row.id, row.status);
+    const status = changeMissionRepeatStatus(row.id, row.status);
     loading.value = true
     if (status) {
       loading.value = false
@@ -527,8 +536,8 @@ function handleQuery() {
 /** fetch all data from back-end as getList */
 function getList() {
   loading.value = true;
-  questRepeatList(queryParams.value).then(response => {
-    questRepeatLists.value = response.data;
+  missionRepeatList(queryParams.value).then(response => {
+    missionRepeatLists.value = response.data;
     total.value = response.total;
     loading.value = false;
   });
@@ -540,20 +549,21 @@ function reset() {
     currency: null,
     currencyAll: null,
     selectAll: null,
-    checkedCurrency: activity_quest_currency.value.slice(0, 1),
-    taskClassification: activity_quest_task_classification.value[0].label,
-    missionObjectives: activity_quest_mission_objectives.value[0].label,
+    checkedCurrency: activity_mission_currency.value.slice(0, 1),
+    taskClassification: activity_mission_task_classification.value[0].label,
+    missionObjectives: activity_mission_objectives.value[0].label,
     accumulatedRechargeSource: pay_online_recharge_category,
     gameType: null,
     platformType: null,
     gameName: null,
     cumulativeRechargeAmount: null,
     rewardActivity: null,
+    completionCount: null,
     rewardAmount: null,
     missionIntroduction: null,
     status: null
   }
-  proxy.resetForm('questRepeatRef');
+  proxy.resetForm('missionRepeatRef');
 }
 
 /** 重置按钮操作 handle reset query*/
@@ -574,7 +584,7 @@ function handleAdd() {
 
 /** submit new data and handle insert data api*/
 function submitForm() {
-  proxy.$refs['questRepeatRef'].validate(async valid => {
+  proxy.$refs['missionRepeatRef'].validate(async valid => {
     if (valid) {
       let params = {
       }
@@ -588,13 +598,15 @@ function submitForm() {
           gameTypeId: null,
           gameId: null,
 
-          id: checkedCurrency.value.id,
-          questRepeatType: 2,
-          questSettingsId: 3,
+          // id: checkedCurrency.value.id,
+          id: form.value.id,
+          missionRepeatType: 2,
+          missionSettingsId: 3,
           // taskCurrency : checkedCurrency.value.toString(),
           taskCurrency: checkedCurrency.value.map((item) => item).join(','),
           taskClassification: form.value.taskClassification,
           rewardAmount: form.value.rewardAmount,
+          completionCount: form.value.completionCount,
           missionObjectives: form.value.missionObjectives,
           cumulativeRechargeAmount: form.value.cumulativeRechargeAmount,
           rewardActivity: form.value.rewardActivity,
@@ -607,12 +619,14 @@ function submitForm() {
           gameTypeId: form.value.gameType,
           gameId: form.value.gameType,
 
-          id: checkedCurrency.value.id,
-          questRepeatType: 2,
-          questSettingsId: 3,
+          // id: checkedCurrency.value.id,
+          id: form.value.id,
+          missionRepeatType: 2,
+          missionSettingsId: 3,
           // taskCurrency : checkedCurrency.value.toString(),
           taskCurrency: checkedCurrency.value.map((item) => item).join(','),
           taskClassification: form.value.taskClassification,
+          completionCount: form.value.completionCount,
           rewardAmount: form.value.rewardAmount,
           missionObjectives: form.value.missionObjectives,
           cumulativeRechargeAmount: form.value.cumulativeRechargeAmount,
@@ -622,12 +636,12 @@ function submitForm() {
       }
 
       if (form.value.id != null) {
-        updateQuestRepeat(params).then(() => {
+        updateMissionRepeat(params).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
         })
       } else {
-        addQuestRepeat(params).then(() => {
+        addMissionRepeat(params).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
         })
@@ -641,7 +655,7 @@ function submitForm() {
 function handleUpdate(row) {
   reset()
   const id = row.id || this.ids
-  getQuestRepeatList(id).then(response => {
+  getMissionRepeatList(id).then(response => {
     form.value = response.data
     open.value = true
     title.value = '编辑每日任务'
@@ -656,7 +670,7 @@ function handleDelete(row) {
     cancelButtonText: '取消',
     type: 'warning'
   }).then(function () {
-    return deleteQuestRepeat(idss)
+    return deleteMissionRepeat(idss)
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess('删除成功')
@@ -665,14 +679,14 @@ function handleDelete(row) {
 
 function handleCheckAllChange() {
   if (selectAll.value) {
-    checkedCurrency.value = activity_quest_currency.value.map(kek => kek.label)
+    checkedCurrency.value = activity_mission_currency.value.map(kek => kek.label)
   } else {
     checkedCurrency.value = [];
   }
 }
 
 function handleCheckedCurrencyChange() {
-  selectAll.value = checkedCurrency.value.length === activity_quest_currency.value.length;
+  selectAll.value = checkedCurrency.value.length === activity_mission_currency.value.length;
 }
 
 function handleComposeMission() {
@@ -754,10 +768,10 @@ function handleSettings() {
 }
 
 function populateCheckList(collection, checkedList, key) {
-  collection.value = settingsForm.value.questSettingsOtherList
-      .filter(q => q.questSettingsCode === key)
-  checkedList.value = settingsForm.value.questSettingsOtherList
-      .filter(k => k.questSettingsCode === key && k.status === 1)
+  collection.value = settingsForm.value.missionSettingsOtherList
+      .filter(q => q.missionSettingsCode === key)
+  checkedList.value = settingsForm.value.missionSettingsOtherList
+      .filter(k => k.missionSettingsCode === key && k.status === 1)
 }
 
 /** handle update data */
@@ -773,7 +787,7 @@ function submitSettings() {
         auditRestrictedPlatformsJson: settingsForm.value.auditRestrictedPlatformsJson,
         homePagePromptSwitch: settingsForm.value.homePagePromptSwitch ? 1 : 0,
         auditMultiplier: settingsForm.value.auditMultiplier,
-        questSettingsOtherList: checkedEventCollection.value.concat(checkedCollectionRestriction.value)
+        missionSettingsOtherList: checkedEventCollection.value.concat(checkedCollectionRestriction.value)
       }
       updateSettings(params).then(() => {
         proxy.$modal.msgSuccess('修改成功')

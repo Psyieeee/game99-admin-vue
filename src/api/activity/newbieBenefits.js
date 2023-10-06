@@ -3,15 +3,15 @@ import request from "@/utils/request";
 
 export function newbieListData(query) {
     return request({
-        url: url.game99PlatformAdminWeb + "/questNewbie/list",
+        url: url.game99PlatformAdminWeb + "/missionNewbie/list",
         method: 'get',
         params: query
     })
 }
 
-export function getQuestNewbie(id) {
+export function getMissionNewbie(id) {
     return request({
-        url: url.game99PlatformAdminWeb + "/questNewbie/" + id,
+        url: url.game99PlatformAdminWeb + "/missionNewbie/" + id,
         method: 'get'
     })
 }
@@ -25,22 +25,22 @@ export function getMemberTierList(query) {
 
 export function deleteNewbie(mobile) {
     return request({
-        url: url.game99PlatformAdminWeb + "/questNewbie/" + mobile,
+        url: url.game99PlatformAdminWeb + "/missionNewbie/" + mobile,
         method: 'delete',
     })
 }
 
-export function addQuestNewbie(data) {
+export function addMissionNewbie(data) {
     return request({
-        url: url.game99PlatformAdminWeb + "/questNewbie/add",
+        url: url.game99PlatformAdminWeb + "/missionNewbie/add",
         method: 'post',
         data: data
     })
 }
 
-export function updateQuestNewbie(data) {
+export function updateMissionNewbie(data) {
     return request({
-        url: url.game99PlatformAdminWeb + "/questNewbie/edit",
+        url: url.game99PlatformAdminWeb + "/missionNewbie/edit",
         method: 'put',
         data: data
     })
@@ -50,28 +50,28 @@ export function updateQuestNewbie(data) {
 
 export function changeNewbieStatus(id, effect) {
     return request({
-        url: url.game99PlatformAdminWeb + '/questNewbie/changeStatus/' + id + "/" + effect,
+        url: url.game99PlatformAdminWeb + '/missionNewbie/changeStatus/' + id + "/" + effect,
         method: 'put',
     })
 }
 
 export function changeNewbiesTipBubble(id, tipBubble) {
     return request({
-        url: url.game99PlatformAdminWeb + '/questNewbie/changeTipBubble/' + id + "/" + tipBubble,
+        url: url.game99PlatformAdminWeb + '/missionNewbie/changeTipBubble/' + id + "/" + tipBubble,
         method: 'put',
     })
 }
 
 export function getSettings(id) {
     return request({
-        url: url.game99PlatformAdminWeb + '/questNewbie/getSettings/' + id,
+        url: url.game99PlatformAdminWeb + '/missionNewbie/getSettings/' + id,
         method: 'get',
     })
 }
 
 export function updateSettings(data) {
     return request({
-        url: url.game99PlatformAdminWeb + '/questNewbie/updateSettings',
+        url: url.game99PlatformAdminWeb + '/missionNewbie/updateSettings',
         method: 'post',
         data: data
     })
@@ -79,7 +79,7 @@ export function updateSettings(data) {
 
 export function fileUpload(data) {
     return request({
-        url: url.game99PlatformAdminWeb + '/questNewbie/uploadFile',
+        url: url.game99PlatformAdminWeb + '/missionNewbie/uploadFile',
         method: 'post',
         headers: {
             'Content-Type': 'multipart/form-data'

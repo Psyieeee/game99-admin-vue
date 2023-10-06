@@ -20,7 +20,7 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['mission:questNewbie:add']"
+            v-hasPermi="['mission:newbie:add']"
             icon="Plus"
             plain
             size="small"
@@ -31,7 +31,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['mission:questNewbie:delete']"
+            v-hasPermi="['mission:newbie:delete']"
             :disabled="multiple"
             icon="Delete"
             plain
@@ -60,6 +60,7 @@
       <el-table-column align="center" label="ID" min-width="70" prop="id"/>
       <el-table-column align="center" label="Task Conditions" min-width="180" prop="taskConditions"/>
       <el-table-column align="center" label="Reward Amount" min-width="180" prop="reward"/>
+      <el-table-column align="center" label="Completion Points" min-width="180" prop="completionCount"/>
       <el-table-column align="center" label="Reward Activity" min-width="180" prop="rewardActivity"/>
       <el-table-column align="center" label="Mission Introduction" min-width="180">
         <template #default="scope">
@@ -105,14 +106,14 @@
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
-              v-hasPermi="['mission:questNewbie:edit']"
+              v-hasPermi="['mission:newbie:edit']"
               icon="Edit" link
               size="small"
               type="primary"
               @click="handleUpdate(scope.row)">修改
           </el-button>
           <el-button
-              v-hasPermi="['mission:questNewbie:delete']"
+              v-hasPermi="['mission:newbie:delete']"
               icon="Delete" link
               size="small"
               style="color: #e05e5e"
@@ -141,10 +142,12 @@
         <el-form-item label="reward奖励金额" prop="reward">
           <el-input type="number" v-model="form.reward" placeholder="请输入奖励金额"/>
         </el-form-item>
+        <el-form-item label="Completion Points" prop="completionCount">
+          <el-input type="number" v-model="form.completionCount" placeholder="请输入奖励金额"/>
+        </el-form-item>
         <el-form-item label="activity奖励活动" prop="rewardActivity">
           <el-input type="number" v-model="form.rewardActivity" placeholder="请输入奖励活动"/>
         </el-form-item>
-
         <el-form-item label="活跃" prop="status">
           <template #default="scope">
             <el-switch
@@ -223,7 +226,7 @@
                   v-model="checkedCurrency"
                   @change="handleCheckedSettingsCurrencyChange">
                 <el-checkbox v-for="currency in currencyCollection" :key="currency.id" :label="currency">
-                  {{ currency.questSettingsValue }}
+                  {{ currency.missionSettingsValue }}
                 </el-checkbox>
               </el-checkbox-group>
             </el-form-item>
@@ -247,7 +250,7 @@
               <el-checkbox-group disabled
                                  v-model="checkedEventCollection">
                 <el-checkbox v-for="ec in eventCollection" :key="ec.id" :label="ec">
-                  {{ ec.questSettingsValue }}
+                  {{ ec.missionSettingsValue }}
                 </el-checkbox>
               </el-checkbox-group>
             </el-form-item>
@@ -257,7 +260,7 @@
               <el-checkbox-group
                   v-model="checkedCollectionRestriction">
                 <el-checkbox v-for="cc in collectionRestriction" :key="cc.id" :label="cc">
-                  {{ cc.questSettingsValue }}
+                  {{ cc.missionSettingsValue }}
                 </el-checkbox>
               </el-checkbox-group>
             </el-form-item>
@@ -361,11 +364,11 @@
 import {
     newbieListData,
     deleteNewbie,
-    addQuestNewbie,
-    updateQuestNewbie,
+    addMissionNewbie,
+    updateMissionNewbie,
     changeNewbieStatus,
     changeNewbiesTipBubble,
-    getQuestNewbie,
+    getMissionNewbie,
     getSettings,
     updateSettings,
     getMemberTierList,
@@ -374,7 +377,7 @@ import {
 
 import {
   getGamePlatformGameTypeList
-} from "@/api/activity/questRepeat";
+} from "@/api/activity/missionRepeat";
 
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {getToken} from "@/utils/auth";
@@ -464,6 +467,10 @@ const data = reactive({
         [
           {required: true, message: '不能为空', trigger: 'blur'}
         ],
+    completionCount:
+        [
+          {required: true, message: '不能为空', trigger: 'blur'}
+        ],
     taskConditions:
         [
           {required: true, message: '不能为空', trigger: 'blur'}
@@ -487,7 +494,7 @@ function handleMemberTierList() {
 }
 
 function uploadAdvertisementUrl() {
-  return url.baseUrl + url.game99PlatformAdminWeb + "/questNewbie/uploadFile";
+  return url.baseUrl + url.game99PlatformAdminWeb + "/newbie/uploadFile";
 }
 
 function beforeAvatarUpload(file) {
@@ -609,6 +616,7 @@ function reset() {
     taskConditions: null,
     rewardActivity: null,
     rewardAmount: null,
+    completionCount: null,
     status: null,
     tipBubbleSwitch: null,
     missionIntroduction: null,
@@ -635,7 +643,7 @@ function handleUpdate(row) {
   reset()
   editTaskConditions.value = true;
   const id = row.id || this.ids
-  getQuestNewbie(id).then(response => {
+  getMissionNewbie(id).then(response => {
     form.value = response.data
     open.value = true
     title.value = '添加页脚'
@@ -648,11 +656,12 @@ function submitForm() {
   proxy.$refs['newbieBenefitsRef'].validate(async valid => {
     if (valid) {
       const params = {
-        questSettingsId: 1,
+        missionSettingsId: 1,
         taskConditions: form.value.taskConditions,
         rewardActivity: form.value.rewardActivity,
         reward: form.value.reward,
         status: form.value.status,
+        completionCount: form.value.completionCount,
         tipBubbleSwitch: form.value.tipBubbleSwitch,
         icon: null,
       }
@@ -662,13 +671,13 @@ function submitForm() {
       }
 
       if (form.value.id != null) {
-        updateQuestNewbie(form.value).then(() => {
+        updateMissionNewbie(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
         })
       } else {
-        addQuestNewbie(params).then(() => {
+        addMissionNewbie(params).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
@@ -699,7 +708,7 @@ function submitSettings() {
         withdrawalLimitReminderSwitch: settingsForm.value.withdrawalLimitReminderSwitch ? 1 : 0,
         auditRestrictedPlatformsSwitch: settingsForm.value.auditRestrictedPlatformsSwitch,
         auditMultiplier: settingsForm.value.auditMultiplier,
-        questSettingsOtherList: checkedCurrency.value.concat(checkedEventCollection.value).concat(checkedCollectionRestriction.value)
+        missionSettingsOtherList: checkedCurrency.value.concat(checkedEventCollection.value).concat(checkedCollectionRestriction.value)
       }
       updateSettings(params).then(() => {
         proxy.$modal.msgSuccess('修改成功')
@@ -733,9 +742,9 @@ function handleSettings() {
     total.value = response.total;
     settingsLoading.value = false;
 
-    populateCheckList(currencyCollection, checkedCurrency, 'CURRENCY');
-    populateCheckList(eventCollection, checkedEventCollection, 'EVENT_COLLECTION_ENTRANCE');
-    populateCheckList(collectionRestriction, checkedCollectionRestriction, 'COLLECTION_RESTRICTION');
+    populateCheckList(currencyCollection,     checkedCurrency,              'CURRENCY');
+    populateCheckList(eventCollection,        checkedEventCollection,       'EVENT_COLLECTION_ENTRANCE');
+    populateCheckList(collectionRestriction,  checkedCollectionRestriction, 'COLLECTION_RESTRICTION');
 
     handleCheckedSettingsCurrencyChange();
     settingsOpen.value = true;
@@ -743,10 +752,10 @@ function handleSettings() {
 }
 
 function populateCheckList(collection, checkedList, key) {
-  collection.value = settingsForm.value.questSettingsOtherList
-      .filter(q => q.questSettingsCode === key)
-  checkedList.value = settingsForm.value.questSettingsOtherList
-      .filter(k => k.questSettingsCode === key && k.status === 1)
+  collection.value = settingsForm.value.missionSettingsOtherList
+      .filter(q => q.missionSettingsCode === key)
+  checkedList.value = settingsForm.value.missionSettingsOtherList
+      .filter(k => k.missionSettingsCode === key && k.status === 1)
 }
 
 function handleComposeMission() {

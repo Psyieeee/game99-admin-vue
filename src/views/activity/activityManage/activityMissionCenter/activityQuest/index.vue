@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form label="Activity Quest" v-show="showSearch" ref="queryForm" :inline="true" :model="queryParams"
+    <el-form label="Activity Mission" v-show="showSearch" ref="queryForm" :inline="true" :model="queryParams"
              label-width="98px">
       <el-form-item prop="现状" style="min-width: 50px">
         <el-input
@@ -20,7 +20,7 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['quest:activity:add']"
+            v-hasPermi="['mission:activity:add']"
             icon="Plus"
             plain
             size="small"
@@ -31,7 +31,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['quest:activity:remove']"
+            v-hasPermi="['mission:activity:remove']"
             :disabled="multiple"
             icon="Delete"
             plain
@@ -43,7 +43,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['quest:activity:settings']"
+            v-hasPermi="['mission:activity:settings']"
             icon="gear"
             plain
             size="small"
@@ -56,7 +56,7 @@
     </el-row>
 
     <!--    display data in table -->
-    <el-table v-loading="loading" :data="activityQuestLists" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="activityMissionLists" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="ID" min-width="70" prop="id"/>
       <el-table-column align="center" label="Activity Name" min-width="180" prop="name"/>
@@ -78,14 +78,14 @@
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
-              v-hasPermi="['quest:activity:update']"
+              v-hasPermi="['mission:activity:update']"
               icon="Edit" link
               size="small"
               type="primary"
               @click="handleUpdate(scope.row)">修改
           </el-button>
           <el-button
-              v-hasPermi="['quest:activity:remove']"
+              v-hasPermi="['mission:activity:remove']"
               icon="Delete" link
               size="small"
               style="color: #e05e5e"
@@ -150,7 +150,7 @@
       <el-form :inline="true" ref="settingsRef" :model="settingsForm" :rules="rules" label-width="500px">
         <el-row>
           <el-col :span="24">
-            <el-form-item label="Quest Cycle (每日周期（重置为 0:00）or 每周循环（周一0:00重置）" prop="reset"
+            <el-form-item label="Mission Cycle (每日周期（重置为 0:00）or 每周循环（周一0:00重置）" prop="reset"
                           style="min-width: 290px">
               <template #default="scope">
                 <el-switch
@@ -233,13 +233,13 @@
 <script name="weeklyTasks" setup>
 
 import {
-  activityQuestList,
-  getActivityQuestList,
-  deleteActivityQuest,
-  addActivityQuest,
-  updateActivityQuest,
-  changeQuestActivityStatus, getQuestActivitySettings, updateQuestActivitySettings,
-} from "@/api/activity/activityQuest";
+  activityMissionList,
+  getActivityMissionList,
+  deleteActivityMission,
+  addActivityMission,
+  updateActivityMission,
+  changeMissionActivityStatus, getMissionActivitySettings, updateMissionActivitySettings,
+} from "@/api/activity/activityMission";
 
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {getToken} from "@/utils/auth";
@@ -247,7 +247,7 @@ import {useRouter} from "vue-router";
 
 const router = useRouter();
 
-const activityQuestLists = ref([]);
+const activityMissionLists = ref([]);
 const ids = ref([]);
 const id = ref('');
 const status = ref(1);
@@ -298,7 +298,7 @@ function handleEffectChange(row) {
     confirmButtonText: '确定',
     cancelButtonText: '取消'
   }).then(function () {
-    const status = changeQuestActivityStatus(row.id, row.status);
+    const status = changeMissionActivityStatus(row.id, row.status);
     loading.value = true
     if (status) {
       loading.value = false
@@ -326,9 +326,9 @@ function handleQuery() {
 /** fetch all data from back-end as getList */
 function getList() {
   loading.value = true;
-  activityQuestList(queryParams.value).then(response => {
+  activityMissionList(queryParams.value).then(response => {
     console.log(response.data)
-    activityQuestLists.value = response.data;
+    activityMissionLists.value = response.data;
     total.value = response.total;
     loading.value = false;
   });
@@ -365,7 +365,7 @@ function submitForm() {
     if (valid) {
       const params = {
         name: form.value.name,
-        questSettingsId: 5,
+        missionSettingsId: 5,
         requiredActivityLevel: form.value.requiredActivityLevel,
         rewardType: form.value.rewardType,
         rewardAmount: form.value.rewardAmount,
@@ -373,13 +373,13 @@ function submitForm() {
 
       }
       if (form.value.id != null) {
-        updateActivityQuest(form.value).then(response => {
+        updateActivityMission(form.value).then(response => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
         })
       } else {
-        addActivityQuest(params).then(response => {
+        addActivityMission(params).then(response => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
@@ -394,14 +394,14 @@ function submitSettingsForm() {
     if (valid) {
       // const params = {
       //   name: settingsForm.value.name,
-      //   questSettingsId: 5,
+      //   missionSettingsId: 5,
       //   requiredActivityLevel: settingsForm.value.requiredActivityLevel,
       //   rewardType: settingsForm.value.rewardType,
       //   rewardAmount: settingsForm.value.rewardAmount,
       //   status: 0,
       //
       // }
-      updateQuestActivitySettings(settingsForm.value).then(response => {
+      updateMissionActivitySettings(settingsForm.value).then(response => {
         proxy.$modal.msgSuccess('修改成功')
         settingsOpen.value = false
         getList()
@@ -415,7 +415,7 @@ function submitSettingsForm() {
 function handleUpdate(row) {
   reset()
   const id = row.id || this.ids
-  getActivityQuestList(id).then(response => {
+  getActivityMissionList(id).then(response => {
     form.value = response.data
     open.value = true
     title.value = '修改活动任务'
@@ -430,7 +430,7 @@ function handleDelete(row) {
     cancelButtonText: '取消',
     type: 'warning'
   }).then(function () {
-    return deleteActivityQuest(idss)
+    return deleteActivityMission(idss)
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess('删除成功')
@@ -438,7 +438,7 @@ function handleDelete(row) {
 }
 
 function handleSettings() {
-  getQuestActivitySettings(id).then(response => {
+  getMissionActivitySettings(id).then(response => {
     settingsForm.value = response.data
     settingsOpen.value = true;
   })

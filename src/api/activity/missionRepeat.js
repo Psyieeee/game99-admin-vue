@@ -1,47 +1,47 @@
 import {url} from "@/utils/url";
 import request from "@/utils/request";
 
-export function questRepeatList(query){
+export function missionRepeatList(query){
     return request({
-        url:url.game99PlatformAdminWeb+"/questRepeat/list",
+        url:url.game99PlatformAdminWeb+"/missionRepeat/list",
         method:'get',
         params:query
     })
 }
 
-export function getQuestRepeatList(id){
+export function getMissionRepeatList(id){
     return request({
-        url:url.game99PlatformAdminWeb+"/questRepeat/" + id,
+        url:url.game99PlatformAdminWeb+"/missionRepeat/" + id,
         method:'get'
     })
 }
 
-export function deleteQuestRepeat(id){
+export function deleteMissionRepeat(id){
     return request({
-        url:url.game99PlatformAdminWeb+"/questRepeat/"+id,
+        url:url.game99PlatformAdminWeb+"/missionRepeat/"+id,
         method:'delete',
     })
 }
 
-export function addQuestRepeat(data){
+export function addMissionRepeat(data){
     return request({
-        url:url.game99PlatformAdminWeb+"/questRepeat/add",
+        url:url.game99PlatformAdminWeb+"/missionRepeat/add",
         method:'post',
         data : data
     })
 }
 
-export function updateQuestRepeat(data){
+export function updateMissionRepeat(data){
     return request({
-        url:url.game99PlatformAdminWeb+"/questRepeat/edit",
+        url:url.game99PlatformAdminWeb+"/missionRepeat/edit",
         method:'post',
         data : data
     })
 }
 
-export function changeQuestRepeatStatus(id, status) {
+export function changeMissionRepeatStatus(id, status) {
     return request({
-        url: url.game99PlatformAdminWeb + '/questRepeat/changeStatus/'+ id + "/" + status,
+        url: url.game99PlatformAdminWeb + '/missionRepeat/changeStatus/'+ id + "/" + status,
         method: 'put',
     })
 }
@@ -49,7 +49,7 @@ export function changeQuestRepeatStatus(id, status) {
 
 export function getPlatformList(data){
     return request({
-        url:url.game99PlatformAdminWeb+"/questRepeat/platformList",
+        url:url.game99PlatformAdminWeb+"/missionRepeat/platformList",
         method:'post',
         data:data
     })
@@ -57,7 +57,7 @@ export function getPlatformList(data){
 
 export function gameInfoList(data){
     return request({
-        url:url.game99PlatformAdminWeb+"/questRepeat/gameInfoList",
+        url:url.game99PlatformAdminWeb+"/missionRepeat/gameInfoList",
         method:'post',
         data:data
     })
@@ -65,14 +65,14 @@ export function gameInfoList(data){
 
 export function getSettings(id) {
     return request({
-        url: url.game99PlatformAdminWeb + '/questRepeat/getSettings/' + id,
+        url: url.game99PlatformAdminWeb + '/missionRepeat/getSettings/' + id,
         method: 'get',
     })
 }
 
 export function updateSettings(data) {
     return request({
-        url: url.game99PlatformAdminWeb + '/questRepeat/updateSettings',
+        url: url.game99PlatformAdminWeb + '/missionRepeat/updateSettings',
         method: 'post',
         data: data
     })
@@ -80,7 +80,7 @@ export function updateSettings(data) {
 
 export function getGamePlatformGameTypeList(query) {
     return request({
-        url: url.game99PlatformAdminWeb + "/questRepeat/settingsList",
+        url: url.game99PlatformAdminWeb + "/missionRepeat/settingsList",
         method: 'get',
         params: query
     })
@@ -88,7 +88,7 @@ export function getGamePlatformGameTypeList(query) {
 
 export function fileUpload(data) {
     return request({
-        url: url.game99PlatformAdminWeb + '/questNewbie/uploadFile',
+        url: url.game99PlatformAdminWeb + '/missionNewbie/uploadFile',
         method: 'post',
         headers: {
             'Content-Type': 'multipart/form-data'
