@@ -134,10 +134,10 @@
 
     <!--Add Newbie Benefits-->
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
-               width="700px">
-      <el-form ref="newbieBenefitsRef" :model="form" :rules="rules" label-width="180px">
-        <el-form-item label="任务分类" prop="taskConditions">
-          <el-input v-model="form.taskConditions" placeholder="请输入奖励金额"/>
+               width="550px">
+      <el-form ref="newbieBenefitsRef" :model="form" :rules="rules" label-width="150px">
+        <el-form-item label="任务分类" prop="taskConditions" >
+          <el-input v-model="form.taskConditions" placeholder="请输入奖励金额" />
         </el-form-item>
         <el-form-item label="reward奖励金额" prop="reward">
           <el-input type="number" v-model="form.reward" placeholder="请输入奖励金额"/>
@@ -148,7 +148,8 @@
         <el-form-item label="activity奖励活动" prop="rewardActivity">
           <el-input type="number" v-model="form.rewardActivity" placeholder="请输入奖励活动"/>
         </el-form-item>
-        <el-form-item label="活跃" prop="status">
+
+        <el-form-item label="Status (On/Off)" prop="status">
           <template #default="scope">
             <el-switch
                 v-model="form.status"
@@ -157,17 +158,20 @@
             ></el-switch>
           </template>
         </el-form-item>
-        <el-form-item label="活跃" prop="tipBubble">
+        <el-form-item label="Tip Bubble Switch" prop="tipBubble">
           <template #default="scope">
             <el-switch
-                v-model="form.tipBubble"
+                v-model="form.tipBubbleSwitch"
                 :active-value="1"
                 :inactive-value="0"
             ></el-switch>
           </template>
         </el-form-item>
-        <el-form-item label="missionIntro任务简介" prop="missionIntroduction">
+        <el-form-item label="Mission Introduction" prop="missionIntroduction">
           <el-input v-model="mission" placeholder="输入累计充值金额" disabled/>
+        </el-form-item>
+        <el-form-item label="Description" prop="description" >
+          <el-input v-model="form.description" type="textarea" placeholder="Description" :rows="3" />
         </el-form-item>
         <el-form-item>
           <el-upload
@@ -494,7 +498,7 @@ function handleMemberTierList() {
 }
 
 function uploadAdvertisementUrl() {
-  return url.baseUrl + url.game99PlatformAdminWeb + "/newbie/uploadFile";
+  return url.baseUrl + url.game99PlatformAdminWeb + "/missionNewbie/uploadFile";
 }
 
 function beforeAvatarUpload(file) {
@@ -620,6 +624,7 @@ function reset() {
     status: null,
     tipBubbleSwitch: null,
     missionIntroduction: null,
+    upload: null
   }
   proxy.resetForm('newbieBenefitsRef');
 }
@@ -663,6 +668,7 @@ function submitForm() {
         status: form.value.status,
         completionCount: form.value.completionCount,
         tipBubbleSwitch: form.value.tipBubbleSwitch,
+        description: form.value.description,
         icon: null,
       }
 
