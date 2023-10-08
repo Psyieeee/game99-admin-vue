@@ -178,6 +178,7 @@
                                 clearable
                                 format="YYYY-MM-DD"
                                 value-format="YYYY-MM-DD HH:mm:ss"
+                                @change="calculateNumberOfDays"
                 />
               </div>
             </el-form-item>
@@ -386,7 +387,7 @@
           <div class="el-col el-col-8">
             <div>
               <label style="font-size: 25px; text-align: left">Create Banner</label>
-              <el-radio-group style="float: right;" v-model="createBanner.type">
+              <el-radio-group style="float: right;" v-model="createBanner.type" >
                 <el-radio style="width: 120px" label="1" border>Customize</el-radio>
                 <el-radio style="width: 120px" label="2" border>Pre-Made</el-radio>
               </el-radio-group><hr style="margin-top: 20px; margin-bottom: 20px">
@@ -423,7 +424,7 @@
                 <div class="pagination" style="margin-top: 10px">
                   <button @click="prevPage(1)">Previous</button>
                   <button style="margin-left: 10px" @click="nextPage(1)">Next</button>
-                  <span> Page:  {{ createBanner.icon_currentPage  }} / {{Math.ceil(icons.length / createBanner.iconsPerPage)}}</span>
+                  <span> Page:  {{ createBanner.pagination.icons.info.pageNum  }} / {{createBanner.pagination.icons.totalPages}}</span>
                   <input style="float: right" type="file" id="imageUpload" accept="image/* " @change="populateForm">
                   <button style="float: right; margin-right: 10px" class="upload-button" @click="removeImage(1)">Remove</button>
                 </div>
@@ -473,7 +474,7 @@
                 <div class="pagination" style="margin-top: 10px">
                   <button @click="prevPage(2)">Previous</button>
                   <button style="margin-left: 10px" @click="nextPage(2)">Next</button>
-                  <span> Page:  {{ createBanner.banner_currentPage  }} / {{Math.ceil(banners.length / createBanner.bannersPerPage)}}</span>
+                  <span> Page:  {{ createBanner.pagination.banners.info.pageNum  }} / {{ createBanner.pagination.banners.totalPages }}</span>
                   <input style="float: right" type="file" id="imageUpload" accept="image/* " @change="populateForm">
                   <button style="float: right; margin-right: 10px" class="upload-button" @click="removeImage">Remove</button>
                 </div>
@@ -645,7 +646,24 @@ const data =  reactive({
   },
   createBanner: {
     type: '1',
-    iconCollection: icons.value.slice(0,10),
+    iconCollection: null,
+    totalIcons: null,
+    pagination: {
+      icons: {
+        totalPages: 1,
+        info: {
+          pageNum: 1,
+          pageSize: 10
+        }
+      },
+      banners: {
+        totalPages: 1,
+        info: {
+          pageNum: 1,
+          pageSize: 6
+        }
+      },
+    },
     icon_currentPage: 1,
     iconsPerPage: 10,
     selectedIcon: null,
@@ -704,6 +722,18 @@ function getList(){
   })
 }
 
+function calculateNumberOfDays(){
+  if ( form.value.selectDate.length === 2){
+    const start = new Date(form.value.selectDate[0]);
+    const end = new Date(form.value.selectDate[1]);
+    const timeDifference = end - start;
+    const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+    events.value.signIn.cycle = daysDifference + 1;
+    signInConfig(daysDifference + 1)
+
+  }
+}
+
 function signInConfig(days){
   signInData.value = []
   for ( let i = signInData.value.length; i < days; i++ ) {
@@ -712,11 +742,11 @@ function signInConfig(days){
           day: i+1,
           type: '1',
           rewardAmount: {
-            min: 0.01,
-            max: 1
+            min: null,
+            max: null
           },
-          topUpRequirement: 0,
-          codingRequirement: 0,
+          topUpRequirement: null,
+          codingRequirement: null,
           iconUrl: coinIcons.value[0]
         }
     )
@@ -813,26 +843,40 @@ function reset() {
 /** 新增按钮操作 handle add button*/
 function handleAdd(){
   reset()
+  listEventIcons(createBanner.value.pagination.icons.info)
+  listEventBanners(createBanner.value.pagination.banners.info)
   open.value = true
   title.value = "添加活动信息"
-  listImageCollection();
 }
 
-function listImageCollection(){
-  getAllEventsIcon().then(res => {
-    res.data = res.data.map( img => prependActivityInfoImageBaseURI( img ) )
-    icons.value = res.data;
-    createBanner.value.customImage.icon = icons.value[0]
-    createBanner.value.iconCollection = icons.value.slice(0,10)
+function listEventIcons ( param ) {
+  getAllEventsIcon(param).then(res => {
+    res.rows = res.rows.map( img => prependActivityInfoImageBaseURI( img ))
+    createBanner.value.iconCollection = res.rows;
+    createBanner.value.customImage.icon = res.rows[0];
+    createBanner.value.pagination.icons.totalPages = Math.ceil(res.total / createBanner.value.pagination.icons.info.pageSize );
   })
-
-  getAllEventsBanner().then(res => {
-    banners.value = res.data;
-    banner.value = banners.value[0];
-    createBanner.value.bannerCollection = banners.value.slice(0,6);
+}
+function listEventBanners ( param ) {
+  getAllEventsBanner(param).then(res => {
+    createBanner.value.bannerCollection = res.rows;
+    banner.value = res.rows[0];
+    createBanner.value.pagination.banners.totalPages = Math.ceil(res.total / createBanner.value.pagination.banners.info.pageSize );
   })
 }
 
+function listImages (actionType) {
+  if ( actionType === 1 ) {
+    listEventIcons(createBanner.value.pagination.icons.info)
+  }
+  if ( actionType === 2) {
+    listEventBanners(createBanner.value.pagination.banners.info)
+  }
+  if ( actionType === null) {
+    listEventIcons(createBanner.value.pagination.icons.info)
+    listEventBanners(createBanner.value.pagination.banners.info)
+  }
+}
 function prependActivityInfoImageBaseURI(img) {
   return url.baseUrl + url.game99PlatformAdminWeb + "/activity/activityInfo/image?url=" + img;
 }
@@ -854,7 +898,7 @@ function handleDepositSelectAll(){
 /** 修改按钮操作 handle update*/
 function handleUpdate(row){
   reset();
-  listImageCollection();
+  listImages(null)
   const id = row.id ||ids.value
   activityInfoFindById(id).then(response => {
     response.data.type = response.data.type + ""
@@ -884,47 +928,25 @@ function handleUpdate(row){
   });
 }
 
-function prevPage(actionType){
-  event.preventDefault();
-  let imagesPerPage = actionType === 1 ? createBanner.value.iconsPerPage : createBanner.value.bannersPerPage;
-  let currentPage   = actionType === 1 ? createBanner.value.icon_currentPage : createBanner.value.banner_currentPage;
-  if ( currentPage > 1){
-    currentPage--;
-    let start = ( currentPage * imagesPerPage) - imagesPerPage;
-    let end = start + imagesPerPage;
-    if ( actionType === 1 ) {
-      createBanner.value.icon_currentPage = currentPage;
-      createBanner.value.iconCollection = icons.value.slice(start,end)
-    } else {
-      createBanner.value.banner_currentPage = currentPage;
-      createBanner.value.bannerCollection = banners.value.slice(start,end)
-    }
-  }
-}
-
 function nextPage(actionType) {
   event.preventDefault();
-  let currPage   = actionType === 1 ? createBanner.value.icon_currentPage : createBanner.value.banner_currentPage;
-  let imgPerPage = actionType === 1 ? createBanner.value.iconsPerPage : createBanner.value.bannersPerPage;
-  let images     = actionType === 1 ? icons.value : banners.value;
-  let maxPage    = Math.ceil(images.length / imgPerPage );
-
-  if (currPage >= maxPage){
-    return
+  const pageInfo = actionType === 1 ? createBanner.value.pagination.icons : createBanner.value.pagination.banners;
+  if ( pageInfo.info.pageNum < pageInfo.totalPages ) {
+    pageInfo.info.pageNum++;
   }
-  currPage++;
-
-  let start = ( currPage * imgPerPage) - imgPerPage;
-  let end = start + imgPerPage;
-
-  if ( actionType === 1 ) {
-    createBanner.value.icon_currentPage = currPage;
-    createBanner.value.iconCollection = icons.value.slice(start,end)
-  } else {
-    createBanner.value.banner_currentPage= currPage;
-    createBanner.value.bannerCollection = banners.value.slice(start,end)
-  }
+ listImages(actionType)
 }
+function prevPage(actionType){
+  event.preventDefault();
+  const pageInfo = actionType === 1 ? createBanner.value.pagination.icons : createBanner.value.pagination.banners;
+  if ( actionType === 2 && pageInfo.info.pageNum > 1 ) {
+    pageInfo.info.pageNum--;
+  }
+  listImages(actionType)
+}
+
+
+
 
 function populateForm( event ) {
   loading.value = true

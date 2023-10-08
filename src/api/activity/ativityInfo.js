@@ -80,9 +80,11 @@ export function activityInfoUpdateStatus(id,status){
     })
 }
 
-export function getAllEventsIcon(){
+export function getAllEventsIcon(data){
     return request({
-        url:url.game99PlatformAdminWeb+"/activity/activityInfo/getAllEventsIcon"
+        url:url.game99PlatformAdminWeb+"/activity/activityInfo/getAllEventsIcon",
+        method:'post',
+        data: data
     })
 }
 
@@ -106,9 +108,11 @@ export function removeEventsIcon(imageUrl){
     })
 }
 
-export function getAllEventsBanner(){
+export function getAllEventsBanner(data){
     return request({
-        url:url.game99PlatformAdminWeb+"/activity/activityInfo/getAllEventsBanner"
+        url:url.game99PlatformAdminWeb+"/activity/activityInfo/getAllEventsBanner",
+        method:'post',
+        data: data
     })
 }
 
