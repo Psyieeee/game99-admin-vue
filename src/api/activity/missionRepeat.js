@@ -78,14 +78,6 @@ export function updateSettings(data) {
     })
 }
 
-export function getGamePlatformGameTypeList(query) {
-    return request({
-        url: url.game99PlatformAdminWeb + "/missionRepeat/settingsList",
-        method: 'get',
-        params: query
-    })
-}
-
 export function fileUpload(data) {
     return request({
         url: url.game99PlatformAdminWeb + '/missionNewbie/uploadFile',

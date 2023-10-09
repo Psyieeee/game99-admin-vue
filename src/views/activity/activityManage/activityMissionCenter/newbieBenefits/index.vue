@@ -379,10 +379,6 @@ import {
     fileUpload
 } from "@/api/activity/newbieBenefits";
 
-import {
-  getGamePlatformGameTypeList
-} from "@/api/activity/missionRepeat";
-
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {getToken} from "@/utils/auth";
 import {useRouter} from "vue-router";
@@ -390,7 +386,7 @@ import {url} from "@/utils/url";
 
 const {proxy} = getCurrentInstance();
 
-const settingsId = ref(1);
+const settingsId = ref('NEWBIE');
 const router = useRouter();
 
 const newbieBenefitsList = ref([]);
@@ -425,8 +421,9 @@ const selectAll = ref(true);
 const formData = new FormData();
 //endregion
 const data = reactive({
-  auditRestrictedTabs: [], //TODO: to delete
+  auditRestrictedTabs: [],
   memberTierList: [],
+  selectedAudit: [],
   /** 查询参数 query params*/
 
   queryParams: {
@@ -440,7 +437,7 @@ const data = reactive({
   },
 
   auditParams: {
-    id:1,
+    id: 'NEWBIE',
   },
 
   settingsRules: {
@@ -488,12 +485,11 @@ const data = reactive({
     Authorization: 'Bearer ' + getToken()
   },
 });
-const {auditParams, uploadFileUrl, queryParams, form, settingsRules, rules, headers} = toRefs(data);
+const { auditParams, uploadFileUrl, queryParams, form, settingsRules, rules, headers} = toRefs(data);
 
 function handleMemberTierList() {
-  getMemberTierList(data.queryParams).then(res => {
+  getMemberTierList(data.auditParams).then(res => {
     data.memberTierList = res.data
-    console.log( data.memberTierList )
   })
 }
 
@@ -543,14 +539,6 @@ function handlePreview(file) {
   } else {
     proxy.$modal.msgError('此文件导入失败')
   }
-}
-
-function handleGamePlatformGameTypeList() {
-  getGamePlatformGameTypeList(data.auditParams).then(res => {
-    data.auditRestrictedTabs = res.data
-    data.auditRestrictedTabs = JSON.parse( data.auditRestrictedTabs.map( m => m.auditRestrictedPlatformsJson ) )
-    data.auditRestrictedTabs = data.auditRestrictedTabs.auditRestrictedPlatform
-  })
 }
 
 function handleEffectChange(row) {
@@ -693,6 +681,16 @@ function submitForm() {
   })
 }
 
+function handleSelectedAudit(){
+  data.auditRestrictedTabs.forEach( x => {
+        if( x.selectedCheckboxes != null ){
+          x.platforms.forEach( f => {
+            f.status = x.selectedCheckboxes.includes(f.platform) ?  '1' : '0'
+          })
+        }
+      }
+  )
+}
 /** handle update data */
 function submitSettings() {
   proxy.$refs['settingsRef'].validate(async valid => {
@@ -701,10 +699,10 @@ function submitSettings() {
       proxy.$modal.msgError('Currency is required')
       return;
     }
-
+    handleSelectedAudit();
     if (valid) {
       const params = {
-        id: 1,
+        id: 'NEWBIE',
         ruleDescriptionTranslationSwitch: settingsForm.value.ruleDescriptionTranslationSwitch,
         ruleDescription: settingsForm.value.ruleDescription,
         ruleDescriptionTranslated: settingsForm.value.ruleDescriptionTranslated,
@@ -714,7 +712,8 @@ function submitSettings() {
         withdrawalLimitReminderSwitch: settingsForm.value.withdrawalLimitReminderSwitch ? 1 : 0,
         auditRestrictedPlatformsSwitch: settingsForm.value.auditRestrictedPlatformsSwitch,
         auditMultiplier: settingsForm.value.auditMultiplier,
-        missionSettingsOtherList: checkedCurrency.value.concat(checkedEventCollection.value).concat(checkedCollectionRestriction.value)
+        missionSettingsOtherList: checkedCurrency.value.concat(checkedEventCollection.value).concat(checkedCollectionRestriction.value),
+        auditRestrictedPlatformsJson: JSON.stringify( data.auditRestrictedTabs )
       }
       updateSettings(params).then(() => {
         proxy.$modal.msgSuccess('修改成功')
@@ -747,10 +746,10 @@ function handleSettings() {
     settingsForm.value = response.data;
     total.value = response.total;
     settingsLoading.value = false;
-
     populateCheckList(currencyCollection,     checkedCurrency,              'CURRENCY');
     populateCheckList(eventCollection,        checkedEventCollection,       'EVENT_COLLECTION_ENTRANCE');
     populateCheckList(collectionRestriction,  checkedCollectionRestriction, 'COLLECTION_RESTRICTION');
+    data.auditRestrictedTabs = JSON.parse( response.data.auditRestrictedPlatformsJson  )
 
     handleCheckedSettingsCurrencyChange();
     settingsOpen.value = true;
@@ -783,7 +782,6 @@ function handleCheckedSettingsCurrencyChange() {
 }
 
 handleMemberTierList();
-handleGamePlatformGameTypeList();
 getList();
 
 </script>
