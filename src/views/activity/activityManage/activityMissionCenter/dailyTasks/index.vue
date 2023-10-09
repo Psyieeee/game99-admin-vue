@@ -403,8 +403,7 @@ import {
   getPlatformList,
   gameInfoList,
   getSettings,
-  updateSettings,
-  getGamePlatformGameTypeList
+  updateSettings
 } from "@/api/activity/missionRepeat";
 
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
@@ -463,6 +462,7 @@ const checkedCollectionRestriction = ref([]);
 const formData = new FormData();
 const data = reactive({
       /** 查询参数 query params*/
+      auditRestrictedTabs:[],
       queryParams: {
         missionRepeatType: 1,
         pageNum: 1,
@@ -529,14 +529,15 @@ function handleMemberTierList() {
   })
 }
 
-function handleGamePlatformGameTypeList() {
-  getGamePlatformGameTypeList(data.auditParams).then(res => {
-    data.auditRestrictedTabs = res.data
-    data.auditRestrictedTabs = JSON.parse( data.auditRestrictedTabs.map( m => m.auditRestrictedPlatformsJson ) )
-
-    data.auditRestrictedTabs = data.auditRestrictedTabs.auditRestrictedPlatform
-    console.log( JSON.stringify(data.auditRestrictedTabs) + " 23232" )
-  })
+function handleSelectedAudit(){
+  data.auditRestrictedTabs.forEach( x => {
+        if( x.selectedCheckboxes != null ){
+          x.platforms.forEach( f => {
+            f.status = x.selectedCheckboxes.includes(f.platform) ?  '1' : '0'
+          })
+        }
+      }
+  )
 }
 
 function handleEffectChange(row) {
@@ -791,6 +792,7 @@ function handleSettings() {
     populateCheckList(eventCollection, checkedEventCollection, 'EVENT_COLLECTION_ENTRANCE');
     populateCheckList(collectionRestriction, checkedCollectionRestriction, 'COLLECTION_RESTRICTION');
 
+    data.auditRestrictedTabs = JSON.parse( response.data.auditRestrictedPlatformsJson  )
     // handleCheckedSettingsCurrencyChange();
     settingsOpen.value = true;
   });
@@ -807,17 +809,19 @@ function populateCheckList(collection, checkedList, key) {
 function submitSettings() {
   proxy.$refs['settingsRef'].validate(async valid => {
     if (valid) {
+      handleSelectedAudit()
       const params = {
-        id: settingsId.value,
+        id: 'DAILY',
         ruleDescriptionTranslationSwitch: settingsForm.value.ruleDescriptionTranslationSwitch,
         ruleDescription: settingsForm.value.ruleDescription,
         ruleDescriptionTranslated: settingsForm.value.ruleDescriptionTranslated,
         auditRestrictedPlatformsSwitch: settingsForm.value.auditRestrictedPlatformsSwitch,
-        auditRestrictedPlatformsJson: settingsForm.value.auditRestrictedPlatformsJson,
         auditMultiplier: settingsForm.value.auditMultiplier,
         homePagePromptSwitch: settingsForm.value.homePagePromptSwitch ? 1 : 0,
-        missionSettingsOtherList: checkedEventCollection.value.concat(checkedCollectionRestriction.value)
+        missionSettingsOtherList: checkedEventCollection.value.concat(checkedCollectionRestriction.value),
+        auditRestrictedPlatformsJson: JSON.stringify( data.auditRestrictedTabs )
       }
+
       updateSettings(params).then(() => {
         proxy.$modal.msgSuccess('修改成功')
         settingsOpen.value = false;
@@ -905,7 +909,6 @@ function getGameList() {
 }
 
 handleMemberTierList();
-handleGamePlatformGameTypeList();
 getGameTypeList();
 getGamePlatformList();
 getGameList();
