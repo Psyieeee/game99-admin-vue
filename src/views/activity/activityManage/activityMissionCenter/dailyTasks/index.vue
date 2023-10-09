@@ -83,6 +83,7 @@
       </el-table-column>
       <el-table-column align="center" label="Operator" min-width="180" prop="createdBy"/>
       <el-table-column align="center" label="Operating Time" min-width="180" prop="updateTime"/>
+      <el-table-column align="center" label="Description" min-width="180" prop="description"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
@@ -102,6 +103,19 @@
           </el-button>
         </template>
       </el-table-column>
+      <el-table-column :show-overflow-tooltip="true" align="center" label="URL" min-width="180" prop="icon">
+        <template #default="scope">
+          <div>
+            <a
+                v-if="scope.row.icon !== ''"
+                :href="scope.row.icon"
+                style="color: #409eff; font-size: 12px"
+                target="_blank"
+            >{{ scope.row.icon }}
+            </a>
+          </div>
+        </template>
+      </el-table-column>
     </el-table>
 
     <pagination
@@ -115,8 +129,8 @@
 
     <!-- 添加或修改公司入款银行列表对话框 Add or modify company deposit bank list dialog-->
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
-               width="800px">
-      <el-form ref="missionRepeatRef" :model="form" :rules="rules" label-width="200px">
+               width="600px">
+      <el-form ref="missionRepeatRef" :model="form" :rules="rules" label-width="150px">
         <el-form-item label="Currency" prop="currency" style=" min-width: 290px">
           <el-checkbox
               v-model="selectAll"
@@ -124,7 +138,7 @@
           >Check all
           </el-checkbox>
         </el-form-item>
-        <el-form-item label="Currency" prop="currency" style="min-width: 290px">
+        <el-form-item prop="currency" style="min-width: 290px">
           <el-checkbox-group
               v-model="checkedCurrency"
               @change="handleCheckedCurrencyChange">
@@ -161,7 +175,6 @@
                 v-for="dict in pay_online_recharge_category"
                 :key="dict.value"
                 :label="dict.label"
-                :value="dict.value"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -198,21 +211,21 @@
             </el-select>
           </el-form-item>
         </div>
-        <el-form-item label="累计补给量Cumulative Recharge Amount" prop="cumulativeRechargeAmount">
+        <el-form-item label="累计补给量" prop="cumulativeRechargeAmount">
           <el-input type="number" v-model="form.cumulativeRechargeAmount" placeholder="输入累计充值金额"
                     @change="handleComposeMission"/>
         </el-form-item>
-        <el-form-item label="reward奖励金额" prop="rewardAmount">
+        <el-form-item label="奖励金额" prop="rewardAmount">
           <el-input type="number" v-model="form.rewardAmount" placeholder="请输入奖励金额"
                     @change="handleComposeMission"/>
         </el-form-item>
-        <el-form-item label="Completion Count" prop="completionCount">
+        <el-form-item label="完成次数" prop="completionCount">
           <el-input type="number" v-model="form.completionCount" placeholder="请输入奖励金额"/>
         </el-form-item>
-        <el-form-item label="activity奖励活动" prop="rewardActivity">
+        <el-form-item label="奖励活动" prop="rewardActivity">
           <el-input type="number" v-model="form.rewardActivity" placeholder="请输入奖励活动"/>
         </el-form-item>
-        <el-form-item label="missionIntro任务简介" prop="missionIntroduction">
+        <el-form-item label="任务简介" prop="missionIntroduction">
           <el-input v-model="mission" placeholder="输入累计充值金额" disabled/>
         </el-form-item>
         <el-form-item label="活跃" prop="status" style="min-width: 290px">
@@ -223,6 +236,34 @@
                 :inactive-value="0"
             ></el-switch>
           </template>
+        </el-form-item>
+        <el-form-item label="Description" prop="description" >
+          <el-input v-model="form.description" type="textarea" placeholder="Description" :rows="3" />
+        </el-form-item>
+        <el-form-item>
+          <el-upload
+              ref="upload"
+              :action="uploadFileUrl"
+              :auto-upload="false"
+              :before-upload="beforeAvatarUpload"
+              :headers="headers"
+              :limit="1"
+              :multiple="false"
+              :on-change="selectFile"
+              :on-error="uploadFalse"
+              :on-exceed="uploadExceed"
+              :on-preview="handlePreview"
+              :on-remove="handleRemove"
+              :on-success="uploadSuccess"
+              class="upload-demo"
+              drag
+              name="advertisementFile"
+          >
+            <div class="el-upload__text">Drop file here or <em>点击上传</em></div>
+            <div class="el-upload__tip">
+              最大文件大小为 100 MB
+            </div>
+          </el-upload>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -370,7 +411,8 @@ import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {getToken} from "@/utils/auth";
 import {useRouter} from "vue-router";
 import {listAllType} from "@/api/game/type";
-import {getMemberTierList} from "@/api/activity/newbieBenefits";
+import {fileUpload, getMemberTierList} from "@/api/activity/newbieBenefits";
+import {url} from "@/utils/url";
 
 const router = useRouter();
 const {proxy} = getCurrentInstance();
@@ -418,7 +460,7 @@ const eventCollection = ref([]);
 const checkedEventCollection = ref([]);
 const collectionRestriction = ref([]);
 const checkedCollectionRestriction = ref([]);
-
+const formData = new FormData();
 const data = reactive({
       /** 查询参数 query params*/
       queryParams: {
@@ -471,12 +513,14 @@ const data = reactive({
         id:2,
       },
 
+      uploadFileUrl: uploadAdvertisementUrl(),
+
       headers: {
         Authorization: 'Bearer ' + getToken()
       }
       ,
     });
-const {queryParams, form, rules, headers, settingsRules} = toRefs(data);
+const { uploadFileUrl, queryParams, form, rules, headers, settingsRules} = toRefs(data);
 
 function handleMemberTierList() {
   getMemberTierList(data.queryParams).then(res => {
@@ -614,6 +658,7 @@ function submitForm() {
           cumulativeRechargeAmount: form.value.cumulativeRechargeAmount,
           rewardActivity: form.value.rewardActivity,
           status: form.value.status,
+          description: form.value.description,
         }
       } else {
         params = {
@@ -637,21 +682,75 @@ function submitForm() {
           status: form.value.status,
         }
       }
+      //url validator
+      if (formData.get("file") != null) {
+        await fileUpload(formData).then(res => params.icon = res.data);
+      }
 
       if (form.value.id != null) {
         updateMissionRepeat(params).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
+          getList()
         })
       } else {
         addMissionRepeat(params).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
+          getList()
         })
       }
-      getList()
+
     }
   })
+}
+
+function uploadAdvertisementUrl() {
+  return url.baseUrl + url.game99PlatformAdminWeb + "/missionNewbie/uploadFile";
+}
+
+function beforeAvatarUpload(file) {
+  const fileExtension = file.name.split('.')[1]
+  const isLt2M = file.size / 1024 / 1024 < 100
+  if (fileExtension != 'jpg' &&
+      fileExtension != 'png' &&
+      fileExtension != 'bmp') {
+    proxy.$modal.msgError('无效音乐')
+  } else if (!isLt2M) {
+    proxy.$modal.msgError('上传模板大小不能超过100MB!')
+  }
+}
+
+function handleRemove() {
+  proxy.$modal.msgSuccess('移除成功')
+}
+
+function uploadSuccess() {
+  proxy.$modal.msgSuccess('文件上传成功');
+  queryParams.memberId = null
+  queryParams.pageNum = 1
+  getList()
+}
+
+function selectFile( file ) {
+  formData.append("file", file.raw)
+  formData.append("name", file.name)
+}
+
+function uploadFalse() {
+  proxy.$modal.msgError(' 上传音乐文件失败')
+}
+
+function uploadExceed() {
+  proxy.$modal.msgError('只能选择一个音乐文件，如果要更改，请退出并重新选择。')
+}
+
+function handlePreview(file) {
+  if (file.response.status) {
+    proxy.$modal.msgSuccess('此文件导入成功')
+  } else {
+    proxy.$modal.msgError('此文件导入失败')
+  }
 }
 
 /** handle update data */

@@ -83,6 +83,7 @@
       </el-table-column>
       <el-table-column align="center" label="Operator" min-width="180" prop="createdBy"/>
       <el-table-column align="center" label="Operating Time" min-width="180" prop="updateTime"/>
+      <el-table-column align="center" label="Description" min-width="180" prop="description"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
