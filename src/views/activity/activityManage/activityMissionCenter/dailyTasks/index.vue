@@ -361,7 +361,6 @@
                 <el-radio :label="0" size="large">Not Limited</el-radio>
                 <el-radio :label="1" size="large">Only for the following checked platforms</el-radio>
               </el-radio-group>
-
               <el-col>
                 <el-tabs type="border-card" v-if="settingsForm.auditRestrictedPlatformsSwitch === 1">
                   <el-tab-pane v-for="tab in data.auditRestrictedTabs" :key="tab.gameType" :label="tab.gameType">
@@ -403,14 +402,17 @@ import {
   getPlatformList,
   gameInfoList,
   getSettings,
-  updateSettings
+  updateSettings,
+  fileUpload
 } from "@/api/activity/missionRepeat";
 
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {getToken} from "@/utils/auth";
 import {useRouter} from "vue-router";
 import {listAllType} from "@/api/game/type";
-import {fileUpload, getMemberTierList} from "@/api/activity/newbieBenefits";
+import {
+  getMemberTierList
+} from "@/api/activity/newbieBenefits";
 import {url} from "@/utils/url";
 
 const router = useRouter();
@@ -464,7 +466,7 @@ const data = reactive({
       /** 查询参数 query params*/
       auditRestrictedTabs:[],
       queryParams: {
-        missionRepeatType: 1,
+        missionRepeatType: 'DAILY',
         pageNum: 1,
         pageSize: 20,
         type: null,
@@ -509,8 +511,9 @@ const data = reactive({
 
       /** 表单参数 form parameter*/
       form: {},
+
       auditParams: {
-        id:2,
+        id:'DAILY',
       },
 
       uploadFileUrl: uploadAdvertisementUrl(),
@@ -523,9 +526,8 @@ const data = reactive({
 const { uploadFileUrl, queryParams, form, rules, headers, settingsRules} = toRefs(data);
 
 function handleMemberTierList() {
-  getMemberTierList(data.queryParams).then(res => {
+  getMemberTierList(data.auditParams).then(res => {
     data.memberTierList = res.data
-    console.log( data.memberTierList )
   })
 }
 
@@ -575,7 +577,6 @@ function handleQuery() {
 function getList() {
   loading.value = true;
   missionRepeatList(queryParams.value).then(response => {
-    console.log(response.data)
     missionRepeatLists.value = response.data;
     total.value = response.total;
     loading.value = false;
@@ -639,7 +640,6 @@ function submitForm() {
         status: form.value.status,
       }
       if (form.value.missionObjectives === '累计充值') {
-        console.log("aa " + form.value.accumulatedRechargeSource.map((item) => item.label).join(','))
         params = {
           accumulatedRechargeSource: form.value.accumulatedRechargeSource.map((item) => item.label).join(','),
           platformId: null,
@@ -791,7 +791,7 @@ function handleSettings() {
     // populateCheckList(currencyCollection, checkedCurrency, 'CURRENCY');
     populateCheckList(eventCollection, checkedEventCollection, 'EVENT_COLLECTION_ENTRANCE');
     populateCheckList(collectionRestriction, checkedCollectionRestriction, 'COLLECTION_RESTRICTION');
-
+    console.log( response.data )
     data.auditRestrictedTabs = JSON.parse( response.data.auditRestrictedPlatformsJson  )
     // handleCheckedSettingsCurrencyChange();
     settingsOpen.value = true;

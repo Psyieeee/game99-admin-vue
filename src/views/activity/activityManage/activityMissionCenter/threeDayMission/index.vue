@@ -530,6 +530,17 @@ function handleMemberTierList() {
   })
 }
 
+function handleSelectedAudit(){
+  data.auditRestrictedTabs.forEach( x => {
+        if( x.selectedCheckboxes != null ){
+          x.platforms.forEach( f => {
+            f.status = x.selectedCheckboxes.includes(f.platform) ?  '1' : '0'
+          })
+        }
+      }
+  )
+}
+
 function handleEffectChange(row) {
   let text = row.tipBubbleSwitch === '1' ? '启用' : '停用'
   proxy.$confirm('确认要' + text + '"' + row.taskClassification + '"吗?', '警告', {
