@@ -295,10 +295,36 @@
                   <el-radio label="2">Cumulative</el-radio>
                 </el-radio-group>
               </el-form-item>
+              <el-form-item label="Prospect" prop="prospect">
+                <el-radio-group v-model="events.signIn.prospect">
+                  <el-radio label="1">Normal</el-radio>
+                  <el-radio label="2">VIP</el-radio>
+                </el-radio-group>
+              </el-form-item>
               <el-form-item label="Cycle" prop="cycle">
                   <el-input style="width: 350px" v-model="events.signIn.cycle" placeholder="Please enter a number of days" @change="signInConfig(events.signIn.cycle)"/>
               </el-form-item>
-              <el-form-item>
+              <el-form-item label="VIP Level" v-if="events.signIn.prospect === '2'">
+                <el-select
+                    v-model="events.signIn.vipLevel"
+                    filterable
+                    clearable
+                    style="width: 350px"
+                    @change="handleVipLevelChange"
+                >
+                  <el-option
+                      v-for="i in 30"
+                      :key="i"
+                      :label="'VIP ' + i"
+                      :value="i"
+                  ></el-option>
+                </el-select>
+                <div style="padding-left: 10px">
+                  <el-button type="primary" size="small" @click="saveVipConfig">Save</el-button>
+                  <el-button icon="Refresh" size="small" @click="resetVipConfig">Reset</el-button>
+                </div>
+              </el-form-item>
+              <el-form-item >
                 <el-table :data="signInData" style="width: 80%" >
                   <el-table-column label="Day" width="70" align="center" prop="day">
                     <template #default="scope">
@@ -495,6 +521,7 @@
 <script name="ActivityInfo" setup>
 import {url} from "@/utils/url";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
+import { ElMessage } from 'element-plus'
 import {
   activityInfoAdd,
   activityInfoDelete,
@@ -640,8 +667,11 @@ const data =  reactive({
     },
     signIn:{
       signMethod: '1',
+      prospect: '1',
       cycle: null,
-      signInData: signInData
+      signInData: signInData,
+      vipLevel: 1,
+      vipSignInData: [],
     }
   },
   createBanner: {
@@ -730,7 +760,6 @@ function calculateNumberOfDays(){
     const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
     events.value.signIn.cycle = daysDifference + 1;
     signInConfig(daysDifference + 1)
-
   }
 }
 
@@ -933,20 +962,56 @@ function nextPage(actionType) {
   const pageInfo = actionType === 1 ? createBanner.value.pagination.icons : createBanner.value.pagination.banners;
   if ( pageInfo.info.pageNum < pageInfo.totalPages ) {
     pageInfo.info.pageNum++;
+    listImages(actionType)
   }
- listImages(actionType)
 }
 function prevPage(actionType){
   event.preventDefault();
   const pageInfo = actionType === 1 ? createBanner.value.pagination.icons : createBanner.value.pagination.banners;
-  if ( actionType === 2 && pageInfo.info.pageNum > 1 ) {
+  if ( pageInfo.info.pageNum > 1 ) {
     pageInfo.info.pageNum--;
+    listImages(actionType)
   }
-  listImages(actionType)
 }
 
+function saveVipConfig(){
+  const event = events.value.signIn
+  const obj = {
+    level: event.vipLevel,
+    value: event.signInData
+  };
 
+  let hasData = false;
+  let indexOfExistingData = 0;
+  for ( let i=0; i<event.vipSignInData.length; i++ ){
+    if ( event.vipLevel === event.vipSignInData[i].level){
+      hasData = true;
+      indexOfExistingData = i;
+      break
+    }
+  }
 
+  if ( hasData ) {
+    event.vipSignInData[indexOfExistingData].value = event.signInData;
+  } else {
+    event.vipSignInData.push( obj );
+  }
+  ElMessage.success('Success')
+}
+function resetVipConfig(){
+  signInConfig(events.value.signIn.cycle)
+}
+
+function handleVipLevelChange(){
+  const event   = events.value.signIn
+  let currIndex = event.vipLevel-1;
+
+  if ( event.vipSignInData[currIndex] === undefined ) {
+    resetVipConfig()
+  } else {
+    signInData.value = event.vipSignInData[currIndex].value;
+  }
+}
 
 function populateForm( event ) {
   loading.value = true
