@@ -83,6 +83,19 @@
       </el-table-column>
       <el-table-column align="center" label="Operator" min-width="180" prop="createdBy"/>
       <el-table-column align="center" label="Operating Time" min-width="180" prop="updateTime"/>
+      <el-table-column :show-overflow-tooltip="true" align="center" label="URL" min-width="180" prop="icon">
+        <template #default="scope">
+          <div>
+            <a
+                v-if="scope.row.icon !== ''"
+                :href="scope.row.icon"
+                style="color: #409eff; font-size: 12px"
+                target="_blank"
+            >{{ scope.row.icon }}
+            </a>
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="Description" min-width="180" prop="description"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
@@ -125,7 +138,7 @@
           >Check all
           </el-checkbox>
         </el-form-item>
-        <el-form-item label="Currency" prop="currency" style="min-width: 290px">
+        <el-form-item prop="currency" style="min-width: 290px">
           <el-checkbox-group
               v-model="checkedCurrency"
               @change="handleCheckedCurrencyChange">
@@ -225,6 +238,31 @@
                 :inactive-value="0"
             ></el-switch>
           </template>
+        </el-form-item>
+        <el-form-item>
+          <el-upload
+              ref="upload"
+              :action="uploadFileUrl"
+              :auto-upload="false"
+              :before-upload="beforeAvatarUpload"
+              :headers="headers"
+              :limit="1"
+              :multiple="false"
+              :on-change="selectFile"
+              :on-error="uploadFalse"
+              :on-exceed="uploadExceed"
+              :on-preview="handlePreview"
+              :on-remove="handleRemove"
+              :on-success="uploadSuccess"
+              class="upload-demo"
+              drag
+              name="advertisementFile"
+          >
+            <div class="el-upload__text">Drop file here or <em>点击上传</em></div>
+            <div class="el-upload__tip">
+              最大文件大小为 100 MB
+            </div>
+          </el-upload>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -371,6 +409,7 @@ import {getToken} from "@/utils/auth";
 import {useRouter} from "vue-router";
 import {listAllType} from "@/api/game/type";
 import {getMemberTierList} from "@/api/activity/newbieBenefits";
+import {url} from "@/utils/url";
 
 const router = useRouter();
 const {proxy} = getCurrentInstance();
@@ -414,7 +453,7 @@ const settingsForm = ref([]);
 // const currencyCollection = ref([]);
 // const checkedCurrency = ref([]);
 const settingsOpen = ref(false);
-const settingsId = ref(3);
+const settingsId = ref('WEEKLY');
 const eventCollection = ref([]);
 const checkedEventCollection = ref([]);
 const collectionRestriction = ref([]);
@@ -426,7 +465,7 @@ const data = reactive({
       showEditButton: false,
       /** 查询参数 query params*/
       queryParams: {
-        missionRepeatType: 'WEEKLY',
+        missionSettingsId: 'WEEKLY',
         pageNum: 1,
         pageSize: 20,
         type: null,
@@ -436,7 +475,7 @@ const data = reactive({
       },
 
       auditParams: {
-        id:3
+        id:'WEEKLY'
       },
 
       settingsRules: {
@@ -478,11 +517,12 @@ const data = reactive({
 
       headers: {
         Authorization: 'Bearer ' + getToken()
-      }
-      ,
+      },
+
+      uploadFileUrl: uploadAdvertisementUrl(),
     })
 ;
-const {queryParams, form, rules, headers, settingsRules, auditParams} = toRefs(data);
+const { uploadFileUrl, queryParams, form, rules, headers, settingsRules, auditParams} = toRefs(data);
 
 
 function handleMemberTierList() {
@@ -763,9 +803,21 @@ function populateCheckList(collection, checkedList, key) {
       .filter(k => k.missionSettingsCode === key && k.status === 1)
 }
 
+function handleSelectedAudit(){
+  data.auditRestrictedTabs.forEach( x => {
+        if( x.selectedCheckboxes != null ){
+          x.platforms.forEach( f => {
+            f.status = x.selectedCheckboxes.includes(f.platform) ?  '1' : '0'
+          })
+        }
+      }
+  )
+}
+
 /** handle update data */
 function submitSettings() {
   proxy.$refs['settingsRef'].validate(async valid => {
+    handleSelectedAudit()
     if (valid) {
       const params = {
         id: settingsId.value,
@@ -773,13 +825,14 @@ function submitSettings() {
         ruleDescription: settingsForm.value.ruleDescription,
         ruleDescriptionTranslated: settingsForm.value.ruleDescriptionTranslated,
         auditRestrictedPlatformsSwitch: settingsForm.value.auditRestrictedPlatformsSwitch,
-        auditRestrictedPlatformsJson: settingsForm.value.auditRestrictedPlatformsJson,
+        auditRestrictedPlatformsJson: JSON.stringify( data.auditRestrictedTabs ),
         homePagePromptSwitch: settingsForm.value.homePagePromptSwitch ? 1 : 0,
         auditMultiplier: settingsForm.value.auditMultiplier,
         missionSettingsOtherList: checkedEventCollection.value.concat(checkedCollectionRestriction.value)
       }
       updateSettings(params).then(() => {
         proxy.$modal.msgSuccess('修改成功')
+        data.auditRestrictedTabs = null;
         settingsOpen.value = false;
         getList()
       })
@@ -791,8 +844,53 @@ function handleCheckAllSettingsChange() {
   checkedCurrency.value = selectAll.value ? currencyCollection.value : [];
 }
 
-function handleCheckedSettingsCurrencyChange() {
-  selectAll.value = checkedCurrency.value.length === currencyCollection.value.length;
+
+function handleRemove() {
+  proxy.$modal.msgSuccess('移除成功')
+}
+
+function uploadSuccess() {
+  proxy.$modal.msgSuccess('文件上传成功');
+  queryParams.memberId = null
+  queryParams.pageNum = 1
+  getList()
+}
+
+function selectFile( file ) {
+  formData.append("file", file.raw)
+  formData.append("name", file.name)
+}
+
+function uploadFalse() {
+  proxy.$modal.msgError(' 上传音乐文件失败')
+}
+
+function uploadExceed() {
+  proxy.$modal.msgError('只能选择一个音乐文件，如果要更改，请退出并重新选择。')
+}
+
+function handlePreview(file) {
+  if (file.response.status) {
+    proxy.$modal.msgSuccess('此文件导入成功')
+  } else {
+    proxy.$modal.msgError('此文件导入失败')
+  }
+}
+
+function beforeAvatarUpload(file) {
+  const fileExtension = file.name.split('.')[1]
+  const isLt2M = file.size / 1024 / 1024 < 100
+  if (fileExtension != 'jpg' &&
+      fileExtension != 'png' &&
+      fileExtension != 'bmp') {
+    proxy.$modal.msgError('无效音乐')
+  } else if (!isLt2M) {
+    proxy.$modal.msgError('上传模板大小不能超过100MB!')
+  }
+}
+
+function uploadAdvertisementUrl() {
+  return url.baseUrl + url.game99PlatformAdminWeb + "/missionNewbie/uploadFile";
 }
 
 handleMemberTierList();
