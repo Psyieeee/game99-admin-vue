@@ -357,26 +357,26 @@
           </el-col>
           <el-col>
             <el-form-item label="Audit Restricted Platform">
-              <el-radio-group v-model="settingsForm.auditRestrictedPlatformsSwitch" class="ml-4">
-                <el-radio :label="0" size="large">Not Limited</el-radio>
-                <el-radio :label="1" size="large">Only for the following checked platforms</el-radio>
-              </el-radio-group>
               <el-col>
-                <el-tabs type="border-card" v-if="settingsForm.auditRestrictedPlatformsSwitch === 1">
-                  <el-tab-pane v-for="tab in data.auditRestrictedTabs" :key="tab.gameType" :label="tab.gameType">
-                    <el-checkbox-group v-model="tab.selectedCheckboxes">
-                      <el-checkbox v-for="plat in tab.platforms"
-                                   :key="plat.status"
-                                   :checked="plat.status === 1"
-                                   :label="plat.platform"
-                                   size="large"
-                                   style="width: auto">
-                        {{ plat.platform }}
-                      </el-checkbox>
-                    </el-checkbox-group>
-                  </el-tab-pane>
-                </el-tabs>
+                <el-radio-group v-model="settingsForm.auditRestrictedPlatformsSwitch" class="ml-4">
+                  <el-radio :label="0" size="large">Not Limited</el-radio>
+                  <el-radio :label="1" size="large">Only for the following checked platforms</el-radio>
+                </el-radio-group>
               </el-col>
+              <el-tabs type="border-card" v-if="settingsForm.auditRestrictedPlatformsSwitch === 1">
+                <el-tab-pane v-for="tab in data.auditRestrictedTabs" :key="tab.gameType" :label="tab.gameType">
+                  <el-checkbox-group v-model="tab.selectedCheckboxes">
+                    <el-checkbox v-for="plat in tab.platforms"
+                                 :key="plat.status"
+                                 :checked="plat.status === 1"
+                                 :label="plat.platform"
+                                 size="large"
+                                 style="width: auto">
+                      {{ plat.platform }}
+                    </el-checkbox>
+                  </el-checkbox-group>
+                </el-tab-pane>
+              </el-tabs>
             </el-form-item>
           </el-col>
         </el-row>
@@ -456,7 +456,7 @@ const settingsForm = ref([]);
 // const currencyCollection = ref([]);
 // const checkedCurrency = ref([]);
 const settingsOpen = ref(false);
-const settingsId = ref(2);
+const settingsId = ref('DAILY');
 const eventCollection = ref([]);
 const checkedEventCollection = ref([]);
 const collectionRestriction = ref([]);
@@ -466,7 +466,7 @@ const data = reactive({
       /** 查询参数 query params*/
       auditRestrictedTabs:[],
       queryParams: {
-        missionRepeatType: 'DAILY',
+        missionSettingsId: 'DAILY',
         pageNum: 1,
         pageSize: 20,
         type: null,
@@ -824,6 +824,7 @@ function submitSettings() {
 
       updateSettings(params).then(() => {
         proxy.$modal.msgSuccess('修改成功')
+        data.auditRestrictedTabs = null;
         settingsOpen.value = false;
         getList()
       })

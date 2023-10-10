@@ -405,8 +405,7 @@ import {
   getPlatformList,
   gameInfoList,
   getSettings,
-  updateSettings,
-  getGamePlatformGameTypeList
+  updateSettings
 } from "@/api/activity/missionRepeat";
 
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
@@ -466,7 +465,7 @@ const checkedCollectionRestriction = ref([]);
 
 const data = reactive({
       queryParams: {
-        missionRepeatType: 3,
+        missionRepeatType: 'THREE_DAY',
         pageNum: 1,
         pageSize: 20,
         type: null,
@@ -512,7 +511,7 @@ const data = reactive({
       form: {},
 
       auditParams: {
-        id: 4,
+        id: 'THREE_DAY',
       },
 
       headers: {
@@ -731,6 +730,7 @@ function handleSettings() {
     populateCheckList(eventCollection, checkedEventCollection, 'EVENT_COLLECTION_ENTRANCE');
     populateCheckList(collectionRestriction, checkedCollectionRestriction, 'COLLECTION_RESTRICTION');
 
+    data.auditRestrictedTabs = JSON.parse( response.data.auditRestrictedPlatformsJson )
     handleCheckedSettingsCurrencyChange();
     settingsOpen.value = true;
   });
@@ -816,14 +816,6 @@ function handleGamePlatformChange() {
   getGameTypeList();
 }
 
-function handleGamePlatformGameTypeList() {
-  getGamePlatformGameTypeList(data.auditParams).then(res => {
-    data.auditRestrictedTabs = res.data
-    data.auditRestrictedTabs = JSON.parse( data.auditRestrictedTabs.map( m => m.auditRestrictedPlatformsJson ) )
-    data.auditRestrictedTabs = data.auditRestrictedTabs.auditRestrictedPlatform
-    console.log( JSON.stringify(data.auditRestrictedTabs) + " 23232" )
-  })
-}
 
 function getGameTypeList() {
   listAllType().then(res => {
@@ -866,7 +858,6 @@ function getGameList() {
 }
 
 handleMemberTierList();
-handleGamePlatformGameTypeList();
 getGameTypeList();
 getGamePlatformList();
 getGameList();

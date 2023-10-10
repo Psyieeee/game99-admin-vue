@@ -363,8 +363,7 @@ import {
   getPlatformList,
   gameInfoList,
   getSettings,
-  updateSettings,
-  getGamePlatformGameTypeList
+  updateSettings
 } from "@/api/activity/missionRepeat";
 
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
@@ -427,7 +426,7 @@ const data = reactive({
       showEditButton: false,
       /** 查询参数 query params*/
       queryParams: {
-        missionRepeatType: 2,
+        missionRepeatType: 'WEEKLY',
         pageNum: 1,
         pageSize: 20,
         type: null,
@@ -490,16 +489,6 @@ function handleMemberTierList() {
   getMemberTierList(data.queryParams).then(res => {
     data.memberTierList = res.data
     console.log( data.memberTierList )
-  })
-}
-
-function handleGamePlatformGameTypeList() {
-  getGamePlatformGameTypeList(data.auditParams).then(res => {
-    data.auditRestrictedTabs = res.data
-    data.auditRestrictedTabs = JSON.parse( data.auditRestrictedTabs.map( m => m.auditRestrictedPlatformsJson ) )
-
-    data.auditRestrictedTabs = data.auditRestrictedTabs.auditRestrictedPlatform
-    console.log( JSON.stringify(data.auditRestrictedTabs) + " 23232" )
   })
 }
 
@@ -759,11 +748,10 @@ function handleSettings() {
     total.value = response.total;
     settingsLoading.value = false;
 
-    // populateCheckList(currencyCollection, checkedCurrency, 'CURRENCY');
     populateCheckList(eventCollection, checkedEventCollection, 'EVENT_COLLECTION_ENTRANCE');
     populateCheckList(collectionRestriction, checkedCollectionRestriction, 'COLLECTION_RESTRICTION');
 
-    // handleCheckedSettingsCurrencyChange();
+    data.auditRestrictedTabs = JSON.parse( response.data.auditRestrictedPlatformsJson )
     settingsOpen.value = true;
   });
 }
@@ -808,7 +796,6 @@ function handleCheckedSettingsCurrencyChange() {
 }
 
 handleMemberTierList();
-handleGamePlatformGameTypeList();
 getGameTypeList();
 getGamePlatformList();
 getGameList();

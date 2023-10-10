@@ -717,6 +717,7 @@ function submitSettings() {
       }
       updateSettings(params).then(() => {
         proxy.$modal.msgSuccess('修改成功')
+        data.auditRestrictedTabs = null;
         settingsOpen.value = false;
         getList()
       })
