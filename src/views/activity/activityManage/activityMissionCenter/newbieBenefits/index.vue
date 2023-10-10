@@ -148,7 +148,6 @@
         <el-form-item label="activity奖励活动" prop="rewardActivity">
           <el-input type="number" v-model="form.rewardActivity" placeholder="请输入奖励活动"/>
         </el-form-item>
-
         <el-form-item label="Status (On/Off)" prop="status">
           <template #default="scope">
             <el-switch

@@ -20,7 +20,7 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['mission:activity:add']"
+            v-hasPermi="['repeat:activity:add']"
             icon="Plus"
             plain
             size="small"
@@ -31,7 +31,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['mission:activity:remove']"
+            v-hasPermi="['repeat:activity:remove']"
             :disabled="multiple"
             icon="Delete"
             plain
@@ -43,7 +43,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['mission:activity:settings']"
+            v-hasPermi="['repeat:activity:settings']"
             icon="gear"
             plain
             size="small"
@@ -78,14 +78,14 @@
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
-              v-hasPermi="['mission:activity:update']"
+              v-hasPermi="['repeat:activity:update']"
               icon="Edit" link
               size="small"
               type="primary"
               @click="handleUpdate(scope.row)">修改
           </el-button>
           <el-button
-              v-hasPermi="['mission:activity:remove']"
+              v-hasPermi="['repeat:activity:remove']"
               icon="Delete" link
               size="small"
               style="color: #e05e5e"
@@ -146,27 +146,19 @@
 
     <el-dialog v-model="settingsOpen" :close-on-click-modal="false" title="汪跃度设署" append-to-body
                style="padding-bottom: 20px"
-               width="800px">
-      <el-form :inline="true" ref="settingsRef" :model="settingsForm" :rules="rules" label-width="500px">
-        <el-row>
+               width="600px">
+      <el-form :inline="true" ref="settingsRef" :model="settingsForm" :rules="rules" label-width="270px">
           <el-col :span="24">
-            <el-form-item label="Mission Cycle (每日周期（重置为 0:00）or 每周循环（周一0:00重置）" prop="reset"
+            <el-form-item label="Circular Way" prop="reset"
                           style="min-width: 290px">
               <template #default="scope">
-                <el-switch
-                    v-model="settingsForm.reset"
-                    :active-value="1"
-                    :inactive-value="0"
-                ></el-switch>
+                <el-select v-model="form.region" placeholder="please select your zone">
+                  <el-option label="Mission Cycle (每日周期（重置为 0:00）" :value="0" />
+                  <el-option label="Weekly Cycle (每周循环（周一0:00重置)" :value="1" />
+                </el-select>
               </template>
-              <!--          <el-select clearable placeholder="Reset Time">-->
-              <!--            <el-option label="每日周期（重置为 0:00）" value="0"></el-option>-->
-              <!--            <el-option label="每周循环（周一0:00重置）" value="1"></el-option>-->
-              <!--          </el-select>-->
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="24">
             <el-form-item label="Repeat Chest Open Cycle Time" prop="repeatOpenSwitch" style="min-width: 290px">
               <template #default="scope">
@@ -176,25 +168,18 @@
                     :inactive-value="0"
                 ></el-switch>
               </template>
-              <!--          <el-select clearable placeholder="状态">-->
-              <!--            <el-option label="每日周期（重置为 0:00）" value="0"></el-option>-->
-              <!--            <el-option label="每周循环（周一0:00重置）" value="1"></el-option>-->
-              <!--          </el-select>-->
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="24">
             <el-form-item label="Audit Multiplier" prop="auditMultiplier" style="min-width: 290px">
               <el-input
                   v-model="settingsForm.auditMultiplier"
                   clearable
                   placeholder="enter audit multiplier"
+                  type="number"
               />
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="24">
             <el-form-item label="Audit Restricted Platform" prop="auditPlatformSwitch" style="min-width: 290px">
               <template #default="scope">
@@ -204,22 +189,8 @@
                     :inactive-value="0"
                 ></el-switch>
               </template>
-              <!--          <el-select clearable placeholder="状态">-->
-              <!--            <el-option label="每日周期（重置为 0:00）" value="0"></el-option>-->
-              <!--            <el-option label="每周循环（周一0:00重置）" value="1"></el-option>-->
-              <!--          </el-select>-->
             </el-form-item>
           </el-col>
-        </el-row>
-        <!--        <el-form-item :v-model="settingsForm.auditRestrictedPlatformsSwitch=1" prop="auditPlatformRestricted" style="min-width: 290px">-->
-        <!--          <template>-->
-        <!--            <el-tree-->
-        <!--                show-checkbox-->
-        <!--                node-key="auditRestrictedPlatform"-->
-        <!--                :data="settingsForm.auditPlatformRestricted"-->
-        <!--            />-->
-        <!--          </template>-->
-        <!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitSettingsForm">确 定</el-button>
@@ -238,7 +209,9 @@ import {
   deleteActivityMission,
   addActivityMission,
   updateActivityMission,
-  changeMissionActivityStatus, getMissionActivitySettings, updateMissionActivitySettings,
+  changeMissionActivityStatus,
+  getMissionActivitySettings,
+  updateMissionActivitySettings
 } from "@/api/activity/activityMission";
 
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
@@ -392,16 +365,15 @@ function submitForm() {
 function submitSettingsForm() {
   proxy.$refs['settingsRef'].validate(async valid => {
     if (valid) {
-      // const params = {
-      //   name: settingsForm.value.name,
-      //   missionSettingsId: 5,
-      //   requiredActivityLevel: settingsForm.value.requiredActivityLevel,
-      //   rewardType: settingsForm.value.rewardType,
-      //   rewardAmount: settingsForm.value.rewardAmount,
-      //   status: 0,
-      //
-      // }
-      updateMissionActivitySettings(settingsForm.value).then(response => {
+      console.log( settingsForm.value )
+      const params = {
+        reset: settingsForm.value.reset,
+        repeatOpenSwitch: settingsForm.value.repeatOpenSwitch,
+        auditMultiplier: settingsForm.value.auditMultiplier,
+        auditPlatformSwitch: settingsForm.value.auditPlatformSwitch,
+        missionSettingsId: 'ACTIVITY'
+      }
+      updateMissionActivitySettings(params).then(response => {
         proxy.$modal.msgSuccess('修改成功')
         settingsOpen.value = false
         getList()
