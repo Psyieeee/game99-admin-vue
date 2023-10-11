@@ -296,18 +296,18 @@
                   <el-radio label="2">Cumulative</el-radio>
                 </el-radio-group>
               </el-form-item>
+              <el-form-item label="Cycle" prop="cycle">
+                  <el-input style="width: 350px" v-model="events.signIn.cycle" placeholder="Please enter a number of days" @change="signInConfig(events.signIn.cycle)"/>
+              </el-form-item>
               <el-form-item label="Prospect" prop="prospect">
                 <el-radio-group v-model="events.signIn.prospect">
                   <el-radio label="1">Normal</el-radio>
                   <el-radio label="2">VIP</el-radio>
                 </el-radio-group>
               </el-form-item>
-              <el-form-item label="Cycle" prop="cycle">
-                  <el-input style="width: 350px" v-model="events.signIn.cycle" placeholder="Please enter a number of days" @change="signInConfig(events.signIn.cycle)"/>
-              </el-form-item>
               <el-form-item label="VIP Level" v-if="events.signIn.prospect === '2'">
                 <el-select
-                    v-model="events.signIn.vipLevel"
+                    v-model="events.vipLevel"
                     filterable
                     clearable
                     style="width: 350px"
@@ -646,6 +646,8 @@ const data =  reactive({
   showTime: [],
   form:{},
   events: {
+    vipLevel: 1,
+    vipSignInData: [],
     deposit: {
       resetCycle: '1',
       limitedRechargeSwitch: false,
@@ -659,8 +661,6 @@ const data =  reactive({
       prospect: '1',
       cycle: null,
       signInData: signInData,
-      vipLevel: 1,
-      vipSignInData: [],
     }
   },
   createBanner: {
@@ -786,17 +786,17 @@ function signInConfig(days){
 function saveVipConfig(){
   const event = events.value.signIn
   const obj = {
-    level: event.vipLevel,
+    level: events.value.vipLevel,
     value: event.signInData
   };
 
-  const indexOfExistingData = event.vipSignInData.findIndex(data => data.level === event.vipLevel);
+  const indexOfExistingData = events.value.vipSignInData.findIndex(data => data.level === events.value.vipLevel);
   const hasData = indexOfExistingData !== -1;
 
   if ( hasData ) {
-    event.vipSignInData[indexOfExistingData].value = event.signInData;
+    events.value.vipSignInData[indexOfExistingData].value = event.signInData;
   } else {
-    event.vipSignInData.push( obj );
+    events.value.vipSignInData.push( obj );
   }
   ElMessage.success('Success')
 }
@@ -804,13 +804,12 @@ function resetVipConfig(){
   signInConfig(events.value.signIn.cycle)
 }
 function handleVipLevelChange(){
-  const event   = events.value.signIn
-  let currIndex = event.vipLevel-1;
+  let currIndex = events.value.vipLevel-1;
 
-  if ( event.vipSignInData[currIndex] === undefined ) {
+  if ( events.value.vipSignInData[currIndex] === undefined ) {
     resetVipConfig()
   } else {
-    signInData.value = event.vipSignInData[currIndex].value;
+    signInData.value = events.value.vipSignInData[currIndex].value;
   }
 }
 
@@ -1007,18 +1006,24 @@ function handleUpdate(row){
   const id = row.id ||ids.value
   activityInfoFindById(id).then(response => {
     response.data.type = response.data.type + ""
-    let config = JSON.parse( response.data.configString )
+    let parsedResponse =  JSON.parse(response.data.configString);
+    let data = parsedResponse.eventConfig.signInData
     switch ( response.data.typeId ) {
       case 1:
-        depositData.value = config.eventConfig.tableData;
+        depositData.value = parsedResponse.eventConfig.tableData;
         break;
       case 2:
-        signInData.value = config.eventConfig.signInData;
+        events.value.signIn = parsedResponse.eventConfig
+        if ( parsedResponse.eventConfig.prospect === "2" ) {
+          events.value.signIn.signInData = signInData;
+          events.value.vipSignInData = data;
+          handleVipLevelChange()
+        }
         break;
     }
 
-    if ( config.customBannerConfig !== null ) {
-      createBanner.value.customImage = config.customBannerConfig;
+    if ( parsedResponse.customBannerConfig !== null ) {
+      createBanner.value.customImage = parsedResponse.customBannerConfig;
       createBanner.value.type = '1'
     } else {
       createBanner.value.type = '2'
@@ -1057,6 +1062,9 @@ function submitForm() {
           form.value.event = events.value.deposit
           break;
         case 2:
+          if ( events.value.signIn.prospect === '2' ) {
+            events.value.signIn.signInData = events.value.vipSignInData
+          }
           form.value.event = events.value.signIn
           break;
       }
