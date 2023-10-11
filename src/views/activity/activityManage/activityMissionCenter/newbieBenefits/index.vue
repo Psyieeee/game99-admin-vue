@@ -137,7 +137,11 @@
                width="550px">
       <el-form ref="newbieBenefitsRef" :model="form" :rules="rules" label-width="150px">
         <el-form-item label="任务分类" prop="taskConditions" >
-          <el-input v-model="form.taskConditions" placeholder="请输入奖励金额" />
+          <el-select v-model="form.taskConditions" placeholder="请输入奖励金额">
+            <el-option label="BET" value="BET" />
+            <el-option label="INVITE" value="INVITE" />
+            <el-option label="RECHARGE" value="RECHARGE" />
+          </el-select>
         </el-form-item>
         <el-form-item label="reward奖励金额" prop="reward">
           <el-input type="number" v-model="form.reward" placeholder="请输入奖励金额"/>
@@ -474,7 +478,11 @@ const data = reactive({
     taskConditions:
         [
           {required: true, message: '不能为空', trigger: 'blur'}
-        ]
+        ],
+    description:
+        [
+          {required: true, message: '不能为空', trigger: 'blur'}
+        ],
   },
 
   uploadFileUrl: uploadAdvertisementUrl(),
