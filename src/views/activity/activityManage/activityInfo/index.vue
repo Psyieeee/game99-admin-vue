@@ -168,33 +168,41 @@
             <el-form-item label="标题" prop="title">
               <el-input style="width: 350px" v-model="form.title" placeholder="请输入标题"/>
             </el-form-item> <br>
-            <el-form-item label="Schedule" prop="selectDate">
-              <div>
-                <el-date-picker type="daterange"
-                                v-model="form.selectDate"
-                                start-placeholder="开始时间"
-                                end-placeholder="开始时间"
-                                range-separator="至"
-                                clearable
-                                format="YYYY-MM-DD"
-                                value-format="YYYY-MM-DD HH:mm:ss"
-                                @change="calculateNumberOfDays"
-                />
-              </div>
+            <el-form-item label="Schedule Type" prop="scheduleType">
+              <el-radio-group v-model="form.scheduleType">
+                <el-radio label="1">Fixed Time</el-radio>
+                <el-radio label="2">Permanent</el-radio>
+              </el-radio-group>
             </el-form-item>
-            <el-form-item label="Showtime" prop="showTime">
-              <div>
-                <el-date-picker type="daterange"
-                                v-model="form.showTime"
-                                start-placeholder="开始时间"
-                                end-placeholder="开始时间"
-                                range-separator="至"
-                                clearable
-                                format="YYYY-MM-DD"
-                                value-format="YYYY-MM-DD HH:mm:ss"
-                />
-              </div>
-            </el-form-item>
+            <div v-if="form.scheduleType === '1'">
+              <el-form-item label="Effective Time" prop="selectDate">
+                <div>
+                  <el-date-picker type="daterange"
+                                  v-model="form.selectDate"
+                                  start-placeholder="开始时间"
+                                  end-placeholder="开始时间"
+                                  range-separator="至"
+                                  clearable
+                                  format="YYYY-MM-DD"
+                                  value-format="YYYY-MM-DD HH:mm:ss"
+                                  @change="calculateNumberOfDays"
+                  />
+                </div>
+              </el-form-item>
+              <el-form-item label="Show Time" prop="showTime">
+                <div>
+                  <el-date-picker type="daterange"
+                                  v-model="form.showTime"
+                                  start-placeholder="开始时间"
+                                  end-placeholder="开始时间"
+                                  range-separator="至"
+                                  clearable
+                                  format="YYYY-MM-DD"
+                                  value-format="YYYY-MM-DD HH:mm:ss"
+                  />
+                </div>
+              </el-form-item>
+            </div>
             <el-form-item label="Home Popup" label-width="120">
               <el-switch
                   v-model="form.isDisplayHome"
@@ -977,6 +985,7 @@ function reset() {
   form.value = {
     title: null,
     isDisplayHome: false,
+    scheduleType: '1',
     selectDate: [],
     showTime:[],
     type: null,
