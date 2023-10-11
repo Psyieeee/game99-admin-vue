@@ -195,6 +195,13 @@
                 />
               </div>
             </el-form-item>
+            <el-form-item label="Home Popup" label-width="120">
+              <el-switch
+                  v-model="form.isDisplayHome"
+                  class="ml-2"
+                  style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+              />
+            </el-form-item>
 <!--         入款优惠 DEPOSIT TYPE -->
             <div v-if="form.typeId === 1">
               <el-form-item label="Reset Cycle" prop="resetCycle" @change="handleResetCycleChange(events.deposit.resetCycle)">
@@ -231,13 +238,7 @@
                     </el-checkbox>
                   </el-checkbox-group>
               </el-form-item>
-              <el-form-item v-if="events.deposit.activityCondition === '1' " label="Home Popup" label-width="120">
-                <el-switch
-                    v-model="events.deposit.notifySwitch"
-                    class="ml-2"
-                    style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
-                />
-              </el-form-item>
+
               <el-form-item label="Bonus Method" prop="bonusMethod">
                 <el-radio-group v-model="events.deposit.bonusMethod">
                   <el-radio label="1">Fixed Amount</el-radio>
@@ -522,6 +523,9 @@
 import {url} from "@/utils/url";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import { ElMessage } from 'element-plus'
+import html2canvas from 'html2canvas';
+import {getActivityTypeAllList} from "@/api/activity/activityType";
+import WangEditor from "@/components/WangEditor";
 import {
   activityInfoAdd,
   activityInfoDelete,
@@ -537,20 +541,21 @@ import {
   uploadEventsBanner,
   uploadEventsIcon
 } from "@/api/activity/ativityInfo";
-import html2canvas from 'html2canvas';
-import {getActivityTypeAllList} from "@/api/activity/activityType";
-import WangEditor from "@/components/WangEditor";
 
 const {proxy} = getCurrentInstance();
-
 /** 活动信息表格数据 */
 const activityInfoList = ref([]);
 /** 活动类型 activity type list */
 const activityTypeOptions = ref([]);
+/** 非单个禁用 */
+const single = ref(true);
+/** 非多个禁用 */
+const multiple = ref(true);
+/** 显示搜索条件 */
+const showSearch = ref(true);
 const ids = ref([]);
 const total = ref(0);
 const title = ref();
-
 const coinIcons = ref([
     'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb1.png',
     'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb2.png',
@@ -558,16 +563,14 @@ const coinIcons = ref([
     'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb4.png',
     'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb5.png',
     'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb6.png'
-])
+]);
 const treasureIcons = ref([
   'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdbx1.png',
   'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdbx2.png',
   'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdbx3.png',
-])
-
-const banners = ref([])
-const icons = ref( [])
-
+]);
+const banners = ref([]);
+const icons = ref( []);
 const fontOptions = ref([
   "Arial, sans-serif",
   "Helvetica, sans-serif",
@@ -589,8 +592,7 @@ const fontOptions = ref([
   "Courier, monospace",
   "MS Sans Serif, sans-serif",
   "MS Serif, serif",
-])
-
+]);
 const depositOptions = ref([
   {
     name: 'PIX',
@@ -612,8 +614,7 @@ const depositOptions = ref([
     name: 'BTC-Bitcoin',
     value: 6
   }
-])
-
+]);
 const depositData = ref([
   {
     depositAmount: null,
@@ -626,22 +627,11 @@ const depositData = ref([
   }
 ]);
 const signInData = ref([]);
-
-/** 非单个禁用 */
-const single = ref(true)
-/** 非多个禁用 */
-const multiple = ref(true)
-/** 显示搜索条件 */
-const showSearch = ref(true)
-
-const loading = ref(true)
-const open = ref(false)
-const selectDate = ref(false)
-const showTime = ref(false)
-const selectAllDepositMethod = ref(false)
-
+const loading = ref(true);
+const open = ref(false);
+const selectDate = ref(false);
+const selectAllDepositMethod = ref(false);
 const data =  reactive({
-  /**查询参数 */
   queryParams:{
     pageNum: 1,
     pageSize: 10,
@@ -661,7 +651,6 @@ const data =  reactive({
       limitedRechargeSwitch: false,
       activityCondition: '1',
       depositMethod: [],
-      notifySwitch: false,
       bonusMethod: '1',
       tableData: depositData,
     },
@@ -736,22 +725,36 @@ const data =  reactive({
   },
   /** updateTime */
 });
+
 const {queryParams,form,rules, banner, events, createBanner} = toRefs(data);
-const {activityInfo_status} = proxy.useDict("activityInfo_status")
+const {activityInfo_status} = proxy.useDict("activityInfo_status");
 const formData = new FormData();
 
-/**
- * 查询活动信息列表 get list of data
- */
-function getList(){
-  loading.value = true
-  getActivityInfoList(proxy.addDateRange(queryParams.value)).then((res)=>{
-    activityInfoList.value = res.data
-    total.value = res.total
-    loading.value = false
-  })
+//DEPOSIT RELATED
+function addDepositConfig(){
+  depositData.value.push(
+      {
+        depositAmount: null,
+        bonusAmount: { min: null, max: null },
+        activityDescription: null,
+        rewardLimit: null
+      }
+  )
+}
+function removeDepositConfig(index){
+  depositData.value.splice( index, 1 )
+}
+function handleResetCycleChange(resetCycle) {
+  if ( resetCycle === '2') {
+    events.value.deposit.activityCondition = '2'
+  }
+}
+function handleDepositSelectAll(){
+  events.value.deposit.depositMethod = selectAllDepositMethod.value ? depositOptions.value.map(item => item.value) : [];
 }
 
+
+//SIGN IN RELATED
 function calculateNumberOfDays(){
   if ( form.value.selectDate.length === 2){
     const start = new Date(form.value.selectDate[0]);
@@ -759,10 +762,9 @@ function calculateNumberOfDays(){
     const timeDifference = end - start;
     const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
     events.value.signIn.cycle = daysDifference + 1;
-    signInConfig(daysDifference + 1)
+    signInConfig( events.value.signIn.cycle )
   }
 }
-
 function signInConfig(days){
   signInData.value = []
   for ( let i = signInData.value.length; i < days; i++ ) {
@@ -781,36 +783,161 @@ function signInConfig(days){
     )
   }
 }
+function saveVipConfig(){
+  const event = events.value.signIn
+  const obj = {
+    level: event.vipLevel,
+    value: event.signInData
+  };
 
-function addDepositConfig(){
-  depositData.value.push(
-      {
-        depositAmount: null,
-        bonusAmount: {
-          min: null,
-          max: null
-        },
-        activityDescription: null,
-        rewardLimit: null
-      }
-  )
+  const indexOfExistingData = event.vipSignInData.findIndex(data => data.level === event.vipLevel);
+  const hasData = indexOfExistingData !== -1;
+
+  if ( hasData ) {
+    event.vipSignInData[indexOfExistingData].value = event.signInData;
+  } else {
+    event.vipSignInData.push( obj );
+  }
+  ElMessage.success('Success')
+}
+function resetVipConfig(){
+  signInConfig(events.value.signIn.cycle)
+}
+function handleVipLevelChange(){
+  const event   = events.value.signIn
+  let currIndex = event.vipLevel-1;
+
+  if ( event.vipSignInData[currIndex] === undefined ) {
+    resetVipConfig()
+  } else {
+    signInData.value = event.vipSignInData[currIndex].value;
+  }
 }
 
-function removeDepositConfig(index){
-  depositData.value.splice( index, 1 )
+//BANNER RELATED
+function handleChangeType(scope){
+  scope.row.iconUrl = ( scope.row.type === '1' ? coinIcons : treasureIcons ).value[0]
+}
+function listEventIcons ( param ) {
+  const _this = createBanner.value;
+  getAllEventsIcon(param).then(res => {
+    res.rows = res.rows.map( img => prependActivityInfoImageBaseURI( img ))
+    _this.iconCollection = res.rows;
+    _this.customImage.icon = res.rows[0];
+    _this.pagination.icons.totalPages = Math.ceil(res.total / _this.pagination.icons.info.pageSize );
+  })
+}
+function listEventBanners ( param ) {
+  const _this = createBanner.value;
+  getAllEventsBanner(param).then(res => {
+    _this.bannerCollection = res.rows;
+    banner.value = res.rows[0];
+    _this.pagination.banners.totalPages = Math.ceil(res.total / _this.pagination.banners.info.pageSize );
+  })
+}
+function listImages (actionType) {
+  if ( actionType === 1 ) {
+    listEventIcons(createBanner.value.pagination.icons.info)
+  }
+  if ( actionType === 2) {
+    listEventBanners(createBanner.value.pagination.banners.info)
+  }
+  if ( actionType === null) {
+    listEventIcons(createBanner.value.pagination.icons.info)
+    listEventBanners(createBanner.value.pagination.banners.info)
+  }
+}
+function removeImage(){
+  event.preventDefault();
+  loading.value = true
+  if ( createBanner.value.type === '1' ) {
+    removeEventsIcon(createBanner.value.selectedIcon).then( res => {
+      getAllEventsIcon().then(res => {
+        icons.value = res.data;
+        createBanner.value.customImage.icon = icons.value[0]
+        createBanner.value.iconCollection = icons.value.slice(0,10)
+        loading.value = false
+      })
+    })
+  } else {
+    removeEventsBanner(createBanner.value.selectedBanner).then( res => {
+      getAllEventsBanner().then(res => {
+        banners.value = res.data;
+        banner.value = banners.value[0];
+        createBanner.value.bannerCollection = banners.value.slice(0,6);
+        loading.value = false
+      })
+    })
+  }
+}
+function prependActivityInfoImageBaseURI(img) {
+  return url.baseUrl + url.game99PlatformAdminWeb + "/activity/activityInfo/image?url=" + img;
+}
+function nextPage(actionType) {
+  event.preventDefault();
+  const pageInfo = actionType === 1 ? createBanner.value.pagination.icons : createBanner.value.pagination.banners;
+  if ( pageInfo.info.pageNum < pageInfo.totalPages ) {
+    pageInfo.info.pageNum++;
+    listImages(actionType)
+  }
+}
+function prevPage(actionType){
+  event.preventDefault();
+  const pageInfo = actionType === 1 ? createBanner.value.pagination.icons : createBanner.value.pagination.banners;
+  if ( pageInfo.info.pageNum > 1 ) {
+    pageInfo.info.pageNum--;
+    listImages(actionType)
+  }
+}
+function populateForm( event ) {
+  loading.value = true
+  formData.set( "file", event.currentTarget.files[0] )
+  if ( createBanner.value.type === '1' ) {
+    uploadEventsIcon( formData ).then( res => {
+      getAllEventsIcon().then(res => {
+        icons.value = res.data;
+        createBanner.value.customImage.icon = icons.value[0]
+        createBanner.value.iconCollection = icons.value.slice(0,10)
+        loading.value = false
+      })
+    })
+  } else {
+    uploadEventsBanner( formData ).then( res => {
+      getAllEventsBanner().then(res => {
+        banners.value = res.data;
+        banner.value = banners.value[0];
+        createBanner.value.bannerCollection = banners.value.slice(0,6);
+        loading.value = false
+      })
+    })
+  }
+
+}
+function selectIcon (icon){
+  createBanner.value.selectedIcon = icon
+  createBanner.value.customImage.icon = icon
+}
+function selectBanner (image){
+  createBanner.value.selectedBanner = image
+  banner.value = image
 }
 
-
+/**
+ * 查询活动信息列表 get list of data
+ */
+function getList(){
+  loading.value = true
+  getActivityInfoList(proxy.addDateRange(queryParams.value)).then((res)=>{
+    activityInfoList.value = res.data
+    total.value = res.total
+    loading.value = false
+  })
+}
 function activityTypeList(){
   getActivityTypeAllList().then((res)=>{
     activityTypeOptions.value = res
   })
 }
-
-function handleChangeType(scope){
-  scope.row.iconUrl = ( scope.row.type === '1' ? coinIcons : treasureIcons ).value[0]
-}
-
 /**  多选框选中数据 select multiple rows*/
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id)
@@ -827,7 +954,6 @@ function formatterType(row) {
     return ''
   }
 }
-
 function formatterActivityType(row) {
   for (const a of activityTypeOptions.value) {
     if (a.id === row.typeId) {
@@ -836,14 +962,11 @@ function formatterActivityType(row) {
   }
   return "";
 }
-
-
 /** 搜索按钮操作 handle query*/
 function handleQuery(){
   queryParams.pageNum = 1;
   getList()
 }
-
 /** 搜索按钮操作 handle query*/
 function resetQuery(){
   proxy.resetForm("queryForm");
@@ -854,6 +977,7 @@ function resetQuery(){
 function reset() {
   form.value = {
     title: null,
+    isDisplayHome: false,
     selectDate: [],
     showTime:[],
     type: null,
@@ -868,7 +992,6 @@ function reset() {
   };
   proxy.resetForm("activityForm");
 }
-
 /** 新增按钮操作 handle add button*/
 function handleAdd(){
   reset()
@@ -877,53 +1000,6 @@ function handleAdd(){
   open.value = true
   title.value = "添加活动信息"
 }
-
-function listEventIcons ( param ) {
-  getAllEventsIcon(param).then(res => {
-    res.rows = res.rows.map( img => prependActivityInfoImageBaseURI( img ))
-    createBanner.value.iconCollection = res.rows;
-    createBanner.value.customImage.icon = res.rows[0];
-    createBanner.value.pagination.icons.totalPages = Math.ceil(res.total / createBanner.value.pagination.icons.info.pageSize );
-  })
-}
-function listEventBanners ( param ) {
-  getAllEventsBanner(param).then(res => {
-    createBanner.value.bannerCollection = res.rows;
-    banner.value = res.rows[0];
-    createBanner.value.pagination.banners.totalPages = Math.ceil(res.total / createBanner.value.pagination.banners.info.pageSize );
-  })
-}
-
-function listImages (actionType) {
-  if ( actionType === 1 ) {
-    listEventIcons(createBanner.value.pagination.icons.info)
-  }
-  if ( actionType === 2) {
-    listEventBanners(createBanner.value.pagination.banners.info)
-  }
-  if ( actionType === null) {
-    listEventIcons(createBanner.value.pagination.icons.info)
-    listEventBanners(createBanner.value.pagination.banners.info)
-  }
-}
-function prependActivityInfoImageBaseURI(img) {
-  return url.baseUrl + url.game99PlatformAdminWeb + "/activity/activityInfo/image?url=" + img;
-}
-
-function handleResetCycleChange(resetCycle) {
-  if ( resetCycle === '2') {
-    events.value.deposit.activityCondition = '2'
-  }
-}
-
-function handleDepositSelectAll(){
-  if (selectAllDepositMethod.value) {
-    events.value.deposit.depositMethod = depositOptions.value.map(item => item.value)
-  } else {
-    events.value.deposit.depositMethod = []
-  }
-}
-
 /** 修改按钮操作 handle update*/
 function handleUpdate(row){
   reset();
@@ -956,97 +1032,6 @@ function handleUpdate(row){
     title.value = "修改活动信息";
   });
 }
-
-function nextPage(actionType) {
-  event.preventDefault();
-  const pageInfo = actionType === 1 ? createBanner.value.pagination.icons : createBanner.value.pagination.banners;
-  if ( pageInfo.info.pageNum < pageInfo.totalPages ) {
-    pageInfo.info.pageNum++;
-    listImages(actionType)
-  }
-}
-function prevPage(actionType){
-  event.preventDefault();
-  const pageInfo = actionType === 1 ? createBanner.value.pagination.icons : createBanner.value.pagination.banners;
-  if ( pageInfo.info.pageNum > 1 ) {
-    pageInfo.info.pageNum--;
-    listImages(actionType)
-  }
-}
-
-function saveVipConfig(){
-  const event = events.value.signIn
-  const obj = {
-    level: event.vipLevel,
-    value: event.signInData
-  };
-
-  let hasData = false;
-  let indexOfExistingData = 0;
-  for ( let i=0; i<event.vipSignInData.length; i++ ){
-    if ( event.vipLevel === event.vipSignInData[i].level){
-      hasData = true;
-      indexOfExistingData = i;
-      break
-    }
-  }
-
-  if ( hasData ) {
-    event.vipSignInData[indexOfExistingData].value = event.signInData;
-  } else {
-    event.vipSignInData.push( obj );
-  }
-  ElMessage.success('Success')
-}
-function resetVipConfig(){
-  signInConfig(events.value.signIn.cycle)
-}
-
-function handleVipLevelChange(){
-  const event   = events.value.signIn
-  let currIndex = event.vipLevel-1;
-
-  if ( event.vipSignInData[currIndex] === undefined ) {
-    resetVipConfig()
-  } else {
-    signInData.value = event.vipSignInData[currIndex].value;
-  }
-}
-
-function populateForm( event ) {
-  loading.value = true
-  formData.set( "file", event.currentTarget.files[0] )
-  if ( createBanner.value.type === '1' ) {
-    uploadEventsIcon( formData ).then( res => {
-      getAllEventsIcon().then(res => {
-        icons.value = res.data;
-        createBanner.value.customImage.icon = icons.value[0]
-        createBanner.value.iconCollection = icons.value.slice(0,10)
-        loading.value = false
-      })
-    })
-  } else {
-    uploadEventsBanner( formData ).then( res => {
-      getAllEventsBanner().then(res => {
-        banners.value = res.data;
-        banner.value = banners.value[0];
-        createBanner.value.bannerCollection = banners.value.slice(0,6);
-        loading.value = false
-      })
-    })
-  }
-
-}
-
-function selectIcon (icon){
-  createBanner.value.selectedIcon = icon
-  createBanner.value.customImage.icon = icon
-}
-function selectBanner (image){
-  createBanner.value.selectedBanner = image
-  banner.value = image
-}
-
 /** 提交按钮 submit form*/
 function submitForm() {
   proxy.$refs["activityForm"].validate(async valid => {
@@ -1100,8 +1085,6 @@ function submitForm() {
     loading.value = false;
   });
 }
-
-
 /** 删除按钮操作 handle delete data */
 function handleDelete(row){
   const id = row.id || ids.value;
@@ -1116,7 +1099,6 @@ function handleDelete(row){
     proxy.$modal.msgSuccess("删除成功");
   })
 }
-
 /** 导出按钮操作 handle export data*/
 function handleExport(){
   proxy.$modal.confirm('确认处理Excel并下载，数据量大的时候会延迟，请耐心等待...', '警告', {
@@ -1130,31 +1112,6 @@ function handleExport(){
   }).catch(() => {
   })
 }
-
-function removeImage(){
-  event.preventDefault();
-  loading.value = true
-  if ( createBanner.value.type === '1' ) {
-    removeEventsIcon(createBanner.value.selectedIcon).then( res => {
-      getAllEventsIcon().then(res => {
-        icons.value = res.data;
-        createBanner.value.customImage.icon = icons.value[0]
-        createBanner.value.iconCollection = icons.value.slice(0,10)
-        loading.value = false
-      })
-    })
-  } else {
-    removeEventsBanner(createBanner.value.selectedBanner).then( res => {
-      getAllEventsBanner().then(res => {
-        banners.value = res.data;
-        banner.value = banners.value[0];
-        createBanner.value.bannerCollection = banners.value.slice(0,6);
-        loading.value = false
-      })
-    })
-  }
-}
-
 /**  0停用1启用 */
 function handleEffectChange(row){
   let text = row.status === '1' ? '启用' : '停用'
@@ -1176,28 +1133,23 @@ activityTypeList()
 </script>
 
 <style scoped>
-
-.dialog-footer{
-  float: right;
+#original {
+  position: relative;
+  overflow: hidden;
 }
-
-
 body {
   font-family: 'LocalMarket-Bold';
 }
-
 section {
   display: flex;
   justify-content: center;
 }
-
 img {
   position: relative;
   top: 0;
   left: 0;
   height: 100%;
 }
-
 .form-group {
   margin-bottom: 20px;
 }
@@ -1211,10 +1163,7 @@ img {
 .selected-image {
   border: 2px solid #00dfff;
 }
-
-#original {
-  position: relative;
-  overflow: hidden;
+.dialog-footer{
+  float: right;
 }
-
 </style>
