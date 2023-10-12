@@ -1016,6 +1016,7 @@ function handleUpdate(row){
   const id = row.id ||ids.value
   activityInfoFindById(id).then(response => {
     response.data.type = response.data.type + ""
+    form.value = response.data;
     let parsedResponse =  JSON.parse(response.data.configString);
     let data = parsedResponse.eventConfig.signInData
     switch ( response.data.typeId ) {
@@ -1023,11 +1024,12 @@ function handleUpdate(row){
         depositData.value = parsedResponse.eventConfig.tableData;
         break;
       case 2:
-        events.value.signIn = parsedResponse.eventConfig
         if ( parsedResponse.eventConfig.prospect === "2" ) {
           events.value.signIn.signInData = signInData;
           events.value.vipSignInData = data;
           handleVipLevelChange()
+        } else {
+          events.value.signIn.signInData = data
         }
         break;
     }
@@ -1038,9 +1040,8 @@ function handleUpdate(row){
     } else {
       createBanner.value.type = '2'
     }
-
     form.value.creationType = createBanner.value.type
-    form.value = response.data;
+    form.value.scheduleType = response.data.scheduleType.toString()
     form.value.selectDate = [ response.data.startEffect, response.data.endEffect ]
     form.value.showTime = [ response.data.startShow, response.data.endShow ]
     open.value = true;
