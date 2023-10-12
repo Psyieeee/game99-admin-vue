@@ -179,38 +179,38 @@
 
         </el-form-item>
         <div v-if="form.missionObjectives !== '累计充值'">
-        <el-form-item label="Game Type" prop="gameType" style="min-width: 290px">
-          <el-select v-model="form.gameType" @change="handleGameTypeChange">
-            <el-option
-                v-for="dict in gameTypeList"
-                :key="dict.id"
-                :label="dict.name"
-                :value="dict.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item
-            label="Platform Type" prop="platformType" style="min-width: 290px">
-          <el-select v-model="form.platformType" @change="handleGamePlatformChange">
-            <el-option
-                v-for="dict in platformTypeList"
-                :key="dict.id"
-                :label="dict.name"
-                :value="dict.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Game" prop="gameName" style="min-width: 290px">
-          <el-select v-model="form.gameName">
-            <el-option
-                v-for="dict in gameList"
-                :key="dict.id"
-                :label="dict.name"
-                :value="dict.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-      </div>
+          <el-form-item label="Game Type" prop="gameType" style="min-width: 290px">
+            <el-select v-model="form.gameType" @change="handleGameTypeChange">
+              <el-option
+                  v-for="dict in gameTypeList"
+                  :key="dict.id"
+                  :label="dict.name"
+                  :value="dict.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item
+              label="Platform Type" prop="platformType" style="min-width: 290px">
+            <el-select v-model="form.platformType" @change="handleGamePlatformChange">
+              <el-option
+                  v-for="dict in platformTypeList"
+                  :key="dict.id"
+                  :label="dict.name"
+                  :value="dict.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="Game" prop="gameName" style="min-width: 290px">
+            <el-select v-model="form.gameName">
+              <el-option
+                  v-for="dict in gameList"
+                  :key="dict.id"
+                  :label="dict.name"
+                  :value="dict.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </div>
         <el-form-item label="累计补给量" prop="cumulativeRechargeAmount">
           <el-input type="number" v-model="form.cumulativeRechargeAmount" placeholder="输入累计充值金额"
                     @change="handleComposeMission"/>

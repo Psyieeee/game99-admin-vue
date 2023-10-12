@@ -75,6 +75,7 @@
       </el-table-column>
       <el-table-column align="center" label="Operator" min-width="180" prop="updateBy"/>
       <el-table-column align="center" label="Operating Time" min-width="180" prop="updateDatetime"/>
+      <el-table-column align="center" label="Description" min-width="180" prop="description"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
@@ -106,36 +107,60 @@
     />
 
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
-               width="700px">
-      <el-form :inline="true" ref="ref" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="Name" prop="name" style="min-width: 290px">
-          <el-input
-              v-model="form.name"
-              clearable
-              placeholder="name"
-          />
-        </el-form-item>
-        <el-form-item label="Required Activity Level" prop="requiredActivityLevel" style="min-width: 290px">
-          <el-input
+               width="500px">
+      <el-form :inline="true" ref="ref" :model="form" :rules="rules" label-width="200px">
+        <el-col>
+          <el-form-item label="Name" prop="name" >
+            <el-input
+                v-model="form.name"
+                clearable
+                placeholder="name"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col>
+          <el-form-item label="Required Activity Level" prop="requiredActivityLevel" >
+            <el-input
               v-model="form.requiredActivityLevel"
               clearable
               placeholder="Please enter Required Activity Level"
           />
+          </el-form-item>
+        </el-col>
+        <el-col>
+          <el-form-item label="Reward Type" prop="rewardType" >
+            <el-input
+                v-model="form.rewardType"
+                clearable
+                placeholder="Enter Reward Type"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col>
+          <el-form-item label="Reward Amount" prop="rewardAmount" >
+            <el-input
+                v-model="form.rewardAmount"
+                clearable
+                placeholder="Enter Reward Amount"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col>
+          <el-form-item label="Status" prop="status" style="min-width: 290px">
+          <template #default="scope">
+            <el-switch
+                v-model="form.status"
+                :active-value="1"
+                :inactive-value="0"
+            ></el-switch>
+          </template>
         </el-form-item>
-        <el-form-item label="Reward Type" prop="rewardType" style="min-width: 290px">
-          <el-input
-              v-model="form.rewardType"
-              clearable
-              placeholder="Enter Reward Type"
-          />
+        </el-col>
+        <el-col>
+          <el-form-item label="Description" prop="description" >
+          <el-input v-model="form.description" type="textarea" placeholder="Description" :rows="3" />
         </el-form-item>
-        <el-form-item label="Reward Amount" prop="rewardAmount" style="min-width: 290px">
-          <el-input
-              v-model="form.rewardAmount"
-              clearable
-              placeholder="Enter Reward Amount"
-          />
-        </el-form-item>
+        </el-col>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -343,16 +368,17 @@ function submitForm() {
         rewardType: form.value.rewardType,
         rewardAmount: form.value.rewardAmount,
         status: 0,
+        description: form.value.description
 
       }
       if (form.value.id != null) {
-        updateActivityMission(form.value).then(response => {
+        updateActivityMission(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
         })
       } else {
-        addActivityMission(params).then(response => {
+        addActivityMission(params).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
@@ -381,7 +407,6 @@ function submitSettingsForm() {
     }
   })
 }
-
 
 /** handle update data */
 function handleUpdate(row) {
