@@ -61,14 +61,14 @@
       <el-table-column align="center" label="ID" min-width="70" prop="id"/>
       <el-table-column align="center" label="Task Currency" min-width="180" prop="taskCurrency"/>
       <el-table-column align="center" label="Task Classification" min-width="180" prop="taskClassification"/>
-      <el-table-column align="center" label="Reward Amount" min-width="180" prop="rewardAmount"/>
+      <el-table-column align="center" label="Reward Amount" min-width="180" prop="reward"/>
       <el-table-column align="center" label="Completion Count" min-width="180" prop="completionCount"/>
       <el-table-column align="center" label="Mission Target" min-width="180" prop="missionObjectives"/>
       <el-table-column align="center" label="Reward Activity" min-width="180" prop="rewardActivity"/>
       <el-table-column align="center" label="Mission Introduction" min-width="180">
         <template #default="scope">
           <!-- Display both ID and Task Currency in the same cell -->
-          累计充值${{ scope.row.cumulativeRechargeAmount }}, 奖励${{ scope.row.rewardAmount }}
+          累计充值${{ scope.row.cumulativeRechargeAmount }}, 奖励${{ scope.row.reward }}
         </template>
       </el-table-column>
       <el-table-column align="center" min-width="150" label="Status" prop="status">
@@ -215,8 +215,8 @@
           <el-input type="number" v-model="form.cumulativeRechargeAmount" placeholder="输入累计充值金额"
                     @change="handleComposeMission"/>
         </el-form-item>
-        <el-form-item label="奖励金额" prop="rewardAmount">
-          <el-input type="number" v-model="form.rewardAmount" placeholder="请输入奖励金额"
+        <el-form-item label="奖励金额" prop="reward">
+          <el-input type="number" v-model="form.reward" placeholder="请输入奖励金额"
                     @change="handleComposeMission"/>
         </el-form-item>
         <el-form-item label="完成次数" prop="completionCount">
@@ -502,7 +502,7 @@ const data = reactive({
             [
               {required: true, message: '不能为空', trigger: 'blur'}
             ],
-        rewardAmount:
+        reward:
             [
               {required: true, message: '不能为空', trigger: 'blur'}
             ],
@@ -591,7 +591,6 @@ function reset() {
   form.value = {
     currency: null,
     currencyAll: null,
-    selectAll: null,
     checkedCurrency: activity_mission_currency.value.slice(0, 1),
     taskClassification: activity_mission_task_classification.value[0].label,
     missionObjectives: activity_mission_objectives.value[0].label,
@@ -602,7 +601,7 @@ function reset() {
     gameName: null,
     cumulativeRechargeAmount: null,
     rewardActivity: null,
-    rewardAmount: null,
+    reward: null,
     missionIntroduction: null,
     status: null
   }
@@ -621,7 +620,8 @@ function handleAdd() {
   reset()
   open.value = true
   title.value = '添加每日任务'
-  selectAll.value = true;
+  selectAll.value = false;
+  data.rechargeCategory = [];
   handleCheckAllChange();
 }
 
@@ -635,7 +635,7 @@ function submitForm() {
         missionSettingsId: 'DAILY',
         taskCurrency: checkedCurrency.value.map((item) => item).join(','),
         taskClassification: form.value.taskClassification,
-        rewardAmount: form.value.rewardAmount,
+        reward: form.value.reward,
         completionCount: form.value.completionCount,
         cumulativeRechargeAmount: form.value.cumulativeRechargeAmount,
         missionObjectives: form.value.missionObjectives,
@@ -660,7 +660,7 @@ function submitForm() {
           // taskCurrency : checkedCurrency.value.toString(),
           taskCurrency: checkedCurrency.value.map((item) => item).join(','),
           taskClassification: form.value.taskClassification,
-          rewardAmount: form.value.rewardAmount,
+          reward: form.value.reward,
           completionCount: form.value.completionCount,
           missionObjectives: form.value.missionObjectives,
           cumulativeRechargeAmount: form.value.cumulativeRechargeAmount,
@@ -745,11 +745,18 @@ function handleUpdate(row) {
   reset()
   const id = row.id || this.ids
   getMissionRepeatList(id).then(response => {
-    data.rechargeCategory = response.data.accumulatedRechargeSource.split(',')
+    if( response.data.accumulatedRechargeSource != null ){
+      data.rechargeCategory = response.data.accumulatedRechargeSource.split(',')
+    }
+    if( response.data.taskCurrency != null ){
+      checkedCurrency.value = response.data.taskCurrency.split(',')
+    }
     form.value = response.data
     open.value = true
     title.value = '编辑每日任务'
+    handleCheckedCurrencyChange()
   })
+
 }
 
 /**  删除按钮操作 handle delete */
@@ -822,10 +829,6 @@ function handleCheckAllSettingsChange() {
   checkedCurrency.value = selectAll.value ? currencyCollection.value : [];
 }
 
-function handleCheckedSettingsCurrencyChange() {
-  selectAll.value = checkedCurrency.value.length === currencyCollection.value.length;
-}
-
 function handleCheckAllChange() {
   checkedCurrency.value = selectAll.value ? activity_mission_currency.value.map(kek => kek.label) : [];
 }
@@ -835,8 +838,8 @@ function handleCheckedCurrencyChange() {
 }
 
 function handleComposeMission() {
-  if (!isNullOrEmpty(form.value.cumulativeRechargeAmount) && !isNullOrEmpty(form.value.rewardAmount)) {
-    mission.value = "累计充值" + form.value.cumulativeRechargeAmount + "，奖励" + form.value.rewardAmount;
+  if (!isNullOrEmpty(form.value.cumulativeRechargeAmount) && !isNullOrEmpty(form.value.reward)) {
+    mission.value = "累计充值" + form.value.cumulativeRechargeAmount + "，奖励" + form.value.reward;
   } else {
     mission.value = "";
   }

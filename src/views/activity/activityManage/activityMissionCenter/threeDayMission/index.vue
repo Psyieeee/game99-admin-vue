@@ -59,14 +59,14 @@
     <el-table v-loading="loading" :data="threeDayMissionList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="ID" min-width="70" prop="id"/>
-      <el-table-column align="center" label="Reward Amount" min-width="180" prop="rewardAmount"/>
+      <el-table-column align="center" label="Reward Amount" min-width="180" prop="reward"/>
       <el-table-column align="center" label="Mission Target" min-width="180" prop="missionObjectives"/>
       <el-table-column align="center" label="Completion Count" min-width="180" prop="completionCount"/>
       <el-table-column align="center" label="Reward Activity" min-width="180" prop="rewardActivity"/>
       <el-table-column align="center" label="Mission Introduction" min-width="180">
         <template #default="scope">
           <!-- Display both ID and Task Currency in the same cell -->
-          累计充值${{ scope.row.cumulativeRechargeAmount }}, 奖励${{ scope.row.rewardAmount }}
+          累计充值${{ scope.row.cumulativeRechargeAmount }}, 奖励${{ scope.row.reward }}
         </template>
       </el-table-column>
       <el-table-column align="center" min-width="150" label="Status" prop="status">
@@ -168,14 +168,12 @@
         </el-form-item>
         <el-form-item v-if="form.missionObjectives === '累计充值'" label="Recharge Category"
                       prop="accumulatedRechargeSource" style="min-width: 290px">
-          <el-select v-model="form.accumulatedRechargeSource" multiple>
-            <el-option
+          <el-checkbox-group v-model="data.rechargeCategory">
+            <el-checkbox-button
                 v-for="dict in pay_online_recharge_category"
                 :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-            ></el-option>
-          </el-select>
+                :label="dict.label"></el-checkbox-button>
+          </el-checkbox-group>
         </el-form-item>
         <div v-if="form.missionObjectives !== '累计充值'">
           <el-form-item label="Game Type" prop="gameType" style="min-width: 290px">
@@ -215,8 +213,8 @@
           <el-input type="number" v-model="form.cumulativeRechargeAmount" placeholder="输入累计充值金额"
                     @change="handleComposeMission"/>
         </el-form-item>
-        <el-form-item label="Reward" prop="rewardAmount">
-          <el-input type="number" v-model="form.rewardAmount" placeholder="请输入奖励金额"
+        <el-form-item label="Reward" prop="reward">
+          <el-input type="number" v-model="form.reward" placeholder="请输入奖励金额"
                     @change="handleComposeMission"/>
         </el-form-item>
         <el-form-item label="Completion Count" prop="completionCount">
@@ -443,7 +441,7 @@ import {
   getPlatformList,
   gameInfoList,
   getSettings,
-  updateSettings
+  updateSettings, fileUpload
 } from "@/api/activity/missionRepeat";
 
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
@@ -501,9 +499,13 @@ const eventCollection = ref([]);
 const checkedEventCollection = ref([]);
 const collectionRestriction = ref([]);
 const checkedCollectionRestriction = ref([]);
+const formData = new FormData();
 
 const data = reactive({
       auditRestrictedTabs:[],
+
+      rechargeCategory:[],
+
       queryParams: {
         missionSettingsId: 'THREE_DAY',
         pageNum: 1,
@@ -538,7 +540,7 @@ const data = reactive({
             [
               {required: true, message: '不能为空', trigger: 'blur'}
             ],
-        rewardAmount:
+        reward:
             [
               {required: true, message: '不能为空', trigger: 'blur'}
             ],
@@ -638,7 +640,7 @@ function reset() {
     cumulativeRechargeAmount: null,
     rewardActivity: null,
     completionCount: null,
-    rewardAmount: null,
+    reward: null,
     missionIntroduction: null,
     status: null
   }
@@ -657,7 +659,9 @@ function handleAdd() {
   reset()
   open.value = true
   title.value = '添加 3 天任务'
-  selectAll.value = true;
+  selectAll.value = false;
+  data.rechargeCategory = []
+  checkedCurrency.value =[]
   handleCheckAllChange();
 }
 
@@ -666,22 +670,25 @@ function submitForm() {
   proxy.$refs['missionRepeatRef'].validate(async valid => {
     if (valid) {
       let params = {
-        id: checkedCurrency.value.id,
-        missionRepeatType: 1,
-        missionSettingsId: 2,
-        // taskCurrency : checkedCurrency.value.toString(),
-        taskCurrency: checkedCurrency.value.map((item) => item).join(','),
-        taskClassification: form.value.taskClassification,
-        rewardAmount: form.value.rewardAmount,
+        accumulatedRechargeSource: null,
+        platformId: form.value.platformType,
+        gameTypeId: form.value.gameType,
+        gameId: form.value.gameType,
+
+        // id: checkedCurrency.value.id,
+        id: form.value.id,
+        missionRepeatType: 3,
+        missionSettingsId: 4,
+        completionCount: form.value.completionCount,
+        reward: form.value.reward,
         missionObjectives: form.value.missionObjectives,
         cumulativeRechargeAmount: form.value.cumulativeRechargeAmount,
         rewardActivity: form.value.rewardActivity,
         status: form.value.status,
       }
-
       if (form.value.missionObjectives === '累计充值') {
         params = {
-          accumulatedRechargeSource: form.value.accumulatedRechargeSource.map((item) => item.label).join(','),
+          accumulatedRechargeSource: data.rechargeCategory.map((item) => item).join(','),
           platformId: null,
           gameTypeId: null,
           gameId: null,
@@ -689,27 +696,9 @@ function submitForm() {
           // id: checkedCurrency.value.id,
           id: form.value.id,
           missionRepeatType: 3,
-          missionSettingsId: 4,
+          missionSettingsId: 'THREE_DAY',
           completionCount: form.value.completionCount,
-          rewardAmount: form.value.rewardAmount,
-          missionObjectives: form.value.missionObjectives,
-          cumulativeRechargeAmount: form.value.cumulativeRechargeAmount,
-          rewardActivity: form.value.rewardActivity,
-          status: form.value.status,
-        }
-      } else {
-        params = {
-          accumulatedRechargeSource: null,
-          platformId: form.value.platformType,
-          gameTypeId: form.value.gameType,
-          gameId: form.value.gameType,
-
-          // id: checkedCurrency.value.id,
-          id: form.value.id,
-          missionRepeatType: 3,
-          missionSettingsId: 4,
-          completionCount: form.value.completionCount,
-          rewardAmount: form.value.rewardAmount,
+          reward: form.value.reward,
           missionObjectives: form.value.missionObjectives,
           cumulativeRechargeAmount: form.value.cumulativeRechargeAmount,
           rewardActivity: form.value.rewardActivity,
@@ -717,18 +706,22 @@ function submitForm() {
         }
       }
 
+      if (formData.get("file") != null) {
+        await fileUpload(formData).then(res => params.icon = res.data);
+      }
       if (form.value.id != null) {
         updateMissionRepeat(params).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
+          getList()
         })
       } else {
         addMissionRepeat(params).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
+          getList()
         })
       }
-      getList()
     }
   })
 }
@@ -738,9 +731,16 @@ function handleUpdate(row) {
   reset()
   const id = row.id || this.ids
   getMissionRepeatList(id).then(response => {
+    if( response.data.accumulatedRechargeSource != null ){
+      data.rechargeCategory = response.data.accumulatedRechargeSource.split(',')
+    }
+    if( response.data.taskCurrency != null ){
+      checkedCurrency.value = response.data.taskCurrency.split(',')
+    }
     form.value = response.data
     open.value = true
     title.value = '编辑每日任务'
+    handleCheckedCurrencyChange()
   })
 }
 
@@ -830,8 +830,8 @@ function handleCheckedCurrencyChange() {
 }
 
 function handleComposeMission() {
-  if (!isNullOrEmpty(form.value.cumulativeRechargeAmount) && !isNullOrEmpty(form.value.rewardAmount)) {
-    mission.value = "累计充值" + form.value.cumulativeRechargeAmount + "，奖励" + form.value.rewardAmount;
+  if (!isNullOrEmpty(form.value.cumulativeRechargeAmount) && !isNullOrEmpty(form.value.reward)) {
+    mission.value = "累计充值" + form.value.cumulativeRechargeAmount + "，奖励" + form.value.reward;
   } else {
     mission.value = "";
   }

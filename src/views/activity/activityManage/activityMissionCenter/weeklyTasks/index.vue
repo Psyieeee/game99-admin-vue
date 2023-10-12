@@ -427,7 +427,7 @@ import {
   getPlatformList,
   gameInfoList,
   getSettings,
-  updateSettings
+  updateSettings, fileUpload
 } from "@/api/activity/missionRepeat";
 
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
@@ -480,6 +480,7 @@ const eventCollection = ref([]);
 const checkedEventCollection = ref([]);
 const collectionRestriction = ref([]);
 const checkedCollectionRestriction = ref([]);
+const formData = new FormData();
 
 const data = reactive({
       selectAll: false,
@@ -635,6 +636,7 @@ function handleAdd() {
   data.selectAll = false
   data.rechargeCategory = []
   data.checkedCurrency = []
+  handleCheckAllChange()
 }
 
 /** submit new data and handle insert data api*/
@@ -687,6 +689,10 @@ function submitForm() {
         }
       }
 
+      if (formData.get("file") != null) {
+        await fileUpload(formData).then(res => params.icon = res.data);
+      }
+
       if (form.value.id != null) {
         updateMissionRepeat(params).then(() => {
           proxy.$modal.msgSuccess('修改成功')
@@ -710,12 +716,18 @@ function handleUpdate(row) {
   reset()
   const id = row.id || this.ids
   getMissionRepeatList(id).then(response => {
-    data.rechargeCategory = response.data.accumulatedRechargeSource.split(',')
-    data.checkedCurrency = response.data.taskCurrency.split(',')
+    if( response.data.accumulatedRechargeSource != null ){
+      data.rechargeCategory = response.data.accumulatedRechargeSource.split(',')
+    }
+    if( response.data.taskCurrency != null ) {
+      data.checkedCurrency = response.data.taskCurrency.split(',')
+    }
     form.value = response.data
     open.value = true
     title.value = '编辑每日任务'
+    handleCheckedCurrencyChange()
   })
+
 }
 
 /**  删除按钮操作 handle delete */
@@ -742,7 +754,7 @@ function handleCheckAllChange() {
 }
 
 function handleCheckedCurrencyChange() {
-  data.selectAll = data.checkedCurrency === activity_mission_currency.value.length;
+  data.selectAll = data.checkedCurrency.length === activity_mission_currency.value.length;
 }
 
 function handleComposeMission() {
