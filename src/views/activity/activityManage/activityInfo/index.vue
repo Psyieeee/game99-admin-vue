@@ -203,6 +203,17 @@
                 </div>
               </el-form-item>
             </div>
+            <div v-if="form.scheduleType === '2'">
+              <el-form-item label="Start Date" prop="startDate">
+                <el-date-picker type="date"
+                                v-model="form.startEffect"
+                                placeholder="开始时间"
+                                format="YYYY-MM-DD"
+                                value-format="YYYY-MM-DD HH:mm:ss"
+                                clearable>
+                </el-date-picker>
+              </el-form-item>
+            </div>
             <el-form-item label="Home Popup" label-width="120">
               <el-switch
                   v-model="form.isDisplayHome"
@@ -1080,10 +1091,12 @@ function submitForm() {
           break;
       }
 
-      form.value.startEffect = form.value.selectDate[0]
-      form.value.endEffect = form.value.selectDate[1]
-      form.value.startShow = form.value.showTime[0]
-      form.value.endShow = form.value.showTime[1]
+      if (form.value.scheduleType === '1') {
+        form.value.startEffect = form.value.selectDate[0]
+        form.value.endEffect = form.value.selectDate[1]
+        form.value.startShow = form.value.showTime[0]
+        form.value.endShow = form.value.showTime[1]
+      }
 
       config.eventConfig = form.value.event
       form.value.configString = JSON.stringify( config )
