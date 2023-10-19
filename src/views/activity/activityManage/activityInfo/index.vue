@@ -313,6 +313,7 @@
                 <el-radio-group v-model="events.signIn.signMethod">
                   <el-radio label="1">Continuous</el-radio>
                   <el-radio label="2">Cumulative</el-radio>
+                  <el-radio label="3">Daily</el-radio>
                 </el-radio-group>
               </el-form-item>
               <el-form-item label="Cycle" prop="cycle">
@@ -1035,6 +1036,9 @@ function handleUpdate(row){
         depositData.value = parsedResponse.eventConfig.tableData;
         break;
       case 2:
+        events.value.signIn.cycle = parsedResponse.eventConfig.cycle
+        events.value.signIn.signMethod = parsedResponse.eventConfig.signMethod;
+        events.value.signIn.prospect = parsedResponse.eventConfig.prospect
         if ( parsedResponse.eventConfig.prospect === "2" ) {
           events.value.signIn.signInData = signInData;
           events.value.vipSignInData = data;
@@ -1088,6 +1092,7 @@ function submitForm() {
             events.value.signIn.signInData = events.value.vipSignInData
           }
           form.value.event = events.value.signIn
+            console.log(form.value.event)
           break;
       }
 
