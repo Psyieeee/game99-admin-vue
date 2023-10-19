@@ -56,17 +56,17 @@
     </el-row>
 
     <!--    display data in table -->
-    <el-table v-loading="loading" :data="missionRepeatLists" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="threeDayMissionList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="ID" min-width="70" prop="id"/>
-      <el-table-column align="center" label="Reward Amount" min-width="180" prop="rewardAmount"/>
+      <el-table-column align="center" label="Reward Amount" min-width="180" prop="reward"/>
       <el-table-column align="center" label="Mission Target" min-width="180" prop="missionObjectives"/>
       <el-table-column align="center" label="Completion Count" min-width="180" prop="completionCount"/>
       <el-table-column align="center" label="Reward Activity" min-width="180" prop="rewardActivity"/>
       <el-table-column align="center" label="Mission Introduction" min-width="180">
         <template #default="scope">
           <!-- Display both ID and Task Currency in the same cell -->
-          累计充值${{ scope.row.cumulativeRechargeAmount }}, 奖励${{ scope.row.rewardAmount }}
+          累计充值${{ scope.row.cumulativeRechargeAmount }}, 奖励${{ scope.row.reward }}
         </template>
       </el-table-column>
       <el-table-column align="center" min-width="150" label="Status" prop="status">
@@ -81,6 +81,20 @@
       </el-table-column>
       <el-table-column align="center" label="Operator" min-width="180" prop="createdBy"/>
       <el-table-column align="center" label="Operating Time" min-width="180" prop="updateTime"/>
+      <el-table-column :show-overflow-tooltip="true" align="center" label="URL" min-width="180" prop="icon">
+        <template #default="scope">
+          <div>
+            <a
+                v-if="scope.row.icon !== ''"
+                :href="scope.row.icon"
+                style="color: #409eff; font-size: 12px"
+                target="_blank"
+            >{{ scope.row.icon }}
+            </a>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Description" min-width="180" prop="description"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
@@ -114,7 +128,7 @@
     <!-- 添加或修改公司入款银行列表对话框 Add or modify company deposit bank list dialog-->
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="700px">
-      <el-form ref="missionRepeatRef" :model="form" :rules="rules" label-width="300px">
+      <el-form ref="missionRepeatRef" :model="form" :rules="rules" label-width="230px">
         <el-form-item label="Currency" prop="currency" style=" min-width: 290px">
           <el-checkbox
               v-model="selectAll"
@@ -122,7 +136,7 @@
           >Check all
           </el-checkbox>
         </el-form-item>
-        <el-form-item label="Currency" prop="currency" style="min-width: 290px">
+        <el-form-item prop="currency" style="min-width: 290px">
           <el-checkbox-group
               v-model="checkedCurrency"
               @change="handleCheckedCurrencyChange">
@@ -154,14 +168,12 @@
         </el-form-item>
         <el-form-item v-if="form.missionObjectives === '累计充值'" label="Recharge Category"
                       prop="accumulatedRechargeSource" style="min-width: 290px">
-          <el-select v-model="form.accumulatedRechargeSource" multiple>
-            <el-option
+          <el-checkbox-group v-model="data.rechargeCategory">
+            <el-checkbox-button
                 v-for="dict in pay_online_recharge_category"
                 :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-            ></el-option>
-          </el-select>
+                :label="dict.label"></el-checkbox-button>
+          </el-checkbox-group>
         </el-form-item>
         <div v-if="form.missionObjectives !== '累计充值'">
           <el-form-item label="Game Type" prop="gameType" style="min-width: 290px">
@@ -197,15 +209,15 @@
             </el-select>
           </el-form-item>
         </div>
-        <el-form-item label="累计补给量Cumulative Recharge Amount" prop="cumulativeRechargeAmount">
+        <el-form-item label="Cumulative Recharge Amount" prop="cumulativeRechargeAmount">
           <el-input type="number" v-model="form.cumulativeRechargeAmount" placeholder="输入累计充值金额"
                     @change="handleComposeMission"/>
         </el-form-item>
-        <el-form-item label="reward奖励金额" prop="rewardAmount">
-          <el-input type="number" v-model="form.rewardAmount" placeholder="请输入奖励金额"
+        <el-form-item label="Reward" prop="reward">
+          <el-input type="number" v-model="form.reward" placeholder="请输入奖励金额"
                     @change="handleComposeMission"/>
         </el-form-item>
-        <el-form-item label="reward奖励金额" prop="completionCount">
+        <el-form-item label="Completion Count" prop="completionCount">
           <el-input type="number" v-model="form.completionCount" placeholder="Add Completion Count"/>
         </el-form-item>
         <el-form-item label="activity奖励活动" prop="rewardActivity">
@@ -222,6 +234,31 @@
                 :inactive-value="0"
             ></el-switch>
           </template>
+        </el-form-item>
+        <el-form-item>
+          <el-upload
+              ref="upload"
+              :action="uploadFileUrl"
+              :auto-upload="false"
+              :before-upload="beforeAvatarUpload"
+              :headers="headers"
+              :limit="1"
+              :multiple="false"
+              :on-change="selectFile"
+              :on-error="uploadFalse"
+              :on-exceed="uploadExceed"
+              :on-preview="handlePreview"
+              :on-remove="handleRemove"
+              :on-success="uploadSuccess"
+              class="upload-demo"
+              drag
+              name="advertisementFile"
+          >
+            <div class="el-upload__text">Drop file here or <em>点击上传</em></div>
+            <div class="el-upload__tip">
+              最大文件大小为 100 MB
+            </div>
+          </el-upload>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -297,7 +334,6 @@
               ></el-switch>
             </el-form-item>
           </el-col>
-
           <el-col>
             <el-form-item label="Final Mystery Jackpot" prop="finalMysteryJackpotSwitch">
               <el-switch
@@ -405,7 +441,7 @@ import {
   getPlatformList,
   gameInfoList,
   getSettings,
-  updateSettings
+  updateSettings, fileUpload
 } from "@/api/activity/missionRepeat";
 
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
@@ -415,6 +451,7 @@ import {getToken} from "@/utils/auth";
 import {useRouter} from "vue-router";
 import {listAllType} from "@/api/game/type";
 import {getMemberTierList} from "@/api/activity/newbieBenefits";
+import {url} from "@/utils/url";
 
 const {proxy} = getCurrentInstance();
 const router = useRouter();
@@ -436,7 +473,7 @@ const gameList = ref([])
 const mission = ref('')
 
 
-const missionRepeatLists = ref([]);
+const threeDayMissionList = ref([]);
 const ids = ref([]);
 const id = ref('');
 const rewards = ref('');
@@ -457,15 +494,20 @@ const settingsForm = ref([]);
 const currencyCollection = ref([]);
 const checkedCurrency = ref([]);
 const settingsOpen = ref(false);
-const settingsId = ref(4);
+const settingsId = ref('THREE_DAY');
 const eventCollection = ref([]);
 const checkedEventCollection = ref([]);
 const collectionRestriction = ref([]);
 const checkedCollectionRestriction = ref([]);
+const formData = new FormData();
 
 const data = reactive({
+      auditRestrictedTabs:[],
+
+      rechargeCategory:[],
+
       queryParams: {
-        missionRepeatType: 'THREE_DAY',
+        missionSettingsId: 'THREE_DAY',
         pageNum: 1,
         pageSize: 20,
         type: null,
@@ -498,7 +540,7 @@ const data = reactive({
             [
               {required: true, message: '不能为空', trigger: 'blur'}
             ],
-        rewardAmount:
+        reward:
             [
               {required: true, message: '不能为空', trigger: 'blur'}
             ],
@@ -516,11 +558,12 @@ const data = reactive({
 
       headers: {
         Authorization: 'Bearer ' + getToken()
-      }
-      ,
+      },
+
+      uploadFileUrl: uploadAdvertisementUrl(),
     })
 ;
-const {queryParams, form, rules, settingsRules, headers} = toRefs(data);
+const {uploadFileUrl, queryParams, form, rules, settingsRules, headers} = toRefs(data);
 
 function handleMemberTierList() {
   getMemberTierList(data.queryParams).then(res => {
@@ -575,7 +618,7 @@ function handleQuery() {
 function getList() {
   loading.value = true;
   missionRepeatList(queryParams.value).then(response => {
-    missionRepeatLists.value = response.data;
+    threeDayMissionList.value = response.data;
     total.value = response.total;
     loading.value = false;
   });
@@ -597,7 +640,7 @@ function reset() {
     cumulativeRechargeAmount: null,
     rewardActivity: null,
     completionCount: null,
-    rewardAmount: null,
+    reward: null,
     missionIntroduction: null,
     status: null
   }
@@ -616,7 +659,9 @@ function handleAdd() {
   reset()
   open.value = true
   title.value = '添加 3 天任务'
-  selectAll.value = true;
+  selectAll.value = false;
+  data.rechargeCategory = []
+  checkedCurrency.value =[]
   handleCheckAllChange();
 }
 
@@ -625,22 +670,25 @@ function submitForm() {
   proxy.$refs['missionRepeatRef'].validate(async valid => {
     if (valid) {
       let params = {
-        id: checkedCurrency.value.id,
-        missionRepeatType: 1,
-        missionSettingsId: 2,
-        // taskCurrency : checkedCurrency.value.toString(),
-        taskCurrency: checkedCurrency.value.map((item) => item).join(','),
-        taskClassification: form.value.taskClassification,
-        rewardAmount: form.value.rewardAmount,
+        accumulatedRechargeSource: null,
+        platformId: form.value.platformType,
+        gameTypeId: form.value.gameType,
+        gameId: form.value.gameType,
+
+        // id: checkedCurrency.value.id,
+        id: form.value.id,
+        missionRepeatType: 3,
+        missionSettingsId: 4,
+        completionCount: form.value.completionCount,
+        reward: form.value.reward,
         missionObjectives: form.value.missionObjectives,
         cumulativeRechargeAmount: form.value.cumulativeRechargeAmount,
         rewardActivity: form.value.rewardActivity,
         status: form.value.status,
       }
-
       if (form.value.missionObjectives === '累计充值') {
         params = {
-          accumulatedRechargeSource: form.value.accumulatedRechargeSource.map((item) => item.label).join(','),
+          accumulatedRechargeSource: data.rechargeCategory.map((item) => item).join(','),
           platformId: null,
           gameTypeId: null,
           gameId: null,
@@ -648,27 +696,9 @@ function submitForm() {
           // id: checkedCurrency.value.id,
           id: form.value.id,
           missionRepeatType: 3,
-          missionSettingsId: 4,
+          missionSettingsId: 'THREE_DAY',
           completionCount: form.value.completionCount,
-          rewardAmount: form.value.rewardAmount,
-          missionObjectives: form.value.missionObjectives,
-          cumulativeRechargeAmount: form.value.cumulativeRechargeAmount,
-          rewardActivity: form.value.rewardActivity,
-          status: form.value.status,
-        }
-      } else {
-        params = {
-          accumulatedRechargeSource: null,
-          platformId: form.value.platformType,
-          gameTypeId: form.value.gameType,
-          gameId: form.value.gameType,
-
-          // id: checkedCurrency.value.id,
-          id: form.value.id,
-          missionRepeatType: 3,
-          missionSettingsId: 4,
-          completionCount: form.value.completionCount,
-          rewardAmount: form.value.rewardAmount,
+          reward: form.value.reward,
           missionObjectives: form.value.missionObjectives,
           cumulativeRechargeAmount: form.value.cumulativeRechargeAmount,
           rewardActivity: form.value.rewardActivity,
@@ -676,18 +706,22 @@ function submitForm() {
         }
       }
 
+      if (formData.get("file") != null) {
+        await fileUpload(formData).then(res => params.icon = res.data);
+      }
       if (form.value.id != null) {
         updateMissionRepeat(params).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
+          getList()
         })
       } else {
         addMissionRepeat(params).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
+          getList()
         })
       }
-      getList()
     }
   })
 }
@@ -697,9 +731,16 @@ function handleUpdate(row) {
   reset()
   const id = row.id || this.ids
   getMissionRepeatList(id).then(response => {
+    if( response.data.accumulatedRechargeSource != null ){
+      data.rechargeCategory = response.data.accumulatedRechargeSource.split(',')
+    }
+    if( response.data.taskCurrency != null ){
+      checkedCurrency.value = response.data.taskCurrency.split(',')
+    }
     form.value = response.data
     open.value = true
     title.value = '编辑每日任务'
+    handleCheckedCurrencyChange()
   })
 }
 
@@ -745,7 +786,7 @@ function populateCheckList(collection, checkedList, key) {
 
 function submitSettings() {
   proxy.$refs['settingsRef'].validate(async valid => {
-
+    handleSelectedAudit()
     if (checkedCurrency.value.length <= 0) {
       proxy.$modal.msgError('Currency is required')
       return;
@@ -763,11 +804,12 @@ function submitSettings() {
         finalMysteryJackpotMax: settingsForm.value.finalMysteryJackpotMax,
         auditMultiplier: settingsForm.value.auditMultiplier,
         auditRestrictedPlatformsSwitch: settingsForm.value.auditRestrictedPlatformsSwitch,
-        auditRestrictedPlatformsJson: settingsForm.value.auditRestrictedPlatformsJson,
+        auditRestrictedPlatformsJson: JSON.stringify( data.auditRestrictedTabs ),
         missionSettingsOtherList: checkedCurrency.value.concat(checkedEventCollection.value).concat(checkedCollectionRestriction.value)
       }
       updateSettings(params).then(() => {
         proxy.$modal.msgSuccess('修改成功')
+        data.auditRestrictedTabs = null;
         settingsOpen.value = false;
         getList()
       })
@@ -788,8 +830,8 @@ function handleCheckedCurrencyChange() {
 }
 
 function handleComposeMission() {
-  if (!isNullOrEmpty(form.value.cumulativeRechargeAmount) && !isNullOrEmpty(form.value.rewardAmount)) {
-    mission.value = "累计充值" + form.value.cumulativeRechargeAmount + "，奖励" + form.value.rewardAmount;
+  if (!isNullOrEmpty(form.value.cumulativeRechargeAmount) && !isNullOrEmpty(form.value.reward)) {
+    mission.value = "累计充值" + form.value.cumulativeRechargeAmount + "，奖励" + form.value.reward;
   } else {
     mission.value = "";
   }
@@ -815,7 +857,6 @@ function handleGameTypeChange() {
 function handleGamePlatformChange() {
   getGameTypeList();
 }
-
 
 function getGameTypeList() {
   listAllType().then(res => {
@@ -855,6 +896,54 @@ function getGameList() {
     };
     gameList.value = [allGame, ...res.data];
   })
+}
+
+function handleRemove() {
+  proxy.$modal.msgSuccess('移除成功')
+}
+
+function uploadSuccess() {
+  proxy.$modal.msgSuccess('文件上传成功');
+  queryParams.memberId = null
+  queryParams.pageNum = 1
+  getList()
+}
+
+function selectFile( file ) {
+  formData.append("file", file.raw)
+  formData.append("name", file.name)
+}
+
+function uploadFalse() {
+  proxy.$modal.msgError(' 上传音乐文件失败')
+}
+
+function uploadExceed() {
+  proxy.$modal.msgError('只能选择一个音乐文件，如果要更改，请退出并重新选择。')
+}
+
+function handlePreview(file) {
+  if (file.response.status) {
+    proxy.$modal.msgSuccess('此文件导入成功')
+  } else {
+    proxy.$modal.msgError('此文件导入失败')
+  }
+}
+
+function beforeAvatarUpload(file) {
+  const fileExtension = file.name.split('.')[1]
+  const isLt2M = file.size / 1024 / 1024 < 100
+  if (fileExtension != 'jpg' &&
+      fileExtension != 'png' &&
+      fileExtension != 'bmp') {
+    proxy.$modal.msgError('无效音乐')
+  } else if (!isLt2M) {
+    proxy.$modal.msgError('上传模板大小不能超过100MB!')
+  }
+}
+
+function uploadAdvertisementUrl() {
+  return url.baseUrl + url.game99PlatformAdminWeb + "/missionNewbie/uploadFile";
 }
 
 handleMemberTierList();
