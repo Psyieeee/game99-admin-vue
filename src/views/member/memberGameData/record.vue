@@ -35,7 +35,7 @@
                 icon="el-icon-menu"
                 size="small"
                 @click="handleDetail(scope.row)"
-                v-hasPermi="['member:memberGameData:detailList']"
+                v-hasPermi="['member:gameData:detailList']"
             >更多
             </el-button>
           </template>
