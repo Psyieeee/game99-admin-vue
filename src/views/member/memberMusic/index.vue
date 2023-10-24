@@ -342,17 +342,26 @@ function submitForm() {
       }
 
       if (formData.get("file") != null) {
-        await fileUpload(formData).then(res => params.url = res.data);
+        await fileUpload(formData).then(res => {
+          console.log(" params.url " + params.url)
+          if (form.value.id != null) {
+            form.value.url = res.data
+          } else {
+            params.url = res.data
+          }
+        });
       }
 
+      console.log("form.value.url " + form.value.url)
+
       if (form.value.id != null) {
-        updateMusic(form.value).then(response => {
+        updateMusic(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
         })
       } else {
-        addMusic(params).then(response => {
+        addMusic(params).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
@@ -426,7 +435,7 @@ function handleEffectChange(row) {
 /** select multiple option */
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id);
-  single.value = selection.length != 1;
+  single.value = selection.length !== 1;
   multiple.value = !selection.length;
 }
 
@@ -461,13 +470,13 @@ function uploadSuccess() {
 function beforeAvatarUpload(file) {
   const fileExtension = file.name.split('.')[1]
   const isLt2M = file.size / 1024 / 1024 < 100
-  if (fileExtension != 'mp3' &&
-      fileExtension != 'mp4' &&
-      fileExtension != 'm4a' &&
-      fileExtension != 'aac' &&
-      fileExtension != 'wma' &&
-      fileExtension != 'wav' &&
-      fileExtension != 'flac') {
+  if (fileExtension !== 'mp3' &&
+      fileExtension !== 'mp4' &&
+      fileExtension !== 'm4a' &&
+      fileExtension !== 'aac' &&
+      fileExtension !== 'wma' &&
+      fileExtension !== 'wav' &&
+      fileExtension !== 'flac') {
     proxy.$modal.msgError('无效音乐')
   } else if (!isLt2M) {
     proxy.$modal.msgError('上传模板大小不能超过100MB!')
