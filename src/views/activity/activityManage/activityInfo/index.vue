@@ -541,7 +541,6 @@
 
 <script name="ActivityInfo" setup>
 import {url} from "@/utils/url";
-import event1 from "@/assets/icons/event/1.png";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import { ElMessage } from 'element-plus'
 import html2canvas from 'html2canvas';
