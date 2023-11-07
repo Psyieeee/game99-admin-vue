@@ -541,6 +541,7 @@
 
 <script name="ActivityInfo" setup>
 import {url} from "@/utils/url";
+import event1 from "@/assets/icons/event/1.png";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import { ElMessage } from 'element-plus'
 import html2canvas from 'html2canvas';
@@ -577,13 +578,7 @@ const ids = ref([]);
 const total = ref(0);
 const title = ref();
 const coinIcons = ref([
-    '/wjehbtewj/assets/icons/event/1.png',
-    '/wjehbtewj/assets/icons/event/2.png',
-    '/wjehbtewj/assets/icons/event/3.png',
-    '/wjehbtewj/assets/icons/event/4.png',
-    '/wjehbtewj/assets/icons/event/5.png',
-    '/wjehbtewj/assets/icons/event/6.png',
-    '/wjehbtewj/assets/icons/event/7.png'
+  event1
 ]);
 const treasureIcons = ref([
   'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdbx1.png',
