@@ -565,12 +565,13 @@ const ids = ref([]);
 const total = ref(0);
 const title = ref();
 const coinIcons = ref([
-    'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb1.png',
-    'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb2.png',
-    'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb3.png',
-    'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb4.png',
-    'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb5.png',
-    'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb6.png'
+    'https://game99.feiwindevelopment.com/wjehbtewj/src/assets/icons/event/1.png',
+    'https://game99.feiwindevelopment.com/wjehbtewj/src/assets/icons/event/2.png',
+    'https://game99.feiwindevelopment.com/wjehbtewj/src/assets/icons/event/3.png',
+    'https://game99.feiwindevelopment.com/wjehbtewj/src/assets/icons/event/4.png',
+    'https://game99.feiwindevelopment.com/wjehbtewj/src/assets/icons/event/5.png',
+    'https://game99.feiwindevelopment.com/wjehbtewj/src/assets/icons/event/1.png',
+    'https://game99.feiwindevelopment.com/wjehbtewj/src/assets/icons/event/1.png',
 ]);
 const treasureIcons = ref([
   'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdbx1.png',
