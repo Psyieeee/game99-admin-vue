@@ -578,7 +578,12 @@ const ids = ref([]);
 const total = ref(0);
 const title = ref();
 const coinIcons = ref([
-  event1
+    'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb1.png',
+    'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb2.png',
+    'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb3.png',
+    'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb4.png',
+    'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb5.png',
+    'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb6.png'
 ]);
 const treasureIcons = ref([
   'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdbx1.png',
