@@ -577,13 +577,13 @@ const ids = ref([]);
 const total = ref(0);
 const title = ref();
 const coinIcons = ref([
-    'src/assets/icons/event/1.png',
-    'src/assets/icons/event/2.png',
-    'src/assets/icons/event/3.png',
-    'src/assets/icons/event/4.png',
-    'src/assets/icons/event/5.png',
-    'src/assets/icons/event/1.png',
-    'src/assets/icons/event/1.png',
+    '/wjehbtewj/assets/icons/event/1.png',
+    '/wjehbtewj/assets/icons/event/2.png',
+    '/wjehbtewj/assets/icons/event/3.png',
+    '/wjehbtewj/assets/icons/event/4.png',
+    '/wjehbtewj/assets/icons/event/5.png',
+    '/wjehbtewj/assets/icons/event/6.png',
+    '/wjehbtewj/assets/icons/event/7.png'
 ]);
 const treasureIcons = ref([
   'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdbx1.png',
