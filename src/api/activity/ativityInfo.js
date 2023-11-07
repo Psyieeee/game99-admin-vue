@@ -137,6 +137,12 @@ export function removeEventsBanner(imageUrl){
     })
 }
 
+export function getAllRewardIcon(){
+    return request({
+        url:url.game99PlatformAdminWeb+"/activity/activityInfo/getAllRewardIcon",
+        method:'post',
+    })
+}
 
 
 

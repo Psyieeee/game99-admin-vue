@@ -401,15 +401,15 @@
                           style="width: 120px"
                       >
                         <template #prefix>
-                          <el-image style="width: 80px; height: 80px; margin-left: 10px" :src="scope.row.iconUrl"/>
+                          <el-image style="width: 50px; height: 50px; margin-top: 5px; margin-bottom: 5px; margin-left: 10px " :src="scope.row.iconUrl"/>
                         </template>
                         <el-option
                             label=" "
-                            v-for="icon in ( scope.row.type === '1' ? coinIcons : treasureIcons)"
+                            v-for="icon in ( scope.row.type === '1' ? rewardIconCollection : treasureIcons)"
                             :value="icon"
                             style="width: 120px; height: 100px; margin-left: -15px"
                         >
-                          <el-image style="width: 100px; height: 100px" :src="icon" fit="fill" />
+                          <el-image style="width: 50px; height: 50px;margin-top: 10px; margin-left: 25px" :src="icon"  />
                         </el-option>
                       </el-select>
                     </template>
@@ -556,7 +556,7 @@ import {
   activityInfoUpdateStatus,
   getActivityInfoList,
   getAllEventsBanner,
-  getAllEventsIcon,
+  getAllEventsIcon, getAllRewardIcon,
   removeEventsBanner,
   removeEventsIcon,
   uploadEventsBanner,
@@ -577,14 +577,6 @@ const showSearch = ref(true);
 const ids = ref([]);
 const total = ref(0);
 const title = ref();
-const coinIcons = ref([
-    'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb1.png',
-    'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb2.png',
-    'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb3.png',
-    'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb4.png',
-    'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb5.png',
-    'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdjb6.png'
-]);
 const treasureIcons = ref([
   'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdbx1.png',
   'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdbx2.png',
@@ -722,6 +714,7 @@ const data =  reactive({
       },
     },
   },
+  rewardIconCollection: null,
   banner: null,
   rules:{
     selectDate:[
@@ -747,7 +740,7 @@ const data =  reactive({
   /** updateTime */
 });
 
-const {queryParams,form,rules, banner, events, createBanner} = toRefs(data);
+const {queryParams,form,rules, banner, events, createBanner, rewardIconCollection} = toRefs(data);
 const {activityInfo_status} = proxy.useDict("activityInfo_status");
 const formData = new FormData();
 
@@ -799,7 +792,7 @@ function signInConfig(days){
           },
           topUpRequirement: null,
           codingRequirement: null,
-          iconUrl: coinIcons.value[0]
+          iconUrl: rewardIconCollection.value[0]
         }
     )
   }
@@ -855,6 +848,13 @@ function listEventBanners ( param ) {
     _this.pagination.banners.totalPages = Math.ceil(res.total / _this.pagination.banners.info.pageSize );
   })
 }
+
+function listRewardIcons ( param ) {
+  getAllRewardIcon(param).then(res => {
+    rewardIconCollection.value = res.data
+  })
+}
+
 function listImages (actionType) {
   if ( actionType === 1 ) {
     listEventIcons(createBanner.value.pagination.icons.info)
@@ -865,6 +865,7 @@ function listImages (actionType) {
   if ( actionType === null) {
     listEventIcons(createBanner.value.pagination.icons.info)
     listEventBanners(createBanner.value.pagination.banners.info)
+    listRewardIcons()
   }
 }
 function removeImage(){
@@ -1018,6 +1019,7 @@ function handleAdd(){
   reset()
   listEventIcons(createBanner.value.pagination.icons.info)
   listEventBanners(createBanner.value.pagination.banners.info)
+  listRewardIcons()
   open.value = true
   title.value = "添加活动信息"
 }
