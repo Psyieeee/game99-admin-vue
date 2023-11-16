@@ -20,7 +20,7 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['repeat:activity:add']"
+            v-hasPermi="['mission:activity:add']"
             icon="Plus"
             plain
             size="small"
@@ -31,7 +31,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['repeat:activity:remove']"
+            v-hasPermi="['mission:activity:remove']"
             :disabled="multiple"
             icon="Delete"
             plain
@@ -43,7 +43,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['repeat:activity:settings']"
+            v-hasPermi="['mission:activity:settings']"
             icon="gear"
             plain
             size="small"
@@ -62,7 +62,7 @@
       <el-table-column align="center" label="Activity Name" min-width="180" prop="name"/>
       <el-table-column align="center" label="Required Activity Level" min-width="180" prop="requiredActivityLevel"/>
       <el-table-column align="center" label="Reward Type" min-width="180" prop="rewardType"/>
-      <el-table-column align="center" label="Reward Amount" min-width="180" prop="rewardAmount"/>
+      <el-table-column align="center" label="Reward Amount" min-width="180" prop="reward"/>
       <el-table-column align="center" min-width="150" label="Active" prop="status">
         <template #default="scope">
           <el-switch
@@ -74,19 +74,19 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="Operator" min-width="180" prop="updateBy"/>
-      <el-table-column align="center" label="Operating Time" min-width="180" prop="updateDatetime"/>
+      <el-table-column align="center" label="Operating Time" min-width="180" prop="updateTime"/>
       <el-table-column align="center" label="Description" min-width="180" prop="description"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
-              v-hasPermi="['repeat:activity:update']"
+              v-hasPermi="['mission:activity:update']"
               icon="Edit" link
               size="small"
               type="primary"
               @click="handleUpdate(scope.row)">修改
           </el-button>
           <el-button
-              v-hasPermi="['repeat:activity:remove']"
+              v-hasPermi="['mission:activity:remove']"
               icon="Delete" link
               size="small"
               style="color: #e05e5e"
@@ -137,9 +137,9 @@
           </el-form-item>
         </el-col>
         <el-col>
-          <el-form-item label="Reward Amount" prop="rewardAmount" >
+          <el-form-item label="Reward Amount" prop="reward" >
             <el-input
-                v-model="form.rewardAmount"
+                v-model="form.reward"
                 clearable
                 placeholder="Enter Reward Amount"
             />
@@ -177,7 +177,7 @@
             <el-form-item label="Circular Way" prop="reset"
                           style="min-width: 290px">
               <template #default="scope">
-                <el-select v-model="form.region" placeholder="please select your zone">
+                <el-select v-model="settingsForm.reset" placeholder="please select your zone">
                   <el-option label="Mission Cycle (每日周期（重置为 0:00）" :value="0" />
                   <el-option label="Weekly Cycle (每周循环（周一0:00重置)" :value="1" />
                 </el-select>
@@ -206,10 +206,10 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="Audit Restricted Platform" prop="auditPlatformSwitch" style="min-width: 290px">
+            <el-form-item label="Audit Restricted Platform" prop="auditRestrictedPlatformsSwitch" style="min-width: 290px">
               <template #default="scope">
                 <el-switch
-                    v-model="settingsForm.auditPlatformSwitch"
+                    v-model="settingsForm.auditRestrictedPlatformsSwitch"
                     :active-value="1"
                     :inactive-value="0"
                 ></el-switch>
@@ -276,7 +276,7 @@ const data = reactive({
     reset: null,
     repeatOpenSwitch: null,
     auditMultiplier: null,
-    auditPlatformSwitch: null,
+    auditRestrictedPlatformsSwitch: null,
     auditPlatformRestricted: null
   },
 
@@ -338,7 +338,7 @@ function reset() {
     name: null,
     requiredActivityLevel: null,
     rewardType: null,
-    rewardAmount: null
+    reward: null
   }
   proxy.resetForm('ref');
 }
@@ -366,7 +366,7 @@ function submitForm() {
         missionSettingsId: 5,
         requiredActivityLevel: form.value.requiredActivityLevel,
         rewardType: form.value.rewardType,
-        rewardAmount: form.value.rewardAmount,
+        reward: form.value.reward,
         status: 0,
         description: form.value.description
 
@@ -393,13 +393,14 @@ function submitSettingsForm() {
     if (valid) {
       console.log( settingsForm.value )
       const params = {
+        id: "ACTIVITY",
         reset: settingsForm.value.reset,
         repeatOpenSwitch: settingsForm.value.repeatOpenSwitch,
         auditMultiplier: settingsForm.value.auditMultiplier,
-        auditPlatformSwitch: settingsForm.value.auditPlatformSwitch,
+        auditRestrictedPlatformsSwitch: settingsForm.value.auditRestrictedPlatformsSwitch,
         missionSettingsId: 'ACTIVITY'
       }
-      updateMissionActivitySettings(params).then(response => {
+      updateMissionActivitySettings(params).then(() => {
         proxy.$modal.msgSuccess('修改成功')
         settingsOpen.value = false
         getList()
