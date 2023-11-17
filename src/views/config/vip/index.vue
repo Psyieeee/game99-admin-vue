@@ -21,6 +21,7 @@
        <el-table-column label="周俸禄" prop="weekBonus" align="center"/>
 <!--       <el-table-column label="月俸禄" prop="monthBonus" align="center"/>-->
        <el-table-column label="需求打码量" prop="bcode" align="center"/>
+       <el-table-column label="救援奖金率" prop="rescueBonusRate" align="center"/>
        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="120">
          <template #default="scope">
            <el-button
@@ -51,7 +52,7 @@
          @pagination="getList"/>
 
      <!-- 添加或修改【请填写功能名称】对话框 -->
-     <el-dialog :close-on-click-modal="false" :title="title" v-model="open" width="500px" style="height: 350px" append-to-body>
+     <el-dialog :close-on-click-modal="false" :title="title" v-model="open" width="500px" style="height: 420px" append-to-body>
        <el-form ref="configVipRef" :model="form" :rules="rules" label-width="90px">
          <el-form-item label="vip等级" prop="level">
            <el-input v-model="form.level" placeholder="请输入vip等级" type="number"
@@ -68,6 +69,9 @@
          </el-form-item>-->
          <el-form-item label="需求打码量" prop="bcode">
            <el-input v-model="form.bcode" placeholder="请输入需求打码量" type="number" />
+         </el-form-item>
+         <el-form-item label="救援奖金率" prop="rescueBonusRate">
+           <el-input v-model="form.rescueBonusRate" placeholder="请输入救援奖金率" type="number" />
          </el-form-item>
        </el-form>
        <div slot="footer" class="dialog-footer">
@@ -94,6 +98,9 @@
          </el-form-item>-->
          <el-form-item label="需求打码量" prop="bcode">
            <el-input v-model="form.bcode" placeholder="请输入需求打码量" type="number" />
+         </el-form-item>
+         <el-form-item label="救援奖金率" prop="rescueBonusRate">
+           <el-input v-model="form.rescueBonusRate" placeholder="请输入救援奖金率" type="number" />
          </el-form-item>
        </el-form>
        <div slot="footer" class="dialog-footer">
@@ -176,6 +183,7 @@ function reset() {
     channel: null,
     client: null,
     bcode: null,
+    rescueBonusRate: null,
   };
   proxy.resetForm("configVipRef");
 }
@@ -190,6 +198,7 @@ function resetUpdateForm() {
     channel: null,
     client: null,
     bcode: null,
+    rescueBonusRate: null,
   };
   proxy.resetForm("configVipUpdateRef");
 }
@@ -216,7 +225,7 @@ function handleUpdate(row){
 function submitForm(){
   proxy.$refs['configVipRef'].validate(validation=>{
     if(validation){
-        addConfigVipData(form.value).then(res=>{
+        addConfigVipData(form.value).then(() =>{
           proxy.$modal.msgSuccess("新增成功")
           open.value = false
           getList()
@@ -229,7 +238,7 @@ function submitForm(){
 function submitFormEdit(){
   proxy.$refs['configVipUpdateRef'].validate(validation=>{
     if(validation){
-    configVipEdit(form.value).then(res => {
+    configVipEdit(form.value).then(()  => {
       proxy.$modal.msgSuccess("修改成功")
       openEdit.value = false
       getList()
