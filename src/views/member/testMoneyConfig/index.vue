@@ -17,7 +17,7 @@
     </el-row>
 
     <!--    display data in table -->
-    <el-table v-loading="loading" :data="tableList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="tableList">
       <el-table-column label="提供时间限制" prop="provideTimesLimit" align="center"/>
       <el-table-column label="每日次数限制" prop="perDayTimesLimit" align="center"/>
       <el-table-column label="总金额" prop="totalAmount" align="center"/>
@@ -99,7 +99,6 @@ import {
     changeEffectStatus, getTestMoneyConfig,
 } from "@/api/member/testMoneyConfig";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
-import {getMemberBcode} from "@/api/member/memberBcode";
 const {proxy} = getCurrentInstance();
 
 
@@ -128,12 +127,6 @@ const data = reactive({
 
 });
 const {queryParams, form, rules, headers} = toRefs(data);
-
-function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.id);
-  console.log( "selection " + !selection.length)
-  multiple.value = !selection.length;
-}
 
 function handleQuery() {
   queryParams.pageNum = 1
@@ -194,13 +187,13 @@ function submitForm() {
 
 /** handle update data */
 function handleUpdate(row) {
+  data.showEditButton = true
+  data.showAddButton = false
+  reset();
   open.value = true
   title.value = '更新信息'
     getTestMoneyConfig(row.id).then(response => {
         form.value = response.data;
-        form.cur = form.cur + '';
-        open.value = true;
-        title.value = "修改会员打码数据";
     });
 }
 
@@ -228,10 +221,3 @@ function effectStatusChange(row) {
 
 getList()
 </script>
-
-<style>
-.centered-form {
-  margin-left: 50px;
-  max-width: 400px;
-}
-</style>
