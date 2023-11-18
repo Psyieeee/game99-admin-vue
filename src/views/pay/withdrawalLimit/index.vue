@@ -195,7 +195,10 @@ function getList() {
 function reset() {
   form.value = {
     vipLevel: null,
-    supportLink: null,
+    dailyWithdrawCount: null,
+    amountLimit: null,
+    oneTimeLimit: null,
+    exceedWithdrawalFee: null,
     status: null
   }
   proxy.resetForm('queryRef');
