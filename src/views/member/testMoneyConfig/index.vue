@@ -4,7 +4,7 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['customerSupport:content:add']"
+            v-hasPermi="['member:testMoney:add']"
             icon="Plus"
             plain
             size="small"
@@ -37,7 +37,7 @@
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
-              v-hasPermi="['customerSupport:content:edit']"
+              v-hasPermi="['member:testMoney:edit']"
               icon="Edit" link
               size="small"
               type="primary"
@@ -48,11 +48,11 @@
     </el-table>
 
 
-    <!-- 添加或修改公司入款银行列表对话框 Add or modify customer support-->
+    <!-- 添加或修改记录 Add or modify records-->
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
-               width="700">
-      <el-form ref="testMoney" :model="form" :rules="rules" label-width="250px">
-<!--        <div class="centered-form">-->
+               width="400">
+      <el-form ref="testMoney" :model="form" :rules="rules" label-width="100px">
+        <div class="centered-form">
           <el-form-item label="提供时间限制" prop="provideTimesLimit">
             <el-input v-model="form.provideTimesLimit" placeholder="提供时间限制" type="number"/>
           </el-form-item>
@@ -72,16 +72,15 @@
             <el-date-picker v-model="form.afterRegisterTime" placeholder="注册时间后" type="datetime" />
           </el-form-item>
           <el-form-item label="状态" prop="status">
-<!--            <el-input v-model="form.status" placeholder="状态" type="number" />-->
             <el-switch v-model="form.status"
                        :active-value=1
                        :inactive-value=0
             />
           </el-form-item>
-<!--        </div>-->
+        </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
+          <el-button type="primary" @click="submitForm">提交</el-button>
           <el-button @click="open=false">取 消</el-button>
       </div>
     </el-dialog>
@@ -104,41 +103,46 @@ const {proxy} = getCurrentInstance();
 
 const tableList = ref([]);
 const ids = ref([]);
-const type = ref('-');
-const name = ref('-');
-const status = ref('-');
-const sort = ref('-');
-const path = ref('-');
 const title = ref('');
-const total = ref(0);
 const loading = ref(true);
 const multiple = ref(true);
 const open = ref(false);
 
 const data = reactive({
   /** 查询参数 query params*/
-  queryParams: {
-    id: ''
-  },
+  queryParams: {},
 
   /** 表单参数 form parameter*/
   form: {},
-  rules:{}
+  rules: {
+    provideTimesLimit: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    perDayTimesLimit: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    totalAmount: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    perDayAmount: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    memberMinMoney: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    afterRegisterTime: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ]
+  }
 
 });
-const {queryParams, form, rules, headers} = toRefs(data);
-
-function handleQuery() {
-  queryParams.pageNum = 1
-  getList()
-}
+const {queryParams, form, rules} = toRefs(data);
 
 /** fetch all data from back-end as getList */
 function getList() {
   loading.value = true;
   testMoneyConfigList(queryParams.value).then(response => {
     tableList.value = response.data;
-    total.value = response.total;
     loading.value = false;
   });
 }
@@ -152,7 +156,7 @@ function reset() {
     perDayAmount: null,
     memberMinMoney: null,
     afterRegisterTime: null,
-    status: null
+    status: 1
   }
   proxy.resetForm('testMoney');
 }
@@ -187,19 +191,17 @@ function submitForm() {
 
 /** handle update data */
 function handleUpdate(row) {
-  data.showEditButton = true
-  data.showAddButton = false
   reset();
   open.value = true
   title.value = '更新信息'
-    getTestMoneyConfig(row.id).then(response => {
-        form.value = response.data;
-    });
+  getTestMoneyConfig(row.id).then(response => {
+    form.value = response.data;
+  });
 }
 
 
 function effectStatusChange(row) {
-  let text = row.status == '1' ? '启用' : '停用'
+  let text = row.status === 1 ? '启用' : '停用'
   proxy.$confirm('确认要' + text + '"?', '警告', {
     confirmButtonText: '确定',
     cancelButtonText: '取消'
@@ -214,10 +216,17 @@ function effectStatusChange(row) {
     proxy.$modal.msgSuccess(text + '成功')
     getList()
   }).catch(function () {
-    row.effect = row.effect === '0' ? '1' : '0'
+    row.status = row.status === 0 ? 1 : 0
   })
 }
 
 
 getList()
 </script>
+
+<style>
+.centered-form {
+  margin-left: 40px;
+  max-width: 400px;
+}
+</style>

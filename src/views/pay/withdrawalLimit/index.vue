@@ -4,7 +4,7 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['customerSupport:content:add']"
+            v-hasPermi="['withdrawalLimit:content:add']"
             icon="Plus"
             plain
             size="small"
@@ -15,7 +15,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['customerSupport:content:delete']"
+            v-hasPermi="['withdrawalLimit:content:delete']"
             :disabled="multiple"
             icon="Delete"
             plain
@@ -31,23 +31,23 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="tableList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="VIP Level" min-width="180" prop="vipLevel"/>
-      <el-table-column align="center" label="Daily Withdraw Count" min-width="180" prop="dailyWithdrawCount"/>
-      <el-table-column align="center" label="Daily Amount Limit" min-width="180" prop="amountLimit"/>
-      <el-table-column align="center" label="One-Time Limit" min-width="180" prop="oneTimeLimit"/>
-      <el-table-column align="center" label="Exceed Withdrawal Fee" min-width="180" prop="exceedWithdrawalFee"/>
-      <el-table-column align="center" label="Status" min-width="180" prop="status"/>
+      <el-table-column align="center" label="VIP 水平" min-width="180" prop="vipLevel"/>
+      <el-table-column align="center" label="每日提现计数" min-width="180" prop="dailyWithdrawCount"/>
+      <el-table-column align="center" label="每日限额" min-width="180" prop="amountLimit"/>
+      <el-table-column align="center" label="一次性提款限额" min-width="180" prop="oneTimeLimit"/>
+      <el-table-column align="center" label="超过提款限额的费用" min-width="180" prop="exceedWithdrawalFee"/>
+      <el-table-column align="center" label="状态" min-width="180" prop="status"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
-              v-hasPermi="['customerSupport:content:edit']"
+              v-hasPermi="['withdrawalLimit:content:edit']"
               icon="Edit" link
               size="small"
               type="primary"
               @click="handleUpdate(scope.row)">修改
           </el-button>
           <el-button
-              v-hasPermi="['customerSupport:content:delete']"
+              v-hasPermi="['withdrawalLimit:content:delete']"
               icon="Delete" link
               size="small"
               style="color: #e05e5e"
@@ -59,12 +59,12 @@
     </el-table>
 
 
-    <!-- 添加或修改公司入款银行列表对话框 Add or modify withdrawal limit-->
+    <!-- 添加或修改记录 Add or modify records-->
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="400px">
       <el-form :inline="true" ref="queryRef" :model="form" :rules="rules" label-width="100px">
         <div class="centered-form">
-          <el-form-item label="VIP Level" prop="vipLevel">
+          <el-form-item label="VIP 水平" prop="vipLevel">
             <el-select v-model="form.vipLevel" clearable placeholder="Select">
               <el-option
                   v-for="item in vipLevels"
@@ -74,19 +74,19 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item label="Daily count" prop="dailyWithdrawCount">
-            <el-input type="number" v-model="form.dailyWithdrawCount" placeholder="Daily Withdraw Count"/>
+          <el-form-item label="每日提现计数" prop="dailyWithdrawCount">
+            <el-input type="number" v-model="form.dailyWithdrawCount" placeholder="每日提现计数"/>
           </el-form-item>
-          <el-form-item label="Amount limit" prop="amountLimit">
-            <el-input type="number" v-model="form.amountLimit" placeholder="Daily Amount Limit"/>
+          <el-form-item label="每日限额" prop="amountLimit">
+            <el-input type="number" v-model="form.amountLimit" placeholder="每日限额"/>
           </el-form-item>
-          <el-form-item label="One-Time" prop="oneTimeLimit">
-            <el-input type="number" v-model="form.oneTimeLimit" placeholder="One-Time Limit"/>
+          <el-form-item label="一次性提款限额" prop="oneTimeLimit">
+            <el-input type="number" v-model="form.oneTimeLimit" placeholder="一次性提款限额"/>
           </el-form-item>
-          <el-form-item label="Exceed Fee" prop="exceedWithdrawalFee">
-            <el-input type="number" v-model="form.exceedWithdrawalFee" placeholder="Exceed Withdrawal Fee"/>
+          <el-form-item label="超过取款限额" prop="exceedWithdrawalFee">
+            <el-input type="number" v-model="form.exceedWithdrawalFee" placeholder="超过提款限额的费用"/>
           </el-form-item>
-          <el-form-item label="Status" prop="status">
+          <el-form-item label="状态" prop="status">
             <el-select v-model="form.status" clearable placeholder="Select">
               <el-option
                   v-for="item in statuses"
@@ -99,8 +99,7 @@
         </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" v-if="data.showAddButton" @click="submitForm">提交</el-button>
-        <el-button type="primary" v-if="data.showEditButton" @click="submitForm">编辑</el-button>
+        <el-button type="primary" @click="submitForm">提交</el-button>
         <el-button @click="open=false">取 消</el-button>
 
       </div>
@@ -118,21 +117,12 @@ import {
   updateWithdrawalLimit,
   getWithdrawalLimit, withdrawalLimitVipLevels
 } from "@/api/pay/withdrawalLimit";
-import {reactive, ref, toRefs} from "vue";
-import {getToken} from "@/utils/auth";
+import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 const {proxy} = getCurrentInstance();
-
-const router = useRouter();
 
 const tableList = ref([]);
 const ids = ref([]);
-const type = ref('-');
-const name = ref('-');
-const status = ref('-');
-const sort = ref('-');
-const path = ref('-');
 const title = ref('');
-const total = ref(0);
 const loading = ref(true);
 const multiple = ref(true);
 const open = ref(false);
@@ -147,23 +137,32 @@ const statuses = ref([
     label: 'Inactive'
   }])
 const data = reactive({
-
-  showAddButton: false,
-  showEditButton: false,
   /** 查询参数 query params*/
-  queryParams: {
-    id: ''
-  },
+  queryParams: {},
 
   /** 表单参数 form parameter*/
   form: {},
 
-  headers: {
-    Authorization: 'Bearer ' + getToken()
-  },
+  rules: {
+    vipLevel: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    dailyWithdrawCount: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    amountLimit: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    oneTimeLimit: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    exceedWithdrawalFee: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ]
+  }
 
 });
-const {queryParams, form, rules, headers} = toRefs(data);
+const {queryParams, form, rules} = toRefs(data);
 
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id);
@@ -171,20 +170,14 @@ function handleSelectionChange(selection) {
   multiple.value = !selection.length;
 }
 
-function handleQuery() {
-  queryParams.pageNum = 1
-  getList()
-}
-
 /** fetch all data from back-end as getList */
 function getList() {
   loading.value = true;
   withdrawalLimitList(queryParams.value).then(response => {
     tableList.value = response.data;
-    total.value = response.total;
     //loading.value = false;
   }).then(
-      withdrawalLimitVipLevels(queryParams.value).then(response => {
+      withdrawalLimitVipLevels().then(response => {
         vipLevels.value = response.data;
         loading.value = false;
       })
@@ -199,15 +192,13 @@ function reset() {
     amountLimit: null,
     oneTimeLimit: null,
     exceedWithdrawalFee: null,
-    status: null
+    status: 1
   }
   proxy.resetForm('queryRef');
 }
 
 /** handle add new data */
 function handleAdd() {
-  data.showAddButton = true
-  data.showEditButton = false
   reset()
   open.value = true
   title.value = '新的提现限额'
@@ -217,15 +208,6 @@ function handleAdd() {
 function submitForm() {
   proxy.$refs['queryRef'].validate(async valid => {
     if (valid) {
-      const params = {
-        vipLevel: form.value.vipLevel,
-        dailyWithdrawCount: form.value.dailyWithdrawCount,
-        amountLimit: form.value.amountLimit,
-        oneTimeLimit: form.value.oneTimeLimit,
-        exceedWithdrawalFee: form.value.exceedWithdrawalFee,
-        status: form.value.status
-      }
-
       if (form.value.id != null) {
         updateWithdrawalLimit(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
@@ -233,7 +215,7 @@ function submitForm() {
           getList()
         })
       } else {
-        addWithdrawalLimit(params).then(() => {
+        addWithdrawalLimit(form.value).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
@@ -245,9 +227,10 @@ function submitForm() {
 
 /** handle update data */
 function handleUpdate(row) {
-  data.showEditButton = true
-  data.showAddButton = false
-  form.value = row
+  reset();
+  getWithdrawalLimit(row.id).then(response => {
+    form.value = response.data;
+  });
   console.log(JSON.stringify(form.value) + " @@@@")
   open.value = true
   title.value = '更新信息'
@@ -274,7 +257,7 @@ getList()
 
 <style>
 .centered-form {
-  margin-left: 50px;
+  margin-left: 40px;
   max-width: 400px;
 }
 </style>

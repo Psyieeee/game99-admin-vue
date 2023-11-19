@@ -31,9 +31,9 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="tableList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="VIP Level" min-width="180" prop="vipLevel"/>
-      <el-table-column align="center" label="Support Link" min-width="180" prop="supportLink"/>
-      <el-table-column align="center" label="Status" min-width="180" prop="status"/>
+      <el-table-column align="center" label="VIP 水平" min-width="180" prop="vipLevel"/>
+      <el-table-column align="center" label="链接" min-width="180" prop="supportLink"/>
+      <el-table-column align="center" label="状态" min-width="180" prop="status"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
@@ -56,12 +56,12 @@
     </el-table>
 
 
-    <!-- 添加或修改公司入款银行列表对话框 Add or modify customer support-->
+    <!-- 添加或修改记录 Add or modify records-->
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="400px">
       <el-form :inline="true" ref="queryRef" :model="form" :rules="rules" label-width="100px">
         <div class="centered-form">
-          <el-form-item label="VIP Level" prop="vipLevel">
+          <el-form-item label="VIP 水平" prop="vipLevel">
             <el-select v-model="form.vipLevel" clearable placeholder="Select">
               <el-option
                   v-for="item in vipLevels"
@@ -71,10 +71,10 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item label="Support Link" prop="supportLink">
+          <el-form-item label="链接" prop="supportLink">
             <el-input type="textarea" v-model="form.supportLink" placeholder="Support Link"/>
           </el-form-item>
-          <el-form-item label="Type" prop="type">
+          <el-form-item label="状态" prop="status">
             <el-select v-model="form.status" clearable placeholder="Select">
               <el-option
                   v-for="item in statuses"
@@ -87,8 +87,7 @@
         </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" v-if="data.showAddButton" @click="submitForm">提交</el-button>
-        <el-button type="primary" v-if="data.showEditButton" @click="submitForm">编辑</el-button>
+        <el-button type="primary" @click="submitForm">提交</el-button>
         <el-button @click="open=false">取 消</el-button>
 
       </div>
@@ -106,21 +105,12 @@ import {
   updateCustomerSupport,
   getCustomerSupport, customerSupportVipLevels
 } from "@/api/system/customerSupport";
-import {reactive, ref, toRefs} from "vue";
-import {getToken} from "@/utils/auth";
+import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 const {proxy} = getCurrentInstance();
-
-const router = useRouter();
 
 const tableList = ref([]);
 const ids = ref([]);
-const type = ref('-');
-const name = ref('-');
-const status = ref('-');
-const sort = ref('-');
-const path = ref('-');
 const title = ref('');
-const total = ref(0);
 const loading = ref(true);
 const multiple = ref(true);
 const open = ref(false);
@@ -136,22 +126,23 @@ const statuses = ref([
   }])
 const data = reactive({
 
-  showAddButton: false,
-  showEditButton: false,
   /** 查询参数 query params*/
-  queryParams: {
-    id: ''
-  },
+  queryParams: {},
 
   /** 表单参数 form parameter*/
   form: {},
 
-  headers: {
-    Authorization: 'Bearer ' + getToken()
-  },
+  rules: {
+    vipLevel: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    supportLink: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ]
+  }
 
 });
-const {queryParams, form, rules, headers} = toRefs(data);
+const {queryParams, form, rules} = toRefs(data);
 
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id);
@@ -159,17 +150,11 @@ function handleSelectionChange(selection) {
   multiple.value = !selection.length;
 }
 
-function handleQuery() {
-  queryParams.pageNum = 1
-  getList()
-}
-
 /** fetch all data from back-end as getList */
 function getList() {
   loading.value = true;
   customerSupportList(queryParams.value).then(response => {
     tableList.value = response.data;
-    total.value = response.total;
     //loading.value = false;
   }).then(
       customerSupportVipLevels(queryParams.value).then(response => {
@@ -184,15 +169,13 @@ function reset() {
   form.value = {
     vipLevel: null,
     supportLink: null,
-    status: null
+    status: 1
   }
   proxy.resetForm('queryRef');
 }
 
 /** handle add new data */
 function handleAdd() {
-  data.showAddButton = true
-  data.showEditButton = false
   reset()
   open.value = true
   title.value = '添加客户支持'
@@ -227,9 +210,10 @@ function submitForm() {
 
 /** handle update data */
 function handleUpdate(row) {
-  data.showEditButton = true
-  data.showAddButton = false
-  form.value = row
+  reset();
+  getCustomerSupport(row.id).then(response => {
+    form.value = response.data;
+  });
   console.log(JSON.stringify(form.value) + " @@@@")
   open.value = true
   title.value = '更新信息'
@@ -249,7 +233,6 @@ function handleDelete(row) {
     proxy.$modal.msgSuccess('删除成功')
   })
 }
-
 
 getList()
 </script>
