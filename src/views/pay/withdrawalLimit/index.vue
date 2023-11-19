@@ -32,7 +32,10 @@
     <el-table v-loading="loading" :data="tableList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="VIP Level" min-width="180" prop="vipLevel"/>
-      <el-table-column align="center" label="Support Link" min-width="180" prop="supportLink"/>
+      <el-table-column align="center" label="Daily Withdraw Count" min-width="180" prop="dailyWithdrawCount"/>
+      <el-table-column align="center" label="Daily Amount Limit" min-width="180" prop="amountLimit"/>
+      <el-table-column align="center" label="One-Time Limit" min-width="180" prop="oneTimeLimit"/>
+      <el-table-column align="center" label="Exceed Withdrawal Fee" min-width="180" prop="exceedWithdrawalFee"/>
       <el-table-column align="center" label="Status" min-width="180" prop="status"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
@@ -56,7 +59,7 @@
     </el-table>
 
 
-    <!-- 添加或修改公司入款银行列表对话框 Add or modify customer support-->
+    <!-- 添加或修改公司入款银行列表对话框 Add or modify withdrawal limit-->
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="400px">
       <el-form :inline="true" ref="queryRef" :model="form" :rules="rules" label-width="100px">
@@ -71,10 +74,19 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item label="Support Link" prop="supportLink">
-            <el-input type="textarea" v-model="form.supportLink" placeholder="Support Link"/>
+          <el-form-item label="Daily count" prop="dailyWithdrawCount">
+            <el-input type="number" v-model="form.dailyWithdrawCount" placeholder="Daily Withdraw Count"/>
           </el-form-item>
-          <el-form-item label="Type" prop="type">
+          <el-form-item label="Amount limit" prop="amountLimit">
+            <el-input type="number" v-model="form.amountLimit" placeholder="Daily Amount Limit"/>
+          </el-form-item>
+          <el-form-item label="One-Time" prop="oneTimeLimit">
+            <el-input type="number" v-model="form.oneTimeLimit" placeholder="One-Time Limit"/>
+          </el-form-item>
+          <el-form-item label="Exceed Fee" prop="exceedWithdrawalFee">
+            <el-input type="number" v-model="form.exceedWithdrawalFee" placeholder="Exceed Withdrawal Fee"/>
+          </el-form-item>
+          <el-form-item label="Status" prop="status">
             <el-select v-model="form.status" clearable placeholder="Select">
               <el-option
                   v-for="item in statuses"
@@ -100,12 +112,12 @@
 <script setup>
 
 import {
-  customerSupportList,
-  deleteCustomerSupport,
-  addCustomerSupport,
-  updateCustomerSupport,
-  getCustomerSupport, customerSupportVipLevels
-} from "@/api/system/customerSupport";
+  withdrawalLimitList,
+  deleteWithdrawalLimit,
+  addWithdrawalLimit,
+  updateWithdrawalLimit,
+  getWithdrawalLimit, withdrawalLimitVipLevels
+} from "@/api/pay/withdrawalLimit";
 import {reactive, ref, toRefs} from "vue";
 import {getToken} from "@/utils/auth";
 const {proxy} = getCurrentInstance();
@@ -167,12 +179,12 @@ function handleQuery() {
 /** fetch all data from back-end as getList */
 function getList() {
   loading.value = true;
-  customerSupportList(queryParams.value).then(response => {
+  withdrawalLimitList(queryParams.value).then(response => {
     tableList.value = response.data;
     total.value = response.total;
     //loading.value = false;
   }).then(
-      customerSupportVipLevels(queryParams.value).then(response => {
+      withdrawalLimitVipLevels(queryParams.value).then(response => {
         vipLevels.value = response.data;
         loading.value = false;
       })
@@ -183,7 +195,10 @@ function getList() {
 function reset() {
   form.value = {
     vipLevel: null,
-    supportLink: null,
+    dailyWithdrawCount: null,
+    amountLimit: null,
+    oneTimeLimit: null,
+    exceedWithdrawalFee: null,
     status: null
   }
   proxy.resetForm('queryRef');
@@ -195,7 +210,7 @@ function handleAdd() {
   data.showEditButton = false
   reset()
   open.value = true
-  title.value = '添加客户支持'
+  title.value = '新的提现限额'
 }
 
 /** submit new data and handle insert data api*/
@@ -204,18 +219,21 @@ function submitForm() {
     if (valid) {
       const params = {
         vipLevel: form.value.vipLevel,
-        supportLink: form.value.supportLink,
+        dailyWithdrawCount: form.value.dailyWithdrawCount,
+        amountLimit: form.value.amountLimit,
+        oneTimeLimit: form.value.oneTimeLimit,
+        exceedWithdrawalFee: form.value.exceedWithdrawalFee,
         status: form.value.status
       }
 
       if (form.value.id != null) {
-        updateCustomerSupport(form.value).then(() => {
+        updateWithdrawalLimit(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
         })
       } else {
-        addCustomerSupport(params).then(() => {
+        addWithdrawalLimit(params).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
@@ -243,7 +261,7 @@ function handleDelete(row) {
     cancelButtonText: '取消',
     type: 'warning'
   }).then(function () {
-    return deleteCustomerSupport(idss)
+    return deleteWithdrawalLimit(idss)
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess('删除成功')
