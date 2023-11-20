@@ -27,7 +27,7 @@ export function addLoja(data){
 export function updateLoja(data){
     return request({
         url:url.game99PayAdminWeb+"/lojaAdmin/edit",
-        method:'post',
+        method:'put',
         data : data
     })
 }
@@ -36,5 +36,16 @@ export function getLoja(id) {
     return request({
         url: url.game99PayAdminWeb + "/lojaAdmin/" + id,
         method: 'get'
+    })
+}
+
+export function fileUpload(data) {
+    return request({
+        url: url.game99PayAdminWeb + '/lojaAdmin/upload',
+        method: 'post',
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        },
+        data
     })
 }
