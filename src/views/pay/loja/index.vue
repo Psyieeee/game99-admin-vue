@@ -198,6 +198,8 @@ function reset() {
     bonus: null,
     image: null
   }
+  formData.delete("file")
+  formData.delete("name")
   proxy.resetForm('queryForm');
 }
 
@@ -261,7 +263,7 @@ function handleDelete(row) {
 
 
 function selectFile(file) {
-  this.fileToUpload = file;
+  //this.fileToUpload = file;
   formData.append("file", file.raw)
   formData.append("name", file.name)
 }
