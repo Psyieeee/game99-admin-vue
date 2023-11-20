@@ -56,27 +56,20 @@
       <el-table-column align="center" label="歌曲名称" min-width="180" prop="title"/>
       <el-table-column label="图标" align="center" prop="icon">
         <template #default="scope">
-          <el-image
-              style="height: 50px;"
-              :src="scope.row.icon"
-              fit="contain"
+          <a
+              v-if="scope.row.icon !== ''"
               :href="scope.row.icon"
+              style="color: #409eff; font-size: 12px"
+              target="_blank"
           >
-          </el-image>
-        </template>
-      </el-table-column>
-
-      <el-table-column :show-overflow-tooltip="true" align="center" label="网址" min-width="180" prop="icon">
-        <template #default="scope">
-          <div>
-            <a
-                v-if="scope.row.icon !== ''"
+            <el-image
+                style="height: 50px;"
+                :src="scope.row.icon"
+                fit="contain"
                 :href="scope.row.icon"
-                style="color: #409eff; font-size: 12px"
                 target="_blank"
-            >下载
-            </a>
-          </div>
+            />
+          </a>
         </template>
       </el-table-column>
       <el-table-column align="center" label="状态" prop="effect">
