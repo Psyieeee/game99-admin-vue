@@ -209,13 +209,14 @@ function effectStatusChange(row) {
     const status = changeEffectStatus(row.id, row.status);
     loading.value = true
     if (status) {
-      loading.value = false
       return status
     }
   }).then(() => {
+    loading.value = false
     proxy.$modal.msgSuccess(text + '成功')
     getList()
   }).catch(function () {
+    loading.value = false
     row.status = row.status === 0 ? 1 : 0
   })
 }
