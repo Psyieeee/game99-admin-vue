@@ -265,6 +265,7 @@ function reset() {
     createTime: null,
     updateTime: null
   }
+  proxy.$refs.upload.clearFiles();
   proxy.resetForm('memberAdvertisementRef');
 }
 
@@ -312,13 +313,13 @@ function submitForm() {
       }
 
       if (form.value.id != null) {
-        updateAdvertisement(form.value).then(response => {
+        updateAdvertisement(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
         })
       } else {
-        addAdvertisement(params).then(response => {
+        addAdvertisement(params).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
@@ -427,9 +428,9 @@ function uploadSuccess() {
 function beforeAvatarUpload(file) {
   const fileExtension = file.name.split('.')[1]
   const isLt2M = file.size / 1024 / 1024 < 100
-  if (fileExtension != 'jpg' &&
-      fileExtension != 'png' &&
-      fileExtension != 'bmp') {
+  if (fileExtension !== 'jpg' &&
+      fileExtension !== 'png' &&
+      fileExtension !== 'bmp') {
     proxy.$modal.msgError('无效音乐')
   } else if (!isLt2M) {
     proxy.$modal.msgError('上传模板大小不能超过100MB!')

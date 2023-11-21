@@ -271,6 +271,7 @@ function reset() {
     createTime: null,
     updateTime: null
   }
+  proxy.$refs.upload.clearFiles();
   proxy.resetForm('profilePictureRef')
 }
 
@@ -336,6 +337,7 @@ function submitForm() {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
+
         })
       }
     }
