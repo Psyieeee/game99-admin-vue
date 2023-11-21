@@ -687,7 +687,6 @@ function submitForm() {
           getList()
         })
       }
-
     }
   })
 }

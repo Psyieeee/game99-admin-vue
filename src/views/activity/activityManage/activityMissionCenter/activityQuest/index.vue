@@ -60,7 +60,19 @@
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="ID" min-width="70" prop="id"/>
       <el-table-column align="center" label="Activity Name" min-width="180" prop="name"/>
+      <el-table-column label="图标" align="center" prop="icon">
+        <template #default="scope">
+          <el-image
+              style="height: 50px;"
+              :src="scope.row.icon"
+              fit="contain"
+              :href="scope.row.icon"
+          >
+          </el-image>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="Required Activity Level" min-width="180" prop="requiredActivityLevel"/>
+      <el-table-column align="center" label="Mission Repeat Type" min-width="180" prop="missionRepeatType"/>
       <el-table-column align="center" label="Reward Type" min-width="180" prop="rewardType"/>
       <el-table-column align="center" label="Reward Amount" min-width="180" prop="reward"/>
       <el-table-column align="center" min-width="150" label="Active" prop="status">
@@ -125,6 +137,18 @@
               clearable
               placeholder="Please enter Required Activity Level"
           />
+          </el-form-item>
+        </el-col>
+        <el-col>
+          <el-form-item label="Mission Repeat Type" prop="missionRepeatType">
+            <el-select v-model="form.missionRepeatType" clearable placeholder="游戏平台">
+              <el-option
+                  v-for="dict in missionRepeatTypeList"
+                  :key="dict"
+                  :label="dict"
+                  :value="dict"
+              ></el-option>
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col>
@@ -230,6 +254,7 @@
 
 import {
   activityMissionList,
+  getMissionRepeatTypeList,
   getActivityMissionList,
   deleteActivityMission,
   addActivityMission,
@@ -246,6 +271,7 @@ import {useRouter} from "vue-router";
 const router = useRouter();
 
 const activityMissionLists = ref([]);
+const missionRepeatTypeList = ref([]);
 const ids = ref([]);
 const id = ref('');
 const status = ref(1);
@@ -332,11 +358,22 @@ function getList() {
   });
 }
 
+function getRepeatTypeList(){
+  getMissionRepeatTypeList().then(response => {
+    loading.value = false;
+    missionRepeatTypeList.value = response.data;
+    console.log("missionRepeatTypeList " , missionRepeatTypeList)
+  });
+
+
+}
+
 // 表单重置
 function reset() {
   form.value = {
     name: null,
     requiredActivityLevel: null,
+    missionRepeatType: null,
     rewardType: null,
     reward: null
   }
@@ -363,8 +400,9 @@ function submitForm() {
     if (valid) {
       const params = {
         name: form.value.name,
-        missionSettingsId: 5,
+        missionSettingsId: 'ACTIVITY',
         requiredActivityLevel: form.value.requiredActivityLevel,
+        missionRepeatType: form.value.missionRepeatType,
         rewardType: form.value.rewardType,
         reward: form.value.reward,
         status: 0,
@@ -443,7 +481,9 @@ function handleSettings() {
 }
 
 
-getList()
+getList();
+getRepeatTypeList();
+
 </script>
 
 <style>

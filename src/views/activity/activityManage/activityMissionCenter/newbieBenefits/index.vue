@@ -141,6 +141,7 @@
             <el-option label="BET" value="BET" />
             <el-option label="INVITE" value="INVITE" />
             <el-option label="RECHARGE" value="RECHARGE" />
+            <el-option label="SIGN UP" value="SIGN_UP" />
           </el-select>
         </el-form-item>
         <el-form-item label="reward奖励金额" prop="reward">
