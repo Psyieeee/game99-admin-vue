@@ -98,7 +98,7 @@
             </el-form-item>
             <el-form-item>
               <el-upload
-                  ref="upload"
+                  v-model:file-list="upload"
                   :auto-upload="false"
                   :limit="1"
                   :multiple="false"
@@ -149,6 +149,7 @@ const title = ref('');
 const loading = ref(true);
 const multiple = ref(true);
 const open = ref(false);
+const upload = ref([]);
 const formData = new FormData();
 const types = ref([
     {
@@ -198,6 +199,7 @@ function reset() {
     bonus: null,
     image: null
   }
+  upload.value = [];
   formData.delete("file")
   formData.delete("name")
   proxy.resetForm('queryForm');
