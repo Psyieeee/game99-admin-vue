@@ -67,6 +67,17 @@
       <el-table-column label="系统编号" align="center" prop="id"/>
       <el-table-column label="名称" align="center" prop="name"/>
       <el-table-column label="网址" align="center" prop="url"/>
+      <el-table-column label="是网址" align="center" prop="isUrl">
+        <template #default="scope">
+          <el-switch
+              v-model="scope.row.isUrl"
+              :active-value="true"
+              :inactive-value="false"
+              @click="handleEffectChange(scope.row)">
+          </el-switch>
+        </template>
+      </el-table-column>
+
       <el-table-column label="排序" align="center" prop="sort"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
@@ -129,8 +140,9 @@ import {
   activityTypeDataById, activityTypeExport,
   activityTypeListData,
   addActivityTypeData, deleteActivityType,
-  updateActivityType
+  updateActivityType, activityTypeUpdateIsUrl
 } from "@/api/activity/activityType";
+import {activityInfoUpdateStatus} from "@/api/activity/ativityInfo";
 
 const {proxy} = getCurrentInstance();
 
@@ -284,6 +296,20 @@ function handleExport() {
   })
 }
 
+function handleEffectChange(row){
+  let text = row.status === '1' ? '启用' : '停用'
+  proxy.$modal.confirm('确认要"' + text + '""' + row.name + '"吗?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(function () {
+    return activityTypeUpdateIsUrl(row.id, row.isUrl)
+  }).then(() => {
+    proxy.$modal.msgSuccess(text + '成功')
+  }).catch(function () {
+    row.isUrl = !row.isUrl
+  })
+}
 
 getList()
 </script>

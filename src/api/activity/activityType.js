@@ -78,7 +78,12 @@ export  function deleteActivityType(id){
     })
 }
 
-
+export function activityTypeUpdateIsUrl( id,isUrl ){
+    return request({
+        url:url.game99PlatformAdminWeb+"/activity/activityType/changeIsUrl/"+id+"/"+ isUrl,
+        method:'put',
+    })
+}
 
 
 
