@@ -8,11 +8,8 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="tableList">
       <el-table-column label="会员ID" prop="memberId" align="center"/>
-      <el-table-column label="Today Collect Times" prop="todayCollectTimes" align="center"/>
-      <el-table-column label="Today Collect Amount" prop="todayCollectAmount" align="center"/>
-      <el-table-column label="Total Collect Times" prop="totalCollectTimes" align="center"/>
-      <el-table-column label="Total Collect Amount" prop="totalCollectAmount" align="center"/>
-      <el-table-column label="Update Time" prop="updateTime" align="center"/>
+      <el-table-column label="收集金额" prop="collectAmount" align="center"/>
+      <el-table-column label="更新时间" prop="updateTime" align="center"/>
     </el-table>
 
   </div>
