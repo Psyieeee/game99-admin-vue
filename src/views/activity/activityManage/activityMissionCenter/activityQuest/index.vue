@@ -60,15 +60,9 @@
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="ID" min-width="70" prop="id"/>
       <el-table-column align="center" label="Activity Name" min-width="180" prop="name"/>
-      <el-table-column label="图标" align="center" prop="icon">
+      <el-table-column :show-overflow-tooltip="true" align="center" label="URL" min-width="180" prop="icon">
         <template #default="scope">
-          <el-image
-              style="height: 50px;"
-              :src="scope.row.icon"
-              fit="contain"
-              :href="scope.row.icon"
-          >
-          </el-image>
+          <el-image :src="scope.row.icon" lazy fit="contain" style="width: 60px;"/>
         </template>
       </el-table-column>
       <el-table-column align="center" label="Required Activity Level" min-width="180" prop="requiredActivityLevel"/>
@@ -119,9 +113,8 @@
     />
 
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
-               width="500px">
-      <el-form :inline="true" ref="ref" :model="form" :rules="rules" label-width="200px">
-        <el-col>
+               width="600px">
+      <el-form ref="ref" :model="form" :rules="rules" label-width="200px">
           <el-form-item label="Name" prop="name" >
             <el-input
                 v-model="form.name"
@@ -129,8 +122,6 @@
                 placeholder="name"
             />
           </el-form-item>
-        </el-col>
-        <el-col>
           <el-form-item label="Required Activity Level" prop="requiredActivityLevel" >
             <el-input
               v-model="form.requiredActivityLevel"
@@ -138,8 +129,6 @@
               placeholder="Please enter Required Activity Level"
           />
           </el-form-item>
-        </el-col>
-        <el-col>
           <el-form-item label="Mission Repeat Type" prop="missionRepeatType">
             <el-select v-model="form.missionRepeatType" clearable placeholder="游戏平台">
               <el-option
@@ -150,8 +139,6 @@
               ></el-option>
             </el-select>
           </el-form-item>
-        </el-col>
-        <el-col>
           <el-form-item label="Reward Type" prop="rewardType" >
             <el-input
                 v-model="form.rewardType"
@@ -159,8 +146,6 @@
                 placeholder="Enter Reward Type"
             />
           </el-form-item>
-        </el-col>
-        <el-col>
           <el-form-item label="Reward Amount" prop="reward" >
             <el-input
                 v-model="form.reward"
@@ -168,8 +153,6 @@
                 placeholder="Enter Reward Amount"
             />
           </el-form-item>
-        </el-col>
-        <el-col>
           <el-form-item label="Status" prop="status" style="min-width: 290px">
           <template #default="scope">
             <el-switch
@@ -179,12 +162,34 @@
             ></el-switch>
           </template>
         </el-form-item>
-        </el-col>
-        <el-col>
           <el-form-item label="Description" prop="description" >
-          <el-input v-model="form.description" type="textarea" placeholder="Description" :rows="3" />
-        </el-form-item>
-        </el-col>
+            <el-input v-model="form.description" type="textarea" placeholder="Description" :rows="3" />
+          </el-form-item>
+          <el-form-item>
+            <el-upload
+                ref="upload"
+                :action="uploadFileUrl"
+                :auto-upload="false"
+                :before-upload="beforeAvatarUpload"
+                :headers="headers"
+                :limit="1"
+                :multiple="false"
+                :on-change="selectFile"
+                :on-error="uploadFalse"
+                :on-exceed="uploadExceed"
+                :on-preview="handlePreview"
+                :on-remove="handleRemove"
+                :on-success="uploadSuccess"
+                class="upload-demo"
+                drag
+                name="advertisementFile"
+            >
+              <div class="el-upload__text">Drop file here or <em>点击上传</em></div>
+              <div class="el-upload__tip">
+                最大文件大小为 100 MB
+              </div>
+            </el-upload>
+          </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -267,6 +272,7 @@ import {
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {getToken} from "@/utils/auth";
 import {useRouter} from "vue-router";
+import {url} from "@/utils/url";
 
 const router = useRouter();
 
@@ -285,6 +291,7 @@ const showSearch = ref(true);
 const single = ref(true);
 const multiple = ref(true);
 const loading = ref(true);
+const formData = new FormData();
 const {proxy} = getCurrentInstance();
 
 const data = reactive({
@@ -309,12 +316,62 @@ const data = reactive({
   /** 表单参数 form parameter*/
   form: {},
 
+  uploadFileUrl: uploadAdvertisementUrl(),
+
   headers: {
     Authorization: 'Bearer ' + getToken()
   },
 
 });
-const {queryParams, settingsForm, form, rules, headers} = toRefs(data);
+const { uploadFileUrl, queryParams, settingsForm, form, rules, headers} = toRefs(data);
+
+function uploadAdvertisementUrl() {
+  return url.baseUrl + url.game99PlatformAdminWeb + "/activity/mission/uploadFile";
+}
+
+function beforeAvatarUpload(file) {
+  const fileExtension = file.name.split('.')[1]
+  const isLt2M = file.size / 1024 / 1024 < 100
+  if (fileExtension !== 'jpg' &&
+      fileExtension !== 'png' &&
+      fileExtension !== 'bmp') {
+    proxy.$modal.msgError('无效音乐')
+  } else if (!isLt2M) {
+    proxy.$modal.msgError('上传模板大小不能超过100MB!')
+  }
+}
+
+function handleRemove() {
+  proxy.$modal.msgSuccess('移除成功')
+}
+
+function uploadSuccess() {
+  proxy.$modal.msgSuccess('文件上传成功');
+  queryParams.memberId = null
+  queryParams.pageNum = 1
+  getList()
+}
+
+function selectFile( file ) {
+  formData.append("file", file.raw)
+  formData.append("name", file.name)
+}
+
+function uploadFalse() {
+  proxy.$modal.msgError(' 上传音乐文件失败')
+}
+
+function uploadExceed() {
+  proxy.$modal.msgError('只能选择一个音乐文件，如果要更改，请退出并重新选择。')
+}
+
+function handlePreview(file) {
+  if (file.response.status) {
+    proxy.$modal.msgSuccess('此文件导入成功')
+  } else {
+    proxy.$modal.msgError('此文件导入失败')
+  }
+}
 
 function handleEffectChange(row) {
   let text = row.status === '1' ? '启用' : '停用'
@@ -351,7 +408,7 @@ function handleQuery() {
 function getList() {
   loading.value = true;
   activityMissionList(queryParams.value).then(response => {
-    console.log(response.data)
+    console.log( JSON.stringify( response.data ) + " @@@")
     activityMissionLists.value = response.data;
     total.value = response.total;
     loading.value = false;
@@ -364,8 +421,6 @@ function getRepeatTypeList(){
     missionRepeatTypeList.value = response.data;
     console.log("missionRepeatTypeList " , missionRepeatTypeList)
   });
-
-
 }
 
 // 表单重置
