@@ -33,8 +33,8 @@ export function addMissionRecharge(data){
 
 export function updateMissionRecharge(data){
     return request({
-        url:url.game99PlatformAdminWeb+"/missionRechargeCommission/update",
-        method:'post',
+        url:url.game99PlatformAdminWeb+"/missionRechargeCommission/edit",
+        method:'put',
         data : data
     })
 }

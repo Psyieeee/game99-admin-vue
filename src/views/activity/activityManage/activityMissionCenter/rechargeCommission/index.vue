@@ -2,27 +2,27 @@
   <div class="app-container">
     <!--    button on the table for query-->
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-            icon="Plus"
-            plain
-            size="small"
-            type="primary"
-            @click="handleAdd"
-        >新增
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-            :disabled="multiple"
-            icon="Delete"
-            plain
-            size="small"
-            type="danger"
-            @click="handleDelete"
-        >删除
-        </el-button>
-      </el-col>
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--            icon="Plus"-->
+<!--            plain-->
+<!--            size="small"-->
+<!--            type="primary"-->
+<!--            @click="handleAdd"-->
+<!--        >新增-->
+<!--        </el-button>-->
+<!--      </el-col>-->
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--            :disabled="multiple"-->
+<!--            icon="Delete"-->
+<!--            plain-->
+<!--            size="small"-->
+<!--            type="danger"-->
+<!--            @click="handleDelete"-->
+<!--        >删除-->
+<!--        </el-button>-->
+<!--      </el-col>-->
       <right-toolbar @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -40,13 +40,13 @@
               type="primary"
               @click="handleUpdate(scope.row)">修改
           </el-button>
-          <el-button
-              icon="Delete" link
-              size="small"
-              style="color: #e05e5e"
-              type="danger"
-              @click="handleDelete(scope.row)">删除
-          </el-button>
+<!--          <el-button-->
+<!--              icon="Delete" link-->
+<!--              size="small"-->
+<!--              style="color: #e05e5e"-->
+<!--              type="danger"-->
+<!--              @click="handleDelete(scope.row)">删除-->
+<!--          </el-button>-->
         </template>
       </el-table-column>
     </el-table>
@@ -65,8 +65,8 @@
                width="500px">
       <el-form :inline="true" ref="addRechargeCommission" :model="form" :rules="rules" label-width="160px">
         <div class="centered-form">
-          <el-form-item label="Level" prop="playerCount">
-            <el-input type="number" v-model="form.level" placeholder="Level"/>
+          <el-form-item label="Level" prop="auditMultiplier" >
+            <el-input type="number" v-model="form.level" placeholder="Level" disabled />
           </el-form-item>
           <el-form-item label="Audit Multiplier" prop="auditMultiplier">
             <el-input type="number" v-model="form.auditMultiplier" placeholder="Audit Multiplier"/>
@@ -80,7 +80,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" v-if="data.showAddButton" @click="submitForm">提交</el-button>
-        <el-button type="primary" v-if="data.showEditButton" @click="handleUpdate">编辑</el-button>
+        <el-button type="primary" v-if="data.showEditButton" @click="submitForm">编辑</el-button>
         <el-button @click="open=false">取 消</el-button>
 
       </div>
@@ -140,7 +140,7 @@ const data = reactive({
 const {queryParams, form, rules, headers} = toRefs(data);
 
 function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.id);
+  ids.value = selection.map(item => item.level);
   console.log( "selection " + !selection.length)
   multiple.value = !selection.length;
 }
@@ -163,7 +163,7 @@ function getList() {
 // 表单重置
 function reset() {
   form.value = {
-    playerCount: null,
+    auditMultiplier: null,
     commissionRate: null,
     level: null
   }
@@ -191,11 +191,12 @@ function submitForm() {
   proxy.$refs['addRechargeCommission'].validate(async valid => {
     if (valid) {
       const params = {
-        playerCount: form.value.playerCount,
-        commissionRate: form.value.commissionRate
+        commissionRate: form.value.commissionRate,
+        auditMultiplier: form.value.auditMultiplier
       }
 
-      if (form.value.id != null) {
+      console.log("orm.value.level " + form.value.level)
+      if (form.value.level != null) {
         updateMissionRecharge(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
@@ -217,7 +218,7 @@ function handleUpdate(row) {
   reset()
   data.showEditButton = true
   data.showAddButton = false
-  const id = row.id || this.ids
+  const id = row.level || ids.value
   console.log( id )
   getMissionRecharge(id).then( response => {
     console.log( JSON.stringify( response ))
@@ -229,7 +230,7 @@ function handleUpdate(row) {
 
 /**  删除按钮操作 handle delete */
 function handleDelete(row) {
-  const idss = row.id || ids.value
+  const idss = row.level || ids.value
   proxy.$confirm('是否确认删除?', '警告', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
