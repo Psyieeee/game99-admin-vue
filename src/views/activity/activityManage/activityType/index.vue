@@ -66,6 +66,7 @@
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="系统编号" align="center" prop="id"/>
       <el-table-column label="名称" align="center" prop="name"/>
+      <el-table-column label="网址" align="center" prop="url"/>
       <el-table-column label="排序" align="center" prop="sort"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
@@ -102,6 +103,9 @@
       <el-form ref="addActivityType" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="名称" prop="name">
           <el-input v-model="form.name" placeholder="请输入名称"/>
+        </el-form-item>
+        <el-form-item label="网址" prop="url">
+          <el-input v-model="form.url" placeholder="输入网址"/>
         </el-form-item>
         <el-form-item label="排序" prop="sort">
           <el-input v-model="form.sort" type="number" class="no-number" placeholder="请输入排序"/>
