@@ -374,12 +374,12 @@
                   <el-table-column label="Reward Amount" width="150" align="center">
                     <template #default="scope">
                       <template v-if="scope.row.type === '1'">
-                        <el-input v-model="scope.row.rewardAmount.max"/>
+                        <el-input type="number" v-model="scope.row.rewardAmount.max"/>
                       </template>
                       <template v-else>
-                        <el-input style="width: 50px; right: 5px" v-model="scope.row.rewardAmount.min"/>
+                        <el-input type="number" style="width: 50px; right: 5px" v-model="scope.row.rewardAmount.min"/>
                         -
-                        <el-input style="width: 50px; left: 5px" v-model="scope.row.rewardAmount.max"/>
+                        <el-input type="number" style="width: 50px; left: 5px" v-model="scope.row.rewardAmount.max"/>
                       </template>
                     </template>
                   </el-table-column>
