@@ -969,7 +969,9 @@ function formatterType(row) {
   if (row.type == 0) {
     return '活动详情'
   } else if (row.type == 1) {
-    return '跳转链接'
+    return '内部浏览器'
+  } else if( row.type == 2 ) {
+    return '外部浏览器'
   } else {
     return ''
   }
