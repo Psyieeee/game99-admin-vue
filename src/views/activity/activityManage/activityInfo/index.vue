@@ -421,15 +421,15 @@
               <el-radio-group v-model="form.type">
                 <el-radio label="0">活动详情</el-radio>
                 <el-radio label="1">跳转链接</el-radio>
+                <el-radio label="2">浏览器</el-radio>
               </el-radio-group>
             </el-form-item>
             <el-form-item label="活动详情" prop="content" v-if="form.type == 0">
               <WangEditor v-model="form.content" image-path="ActivityInfo"/>
             </el-form-item>
-            <el-form-item label="跳转链接" prop="url" v-if="form.type == 1">
+            <el-form-item label="跳转链接" prop="url" v-if="form.type == 1 || form.type == 2">
               <el-input v-model="form.url" placeholder="请输入图标跳转链接"/>
             </el-form-item>
-
         </div>
           <div class="el-col el-col-8">
             <div>
