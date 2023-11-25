@@ -153,15 +153,15 @@ const upload = ref([]);
 const formData = new FormData();
 const types = ref([
     {
-      value: 1,
+      value: 0,
       label: 'First Recharge'
     },
     {
-      value: 2,
+      value: 1,
       label: 'Popular'
     },
     {
-      value: 3,
+      value: 2,
       label: 'Regular'
     }])
 const data = reactive({
