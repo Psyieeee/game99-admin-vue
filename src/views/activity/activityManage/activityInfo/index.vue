@@ -420,8 +420,8 @@
             <el-form-item label="跳转类型" prop="type">
               <el-radio-group v-model="form.type">
                 <el-radio label="0">活动详情</el-radio>
-                <el-radio label="1">跳转链接</el-radio>
-                <el-radio label="2">浏览器</el-radio>
+                <el-radio label="1">内部浏览器</el-radio>
+                <el-radio label="2">外部浏览器</el-radio>
               </el-radio-group>
             </el-form-item>
             <el-form-item label="活动详情" prop="content" v-if="form.type == 0">
