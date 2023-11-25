@@ -54,22 +54,21 @@
     <el-table v-loading="loading" :data="profilePictureList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="歌曲名称" min-width="180" prop="title"/>
-      <el-table-column label="图标" align="center" prop="icon">
+      <el-table-column :show-overflow-tooltip="true" align="center" label="网址" min-width="180" prop="icon">
         <template #default="scope">
-          <a
-              v-if="scope.row.icon !== ''"
-              :href="scope.row.icon"
-              style="color: #409eff; font-size: 12px"
-              target="_blank"
-          >
-            <el-image
-                style="height: 50px;"
-                :src="scope.row.icon"
-                fit="contain"
+          <div>
+            <a
+                v-if="scope.row.icon !== ''"
                 :href="scope.row.icon"
-                target="_blank"
-            />
-          </a>
+                style="color: #409eff; font-size: 12px"
+                target="_blank">
+              <el-image
+                  style="height: 50px;"
+                  :src="scope.row.icon"
+                  fit="contain"
+                  :href="scope.row.icon" />
+            </a>
+          </div>
         </template>
       </el-table-column>
       <el-table-column align="center" label="状态" prop="effect">
@@ -272,6 +271,7 @@ function reset() {
     createTime: null,
     updateTime: null
   }
+  proxy.$refs.upload.clearFiles();
   proxy.resetForm('profilePictureRef')
 }
 
@@ -337,6 +337,7 @@ function submitForm() {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
+
         })
       }
     }

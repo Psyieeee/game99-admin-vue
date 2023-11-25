@@ -59,6 +59,11 @@
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="ID" min-width="70" prop="id"/>
       <el-table-column align="center" label="Task Conditions" min-width="180" prop="taskConditions"/>
+      <el-table-column :show-overflow-tooltip="true" align="center" label="URL" min-width="180" prop="icon">
+        <template #default="scope">
+          <el-image :src="scope.row.icon" lazy fit="contain" style="width: 60px;"/>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="Reward Amount" min-width="180" prop="reward"/>
       <el-table-column align="center" label="Completion Points" min-width="180" prop="completionCount"/>
       <el-table-column align="center" label="Reward Activity" min-width="180" prop="rewardActivity"/>
@@ -89,19 +94,6 @@
       </el-table-column>
       <el-table-column align="center" label="Operator" min-width="180" prop="updateBy"/>
       <el-table-column align="center" label="Operating Time" min-width="180" prop="updateTime"/>
-      <el-table-column :show-overflow-tooltip="true" align="center" label="URL" min-width="180" prop="icon">
-        <template #default="scope">
-          <div>
-            <a
-                v-if="scope.row.icon !== ''"
-                :href="scope.row.icon"
-                style="color: #409eff; font-size: 12px"
-                target="_blank"
-            >{{ scope.row.icon }}
-            </a>
-          </div>
-        </template>
-      </el-table-column>
       <el-table-column align="center" label="Description" min-width="180" prop="description"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
@@ -137,10 +129,12 @@
                width="550px">
       <el-form ref="newbieBenefitsRef" :model="form" :rules="rules" label-width="150px">
         <el-form-item label="任务分类" prop="taskConditions" >
-          <el-select v-model="form.taskConditions" placeholder="请输入奖励金额">
-            <el-option label="BET" value="BET" />
-            <el-option label="INVITE" value="INVITE" />
-            <el-option label="RECHARGE" value="RECHARGE" />
+          <el-select v-model="form.taskConditions" placeholder="Select">
+            <el-option
+                v-for="list in missionTrigger.missionTrigger"
+                :label="list"
+                :value="list"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="reward奖励金额" prop="reward">
@@ -418,6 +412,7 @@ const eventCollection = ref([]);
 const checkedEventCollection = ref([]);
 const collectionRestriction = ref([]);
 const checkedCollectionRestriction = ref([]);
+const missionTrigger = ref([]);
 
 const settingsForm = ref([]);
 const selectAll = ref(true);
@@ -507,9 +502,9 @@ function uploadAdvertisementUrl() {
 function beforeAvatarUpload(file) {
   const fileExtension = file.name.split('.')[1]
   const isLt2M = file.size / 1024 / 1024 < 100
-  if (fileExtension != 'jpg' &&
-      fileExtension != 'png' &&
-      fileExtension != 'bmp') {
+  if (fileExtension !== 'jpg' &&
+      fileExtension !== 'png' &&
+      fileExtension !== 'bmp') {
     proxy.$modal.msgError('无效音乐')
   } else if (!isLt2M) {
     proxy.$modal.msgError('上传模板大小不能超过100MB!')
@@ -604,6 +599,9 @@ function getList() {
   loading.value = true;
   newbieListData(queryParams.value).then(response => {
     newbieBenefitsList.value = response.data;
+    console.log( JSON.stringify( newbieBenefitsList.value ) + " 2#@")
+    missionTrigger.value = newbieBenefitsList.value[0];
+    console.log( missionTrigger.value )
     total.value = response.total;
     loading.value = false;
   });
@@ -621,6 +619,7 @@ function reset() {
     missionIntroduction: null,
     upload: null
   }
+  // proxy.$refs.upload.clearFiles();
   proxy.resetForm('newbieBenefitsRef');
 }
 

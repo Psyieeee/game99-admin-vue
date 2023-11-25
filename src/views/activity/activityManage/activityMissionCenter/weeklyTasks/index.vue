@@ -60,6 +60,11 @@
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="ID" min-width="70" prop="id"/>
       <el-table-column align="center" label="Task Currency" min-width="180" prop="taskCurrency"/>
+      <el-table-column :show-overflow-tooltip="true" align="center" label="URL" min-width="180" prop="icon">
+        <template #default="scope">
+          <el-image :src="scope.row.icon" lazy fit="contain" style="width: 60px;"/>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="Task Classification" min-width="180" prop="taskClassification"/>
       <el-table-column align="center" label="Reward Amount" min-width="180" prop="reward"/>
       <el-table-column align="center" label="Completion Count" min-width="180" prop="completionCount"/>
@@ -83,19 +88,6 @@
       </el-table-column>
       <el-table-column align="center" label="Operator" min-width="180" prop="createdBy"/>
       <el-table-column align="center" label="Operating Time" min-width="180" prop="updateTime"/>
-      <el-table-column :show-overflow-tooltip="true" align="center" label="URL" min-width="180" prop="icon">
-        <template #default="scope">
-          <div>
-            <a
-                v-if="scope.row.icon !== ''"
-                :href="scope.row.icon"
-                style="color: #409eff; font-size: 12px"
-                target="_blank"
-            >{{ scope.row.icon }}
-            </a>
-          </div>
-        </template>
-      </el-table-column>
       <el-table-column align="center" label="Description" min-width="180" prop="description"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
@@ -154,10 +146,10 @@
           <el-form-item label="任务分类" prop="taskClassification" style="min-width: 290px">
           <el-select v-model="form.taskClassification" placeholder="任务分类" clearable>
             <el-option
-                v-for="dict in activity_mission_task_classification"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
+                v-for="dict in missionTriggerList.missionTriggerList"
+                :key="dict"
+                :label="dict"
+                :value="dict"
             />
           </el-select>
         </el-form-item>
@@ -473,6 +465,7 @@ const loading = ref(true);
 
 const settingsLoading = ref(true);
 const settingsForm = ref([]);
+const missionTriggerList = ref([]);
 
 const settingsOpen = ref(false);
 const settingsId = ref('WEEKLY');
@@ -593,6 +586,7 @@ function getList() {
   loading.value = true;
   missionRepeatList(queryParams.value).then(response => {
     missionRepeatLists.value = response.data;
+    missionTriggerList.value = missionRepeatLists.value[0];
     total.value = response.total;
     loading.value = false;
   });
