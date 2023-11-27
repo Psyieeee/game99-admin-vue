@@ -98,8 +98,9 @@ import {
     addMissionRecharge,
     updateMissionRecharge
 } from "@/api/activity/missionRecharge";
-import {reactive, ref, toRefs} from "vue";
+import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {getToken} from "@/utils/auth";
+import {useRouter} from "vue-router";
 
 const router = useRouter();
 const {proxy} = getCurrentInstance();
