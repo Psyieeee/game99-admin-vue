@@ -32,11 +32,12 @@
     <el-table v-loading="loading" :data="tableList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="VIP 水平" min-width="180" prop="vipLevel"/>
-      <el-table-column align="center" label="每日提现计数" min-width="180" prop="dailyWithdrawCount"/>
-      <el-table-column align="center" label="每日限额" min-width="180" prop="amountLimit"/>
-      <el-table-column align="center" label="一次性提款限额" min-width="180" prop="oneTimeLimit"/>
+      <el-table-column align="center" label="每日取款限额计数" min-width="180" prop="dailyWithdrawLimitTimes"/>
+      <el-table-column align="center" label="提款限额" min-width="180" prop="withdrawLimitAmount"/>
       <el-table-column align="center" label="超过提款限额的费用" min-width="180" prop="exceedWithdrawalFee"/>
-      <el-table-column align="center" label="状态" min-width="180" prop="status"/>
+      <el-table-column align="center" label="状态" min-width="180" prop="status">
+        <template #default="scope">{{scope.row.status===1?"Active":"Inactive"}}</template>
+      </el-table-column>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
@@ -74,14 +75,11 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item label="每日提现计数" prop="dailyWithdrawCount">
-            <el-input type="number" v-model="form.dailyWithdrawCount" placeholder="每日提现计数"/>
+          <el-form-item label="每日取款限额计数" prop="dailyWithdrawLimitTimes">
+            <el-input type="number" v-model="form.dailyWithdrawLimitTimes" placeholder="每日提现计数"/>
           </el-form-item>
-          <el-form-item label="每日限额" prop="amountLimit">
-            <el-input type="number" v-model="form.amountLimit" placeholder="每日限额"/>
-          </el-form-item>
-          <el-form-item label="一次性提款限额" prop="oneTimeLimit">
-            <el-input type="number" v-model="form.oneTimeLimit" placeholder="一次性提款限额"/>
+          <el-form-item label="提款限额" prop="withdrawLimitAmount">
+            <el-input type="number" v-model="form.withdrawLimitAmount" placeholder="提款限额"/>
           </el-form-item>
           <el-form-item label="超过取款限额" prop="exceedWithdrawalFee">
             <el-input type="number" v-model="form.exceedWithdrawalFee" placeholder="超过提款限额的费用"/>
@@ -147,7 +145,10 @@ const data = reactive({
     vipLevel: [
       {required: true, message: '无效的值', trigger: 'blur'}
     ],
-    dailyWithdrawCount: [
+    dailyWithdrawLimitTimes: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    withdrawLimitAmount: [
       {required: true, message: '无效的值', trigger: 'blur'}
     ],
     amountLimit: [

@@ -374,12 +374,12 @@
                   <el-table-column label="Reward Amount" width="150" align="center">
                     <template #default="scope">
                       <template v-if="scope.row.type === '1'">
-                        <el-input v-model="scope.row.rewardAmount.max"/>
+                        <el-input type="number" v-model="scope.row.rewardAmount.max"/>
                       </template>
                       <template v-else>
-                        <el-input style="width: 50px; right: 5px" v-model="scope.row.rewardAmount.min"/>
+                        <el-input type="number" style="width: 50px; right: 5px" v-model="scope.row.rewardAmount.min"/>
                         -
-                        <el-input style="width: 50px; left: 5px" v-model="scope.row.rewardAmount.max"/>
+                        <el-input type="number" style="width: 50px; left: 5px" v-model="scope.row.rewardAmount.max"/>
                       </template>
                     </template>
                   </el-table-column>
@@ -420,16 +420,16 @@
             <el-form-item label="跳转类型" prop="type">
               <el-radio-group v-model="form.type">
                 <el-radio label="0">活动详情</el-radio>
-                <el-radio label="1">跳转链接</el-radio>
+                <el-radio label="1">内部浏览器</el-radio>
+                <el-radio label="2">外部浏览器</el-radio>
               </el-radio-group>
             </el-form-item>
             <el-form-item label="活动详情" prop="content" v-if="form.type == 0">
               <WangEditor v-model="form.content" image-path="ActivityInfo"/>
             </el-form-item>
-            <el-form-item label="跳转链接" prop="url" v-if="form.type == 1">
+            <el-form-item label="跳转链接" prop="url" v-if="form.type == 1 || form.type == 2">
               <el-input v-model="form.url" placeholder="请输入图标跳转链接"/>
             </el-form-item>
-
         </div>
           <div class="el-col el-col-8">
             <div>
@@ -969,7 +969,9 @@ function formatterType(row) {
   if (row.type == 0) {
     return '活动详情'
   } else if (row.type == 1) {
-    return '跳转链接'
+    return '内部浏览器'
+  } else if( row.type == 2 ) {
+    return '外部浏览器'
   } else {
     return ''
   }
