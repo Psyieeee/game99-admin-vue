@@ -23,12 +23,12 @@
             v-model="queryParams.typeId"
             placeholder="请选择活动类型"
             clearable
-            style="width: 240px">
+            style="width: 350px">
           <el-option
-              v-for="vipBonusType in vipBonusTypeOptions"
-              :key="vipBonusType.id"
-              :label="vipBonusType.name"
-              :value="vipBonusType.id"/>
+              v-for="bonusType in vipBonusTypes"
+              :key="bonusType.id"
+              :label="bonusType.name"
+              :value="bonusType.id"/>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -44,6 +44,7 @@
             plain
             icon="Plus"
             size="small"
+            :disabled="isListing"
             @click="handleAdd"
             v-hasPermi="['activity:activityInfo:add']">新增
         </el-button>
@@ -84,7 +85,7 @@
     </el-row>
 
 <!-- display data into table-->
-    <el-table v-loading="loading" :data="activityInfoList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="vipBonusInfoList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="标题" align="center" prop="title" min-width="180"/>
         <el-table-column label="图标" align="center" prop="icon">
@@ -173,10 +174,10 @@
                   clearable
                   style="width: 350px">
                 <el-option
-                    v-for="activityType in vipBonusTypes"
-                    :key="activityType.id"
-                    :label="activityType.name"
-                    :value="activityType.id"/>
+                    v-for="bonusType in vipBonusTypes"
+                    :key="bonusType.id"
+                    :label="bonusType.name"
+                    :value="bonusType.id"/>
               </el-select>
             </el-form-item><br>
             <el-form-item label="Title" prop="title">
@@ -393,11 +394,11 @@
                   </div>
                 </div>
                 <div class="pagination" style="margin-top: 10px">
-                  <button @click="handleChangePage(false)">Previous</button>
-                  <button style="margin-left: 10px" @click="handleChangePage(true)">Next</button>
+                  <button :disabled="createBanner.isPageChanging" @click="handleChangePage(false)">Previous</button>
+                  <button :disabled="createBanner.isPageChanging" style="margin-left: 10px" @click="handleChangePage(true)">Next</button>
                   <span> Page:  {{ createBanner.pagination.param.pageNum  }} / {{createBanner.pagination.pageTotal}}</span>
-                  <input style="float: right" type="file" id="imageUpload" accept="image/* " @change="populateForm">
-                  <button style="float: right; margin-right: 10px" class="upload-button" @click="removeImage(1)">Remove</button>
+                  <input style="float: right" type="file" id="imageUpload" :disabled="createBanner.isUploading" accept="image/* " @change="handleUploadImage">
+                  <button style="float: right; margin-right: 10px" class="upload-button" :disabled="createBanner.isRemoving" @click="handleRemoveImage()">Remove</button>
                 </div>
               </div><hr>
               <div class="form-group">
@@ -440,11 +441,11 @@
                 </div>
               </div>
               <div class="pagination" style="margin-top: 10px">
-                <button @click="handleChangePage(false)">Previous</button>
-                <button style="margin-left: 10px" @click="handleChangePage(true)">Next</button>
+                <button :disabled="createBanner.isPageChanging" @click="handleChangePage(false)">Previous</button>
+                <button :disabled="createBanner.isPageChanging" style="margin-left: 10px" @click="handleChangePage(true)">Next</button>
                 <span> Page:  {{ createBanner.pagination.param.pageNum  }} / {{ createBanner.pagination.pageTotal }}</span>
-                <input style="float: right" type="file" id="imageUpload" accept="image/* " @change="populateForm">
-                <button style="float: right; margin-right: 10px" class="upload-button" @click="removeImage">Remove</button>
+                <input style="float: right" type="file" id="imageUpload" accept="image/* " :disabled="createBanner.isUploading" @change="handleUploadImage">
+                <button style="float: right; margin-right: 10px" class="upload-button" :disabled="createBanner.isRemoving" @click="handleRemoveImage">Remove</button>
               </div>
             </div><hr>
             </div>
@@ -490,6 +491,7 @@ const vipBonusTypes    = ref([]); // Vip Bonus Type List
 const showSearch       = ref(true);
 const multiple = ref(true); // Multiple Row Selection
 const loading  = ref(true);
+const isListing  = ref(true);
 const single   = ref(true); // Single Row Selection
 const title    = ref();
 const total    = ref(0); // Total rows
@@ -555,6 +557,9 @@ const data       =  reactive({
   },
   createBanner: {
     type: '1',
+    isUploading: false,
+    isRemoving: false,
+    isPageChanging: false,
     customize: {
       iconCollection: null,
       properties: {
@@ -622,11 +627,10 @@ function calculateNumberOfDays(){
     populateSignInConfigTable()
   }
 }
-function customSignInConfig(){
+function customDay_populateSignInConfigTable(){
   let firstConfig = configurations.value.signIn.listOfDailyData[0].config
-  if ( firstConfig === undefined ) {
-    return
-  }
+  if ( firstConfig === undefined ) return;
+
   dailyData.value = []
   for ( let i = 0; i < firstConfig.length; i++ ) {
     let row = firstConfig[i];
@@ -646,30 +650,25 @@ function customSignInConfig(){
   }
 }
 function populateSignInConfigTable(){
-  // const config = configurations.value;
-  // const signIn = config.signIn;
-  //
-  // let firstConfig = signIn.listOfDailyData[0].config;
-  // if ( signIn.customDay === '1' && firstConfig === undefined ) return;
-  //
-  // let cycle = signIn.customDay === '1' ? firstConfig.length : signIn.cycle;
-  // dailyData.value = [];
-  // for ( let i = 0; i < cycle; i++ ) {
-  //   let row = signIn.customDay === '1' ? firstConfig[i] : null;
-  //   dailyData.value.push(
-  //       {
-  //         day: row.day || i+1,
-  //         rewardType: row.rewardType || '1',
-  //         rewardAmount: {
-  //           min: null,
-  //           max: null
-  //         },
-  //         topUpRequirement: null,
-  //         codingRequirement: null,
-  //         iconUrl: row.iconUrl || config.rewardIcons[i] || null
-  //       }
-  //   )
-  // }
+  let cycle = configurations.value.signIn.cycle;
+  dailyData.value = [];
+
+  for ( let i = 0; i < cycle; i++ ) {
+    let row = null
+    dailyData.value.push(
+        {
+          day: i+1,
+          rewardType: '1',
+          rewardAmount: {
+            min: null,
+            max: null
+          },
+          topUpRequirement: null,
+          codingRequirement: null,
+          iconUrl: configurations.value.rewardIcons[i] || null
+        }
+    )
+  }
 }
 function saveVipConfig(){
   const indexOfExistingData = configurations.value.signIn.listOfDailyData.findIndex(data => data.level === configurations.value.vipLevel);
@@ -695,43 +694,25 @@ function resetVipConfig(){
 function handleVipLevelChange(){
   const config = configurations.value;
   switch ( form.value.typeId ) {
-    case 1:
+    case 1: {
       let signIn      = config.signIn;
       let tableConfig = signIn.listOfDailyData[config.vipLevel];
 
-      if ( tableConfig === undefined ) {
-        populateSignInConfigTable()
-      } else {
+      if ( tableConfig !== undefined ) {
         dailyData.value = tableConfig.config
+        break;
       }
+
+      if ( signIn.customDay === '1' ) customDay_populateSignInConfigTable()
+      else populateSignInConfigTable()
       break;
+    }
   }
 }
 
 //BANNER RELATED
 function handleChangeType(scope){
   scope.row.iconUrl = ( scope.row.rewardType === '1' ? coinIcons : treasureIcons ).value[0]
-}
-function listLogos (param) {
-  param.pageSize = 10;
-  const _this = createBanner.value;
-  getAllVipBonusLogo(param).then(res => {
-    res.rows = res.rows.map( img => prependActivityInfoImageBaseURI( img ))
-    _this.customize.iconCollection = res.rows;
-    _this.customize.properties.icon = res.rows[0];
-    _this.pagination.pageTotal = Math.ceil(res.total / param.pageSize );
-  })
-
-
-}
-function listPreMadeBanners (param ) {
-  param.pageSize = 6;
-  const _this = createBanner.value;
-  getAllVipBonusBanner(param).then(res => {
-    _this.preMade.bannerCollection = res.rows;
-    createBanner.value.preMade.banner = res.rows[0];
-    _this.pagination.pageTotal = Math.ceil(res.total / param.pageSize );
-  })
 }
 function getBannerCreationRelatedImages (pageNum) {
   const _this      = createBanner.value;
@@ -746,41 +727,19 @@ function getBannerCreationRelatedImages (pageNum) {
     getAllVipBonusLogo(param).then( res => {
       customize.iconCollection  = res.rows;
       customize.properties.icon = res.rows[0];
-      pagination.pageTotal = Math.ceil( res.total / param.pageSize );
+      pagination.pageTotal = Math.max(1,Math.ceil(res.total / param.pageSize))
     })
   } else {
     param.pageSize = 6;
     getAllVipBonusBanner(param).then( res => {
       preMade.bannerCollection = res.rows;
       preMade.banner = res.rows[0];
-      pagination.pageTotal = Math.ceil( res.total / param.pageSize );
+      pagination.pageTotal = Math.max(1,Math.ceil(res.total / param.pageSize));
     })
   }
 }
 
-function removeImage(){
-  event.preventDefault();
-  loading.value = true
-  if ( createBanner.value.type === '1' ) {
-    removeVipBonusLogo(createBanner.value.customize.properties.icon).then(res => {
-      getAllVipBonusLogo().then(res => {
-        icons.value = res.data;
-        createBanner.value.customize.properties.icon = icons.value[0]
-        createBanner.value.customize.iconCollection = icons.value.slice(0,10)
-        loading.value = false
-      })
-    })
-  } else {
-    removeVipBonusBanner(createBanner.value.preMade.banner).then(res => {
-      getAllVipBonusBanner().then(res => {
-        banners.value = res.data;
-        createBanner.value.preMade.banner = banners.value[0];
-        createBanner.value.preMade.bannerCollection = banners.value.slice(0,6);
-        loading.value = false
-      })
-    })
-  }
-}
+
 function prependActivityInfoImageBaseURI(img) {
   return url.baseUrl + url.game99PlatformAdminWeb + "/activity/activityInfo/image?url=" + img;
 }
@@ -793,20 +752,49 @@ function handleChangePage(isNext){
   if ( isNext && pageNum < pageTotal ) pageNum++;
   else if ( !isNext && pageNum > 1 ) pageNum--;
   else return;
-
-  getBannerCreationRelatedImages(pageNum);
+  createBanner.value.isPageChanging = true;
+  setTimeout(() => {
+    getBannerCreationRelatedImages(pageNum);
+    createBanner.value.isPageChanging = false;
+  },500)
 }
-function populateForm( event ) {
-  loading.value = true
-  formData.set( "file", event.currentTarget.files[0] )
-  if ( createBanner.value.type === '1' ) {
-    uploadVipBonusLogo( formData )
-    listLogos(createBanner.value.pagination.icons.info)
-  } else {
-    uploadVipBonusBanner( formData )
-    listPreMadeBanners(createBanner.value.pagination.banners.info)
+
+function handleRemoveImage(){
+  event.preventDefault();
+  const type = createBanner.value.type;
+  const logo = createBanner.value.customize.properties.icon;
+  const banner = createBanner.value.preMade.banner;
+  if ( (type === '1' && logo === undefined) || (type === '2' && banner === undefined) ) return;
+
+  if (confirm("Are you sure you want to remove the image?")){
+    createBanner.value.isRemoving = true;
+    let removeFunction = type === '1' ? removeVipBonusLogo(logo)
+        : removeVipBonusBanner(banner);
+
+    setTimeout( () => {
+      removeFunction.then( () => {
+        getBannerCreationRelatedImages(1);
+      }).then( () => {
+        ElMessage.success('Success')
+        createBanner.value.isRemoving = false;
+      })
+    },1000);
   }
-  loading.value = false
+}
+
+function handleUploadImage(event) {
+  if ( event.currentTarget.files[0] === undefined ) return;
+  createBanner.value.isUploading = true;
+  formData.set( "file", event.currentTarget.files[0])
+  let uploadFunction = createBanner.value.type === '1' ? uploadVipBonusLogo( formData )
+      : uploadVipBonusBanner( formData );
+
+  uploadFunction.then( () => {
+    getBannerCreationRelatedImages(1);
+  }).then(() => {
+    ElMessage.success('Success')
+    createBanner.value.isUploading = false;
+  })
 }
 function selectIcon (icon){
   createBanner.value.customize.properties.icon = icon
@@ -820,10 +808,13 @@ function selectBanner (image){
  */
 function getList(){
   loading.value = true
+  isListing.value = true;
   getVipBonusInfoList(proxy.addDateRange(queryParams.value)).then((res)=>{
     vipBonusInfoList.value = res.data
     total.value = res.total
     loading.value = false
+  }).then( ()=> {
+    isListing.value = false;
   })
 }
 function vipBonusTypeList(){

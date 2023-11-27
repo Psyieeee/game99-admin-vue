@@ -137,7 +137,8 @@ export function removeVipBonusBanner(imageUrl){
     })
 }
 
-export function getAllRewardIcon(){
+//TODO: Modify back-end logic, make this filterable by typeId
+export function getRewardIcons(){
     return request({
         url:url.game99PlatformAdminWeb+"/vip/bonus/getAllRewardIcon",
         method:'post',
