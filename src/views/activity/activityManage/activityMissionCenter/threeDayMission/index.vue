@@ -228,29 +228,31 @@
           </template>
         </el-form-item>
         <el-form-item>
-          <el-upload
-              ref="upload"
-              :action="uploadFileUrl"
-              :auto-upload="false"
-              :before-upload="beforeAvatarUpload"
-              :headers="headers"
-              :limit="1"
-              :multiple="false"
-              :on-change="selectFile"
-              :on-error="uploadFalse"
-              :on-exceed="uploadExceed"
-              :on-preview="handlePreview"
-              :on-remove="handleRemove"
-              :on-success="uploadSuccess"
-              class="upload-demo"
-              drag
-              name="advertisementFile"
-          >
-            <div class="el-upload__text">Drop file here or <em>点击上传</em></div>
-            <div class="el-upload__tip">
-              最大文件大小为 100 MB
-            </div>
-          </el-upload>
+          <div class="centered-form">
+            <el-upload
+                ref="upload"
+                :action="uploadFileUrl"
+                :auto-upload="false"
+                :before-upload="beforeAvatarUpload"
+                :headers="headers"
+                :limit="1"
+                :multiple="false"
+                :on-change="selectFile"
+                :on-error="uploadFalse"
+                :on-exceed="uploadExceed"
+                :on-preview="handlePreview"
+                :on-remove="handleRemove"
+                :on-success="uploadSuccess"
+                class="upload-demo"
+                drag
+                name="advertisementFile"
+            >
+              <div class="el-upload__text">Drop file here or <em>点击上传</em></div>
+              <div class="el-upload__tip">
+                最大文件大小为 100 MB
+              </div>
+            </el-upload>
+          </div>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -336,17 +338,18 @@
             </el-form-item>
           </el-col>
           <el-col>
-            <el-form-item label=" " >
+            <el-form-item label=" ">
               <el-input :disabled="!settingsForm.finalMysteryJackpotSwitch"
-                  v-model="settingsForm.finalMysteryJackpotMin"
-                  prop="finalMysteryJackpotMin"
-                  placeholder="Please Input Min Jackpot"
-                  type="number" /> -
+                        v-model="settingsForm.finalMysteryJackpotMin"
+                        prop="finalMysteryJackpotMin"
+                        placeholder="Please Input Min Jackpot"
+                        type="number"/>
+              -
               <el-input :disabled="!settingsForm.finalMysteryJackpotSwitch"
-                  v-model="settingsForm.finalMysteryJackpotMax"
-                  prop="finalMysteryJackpotMax"
-                  placeholder="Please Input Max Jackpot"
-                  type="number"/>
+                        v-model="settingsForm.finalMysteryJackpotMax"
+                        prop="finalMysteryJackpotMax"
+                        placeholder="Please Input Max Jackpot"
+                        type="number"/>
             </el-form-item>
           </el-col>
           <el-col>
@@ -494,9 +497,9 @@ const checkedCollectionRestriction = ref([]);
 const formData = new FormData();
 
 const data = reactive({
-      auditRestrictedTabs:[],
+      auditRestrictedTabs: [],
 
-      rechargeCategory:[],
+      rechargeCategory: [],
 
       queryParams: {
         missionSettingsId: 'THREE_DAY',
@@ -560,15 +563,15 @@ const {uploadFileUrl, queryParams, form, rules, settingsRules, headers} = toRefs
 function handleMemberTierList() {
   getMemberTierList(data.queryParams).then(res => {
     data.memberTierList = res.data
-    console.log( data.memberTierList )
+    console.log(data.memberTierList)
   })
 }
 
-function handleSelectedAudit(){
-  data.auditRestrictedTabs.forEach( x => {
-        if( x.selectedCheckboxes != null ){
-          x.platforms.forEach( f => {
-            f.status = x.selectedCheckboxes.includes(f.platform) ?  '1' : '0'
+function handleSelectedAudit() {
+  data.auditRestrictedTabs.forEach(x => {
+        if (x.selectedCheckboxes != null) {
+          x.platforms.forEach(f => {
+            f.status = x.selectedCheckboxes.includes(f.platform) ? '1' : '0'
           })
         }
       }
@@ -654,7 +657,7 @@ function handleAdd() {
   title.value = '添加 3 天任务'
   selectAll.value = false;
   data.rechargeCategory = []
-  checkedCurrency.value =[]
+  checkedCurrency.value = []
   handleCheckAllChange();
 }
 
@@ -724,10 +727,10 @@ function handleUpdate(row) {
   reset()
   const id = row.id || this.ids
   getMissionRepeatList(id).then(response => {
-    if( response.data.accumulatedRechargeSource != null ){
+    if (response.data.accumulatedRechargeSource != null) {
       data.rechargeCategory = response.data.accumulatedRechargeSource.split(',')
     }
-    if( response.data.taskCurrency != null ){
+    if (response.data.taskCurrency != null) {
       checkedCurrency.value = response.data.taskCurrency.split(',')
     }
     form.value = response.data
@@ -764,7 +767,7 @@ function handleSettings() {
     populateCheckList(eventCollection, checkedEventCollection, 'EVENT_COLLECTION_ENTRANCE');
     populateCheckList(collectionRestriction, checkedCollectionRestriction, 'COLLECTION_RESTRICTION');
 
-    data.auditRestrictedTabs = JSON.parse( response.data.auditRestrictedPlatformsJson )
+    data.auditRestrictedTabs = JSON.parse(response.data.auditRestrictedPlatformsJson)
     handleCheckedSettingsCurrencyChange();
     settingsOpen.value = true;
   });
@@ -797,7 +800,7 @@ function submitSettings() {
         finalMysteryJackpotMax: settingsForm.value.finalMysteryJackpotMax,
         auditMultiplier: settingsForm.value.auditMultiplier,
         auditRestrictedPlatformsSwitch: settingsForm.value.auditRestrictedPlatformsSwitch,
-        auditRestrictedPlatformsJson: JSON.stringify( data.auditRestrictedTabs ),
+        auditRestrictedPlatformsJson: JSON.stringify(data.auditRestrictedTabs),
         missionSettingsOtherList: checkedCurrency.value.concat(checkedEventCollection.value).concat(checkedCollectionRestriction.value)
       }
       updateSettings(params).then(() => {
@@ -902,7 +905,7 @@ function uploadSuccess() {
   getList()
 }
 
-function selectFile( file ) {
+function selectFile(file) {
   formData.append("file", file.raw)
   formData.append("name", file.name)
 }
@@ -926,9 +929,9 @@ function handlePreview(file) {
 function beforeAvatarUpload(file) {
   const fileExtension = file.name.split('.')[1]
   const isLt2M = file.size / 1024 / 1024 < 100
-  if (fileExtension != 'jpg' &&
-      fileExtension != 'png' &&
-      fileExtension != 'bmp') {
+  if (fileExtension !== 'jpg' &&
+      fileExtension !== 'png' &&
+      fileExtension !== 'bmp') {
     proxy.$modal.msgError('无效音乐')
   } else if (!isLt2M) {
     proxy.$modal.msgError('上传模板大小不能超过100MB!')
@@ -948,4 +951,7 @@ getList();
 </script>
 
 <style>
+.centered-form {
+//margin-left: 50px; max-width: 200px;
+}
 </style>

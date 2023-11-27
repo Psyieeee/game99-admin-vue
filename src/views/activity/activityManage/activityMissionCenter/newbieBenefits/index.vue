@@ -128,7 +128,7 @@
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="550px">
       <el-form ref="newbieBenefitsRef" :model="form" :rules="rules" label-width="150px">
-        <el-form-item label="任务分类" prop="taskConditions" >
+        <el-form-item label="任务分类" prop="taskConditions">
           <el-select v-model="form.taskConditions" placeholder="Select">
             <el-option
                 v-for="list in missionTrigger.missionTrigger"
@@ -167,33 +167,35 @@
         <el-form-item label="Mission Introduction" prop="missionIntroduction">
           <el-input v-model="mission" placeholder="输入累计充值金额" disabled/>
         </el-form-item>
-        <el-form-item label="Description" prop="description" >
-          <el-input v-model="form.description" type="textarea" placeholder="Description" :rows="3" />
+        <el-form-item label="Description" prop="description">
+          <el-input v-model="form.description" type="textarea" placeholder="Description" :rows="3"/>
         </el-form-item>
         <el-form-item>
-          <el-upload
-              ref="upload"
-              :action="uploadFileUrl"
-              :auto-upload="false"
-              :before-upload="beforeAvatarUpload"
-              :headers="headers"
-              :limit="1"
-              :multiple="false"
-              :on-change="selectFile"
-              :on-error="uploadFalse"
-              :on-exceed="uploadExceed"
-              :on-preview="handlePreview"
-              :on-remove="handleRemove"
-              :on-success="uploadSuccess"
-              class="upload-demo"
-              drag
-              name="advertisementFile"
-          >
-            <div class="el-upload__text">Drop file here or <em>点击上传</em></div>
-            <div class="el-upload__tip">
-              最大文件大小为 100 MB
-            </div>
-          </el-upload>
+          <div class="centered-form">
+            <el-upload
+                ref="upload"
+                :action="uploadFileUrl"
+                :auto-upload="false"
+                :before-upload="beforeAvatarUpload"
+                :headers="headers"
+                :limit="1"
+                :multiple="false"
+                :on-change="selectFile"
+                :on-error="uploadFalse"
+                :on-exceed="uploadExceed"
+                :on-preview="handlePreview"
+                :on-remove="handleRemove"
+                :on-success="uploadSuccess"
+                class="upload-demo"
+                drag
+                name="advertisementFile"
+            >
+              <div class="el-upload__text">Drop file here or <em>点击上传</em></div>
+              <div class="el-upload__tip">
+                最大文件大小为 100 MB
+              </div>
+            </el-upload>
+          </div>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -363,17 +365,17 @@
 <script name="newbieBenefits" setup>
 //region
 import {
-    newbieListData,
-    deleteNewbie,
-    addMissionNewbie,
-    updateMissionNewbie,
-    changeNewbieStatus,
-    changeNewbiesTipBubble,
-    getMissionNewbie,
-    getSettings,
-    updateSettings,
-    getMemberTierList,
-    fileUpload
+  newbieListData,
+  deleteNewbie,
+  addMissionNewbie,
+  updateMissionNewbie,
+  changeNewbieStatus,
+  changeNewbiesTipBubble,
+  getMissionNewbie,
+  getSettings,
+  updateSettings,
+  getMemberTierList,
+  fileUpload
 } from "@/api/activity/newbieBenefits";
 
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
@@ -487,7 +489,7 @@ const data = reactive({
     Authorization: 'Bearer ' + getToken()
   },
 });
-const { auditParams, uploadFileUrl, queryParams, form, settingsRules, rules, headers} = toRefs(data);
+const {auditParams, uploadFileUrl, queryParams, form, settingsRules, rules, headers} = toRefs(data);
 
 function handleMemberTierList() {
   getMemberTierList(data.auditParams).then(res => {
@@ -522,7 +524,7 @@ function uploadSuccess() {
   getList()
 }
 
-function selectFile( file ) {
+function selectFile(file) {
   formData.append("file", file.raw)
   formData.append("name", file.name)
 }
@@ -599,9 +601,9 @@ function getList() {
   loading.value = true;
   newbieListData(queryParams.value).then(response => {
     newbieBenefitsList.value = response.data;
-    console.log( JSON.stringify( newbieBenefitsList.value ) + " 2#@")
+    console.log(JSON.stringify(newbieBenefitsList.value) + " 2#@")
     missionTrigger.value = newbieBenefitsList.value[0];
-    console.log( missionTrigger.value )
+    console.log(missionTrigger.value)
     total.value = response.total;
     loading.value = false;
   });
@@ -687,16 +689,17 @@ function submitForm() {
   })
 }
 
-function handleSelectedAudit(){
-  data.auditRestrictedTabs.forEach( x => {
-        if( x.selectedCheckboxes != null ){
-          x.platforms.forEach( f => {
-            f.status = x.selectedCheckboxes.includes(f.platform) ?  '1' : '0'
+function handleSelectedAudit() {
+  data.auditRestrictedTabs.forEach(x => {
+        if (x.selectedCheckboxes != null) {
+          x.platforms.forEach(f => {
+            f.status = x.selectedCheckboxes.includes(f.platform) ? '1' : '0'
           })
         }
       }
   )
 }
+
 /** handle update data */
 function submitSettings() {
   proxy.$refs['settingsRef'].validate(async valid => {
@@ -719,7 +722,7 @@ function submitSettings() {
         auditRestrictedPlatformsSwitch: settingsForm.value.auditRestrictedPlatformsSwitch,
         auditMultiplier: settingsForm.value.auditMultiplier,
         missionSettingsOtherList: checkedCurrency.value.concat(checkedEventCollection.value).concat(checkedCollectionRestriction.value),
-        auditRestrictedPlatformsJson: JSON.stringify( data.auditRestrictedTabs )
+        auditRestrictedPlatformsJson: JSON.stringify(data.auditRestrictedTabs)
       }
       updateSettings(params).then(() => {
         proxy.$modal.msgSuccess('修改成功')
@@ -753,10 +756,10 @@ function handleSettings() {
     settingsForm.value = response.data;
     total.value = response.total;
     settingsLoading.value = false;
-    populateCheckList(currencyCollection,     checkedCurrency,              'CURRENCY');
-    populateCheckList(eventCollection,        checkedEventCollection,       'EVENT_COLLECTION_ENTRANCE');
-    populateCheckList(collectionRestriction,  checkedCollectionRestriction, 'COLLECTION_RESTRICTION');
-    data.auditRestrictedTabs = JSON.parse( response.data.auditRestrictedPlatformsJson  )
+    populateCheckList(currencyCollection, checkedCurrency, 'CURRENCY');
+    populateCheckList(eventCollection, checkedEventCollection, 'EVENT_COLLECTION_ENTRANCE');
+    populateCheckList(collectionRestriction, checkedCollectionRestriction, 'COLLECTION_RESTRICTION');
+    data.auditRestrictedTabs = JSON.parse(response.data.auditRestrictedPlatformsJson)
 
     handleCheckedSettingsCurrencyChange();
     settingsOpen.value = true;
@@ -794,4 +797,7 @@ getList();
 </script>
 
 <style>
+.centered-form {
+  max-width: 200px;
+}
 </style>
