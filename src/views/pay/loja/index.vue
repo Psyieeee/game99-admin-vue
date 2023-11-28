@@ -32,7 +32,9 @@
     <el-table v-loading="loading" :data="storeList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="Amount" min-width="180" prop="amount"/>
-      <el-table-column align="center" label="Type" min-width="180" prop="type"/>
+      <el-table-column align="center" label="Type" min-width="180" prop="type">
+        <template #default="scope">{{types[scope.row.type].label}}</template>
+      </el-table-column>
       <el-table-column align="center" label="Bonus" min-width="180" prop="bonus"/>
       <el-table-column align="center" label="Image" prop="image">
         <template #default="scope" >
@@ -199,10 +201,14 @@ function reset() {
     bonus: null,
     image: null
   }
+  clearUpload()
+  proxy.resetForm('queryForm');
+}
+
+function clearUpload(){
   upload.value = [];
   formData.delete("file")
   formData.delete("name")
-  proxy.resetForm('queryForm');
 }
 
 /** handle add new data */
@@ -240,6 +246,7 @@ function submitForm() {
 
 /** handle update data */
 function handleUpdate(row) {
+  clearUpload()
   getLoja(row.id).then(response => {
     form.value = response.data;
   });
