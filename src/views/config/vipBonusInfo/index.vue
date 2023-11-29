@@ -6,15 +6,12 @@
             v-model="queryParams.title"
             placeholder="请输入活动标题"
             clearable
-            @keyup.enter="handleQuery"/>
+            @keyup.enter="handleSearchQuery"/>
       </el-form-item>
       <el-form-item prop="effect">
         <el-select v-model="queryParams.effect" placeholder="状态" clearable>
-          <el-option
-              v-for="dict in activityInfo_status"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"/>
+          <el-option label="Disabled" value="0"></el-option>
+          <el-option label="Enabled" value="1"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="活动类型" prop="typeId">
@@ -32,8 +29,8 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="Search" size="small" @click="handleQuery">搜索</el-button>
-        <el-button icon="Refresh" size="small" @click="resetQuery">重置</el-button>
+        <el-button type="primary" icon="Search" size="small" @click="handleSearchQuery">搜索</el-button>
+        <el-button icon="Refresh" size="small" @click="handleResetQuery">重置</el-button>
       </el-form-item>
     </el-form>
 
@@ -44,9 +41,9 @@
             plain
             icon="Plus"
             size="small"
-            :disabled="isListing"
-            @click="handleAdd"
-            v-hasPermi="['activity:activityInfo:add']">新增
+            :disabled="isButtonDisabled"
+            @click="handleAddBonusActivity"
+            v-hasPermi="['config:vipBonusInfo:add']">新增
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -56,8 +53,8 @@
             icon="Edit"
             size="small"
             :disabled="single"
-            @click="handleUpdate"
-            v-hasPermi="['activity:activityInfo:edit']">修改
+            @click="handleUpdateForm"
+            v-hasPermi="['config:vipBonusInfo:edit']">修改
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -67,8 +64,8 @@
             icon="Delete"
             size="small"
             :disabled="multiple"
-            @click="handleDelete"
-            v-hasPermi="['activity:activityInfo:remove']">删除
+            @click="handleDeleteTableData"
+            v-hasPermi="['config:vipBonusInfo:remove']">删除
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -77,15 +74,15 @@
             plain
             icon="Download"
             size="small"
-            @click="handleExport"
-            v-hasPermi="['activity:activityInfo:export']">导出
+            @click="handleExportData"
+            v-hasPermi="['config:vipBonusInfo:export']">导出
         </el-button>
       </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="listVipBonusActivities"></right-toolbar>
     </el-row>
 
 <!-- display data into table-->
-    <el-table v-loading="loading" :data="vipBonusInfoList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="vipBonusInfoList" @selection-change="handleMultipleSelection">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="标题" align="center" prop="title" min-width="180"/>
         <el-table-column label="图标" align="center" prop="icon">
@@ -104,7 +101,7 @@
       </el-table-column>
       <el-table-column label="创建时间" align="center" prop="createTime"  min-width="160"/>
       <el-table-column label="活动类型" align="center" prop="typeId" :formatter="formatterActivityType"  min-width="160"/>
-<!--      <el-table-column label="跳转类型" align="center" prop="jumpType" :formatter="formatterType"  min-width="160"/>-->
+      <el-table-column label="跳转类型" align="center" prop="jumpType" :formatter="formatterType"  min-width="160"/>
       <el-table-column label="图标跳转链接" align="center" prop="url"  min-width="160"/>
       <el-table-column label="状态" align="center" prop="effect">
         <template #default="scope">
@@ -119,19 +116,21 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="120">
         <template #default="scope">
           <el-button
+              :disabled="isButtonDisabled"
               size="small"
               type="primary"
               link
               icon="Edit"
-              @click="handleUpdate(scope.row)"
-              v-hasPermi="['activity:activityInfo:edit']">修改
+              @click="handleUpdateForm(scope.row)"
+              v-hasPermi="['config:vipBonusInfo:edit']">修改
           </el-button>
           <el-button
               size="small"
               type="danger"
               link
               icon="Delete"
-              @click="handleDelete(scope.row)"
+              @click="handleDeleteTableData(scope.row)"
+              v-hasPermi="['config:vipBonusInfo:remove']">删除
               >删除
           </el-button>
         </template>
@@ -143,7 +142,7 @@
         v-model:page="queryParams.pageNum"
         v-model:limit="queryParams.pageSize"
         :page-sizes="[10,20,50]"
-        @pagination="getList"
+        @pagination="listVipBonusActivities"
     />
 
 <!-- Dialog: Add / Update -->
@@ -154,10 +153,10 @@
         style="height: auto;
         padding-bottom: 20px"
         append--body
-        :before-close="handleClose"
+        @closed="handleClosedForm"
+        @open="handleOpenForm"
         :close-on-press-escape-key="false"
         :close-on-click-modal="false"
-        :close-delay="300"
     >
       <el-form ref="vipBonusForm" :model="form" :rules="rules" label-width="120">
         <div class="el-row">
@@ -189,10 +188,10 @@
                 <el-radio label="2">Permanent</el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form-item v-show="form.scheduleType === '1'" label="Effective Time" prop="selectDate" >
+            <el-form-item v-show="form.scheduleType === '1'" label="Effective Time" prop="dateRange" >
               <div>
                 <el-date-picker type="daterange"
-                                v-model="form.selectDate"
+                                v-model="dateRange"
                                 start-placeholder="开始时间"
                                 end-placeholder="开始时间"
                                 range-separator="至"
@@ -256,8 +255,8 @@
                   ></el-option>
                 </el-select>
                 <div style="padding-left: 10px">
-                  <el-button type="primary" size="small" @click="saveVipConfig">Save</el-button>
-                  <el-button icon="Refresh" size="small" @click="resetVipConfig">Reset</el-button>
+                  <el-button type="primary" size="small" @click="saveSignInConfig">Save</el-button>
+                  <el-button icon="Refresh" size="small" @click="resetSignInConfig">Reset</el-button>
                 </div>
               </el-form-item>
               <el-form-item >
@@ -278,7 +277,7 @@
                           filterable
                           v-model="scope.row.rewardType"
                           style="width: 100px"
-                          @change="handleChangeType(scope)"
+                          @change="handleRewardChangeType(scope)"
                       >
                         <el-option
                             label="Fixed"
@@ -325,7 +324,7 @@
                         </template>
                         <el-option
                             label=" "
-                            v-for="icon in ( scope.row.rewardType === '1' ? rewardIconCollection : treasureIcons)"
+                            v-for="icon in ( scope.row.rewardType === '1' ? configurations.rewardIcons : treasureIcons)"
                             :value="icon"
                             style="width: 120px; height: 100px; margin-left: -15px"
                         >
@@ -341,7 +340,6 @@
 <!-- Other Config -->
             <label style="font-size: 25px; text-align: left">Other Config</label>
             <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
-
             <el-form-item label="Jump Type" prop="jumpType">
               <el-radio-group v-model="form.jumpType">
                 <el-radio label="0">Bonus Activity Details</el-radio>
@@ -387,15 +385,15 @@
                 <div style="display: grid; grid-template-columns: repeat(5, 1fr);">
                   <div v-for="(icon, index) in createBanner.customize.iconCollection"
                        :key="index"
-                       @click="selectIcon(icon)"
+                       @click="  createBanner.customize.properties.icon=icon"
                        :class="{ 'selected-image' : icon === createBanner.customize.properties.icon }"
                        style="cursor: pointer;">
                     <img :src="icon" alt="Icon" style="max-height: 70px; max-width: 70px;" />
                   </div>
                 </div>
                 <div class="pagination" style="margin-top: 10px">
-                  <button :disabled="createBanner.isPageChanging" @click="handleChangePage(false)">Previous</button>
-                  <button :disabled="createBanner.isPageChanging" style="margin-left: 10px" @click="handleChangePage(true)">Next</button>
+                  <button :disabled="createBanner.isPageChanging" @click="handleImagePagination(false)">Previous</button>
+                  <button :disabled="createBanner.isPageChanging" style="margin-left: 10px" @click="handleImagePagination(true)">Next</button>
                   <span> Page:  {{ createBanner.pagination.param.pageNum  }} / {{createBanner.pagination.pageTotal}}</span>
                   <input style="float: right" type="file" id="imageUpload" :disabled="createBanner.isUploading" accept="image/* " @change="handleUploadImage">
                   <button style="float: right; margin-right: 10px" class="upload-button" :disabled="createBanner.isRemoving" @click="handleRemoveImage()">Remove</button>
@@ -434,15 +432,15 @@
               <div style="display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 10px">
                 <div v-for="(image, index) in createBanner.preMade.bannerCollection"
                      :key="index"
-                     @click="selectBanner(image)"
+                     @click="createBanner.preMade.banner=image"
                      :class="{ 'selected-image': image === createBanner.preMade.banner }"
                      style="cursor: pointer;">
                   <img :src="image" alt="Banner" style="max-height: 150px; max-width: 200px" />
                 </div>
               </div>
               <div class="pagination" style="margin-top: 10px">
-                <button :disabled="createBanner.isPageChanging" @click="handleChangePage(false)">Previous</button>
-                <button :disabled="createBanner.isPageChanging" style="margin-left: 10px" @click="handleChangePage(true)">Next</button>
+                <button :disabled="createBanner.isPageChanging" @click="handleImagePagination(false)">Previous</button>
+                <button :disabled="createBanner.isPageChanging" style="margin-left: 10px" @click="handleImagePagination(true)">Next</button>
                 <span> Page:  {{ createBanner.pagination.param.pageNum  }} / {{ createBanner.pagination.pageTotal }}</span>
                 <input style="float: right" type="file" id="imageUpload" accept="image/* " :disabled="createBanner.isUploading" @change="handleUploadImage">
                 <button style="float: right; margin-right: 10px" class="upload-button" :disabled="createBanner.isRemoving" @click="handleRemoveImage">Remove</button>
@@ -455,7 +453,7 @@
 
 <!-- Footer -->
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button type="primary" @click="handleSubmitForm">确 定</el-button>
         <el-button @click="open=false">取 消</el-button>
       </div>
     </el-dialog>
@@ -482,21 +480,20 @@ import {
   removeVipBonusBanner,
   removeVipBonusLogo,
   uploadVipBonusBanner,
-  uploadVipBonusLogo
+  uploadVipBonusLogo,
 } from "@/api/config/vipBonusInfo";
 
-/** Query Related */
-const vipBonusInfoList = ref([]); //List Vip Bonus Activities
-const vipBonusTypes    = ref([]); // Vip Bonus Type List
+const isButtonDisabled    = ref(true); //Used for disabling button
+const vipBonusInfoList = ref([]);
+const vipBonusTypes    = ref([]);
 const showSearch       = ref(true);
-const multiple = ref(true); // Multiple Row Selection
+const multiple = ref(true); //Multiple Row Selection
 const loading  = ref(true);
-const isListing  = ref(true);
-const single   = ref(true); // Single Row Selection
-const title    = ref();
-const total    = ref(0); // Total rows
-const open     = ref(false);
-const ids      = ref([]); // Selected ids of table rows
+const single   = ref(true); //Single Row Selection
+const title    = ref(); //Form Title
+const total    = ref(0); //Total rows
+const open     = ref(false); //Opening form
+const ids      = ref([]); //Selected ids of table rows
 
 /** Create Banner Related */
 const treasureIcons = ref([
@@ -526,16 +523,14 @@ const fontOptions   = ref([
   "MS Sans Serif, sans-serif",
   "MS Serif, serif",
 ]);
-const banners    = ref([]);
-const icons      = ref( []);
 
 /** Bonus: Sign In Related */
 const dailyData = ref([]);
 
 /** Others */
-const {proxy} = getCurrentInstance();
-
-const data       =  reactive({
+const dateRange = ref([]);
+const {proxy}   = getCurrentInstance();
+const data      =  reactive({
   queryParams:{
     title: null,
     typeId:null,
@@ -543,7 +538,19 @@ const data       =  reactive({
     pageNum: 1,
     pageSize: 10
   },
-  form:{},
+  form:{
+    typeId: 1,
+    title: null,
+    scheduleType: '1',
+    startEffect: null,
+    endEffect: null,
+    isDisplayHome: false,
+    configString: null,
+    jumpType: "0",
+    content: '',
+    url: null,
+    icon: null,
+  },
   configurations: {
     vipLevel: 0,
     rewardIcons: [],
@@ -557,6 +564,7 @@ const data       =  reactive({
   },
   createBanner: {
     type: '1',
+    isButtonDisabled: true,
     isUploading: false,
     isRemoving: false,
     isPageChanging: false,
@@ -585,12 +593,7 @@ const data       =  reactive({
       pageTotal: 1
     }
   },
-  selectDate: [],
-  rewardIconCollection: null,
   rules:{
-    selectDate:[
-      { type: 'array', required: true, message: '请选择时间范围', trigger: 'change' },
-    ],
     title: [
       {required: true, message: "标题不能为空", trigger: "blur"}
     ],
@@ -599,34 +602,280 @@ const data       =  reactive({
     ],
     typeId: [
       {required: true, message: "活动类型不能为空", trigger: "blur"}
-    ],
-    // jumpType: [
-    //   {required: false, message: "跳转类型不能为空", trigger: "blur"}
-    // ]
+    ]
   },
-  /** updateTime */
 });
 
-const {queryParams,form,rules, configurations, createBanner, rewardIconCollection} = toRefs(data);
-const {activityInfo_status} = proxy.useDict("activityInfo_status");
+const {queryParams,form,rules, configurations, createBanner} = toRefs(data);
 const formData = new FormData();
 
-//SIGN IN RELATED
-function handleClose(){
-  loading.value = true
-  open.value = false
-  loading.value = false
+/**  Handle Table  */
+function handleSearchQuery(){
+  queryParams.pageNum = 1;
+  listVipBonusActivities()
 }
-function calculateNumberOfDays(){
-  if ( form.value.selectDate.length === 2 ) {
-    const start = new Date(form.value.selectDate[0]);
-    const end   = new Date(form.value.selectDate[1]);
-    const timeDifference = end - start;
-    const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
-    configurations.value.signIn.cycle = daysDifference + 1;
-    populateSignInConfigTable()
+function handleResetQuery(){
+  proxy.resetForm("queryForm");
+  handleSearchQuery();
+  loading.value = false;
+}
+function handleDeleteTableData(row){
+  const id = row.id || ids.value;
+  proxy.$modal.confirm('是否确认删除"' + row.title + '"?', "警告", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning"
+  }).then(function () {
+    return vipBonusInfoDelete(id);
+  }).then(() => {
+    listVipBonusActivities();
+    proxy.$modal.msgSuccess("删除成功");
+  })
+}
+function handleExportData(){
+  proxy.$modal.confirm('确认处理Excel并下载，数据量大的时候会延迟，请耐心等待...', '警告', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(function () {
+    return vipBonusInfoExport(proxy.addDateRange(queryParams.value,updateTime.value));
+  }).then(response => {
+    proxy.downloadExcel(response, '活动信息')
+  }).catch(() => {
+  })
+}
+function handleMultipleSelection(selection) {
+  ids.value = selection.map(item => item.id)
+  single.value = selection.length !== 1
+  multiple.value = !selection.length
+}
+function listVipBonusActivities(){
+  loading.value = true
+  getVipBonusInfoList(proxy.addDateRange(queryParams.value)).then((res)=>{
+    vipBonusInfoList.value = res.data
+    total.value = res.total
+  }).then( ()=> {
+    loading.value = false
+    isButtonDisabled.value = false;
+  })
+}
+function handleEffectChange(row){
+  let text = row.status === '1' ? '启用' : '停用'
+  proxy.$modal.confirm('确认要"' + text + '""' + row.title + '"吗?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(function () {
+    return vipBonusInfoUpdateStatus(row.id, row.effect)
+  }).then(() => {
+    proxy.$modal.msgSuccess(text + '成功')
+  }).catch(function () {
+    row.status = row.status === '0' ? '1' : '0'
+  })
+}
+function formatterActivityType(row) {
+  for (const a of vipBonusTypes.value) {
+    if (a.id === row.typeId) {
+      return a.name;
+    }
+  }
+  return "";
+}
+function vipBonusTypeList(){
+  getVipBonusTypeList().then((res)=>{
+    vipBonusTypes.value = res
+  })
+}
+
+/** Handle Form */
+function handleOpenForm(){
+  isButtonDisabled.value = true;
+}
+function handleClosedForm(){
+  isButtonDisabled.value = false;
+  loading.value = false
+  listVipBonusActivities()
+}
+function handleResetForm() {
+  form.value = {
+    typeId: 1,
+    scheduleType: '1',
+    isDisplayHome: false,
+    jumpType: '0',
+    content: ''
+  };
+  proxy.resetForm("vipBonusForm");
+}
+
+/**  Handle Images */
+function handleUploadImage(event) {
+  if ( event.currentTarget.files[0] === undefined ) return;
+  formData.set( "file", event.currentTarget.files[0])
+  let uploadFunction = createBanner.value.type === '1' ? uploadVipBonusLogo( formData )
+      : uploadVipBonusBanner( formData );
+
+  uploadFunction.then( () => {
+    getBannerCreationRelatedImages(1);
+  }).then(() => {
+    ElMessage.success('Success')
+  })
+}
+function handleRemoveImage(){
+  event.preventDefault();
+  const type = createBanner.value.type;
+  const logo = createBanner.value.customize.properties.icon;
+  const banner = createBanner.value.preMade.banner;
+  if ( (type === '1' && logo === undefined) || (type === '2' && banner === undefined) ) return;
+
+  if (confirm("Are you sure you want to remove the image?")){
+    let removeFunction = type === '1' ? removeVipBonusLogo(logo)
+        : removeVipBonusBanner(banner);
+
+    setTimeout( () => {
+      removeFunction.then( () => {
+        getBannerCreationRelatedImages(1);
+      }).then( () => {
+        ElMessage.success('Success')
+      })
+    },1000);
   }
 }
+function getBannerCreationRelatedImages (pageNum) {
+  const _this      = createBanner.value;
+  const pagination = _this.pagination;
+  const customize  = _this.customize;
+  const preMade    = _this.preMade;
+  const param      = pagination.param
+  const hasData    = form.value.id !== undefined;
+
+  param.pageNum = pageNum;
+  if ( createBanner.value.type === '1' ) {
+    param.pageSize = 10;
+    getAllVipBonusLogo(param).then( res => {
+      res.rows = res.rows.map(img => prependActivityInfoImageBaseURI(img))
+      customize.iconCollection  = res.rows;
+      customize.properties.icon = hasData ? customize.properties.icon : res.rows[0];
+      pagination.pageTotal = Math.max(1,Math.ceil(res.total / param.pageSize))
+    })
+  } else {
+    param.pageSize = 6;
+    getAllVipBonusBanner(param).then( res => {
+      preMade.bannerCollection = res.rows;
+      preMade.banner = hasData ? form.value.icon: res.rows[0];
+      pagination.pageTotal = Math.max(1,Math.ceil(res.total / param.pageSize));
+    })
+  }
+}
+function prependActivityInfoImageBaseURI(img) {
+  return url.baseUrl + url.game99PlatformAdminWeb + "/config/vipBonusInfo/image?url=" + img;
+}
+function handleImagePagination(isNext){
+  event.preventDefault();
+  const pageTotal = createBanner.value.pagination.pageTotal;
+  let   pageNum    = createBanner.value.pagination.param.pageNum;
+
+  if ( isNext && pageNum < pageTotal ) pageNum++;
+  else if ( !isNext && pageNum > 1 ) pageNum--;
+  else return;
+  createBanner.value.isPageChanging = true;
+  setTimeout(() => {
+    getBannerCreationRelatedImages(pageNum);
+    createBanner.value.isPageChanging = false;
+  },500)
+}
+
+/**  Handle Add/Update Bonus Activity */
+function handleAddBonusActivity(){
+  getBannerCreationRelatedImages(1);
+  handleResetForm();
+  open.value = true
+  title.value = "ADD VIP BONUS ACTIVITY"
+}
+function handleUpdateForm(row){
+  handleResetForm();
+  const id = row.id ||ids.value
+  vipBonusInfoFindById(id).then(response => {
+    const rsp = response.data;
+    populateForm(rsp)
+    populateBonusTypeConfiguration(rsp);
+    populateBannerConfiguration(rsp)
+  }).then( () => {
+    open.value = true;
+    title.value = "UPDATE VIP BONUS ACTIVITY"
+  });
+}
+function populateForm( rsp ){
+  form.value = rsp;
+  form.value.jumpType = rsp.jumpType.toString();
+  form.value.scheduleType = rsp.scheduleType.toString();
+  dateRange.value = [ form.value.startEffect, form.value.endEffect ]
+}
+function populateBannerConfiguration( rsp ) {
+  let parsedCustomBannerConfig = JSON.parse(rsp.configString).customBannerConfig;
+  if ( parsedCustomBannerConfig !== null ) {
+    createBanner.value.customize.properties = parsedCustomBannerConfig;
+  } else {
+    createBanner.value.type = '2'
+  }
+  getBannerCreationRelatedImages(1);
+}
+function populateBonusTypeConfiguration( rsp ){
+  let parsedEventConfig = JSON.parse(rsp.configString).eventConfig;
+  switch ( rsp.typeId ) {
+    case 1: //Sign In
+      configurations.value.signIn = parsedEventConfig;
+      dailyData.value = parsedEventConfig.listOfDailyData[0].config
+      break;
+      //TODO: Update when added more bonus type
+  }
+}
+
+/**  Handle Submit Form */
+async function handleSubmitForm() {
+  proxy.$refs["vipBonusForm"].validate(async valid => {
+    if (!valid) return
+  });
+
+  const f = form.value;
+  const isScheduleFixed = f.scheduleType === '1';
+  const create = createBanner.value;
+
+  //Populate other fields in form
+  f.icon = await getCustomizedOrPreMadeIcon();
+  f.startEffect = isScheduleFixed ? dateRange.value[0] : f.startEffect;
+  f.endEffect   = isScheduleFixed ? dateRange.value[1] : null;
+  f.configString = JSON.stringify({
+    eventConfig: getEventConfigByTypeId(),
+    customBannerConfig: create.type === '1' ? create.customize.properties : null
+  });
+
+  let actionMethod = f.id === undefined ? vipBonusInfoAdd(f) : vipBonusInfoUpdate(f);
+  actionMethod.then(() => {
+    proxy.$modal.msgSuccess("修改成功");
+    open.value = false;
+  })
+}
+function getEventConfigByTypeId(){
+  // TypeId = Vip Bonus Activity Type
+  const config = configurations.value;
+  switch ( form.value.typeId ) {
+    case 1: return config.signIn;
+      //TODO: Update this when added more vip bonus activity
+    default: return null;
+  }
+}
+async function getCustomizedOrPreMadeIcon() {
+  let icon = createBanner.value.preMade.banner;
+  if (createBanner.value.type === '1') {
+    const container = document.getElementById('original');
+    await html2canvas(container).then(function (canvas) {
+      icon =  canvas.toDataURL('image/png');
+    });
+  }
+  return icon;
+}
+
+/**  Sign In Related */
 function customDay_populateSignInConfigTable(){
   let firstConfig = configurations.value.signIn.listOfDailyData[0].config
   if ( firstConfig === undefined ) return;
@@ -670,26 +919,15 @@ function populateSignInConfigTable(){
     )
   }
 }
-function saveVipConfig(){
-  const indexOfExistingData = configurations.value.signIn.listOfDailyData.findIndex(data => data.level === configurations.value.vipLevel);
-  const hasData = indexOfExistingData !== -1;
-
-  if ( hasData ) {
-    //Update
-    configurations.value.signIn.listOfDailyData[indexOfExistingData].config = dailyData.value;
-  } else {
-    //Insert
-    configurations.value.signIn.listOfDailyData.push({
-          level: configurations.value.vipLevel,
-          config: dailyData.value
-        });
+function calculateNumberOfDays() {
+  if ( form.value.scheduleType === '1' ) {
+    const start = new Date(dateRange.value[0]);
+    const end   = new Date(dateRange.value[1]);
+    const timeDifference = end - start;
+    const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+    configurations.value.signIn.cycle = daysDifference + 1;
+    populateSignInConfigTable()
   }
-  ElMessage.success('Success')
-}
-function resetVipConfig(){
-  configurations.value.signIn.listOfDailyData = []
-  configurations.value.vipLevel = 0;
-  populateSignInConfigTable()
 }
 function handleVipLevelChange(){
   const config = configurations.value;
@@ -709,296 +947,33 @@ function handleVipLevelChange(){
     }
   }
 }
-
-//BANNER RELATED
-function handleChangeType(scope){
+function handleRewardChangeType(scope){
   scope.row.iconUrl = ( scope.row.rewardType === '1' ? coinIcons : treasureIcons ).value[0]
 }
-function getBannerCreationRelatedImages (pageNum) {
-  const _this      = createBanner.value;
-  const pagination = _this.pagination;
-  const customize  = _this.customize;
-  const preMade    = _this.preMade;
-  const param      = pagination.param;
+function saveSignInConfig(){
+  const indexOfExistingData = configurations.value.signIn.listOfDailyData.findIndex(data => data.level === configurations.value.vipLevel);
+  const hasData = indexOfExistingData !== -1;
 
-  param.pageNum = pageNum;
-  if ( createBanner.value.type === '1' ) {
-    param.pageSize = 10;
-    getAllVipBonusLogo(param).then( res => {
-      customize.iconCollection  = res.rows;
-      customize.properties.icon = res.rows[0];
-      pagination.pageTotal = Math.max(1,Math.ceil(res.total / param.pageSize))
-    })
+  if ( hasData ) {
+    //Update
+    configurations.value.signIn.listOfDailyData[indexOfExistingData].config = dailyData.value;
   } else {
-    param.pageSize = 6;
-    getAllVipBonusBanner(param).then( res => {
-      preMade.bannerCollection = res.rows;
-      preMade.banner = res.rows[0];
-      pagination.pageTotal = Math.max(1,Math.ceil(res.total / param.pageSize));
-    })
+    //Insert
+    configurations.value.signIn.listOfDailyData.push({
+      level: configurations.value.vipLevel,
+      config: dailyData.value
+    });
   }
+  ElMessage.success('Success')
+}
+function resetSignInConfig(){
+  configurations.value.signIn.listOfDailyData = []
+  configurations.value.vipLevel = 0;
+  populateSignInConfigTable()
 }
 
 
-function prependActivityInfoImageBaseURI(img) {
-  return url.baseUrl + url.game99PlatformAdminWeb + "/activity/activityInfo/image?url=" + img;
-}
-
-function handleChangePage(isNext){
-  event.preventDefault();
-  const pageTotal = createBanner.value.pagination.pageTotal;
-  let   pageNum    = createBanner.value.pagination.param.pageNum;
-
-  if ( isNext && pageNum < pageTotal ) pageNum++;
-  else if ( !isNext && pageNum > 1 ) pageNum--;
-  else return;
-  createBanner.value.isPageChanging = true;
-  setTimeout(() => {
-    getBannerCreationRelatedImages(pageNum);
-    createBanner.value.isPageChanging = false;
-  },500)
-}
-
-function handleRemoveImage(){
-  event.preventDefault();
-  const type = createBanner.value.type;
-  const logo = createBanner.value.customize.properties.icon;
-  const banner = createBanner.value.preMade.banner;
-  if ( (type === '1' && logo === undefined) || (type === '2' && banner === undefined) ) return;
-
-  if (confirm("Are you sure you want to remove the image?")){
-    createBanner.value.isRemoving = true;
-    let removeFunction = type === '1' ? removeVipBonusLogo(logo)
-        : removeVipBonusBanner(banner);
-
-    setTimeout( () => {
-      removeFunction.then( () => {
-        getBannerCreationRelatedImages(1);
-      }).then( () => {
-        ElMessage.success('Success')
-        createBanner.value.isRemoving = false;
-      })
-    },1000);
-  }
-}
-
-function handleUploadImage(event) {
-  if ( event.currentTarget.files[0] === undefined ) return;
-  createBanner.value.isUploading = true;
-  formData.set( "file", event.currentTarget.files[0])
-  let uploadFunction = createBanner.value.type === '1' ? uploadVipBonusLogo( formData )
-      : uploadVipBonusBanner( formData );
-
-  uploadFunction.then( () => {
-    getBannerCreationRelatedImages(1);
-  }).then(() => {
-    ElMessage.success('Success')
-    createBanner.value.isUploading = false;
-  })
-}
-function selectIcon (icon){
-  createBanner.value.customize.properties.icon = icon
-}
-function selectBanner (image){
-  createBanner.value.preMade.banner = image
-}
-
-/**
- * 查询活动信息列表 get list of data
- */
-function getList(){
-  loading.value = true
-  isListing.value = true;
-  getVipBonusInfoList(proxy.addDateRange(queryParams.value)).then((res)=>{
-    vipBonusInfoList.value = res.data
-    total.value = res.total
-    loading.value = false
-  }).then( ()=> {
-    isListing.value = false;
-  })
-}
-function vipBonusTypeList(){
-  getVipBonusTypeList().then((res)=>{
-    vipBonusTypes.value = res
-  })
-}
-/**  多选框选中数据 select multiple rows*/
-function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.id)
-  single.value = selection.length !== 1
-  multiple.value = !selection.length
-}
-function formatterActivityType(row) {
-  for (const a of vipBonusTypes.value) {
-    if (a.id === row.typeId) {
-      return a.name;
-    }
-  }
-  return "";
-}
-/** 搜索按钮操作 handle query*/
-function handleQuery(){
-  queryParams.pageNum = 1;
-  getList()
-}
-/** 搜索按钮操作 handle query*/
-function resetQuery(){
-  proxy.resetForm("queryForm");
-  handleQuery();
-  loading.value = false;
-}
-/** 表单重置 reset form*/
-function reset() {
-  form.value = {
-    typeId: 1,
-    title: null,
-    scheduleType: '1',
-    selectDate: [],
-    isDisplayHome: false,
-    configString: '',
-    creationType: '1',
-    icon: null,
-    jumpType: null,
-    content: '',
-    url: null,
-    sort : null,
-  };
-  proxy.resetForm("activityForm");
-}
-/** 新增按钮操作 handle add button*/
-function handleAdd(){
-  reset()
-  getBannerCreationRelatedImages(1)
-  open.value = true
-  title.value = "VIP BONUS ACTIVITY CONFIGURATIONS"
-}
-/** 修改按钮操作 handle update*/
-function handleUpdate(row){
-  reset();
-  getBannerCreationRelatedImages(1)
-  const id = row.id ||ids.value
-  vipBonusInfoFindById(id).then(response => {
-    //Insert values to Form
-    form.value = response.data;
-    form.value.scheduleType = response.data.scheduleType.toString()
-    // form.value.jumpType     = response.data.jumpType.toString()
-
-    //Parsing ConfigString and Insert values to configurations
-    let parsedEventConfig = JSON.parse(response.data.configString).eventConfig;
-    switch ( response.data.typeId ) {
-      case 1: //Sign in
-        configurations.value.signIn = parsedEventConfig;
-        dailyData.value = parsedEventConfig.listOfDailyData[0].config
-        break;
-      //TODO: Add more vip bonuses type
-    }
-
-    //Banner Configuration
-    let parsedCustomBannerConfig = JSON.parse(response.data.configString).customBannerConfig;
-    if ( parsedCustomBannerConfig !== null ) {
-      createBanner.value.customImage = parsedCustomBannerConfig;
-    } else {
-      createBanner.value.type = '2'
-      selectBanner(form.value.icon)
-    }
-
-    open.value = true;
-    title.value = "修改活动信息";
-  });
-}
-/** 提交按钮 submit form*/
-function submitForm() {
-  proxy.$refs["vipBonusForm"].validate(async valid => {
-    loading.value = true;
-    if (valid) {
-      let config = {
-        eventConfig: null,
-        customBannerConfig: createBanner.value.customImage
-      }
-      if ( createBanner.value.type === '1' ) {
-        const container = document.getElementById('original');
-        await html2canvas( container ).then( function (canvas) {
-          form.value.icon = canvas.toDataURL( 'image/png' );
-        });
-      } else {
-        form.value.icon = createBanner.value.preMade.banner
-        config.customBannerConfig = null
-      }
-      form.value.creationType = createBanner.value.type
-
-      switch ( form.value.typeId ) {
-        case 1:
-          config.eventConfig = configurations.value.signIn;
-          break;
-      }
-
-      if (form.value.scheduleType === '1') {
-        form.value.startEffect = form.value.selectDate[0]
-        form.value.endEffect = form.value.selectDate[1]
-      }
-
-      form.value.configString = JSON.stringify( config )
-      if (form.value.id != null) {
-        vipBonusInfoUpdate(form.value).then(response => {
-          proxy.$modal.msgSuccess("修改成功");
-          open.value = false;
-          getList();
-        });
-      } else {
-        vipBonusInfoAdd(form.value).then(response => {
-          proxy.$modal.msgSuccess("新增成功");
-          open.value = false;
-          getList();
-        });
-      }
-    }
-    loading.value = false;
-  });
-}
-/** 删除按钮操作 handle delete data */
-function handleDelete(row){
-  const id = row.id || ids.value;
-  proxy.$modal.confirm('是否确认删除"' + row.title + '"?', "警告", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    type: "warning"
-  }).then(function () {
-    return vipBonusInfoDelete(id);
-  }).then(() => {
-    getList();
-    proxy.$modal.msgSuccess("删除成功");
-  })
-}
-/** 导出按钮操作 handle export data*/
-function handleExport(){
-  proxy.$modal.confirm('确认处理Excel并下载，数据量大的时候会延迟，请耐心等待...', '警告', {
-    confirmButtonText: '确认',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(function () {
-    return vipBonusInfoExport(proxy.addDateRange(queryParams.value,updateTime.value));
-  }).then(response => {
-    proxy.downloadExcel(response, '活动信息')
-  }).catch(() => {
-  })
-}
-/**  0停用1启用 */
-function handleEffectChange(row){
-  let text = row.status === '1' ? '启用' : '停用'
-  proxy.$modal.confirm('确认要"' + text + '""' + row.title + '"吗?', '警告', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(function () {
-    return vipBonusInfoUpdateStatus(row.id, row.effect)
-  }).then(() => {
-    proxy.$modal.msgSuccess(text + '成功')
-  }).catch(function () {
-    row.status = row.status === '0' ? '1' : '0'
-  })
-}
-
-getList()
+listVipBonusActivities()
 vipBonusTypeList()
 </script>
 
