@@ -9,13 +9,6 @@ export function getVipBonusInfoList(query){
     })
 }
 
-// export function prependActivityInfoImageBaseURI(img){
-//     return request({
-//         url:url.game99PlatformAdminWeb+"/activity/activityInfo/image?url=" +img,
-//         method:'get'
-//     })
-// }
-
 export function vipBonusInfoExport(query){
     return request({
         url:url.game99PlatformAdminWeb+"/config/vipBonusInfo/export",
