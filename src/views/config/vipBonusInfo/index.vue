@@ -1,24 +1,24 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :disabled="isButtonDisabled" :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item prop="title" class="input-wd20">
         <el-input
             v-model="queryParams.title"
-            placeholder="请输入活动标题"
+            placeholder="Enter Title"
             clearable
             @keyup.enter="handleSearchQuery"/>
       </el-form-item>
       <el-form-item prop="effect">
-        <el-select v-model="queryParams.effect" placeholder="状态" clearable>
+        <el-select v-model="queryParams.effect" placeholder="Effect" clearable>
           <el-option label="Disabled" value="0"></el-option>
           <el-option label="Enabled" value="1"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="活动类型" prop="typeId">
+      <el-form-item label="Bonus Type" prop="typeId" label-width="100px">
         <el-select
             filterable
             v-model="queryParams.typeId"
-            placeholder="请选择活动类型"
+            placeholder="Select Bonus Type"
             clearable
             style="width: 350px">
           <el-option
@@ -29,13 +29,12 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="Search" size="small" @click="handleSearchQuery">搜索</el-button>
-        <el-button icon="Refresh" size="small" @click="handleResetQuery">重置</el-button>
+        <el-button type="primary" icon="Search" size="small" @click="handleSearchQuery">Search</el-button>
+        <el-button icon="Refresh" size="small" @click="handleResetQuery">Reset</el-button>
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
         <el-button
             type="primary"
             plain
@@ -43,21 +42,8 @@
             size="small"
             :disabled="isButtonDisabled"
             @click="handleAddBonusActivity"
-            v-hasPermi="['config:vipBonusInfo:add']">新增
+            v-hasPermi="['config:vipBonusInfo:add']">Add
         </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-            type="success"
-            plain
-            icon="Edit"
-            size="small"
-            :disabled="single"
-            @click="handleUpdateForm"
-            v-hasPermi="['config:vipBonusInfo:edit']">修改
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
         <el-button
             type="danger"
             plain
@@ -65,27 +51,26 @@
             size="small"
             :disabled="multiple"
             @click="handleDeleteTableData"
-            v-hasPermi="['config:vipBonusInfo:remove']">删除
+            v-hasPermi="['config:vipBonusInfo:remove']">Delete
         </el-button>
-      </el-col>
-      <el-col :span="1.5">
         <el-button
             type="warning"
             plain
             icon="Download"
             size="small"
+            :disabled="isButtonDisabled"
             @click="handleExportData"
-            v-hasPermi="['config:vipBonusInfo:export']">导出
+            v-hasPermi="['config:vipBonusInfo:export']">Export
         </el-button>
-      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="listVipBonusActivities"></right-toolbar>
     </el-row>
 
 <!-- display data into table-->
     <el-table v-loading="loading" :data="vipBonusInfoList" @selection-change="handleMultipleSelection">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="标题" align="center" prop="title" min-width="180"/>
-        <el-table-column label="图标" align="center" prop="icon">
+      <el-table-column label="Title" align="center" prop="title" min-width="180"/>
+      <el-table-column label="Bonus Type" align="center" prop="typeId" :formatter="formatterActivityType"  min-width="160"/>
+      <el-table-column label="Icon" align="center" prop="icon">
           <template #default="scope">
             <el-image
                 style="height: 50px;"
@@ -94,26 +79,25 @@
             </el-image>
           </template>
         </el-table-column>
-      <el-table-column label="活动详情" align="center" prop="content"  min-width="160">
+      <el-table-column label="Content" align="center" prop="content"  min-width="160">
         <template v-slot="{row}">
           <div v-html="row.content" style="max-height: 80px"></div>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime"  min-width="160"/>
-      <el-table-column label="活动类型" align="center" prop="typeId" :formatter="formatterActivityType"  min-width="160"/>
-      <el-table-column label="跳转类型" align="center" prop="jumpType" :formatter="formatterType"  min-width="160"/>
-      <el-table-column label="图标跳转链接" align="center" prop="url"  min-width="160"/>
-      <el-table-column label="状态" align="center" prop="effect">
+      <el-table-column label="Jump Link" align="center" prop="url"  min-width="160"/>
+      <el-table-column label="Create Time" align="center" prop="createTime"  min-width="160"/>
+      <el-table-column label="Effect" align="center" prop="effect">
         <template #default="scope">
           <el-switch
               v-model="scope.row.effect"
+              :disabled="isButtonDisabled"
               :active-value="true"
               :inactive-value="false"
               @click="handleEffectChange(scope.row)">
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="120">
+      <el-table-column label="Action" align="center" class-name="small-padding fixed-width" fixed="right" min-width="120">
         <template #default="scope">
           <el-button
               :disabled="isButtonDisabled"
@@ -122,16 +106,16 @@
               link
               icon="Edit"
               @click="handleUpdateForm(scope.row)"
-              v-hasPermi="['config:vipBonusInfo:edit']">修改
+              v-hasPermi="['config:vipBonusInfo:edit']">Edit
           </el-button>
           <el-button
+              :disabled="isButtonDisabled"
               size="small"
               type="danger"
               link
               icon="Delete"
               @click="handleDeleteTableData(scope.row)"
-              v-hasPermi="['config:vipBonusInfo:remove']">删除
-              >删除
+              v-hasPermi="['config:vipBonusInfo:remove']"> Delete
           </el-button>
         </template>
       </el-table-column>
@@ -154,8 +138,6 @@
         padding-bottom: 20px"
         append--body
         @closed="handleClosedForm"
-        @open="handleOpenForm"
-        :close-on-press-escape-key="false"
         :close-on-click-modal="false"
     >
       <el-form ref="vipBonusForm" :model="form" :rules="rules" label-width="120">
@@ -217,7 +199,6 @@
                   style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
               />
             </el-form-item>
-
             <label style="font-size: 25px; text-align: left">{{ vipBonusTypes.find((type) => type.id === form.typeId).name + ' Config'}}</label>
             <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
 
@@ -260,7 +241,7 @@
                 </div>
               </el-form-item>
               <el-form-item >
-                <el-table :data="dailyData" style="width: 80%" >
+                <el-table :data="configurations.signIn.dailyData" style="width: 80%" >
                   <el-table-column label="Day" width="70" align="center" prop="day">
                       <template #default="scope">
                         <div v-if="configurations.signIn.customDay === '1'">
@@ -349,7 +330,7 @@
 <!-- Jump Type -->
             <div style="max-width: 1000px">
               <el-form-item label="Content" prop="content" v-if="form.jumpType === '0'">
-                <WangEditor v-model="form.content" image-path="VipBonusInfo"/>
+                <WangEditor v-model="form.content" image-path="VipBonusInfo" style="max-width: 700px"/>
               </el-form-item>
               <el-form-item label="Url" prop="url" v-if="form.jumpType === '1'">
                 <el-input v-model="form.url" placeholder="请输入图标跳转链接"/>
@@ -453,8 +434,8 @@
 
 <!-- Footer -->
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleSubmitForm">确 定</el-button>
-        <el-button @click="open=false">取 消</el-button>
+        <el-button type="primary" @click="handleSubmitForm">Submit</el-button>
+        <el-button @click="open=false">Close</el-button>
       </div>
     </el-dialog>
   </div>
@@ -482,18 +463,95 @@ import {
   uploadVipBonusBanner,
   uploadVipBonusLogo,
 } from "@/api/config/vipBonusInfo";
+import {resetForm} from "@/utils/common";
 
 const isButtonDisabled    = ref(true); //Used for disabling button
 const vipBonusInfoList = ref([]);
 const vipBonusTypes    = ref([]);
 const showSearch       = ref(true);
 const multiple = ref(true); //Multiple Row Selection
-const loading  = ref(true);
+const loading  = ref(false);
 const single   = ref(true); //Single Row Selection
 const title    = ref(); //Form Title
 const total    = ref(0); //Total rows
 const open     = ref(false); //Opening form
 const ids      = ref([]); //Selected ids of table rows
+const initValue = ref({
+  queryParams:{
+    title: null,
+    typeId:null,
+    effect: null,
+    pageNum: 1,
+    pageSize: 10
+  },
+  form:{
+    typeId: 1,
+    title: null,
+    scheduleType: '1',
+    startEffect: null,
+    endEffect: null,
+    isDisplayHome: false,
+    configString: null,
+    jumpType: '1',
+    content: '',
+    url: null,
+    icon: null,
+  },
+  configurations: {
+    vipLevel: 0,
+    rewardIcons: [],
+    signIn: {
+      collectMethod: '1',
+      cycle: null,
+      customDay: '2',
+      dailyData: [],
+      listOfDailyData: [],
+    },
+    //TODO: More VIP related bonus
+  },
+  createBanner: {
+    type: '1',
+    isButtonDisabled: true,
+    isUploading: false,
+    isRemoving: false,
+    isPageChanging: false,
+    customize: {
+      iconCollection: null,
+      properties: {
+        background: '#030303',
+        icon: null,
+        text: 'PUT TEXT HERE',
+        textStyle: {
+          font: "Arial, sans-serif",
+          size: 30,
+          color: '#ffffff'
+        }
+      }
+    },
+    preMade: {
+      bannerCollection: null,
+      banner: null,
+    },
+    pagination: {
+      param: {
+        pageNum: 1,
+        pageSize: 10
+      },
+      pageTotal: 1
+    }
+  },
+  rules:{
+    title: [
+      {required: true, message: "标题不能为空", trigger: "blur"}
+    ],
+    icon: [
+      {required: true, message: "图标不能不上传", trigger: "blur"}
+    ],
+    typeId: [
+      {required: true, message: "活动类型不能为空", trigger: "blur"}
+    ]
+  }
+})
 
 /** Create Banner Related */
 const treasureIcons = ref([
@@ -524,13 +582,15 @@ const fontOptions   = ref([
   "MS Serif, serif",
 ]);
 
-/** Bonus: Sign In Related */
-const dailyData = ref([]);
-
 /** Others */
 const dateRange = ref([]);
 const {proxy}   = getCurrentInstance();
 const data      =  reactive({
+  // queryParams: initValue.value.queryParams,
+  // form: initValue.value.form,
+  // configurations: initValue.value.configurations,
+  // createBanner: initValue.value.createBanner,
+  // rules: initValue.value.rules,
   queryParams:{
     title: null,
     typeId:null,
@@ -546,7 +606,7 @@ const data      =  reactive({
     endEffect: null,
     isDisplayHome: false,
     configString: null,
-    jumpType: "0",
+    jumpType: '1',
     content: '',
     url: null,
     icon: null,
@@ -558,6 +618,7 @@ const data      =  reactive({
       collectMethod: '1',
       cycle: null,
       customDay: '2',
+      dailyData: [],
       listOfDailyData: [],
     },
     //TODO: More VIP related bonus
@@ -617,7 +678,6 @@ function handleSearchQuery(){
 function handleResetQuery(){
   proxy.resetForm("queryForm");
   handleSearchQuery();
-  loading.value = false;
 }
 function handleDeleteTableData(row){
   const id = row.id || ids.value;
@@ -650,17 +710,16 @@ function handleMultipleSelection(selection) {
   multiple.value = !selection.length
 }
 function listVipBonusActivities(){
-  loading.value = true
-  getVipBonusInfoList(proxy.addDateRange(queryParams.value)).then((res)=>{
+  getVipBonusInfoList(queryParams.value).then((res)=>{
     vipBonusInfoList.value = res.data
     total.value = res.total
-  }).then( ()=> {
-    loading.value = false
-    isButtonDisabled.value = false;
+  }).then( () => {
+    isButtonDisabled.value = false
   })
 }
 function handleEffectChange(row){
-  let text = row.status === '1' ? '启用' : '停用'
+  if ( isButtonDisabled ) return;
+  let text = row.effect === '1' ? '启用' : '停用'
   proxy.$modal.confirm('确认要"' + text + '""' + row.title + '"吗?', '警告', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
@@ -670,7 +729,7 @@ function handleEffectChange(row){
   }).then(() => {
     proxy.$modal.msgSuccess(text + '成功')
   }).catch(function () {
-    row.status = row.status === '0' ? '1' : '0'
+    row.effect = row.effect === '0' ? '1' : '0'
   })
 }
 function formatterActivityType(row) {
@@ -681,30 +740,64 @@ function formatterActivityType(row) {
   }
   return "";
 }
-function vipBonusTypeList(){
-  getVipBonusTypeList().then((res)=>{
-    vipBonusTypes.value = res
-  })
-}
 
 /** Handle Form */
-function handleOpenForm(){
-  isButtonDisabled.value = true;
-}
-function handleClosedForm(){
-  isButtonDisabled.value = false;
-  loading.value = false
+function handleClosedForm() {
+  handleResetForm()
   listVipBonusActivities()
 }
 function handleResetForm() {
-  form.value = {
-    typeId: 1,
-    scheduleType: '1',
-    isDisplayHome: false,
-    jumpType: '0',
-    content: ''
-  };
+  // createBanner.value = initValue.value.createBanner;
+  // getBannerCreationRelatedImages(1);
+  // configurations.value = initValue.value.configurations;
+  // form.value = initValue.value.form;
+
+  const create = createBanner.value;
+  const cstm   = create.customize;
+  create.type  = '1';
+  cstm.properties.background = '#030303';
+  cstm.properties.text = 'PUT TEXT HERE';
+  cstm.properties.textStyle.font = "Arial, sans-serif";
+  cstm.properties.textStyle.size = 30;
+  cstm.properties.textStyle.color = '#ffffff';
+
+
+  const preMade = create.preMade;
+  preMade.banner = null
+  preMade.bannerCollection = null
+
+  const pagination = create.pagination;
+  pagination.param.pageNum = 1
+  pagination.param.pageSize = 10
+  pagination.pageTotal = 1
+
+
+  const conf = configurations.value;
+  const signIn = conf.signIn;
+  conf.vipLevel = 0;
+  conf.rewardIcons = [];
+  signIn.collectMethod = '1';
+  signIn.cycle = null;
+  signIn.customDay = '2'
+  signIn.dailyData = [];
+  signIn.listOfDailyData = [];
+
+  const f = form.value;
+  f.id = null
+  f.typeId = 1
+  f.title = null
+  f.scheduleType = '1'
+  f.startEffect = null
+  f.endEffect = null
+  f.isDisplayHome = false
+  f.configString = null
+  f.jumpType = '1'
+  f.content = ''
+  f.url = null
+  f.icon = null
+  dateRange.value = null
   proxy.resetForm("vipBonusForm");
+
 }
 
 /**  Handle Images */
@@ -787,31 +880,40 @@ function handleImagePagination(isNext){
 /**  Handle Add/Update Bonus Activity */
 function handleAddBonusActivity(){
   getBannerCreationRelatedImages(1);
-  handleResetForm();
-  open.value = true
   title.value = "ADD VIP BONUS ACTIVITY"
+  open.value  = true
 }
-function handleUpdateForm(row){
-  handleResetForm();
-  const id = row.id ||ids.value
-  vipBonusInfoFindById(id).then(response => {
-    const rsp = response.data;
-    populateForm(rsp)
-    populateBonusTypeConfiguration(rsp);
-    populateBannerConfiguration(rsp)
+function handleUpdateForm(row) {
+  vipBonusInfoFindById(row.id).then( async res => {
+    await populateForm(res.data)
+    await populateBannerConfiguration()
+    await populateBonusTypeConfiguration();
   }).then( () => {
-    open.value = true;
     title.value = "UPDATE VIP BONUS ACTIVITY"
-  });
+    open.value = true;
+  })
 }
-function populateForm( rsp ){
-  form.value = rsp;
-  form.value.jumpType = rsp.jumpType.toString();
-  form.value.scheduleType = rsp.scheduleType.toString();
+function populateForm( r ){
+  const f = form.value;
+  f.id = r.id
+  f.typeId = r.typeId
+  f.title = r.title
+  f.scheduleType = r.scheduleType.toString()
+  f.startEffect = r.startEffect
+  f.endEffect = r.endEffect
+  f.isDisplayHome = r.isDisplayHome
+  f.configString = r.configString
+  f.jumpType = r.jumpType.toString()
+  f.content = r.content
+  f.url = r.url
+  f.icon = r.icon
   dateRange.value = [ form.value.startEffect, form.value.endEffect ]
+  // form.value = rsp;
+  // form.value.jumpType = rsp.jumpType.toString();
+  // form.value.scheduleType = rsp.scheduleType.toString();
 }
-function populateBannerConfiguration( rsp ) {
-  let parsedCustomBannerConfig = JSON.parse(rsp.configString).customBannerConfig;
+function populateBannerConfiguration() {
+  let parsedCustomBannerConfig = JSON.parse(form.value.configString).customBannerConfig;
   if ( parsedCustomBannerConfig !== null ) {
     createBanner.value.customize.properties = parsedCustomBannerConfig;
   } else {
@@ -819,13 +921,16 @@ function populateBannerConfiguration( rsp ) {
   }
   getBannerCreationRelatedImages(1);
 }
-function populateBonusTypeConfiguration( rsp ){
-  let parsedEventConfig = JSON.parse(rsp.configString).eventConfig;
-  switch ( rsp.typeId ) {
+function populateBonusTypeConfiguration(){
+  let parsedEventConfig = JSON.parse(form.value.configString).eventConfig;
+
+  switch ( form.value.typeId ) {
     case 1: //Sign In
-      configurations.value.signIn = parsedEventConfig;
-      dailyData.value = parsedEventConfig.listOfDailyData[0].config
-      break;
+        const conf = configurations.value
+        conf.signIn = parsedEventConfig;
+        let listOfDailyData = parsedEventConfig.listOfDailyData;
+        conf.signIn.dailyData = listOfDailyData === undefined ? [] : listOfDailyData[0].config;
+        break;
       //TODO: Update when added more bonus type
   }
 }
@@ -877,13 +982,14 @@ async function getCustomizedOrPreMadeIcon() {
 
 /**  Sign In Related */
 function customDay_populateSignInConfigTable(){
-  let firstConfig = configurations.value.signIn.listOfDailyData[0].config
+  const signIn = configurations.value.signIn;
+  let firstConfig = signIn.listOfDailyData[0].config
   if ( firstConfig === undefined ) return;
 
-  dailyData.value = []
+  signIn.dailyData = []
   for ( let i = 0; i < firstConfig.length; i++ ) {
     let row = firstConfig[i];
-    dailyData.value.push(
+    signIn.dailyData .push(
         {
           day: row.day,
           rewardType: row.rewardType,
@@ -899,12 +1005,13 @@ function customDay_populateSignInConfigTable(){
   }
 }
 function populateSignInConfigTable(){
-  let cycle = configurations.value.signIn.cycle;
-  dailyData.value = [];
+  const signIn = configurations.value.signIn;
+  let cycle = signIn.cycle;
+  signIn.dailyData  = [];
 
   for ( let i = 0; i < cycle; i++ ) {
     let row = null
-    dailyData.value.push(
+    signIn.dailyData .push(
         {
           day: i+1,
           rewardType: '1',
@@ -937,7 +1044,7 @@ function handleVipLevelChange(){
       let tableConfig = signIn.listOfDailyData[config.vipLevel];
 
       if ( tableConfig !== undefined ) {
-        dailyData.value = tableConfig.config
+        config.signIn.dailyData = tableConfig.config
         break;
       }
 
@@ -951,17 +1058,18 @@ function handleRewardChangeType(scope){
   scope.row.iconUrl = ( scope.row.rewardType === '1' ? coinIcons : treasureIcons ).value[0]
 }
 function saveSignInConfig(){
-  const indexOfExistingData = configurations.value.signIn.listOfDailyData.findIndex(data => data.level === configurations.value.vipLevel);
+  const signIn = configurations.value.signIn;
+  const indexOfExistingData = signIn.listOfDailyData.findIndex(data => data.level === configurations.value.vipLevel);
   const hasData = indexOfExistingData !== -1;
 
   if ( hasData ) {
     //Update
-    configurations.value.signIn.listOfDailyData[indexOfExistingData].config = dailyData.value;
+    signIn.listOfDailyData[indexOfExistingData].config = signIn.dailyData;
   } else {
     //Insert
-    configurations.value.signIn.listOfDailyData.push({
+    signIn.listOfDailyData.push({
       level: configurations.value.vipLevel,
-      config: dailyData.value
+      config: signIn.dailyData
     });
   }
   ElMessage.success('Success')
@@ -971,10 +1079,14 @@ function resetSignInConfig(){
   configurations.value.vipLevel = 0;
   populateSignInConfigTable()
 }
+function initQuery(){
+  listVipBonusActivities()
+  getVipBonusTypeList().then((res)=>{
+    vipBonusTypes.value = res
+  })
+}
 
-
-listVipBonusActivities()
-vipBonusTypeList()
+initQuery();
 </script>
 
 <style scoped>
