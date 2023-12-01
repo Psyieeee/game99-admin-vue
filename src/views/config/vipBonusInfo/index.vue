@@ -476,82 +476,6 @@ const title    = ref(); //Form Title
 const total    = ref(0); //Total rows
 const open     = ref(false); //Opening form
 const ids      = ref([]); //Selected ids of table rows
-const initValue = ref({
-  queryParams:{
-    title: null,
-    typeId:null,
-    effect: null,
-    pageNum: 1,
-    pageSize: 10
-  },
-  form:{
-    typeId: 1,
-    title: null,
-    scheduleType: '1',
-    startEffect: null,
-    endEffect: null,
-    isDisplayHome: false,
-    configString: null,
-    jumpType: '1',
-    content: '',
-    url: null,
-    icon: null,
-  },
-  configurations: {
-    vipLevel: 0,
-    rewardIcons: [],
-    signIn: {
-      collectMethod: '1',
-      cycle: null,
-      customDay: '2',
-      dailyData: [],
-      listOfDailyData: [],
-    },
-    //TODO: More VIP related bonus
-  },
-  createBanner: {
-    type: '1',
-    isButtonDisabled: true,
-    isUploading: false,
-    isRemoving: false,
-    isPageChanging: false,
-    customize: {
-      iconCollection: null,
-      properties: {
-        background: '#030303',
-        icon: null,
-        text: 'PUT TEXT HERE',
-        textStyle: {
-          font: "Arial, sans-serif",
-          size: 30,
-          color: '#ffffff'
-        }
-      }
-    },
-    preMade: {
-      bannerCollection: null,
-      banner: null,
-    },
-    pagination: {
-      param: {
-        pageNum: 1,
-        pageSize: 10
-      },
-      pageTotal: 1
-    }
-  },
-  rules:{
-    title: [
-      {required: true, message: "标题不能为空", trigger: "blur"}
-    ],
-    icon: [
-      {required: true, message: "图标不能不上传", trigger: "blur"}
-    ],
-    typeId: [
-      {required: true, message: "活动类型不能为空", trigger: "blur"}
-    ]
-  }
-})
 
 /** Create Banner Related */
 const treasureIcons = ref([
@@ -583,76 +507,14 @@ const fontOptions   = ref([
 ]);
 
 /** Others */
-const dateRange = ref([]);
 const {proxy}   = getCurrentInstance();
 const data      =  reactive({
-  // queryParams: initValue.value.queryParams,
-  // form: initValue.value.form,
-  // configurations: initValue.value.configurations,
-  // createBanner: initValue.value.createBanner,
-  // rules: initValue.value.rules,
   queryParams:{
     title: null,
     typeId:null,
     effect: null,
     pageNum: 1,
     pageSize: 10
-  },
-  form:{
-    typeId: 1,
-    title: null,
-    scheduleType: '1',
-    startEffect: null,
-    endEffect: null,
-    isDisplayHome: false,
-    configString: null,
-    jumpType: '1',
-    content: '',
-    url: null,
-    icon: null,
-  },
-  configurations: {
-    vipLevel: 0,
-    rewardIcons: [],
-    signIn: {
-      collectMethod: '1',
-      cycle: null,
-      customDay: '2',
-      dailyData: [],
-      listOfDailyData: [],
-    },
-    //TODO: More VIP related bonus
-  },
-  createBanner: {
-    type: '1',
-    isButtonDisabled: true,
-    isUploading: false,
-    isRemoving: false,
-    isPageChanging: false,
-    customize: {
-      iconCollection: null,
-      properties: {
-        background: '#030303',
-        icon: null,
-        text: 'PUT TEXT HERE',
-        textStyle: {
-          font: "Arial, sans-serif",
-          size: 30,
-          color: '#ffffff'
-        }
-      }
-    },
-    preMade: {
-      bannerCollection: null,
-      banner: null,
-    },
-    pagination: {
-      param: {
-        pageNum: 1,
-        pageSize: 10
-      },
-      pageTotal: 1
-    }
   },
   rules:{
     title: [
@@ -665,9 +527,12 @@ const data      =  reactive({
       {required: true, message: "活动类型不能为空", trigger: "blur"}
     ]
   },
+  dateRange: [],
+  form:{},
+  createBanner:{},
+  configurations:{}
 });
-
-const {queryParams,form,rules, configurations, createBanner} = toRefs(data);
+const {queryParams, rules, dateRange, form, createBanner, configurations} = toRefs(data);
 const formData = new FormData();
 
 /**  Handle Table  */
@@ -740,47 +605,55 @@ function formatterActivityType(row) {
   }
   return "";
 }
-
 /** Handle Form */
 function handleClosedForm() {
-  handleResetForm()
+  handleResetData()
   listVipBonusActivities()
 }
-function handleResetForm() {
-  // createBanner.value = initValue.value.createBanner;
-  // getBannerCreationRelatedImages(1);
-  // configurations.value = initValue.value.configurations;
-  // form.value = initValue.value.form;
+function handleResetData() {
+  createBanner.value = {
+    type: '1',
+    isButtonDisabled: true,
+    isUploading: false,
+    isRemoving: false,
+    isPageChanging: false,
+    customize: {
+      iconCollection: null,
+      properties: {
+        background: '#030303',
+        icon: null,
+        text: 'PUT TEXT HERE',
+        textStyle: {
+          font: "Arial, sans-serif",
+          size: 30,
+          color: '#ffffff'
+        }
+      }
+    },
+    preMade: {
+      bannerCollection: null,
+      banner: null,
+    },
+    pagination: {
+      param: {
+        pageNum: 1,
+        pageSize: 10
+      },
+      pageTotal: 1
+    }
+  };
 
-  const create = createBanner.value;
-  const cstm   = create.customize;
-  create.type  = '1';
-  cstm.properties.background = '#030303';
-  cstm.properties.text = 'PUT TEXT HERE';
-  cstm.properties.textStyle.font = "Arial, sans-serif";
-  cstm.properties.textStyle.size = 30;
-  cstm.properties.textStyle.color = '#ffffff';
-
-
-  const preMade = create.preMade;
-  preMade.banner = null
-  preMade.bannerCollection = null
-
-  const pagination = create.pagination;
-  pagination.param.pageNum = 1
-  pagination.param.pageSize = 10
-  pagination.pageTotal = 1
-
-
-  const conf = configurations.value;
-  const signIn = conf.signIn;
-  conf.vipLevel = 0;
-  conf.rewardIcons = [];
-  signIn.collectMethod = '1';
-  signIn.cycle = null;
-  signIn.customDay = '2'
-  signIn.dailyData = [];
-  signIn.listOfDailyData = [];
+  configurations.value = {
+    vipLevel: 0,
+    rewardIcons: [],
+    signIn: {
+      collectMethod: '1',
+      cycle: null,
+      customDay: '2',
+      dailyData: [],
+      listOfDailyData: [],
+    }
+  };
 
   const f = form.value;
   f.id = null
@@ -795,9 +668,7 @@ function handleResetForm() {
   f.content = ''
   f.url = null
   f.icon = null
-  dateRange.value = null
-  proxy.resetForm("vipBonusForm");
-
+  dateRange.value = []
 }
 
 /**  Handle Images */
@@ -838,8 +709,7 @@ function getBannerCreationRelatedImages (pageNum) {
   const pagination = _this.pagination;
   const customize  = _this.customize;
   const preMade    = _this.preMade;
-  const param      = pagination.param
-  const hasData    = form.value.id !== undefined;
+  const param      = pagination.param;
 
   param.pageNum = pageNum;
   if ( createBanner.value.type === '1' ) {
@@ -847,14 +717,16 @@ function getBannerCreationRelatedImages (pageNum) {
     getAllVipBonusLogo(param).then( res => {
       res.rows = res.rows.map(img => prependActivityInfoImageBaseURI(img))
       customize.iconCollection  = res.rows;
-      customize.properties.icon = hasData ? customize.properties.icon : res.rows[0];
+      let icon = customize.properties.icon;
+      customize.properties.icon = icon === null ? res.rows[0]: icon;
       pagination.pageTotal = Math.max(1,Math.ceil(res.total / param.pageSize))
     })
   } else {
     param.pageSize = 6;
     getAllVipBonusBanner(param).then( res => {
       preMade.bannerCollection = res.rows;
-      preMade.banner = hasData ? form.value.icon: res.rows[0];
+      let banner = preMade.banner;
+      preMade.banner = banner === null ? res.rows[0] : banner;
       pagination.pageTotal = Math.max(1,Math.ceil(res.total / param.pageSize));
     })
   }
@@ -878,18 +750,20 @@ function handleImagePagination(isNext){
 }
 
 /**  Handle Add/Update Bonus Activity */
-function handleAddBonusActivity(){
-  getBannerCreationRelatedImages(1);
-  title.value = "ADD VIP BONUS ACTIVITY"
+async function handleAddBonusActivity(){
+  await handleResetData()
+  await getBannerCreationRelatedImages(1);
+  title.value = "ADD BONUS ACTIVITY"
   open.value  = true
 }
 function handleUpdateForm(row) {
+  handleResetData()
   vipBonusInfoFindById(row.id).then( async res => {
     await populateForm(res.data)
     await populateBannerConfiguration()
     await populateBonusTypeConfiguration();
   }).then( () => {
-    title.value = "UPDATE VIP BONUS ACTIVITY"
+    title.value = "UPDATE BONUS ACTIVITY"
     open.value = true;
   })
 }
@@ -907,17 +781,17 @@ function populateForm( r ){
   f.content = r.content
   f.url = r.url
   f.icon = r.icon
-  dateRange.value = [ form.value.startEffect, form.value.endEffect ]
-  // form.value = rsp;
-  // form.value.jumpType = rsp.jumpType.toString();
-  // form.value.scheduleType = rsp.scheduleType.toString();
+  dateRange.value = r.scheduleType === 1 ? [ form.value.startEffect, form.value.endEffect ] : []
 }
 function populateBannerConfiguration() {
-  let parsedCustomBannerConfig = JSON.parse(form.value.configString).customBannerConfig;
-  if ( parsedCustomBannerConfig !== null ) {
-    createBanner.value.customize.properties = parsedCustomBannerConfig;
+  let customizedProperties = JSON.parse(form.value.configString).customBannerConfig;
+  let isCustomized = customizedProperties === null ? false : true;
+  if ( isCustomized ) {
+    createBanner.value.type = '1'
+    createBanner.value.customize.properties = customizedProperties;
   } else {
     createBanner.value.type = '2'
+    createBanner.value.preMade.banner = form.value.icon;
   }
   getBannerCreationRelatedImages(1);
 }
@@ -954,7 +828,7 @@ async function handleSubmitForm() {
     customBannerConfig: create.type === '1' ? create.customize.properties : null
   });
 
-  let actionMethod = f.id === undefined ? vipBonusInfoAdd(f) : vipBonusInfoUpdate(f);
+  let actionMethod = f.id === null ? vipBonusInfoAdd(f) : vipBonusInfoUpdate(f);
   actionMethod.then(() => {
     proxy.$modal.msgSuccess("修改成功");
     open.value = false;
