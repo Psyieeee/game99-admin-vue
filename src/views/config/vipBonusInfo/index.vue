@@ -373,11 +373,11 @@
                   </div>
                 </div>
                 <div class="pagination" style="margin-top: 10px">
-                  <button :disabled="createBanner.isPageChanging" @click="handleImagePagination(false)">Previous</button>
-                  <button :disabled="createBanner.isPageChanging" style="margin-left: 10px" @click="handleImagePagination(true)">Next</button>
+                  <button :disabled="createBanner.isActionFinished" @click="handleImagePagination(false)">Previous</button>
+                  <button :disabled="createBanner.isActionFinished" style="margin-left: 10px" @click="handleImagePagination(true)">Next</button>
                   <span> Page:  {{ createBanner.pagination.param.pageNum  }} / {{createBanner.pagination.pageTotal}}</span>
-                  <input style="float: right" type="file" id="imageUpload" :disabled="createBanner.isUploading" accept="image/* " @change="handleUploadImage">
-                  <button style="float: right; margin-right: 10px" class="upload-button" :disabled="createBanner.isRemoving" @click="handleRemoveImage()">Remove</button>
+                  <input style="float: right" type="file" id="imageUpload" :disabled="createBanner.isActionFinished" accept="image/* " @change="handleUploadImage">
+                  <button style="float: right; margin-right: 10px" class="upload-button" :disabled="createBanner.isActionFinished" @click="handleRemoveImage()">Remove</button>
                 </div>
               </div><hr>
               <div class="form-group">
@@ -420,11 +420,11 @@
                 </div>
               </div>
               <div class="pagination" style="margin-top: 10px">
-                <button :disabled="createBanner.isPageChanging" @click="handleImagePagination(false)">Previous</button>
-                <button :disabled="createBanner.isPageChanging" style="margin-left: 10px" @click="handleImagePagination(true)">Next</button>
+                <button :disabled="createBanner.isActionFinished" @click="handleImagePagination(false)">Previous</button>
+                <button :disabled="createBanner.isActionFinished" style="margin-left: 10px" @click="handleImagePagination(true)">Next</button>
                 <span> Page:  {{ createBanner.pagination.param.pageNum  }} / {{ createBanner.pagination.pageTotal }}</span>
-                <input style="float: right" type="file" id="imageUpload" accept="image/* " :disabled="createBanner.isUploading" @change="handleUploadImage">
-                <button style="float: right; margin-right: 10px" class="upload-button" :disabled="createBanner.isRemoving" @click="handleRemoveImage">Remove</button>
+                <input style="float: right" type="file" id="imageUpload" accept="image/* " :disabled="createBanner.isActionFinished" @change="handleUploadImage">
+                <button style="float: right; margin-right: 10px" class="upload-button" :disabled="createBanner.isActionFinished" @click="handleRemoveImage">Remove</button>
               </div>
             </div><hr>
             </div>
@@ -613,10 +613,7 @@ function handleClosedForm() {
 function handleResetData() {
   createBanner.value = {
     type: '1',
-    isButtonDisabled: true,
-    isUploading: false,
-    isRemoving: false,
-    isPageChanging: false,
+    isActionFinished: false,
     customize: {
       iconCollection: null,
       properties: {
@@ -742,10 +739,10 @@ function handleImagePagination(isNext){
   if ( isNext && pageNum < pageTotal ) pageNum++;
   else if ( !isNext && pageNum > 1 ) pageNum--;
   else return;
-  createBanner.value.isPageChanging = true;
+  createBanner.value.isActionFinished = true;
   setTimeout(() => {
     getBannerCreationRelatedImages(pageNum);
-    createBanner.value.isPageChanging = false;
+    createBanner.value.isActionFinished = false;
   },500)
 }
 
