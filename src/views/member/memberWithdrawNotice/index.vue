@@ -35,7 +35,6 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['memberWithdrawNotice:menu:add']"
             icon="Plus"
             plain
             size="small"
@@ -46,7 +45,6 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['memberWithdrawNotice:menu:remove']"
             :disabled="multiple"
             icon="Delete"
             plain
@@ -66,22 +64,29 @@
       <el-table-column align="center" label="Redis TTL" min-width="180" prop="redisTtl"/>
       <el-table-column align="center" label="弹出窗口持续时间" min-width="180" prop="popupDuration"/>
       <el-table-column align="center" label="轮询间隔" min-width="180" prop="pollingInterval"/>
-      <el-table-column align="center" label="影响" min-width="180" prop="effect"/>
-      <el-table-column align="center" label="创建的" min-width="180" prop="createdBy"/>
-      <el-table-column align="center" label="创建时间" min-width="180" prop="createdTime"/>
-      <el-table-column align="center" label="更新时间" min-width="180" prop="updatedBy"/>
-      <el-table-column align="center" label="更新时间" min-width="180" prop="updatedTime"/>
+      <el-table-column align="center" label="影响" min-width="180" prop="effect">
+        <template #default="scope">
+          <el-switch
+              v-model="scope.row.effect"
+              :active-value="true"
+              :inactive-value="false"
+              @click="handleEffectChange(scope.row)">
+          </el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="创建的" min-width="180" prop="createBy"/>
+      <el-table-column align="center" label="创建时间" min-width="180" prop="createTime"/>
+      <el-table-column align="center" label="更新时间" min-width="180" prop="updateBy"/>
+      <el-table-column align="center" label="更新时间" min-width="180" prop="updateTime"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
-              v-hasPermi="['memberWithdrawNotice:menu:edit']"
               icon="Edit" link
               size="small"
               type="primary"
               @click="handleUpdate(scope.row)">修改
           </el-button>
           <el-button
-              v-hasPermi="['memberWithdrawNotice:menu:remove']"
               icon="Delete" link
               size="small"
               style="color: #e05e5e"
@@ -145,18 +150,19 @@
   </div>
 </template>
 
-<script name="footerMenu" setup>
+<script name="memberWithdrawNotice" setup>
 
 import {
     list,
     deleteConfig,
-    enanbleConfig,
+    enableConfig,
     add,
     edit
 } from "@/api/member/memberWithdrawNotice";
 import {reactive, ref, toRefs} from "vue";
 import {url} from "@/utils/url";
 import {getToken} from "@/utils/auth";
+import {activityInfoUpdateStatus} from "@/api/activity/ativityInfo";
 
 const router = useRouter();
 const {proxy} = getCurrentInstance();
@@ -213,7 +219,7 @@ function handleQuery() {
 function getList() {
   loading.value = true;
   list(queryParams.value).then(response => {
-    memberWithdrawNoticeList.value = response.data;
+    memberWithdrawNoticeList.value = response.rows;
     total.value = response.total;
     loading.value = false;
   });
@@ -251,12 +257,10 @@ function submitForm() {
   proxy.$refs['addMemberWithdrawNotice'].validate(async valid => {
     if (valid) {
       const params = {
-        type: form.value.type,
-        name: form.value.name,
-        status: form.value.status,
-        sort: form.value.sort,
-        path: form.value.path,
-        createdBy: form.value.createdBy
+        minAmount: form.value.minAmount,
+        redisTtl: form.value.redisTtl,
+        popupDuration: form.value.popupDuration,
+        pollingInterval: form.value.pollingInterval,
       }
 
       if (form.value.id != null) {
@@ -300,6 +304,25 @@ function handleDelete(row) {
   })
 }
 
+function handleEffectChange(row){
+  if( !row.effect ) {
+    row.effect = true;
+    return;
+  }
+
+  let text = row.status === '1' ? '启用' : '停用'
+  proxy.$modal.confirm('确认要"' + text + '""' + row.title + '"吗?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(function () {
+    enableConfig( row.id ).then( () => getList() )
+  }).then(() => {
+    proxy.$modal.msgSuccess(text + '成功')
+  }).catch(function () {
+    row.effect = !row.effect;
+  })
+}
 
 getList()
 </script>
