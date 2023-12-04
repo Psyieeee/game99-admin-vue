@@ -144,31 +144,31 @@
         </el-col>
         <el-col>
           <el-form-item label="任务分类" prop="taskClassification" style="min-width: 290px">
-          <el-select v-model="form.taskClassification" placeholder="任务分类" clearable>
-            <el-option
-                v-for="dict in missionTriggerList.missionTriggerList"
-                :key="dict"
-                :label="dict"
-                :value="dict"
-            />
-          </el-select>
-        </el-form-item>
+            <el-select v-model="form.taskClassification" placeholder="任务分类" clearable>
+              <el-option
+                  v-for="dict in missionTriggerList.missionTriggerList"
+                  :key="dict"
+                  :label="dict"
+                  :value="dict"
+              />
+            </el-select>
+          </el-form-item>
         </el-col>
         <el-col>
           <el-form-item label="任务目标" prop="missionObjectives" style="min-width: 290px">
-          <el-select v-model="form.missionObjectives">
-            <el-option
-                v-for="dict in activity_mission_objectives"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-            />
-          </el-select>
-        </el-form-item>
+            <el-select v-model="form.missionObjectives">
+              <el-option
+                  v-for="dict in activity_mission_objectives"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+              />
+            </el-select>
+          </el-form-item>
         </el-col>
         <el-col>
           <el-form-item v-if="form.missionObjectives === '累计充值'" label="充值类别"
-                      prop="accumulatedRechargeSource" style="min-width: 290px">
+                        prop="accumulatedRechargeSource" style="min-width: 290px">
             <el-checkbox-group v-model="data.rechargeCategory">
               <el-checkbox-button
                   v-for="dict in pay_online_recharge_category"
@@ -177,40 +177,40 @@
             </el-checkbox-group>
           </el-form-item>
           <div v-if="form.missionObjectives !== '累计充值'">
-          <el-col>
-            <el-form-item label="Game Type" prop="gameType" style="min-width: 290px">
-              <el-select v-model="form.gameType" @change="handleGameTypeChange">
-                <el-option
-                    v-for="dict in gameTypeList"
-                    :key="dict.id"
-                    :label="dict.name"
-                    :value="dict.id"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item
-                label="Platform Type" prop="platformType" style="min-width: 290px">
-              <el-select v-model="form.platformType" @change="handleGamePlatformChange">
-                <el-option
-                    v-for="dict in platformTypeList"
-                    :key="dict.id"
-                    :label="dict.name"
-                    :value="dict.id"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="Game" prop="gameName" style="min-width: 290px">
-            <el-select v-model="form.gameName">
-              <el-option
-                  v-for="dict in gameList"
-                  :key="dict.id"
-                  :label="dict.name"
-                  :value="dict.id"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-          </el-col>
-        </div>
+            <el-col>
+              <el-form-item label="Game Type" prop="gameType" style="min-width: 290px">
+                <el-select v-model="form.gameType" @change="handleGameTypeChange">
+                  <el-option
+                      v-for="dict in gameTypeList"
+                      :key="dict.id"
+                      :label="dict.name"
+                      :value="dict.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item
+                  label="Platform Type" prop="platformType" style="min-width: 290px">
+                <el-select v-model="form.platformType" @change="handleGamePlatformChange">
+                  <el-option
+                      v-for="dict in platformTypeList"
+                      :key="dict.id"
+                      :label="dict.name"
+                      :value="dict.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="Game" prop="gameName" style="min-width: 290px">
+                <el-select v-model="form.gameName">
+                  <el-option
+                      v-for="dict in gameList"
+                      :key="dict.id"
+                      :label="dict.name"
+                      :value="dict.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </div>
         </el-col>
         <el-col>
           <el-form-item label="累计补给量" prop="cumulativeRechargeAmount">
@@ -220,67 +220,69 @@
         </el-col>
         <el-col>
           <el-form-item label="奖励金额" prop="reward">
-          <el-input type="number" v-model="form.reward" placeholder="请输入奖励金额"
-                    @change="handleComposeMission"/>
-        </el-form-item>
+            <el-input type="number" v-model="form.reward" placeholder="请输入奖励金额"
+                      @change="handleComposeMission"/>
+          </el-form-item>
         </el-col>
         <el-col>
           <el-form-item label="完成次数" prop="completionCount">
-          <el-input type="number" v-model="form.completionCount" placeholder="请输入奖励金额"/>
-        </el-form-item>
+            <el-input type="number" v-model="form.completionCount" placeholder="请输入奖励金额"/>
+          </el-form-item>
         </el-col>
         <el-col>
           <el-form-item label="奖励活动" prop="rewardActivity">
-          <el-input type="number" v-model="form.rewardActivity" placeholder="请输入奖励活动"/>
-        </el-form-item>
+            <el-input type="number" v-model="form.rewardActivity" placeholder="请输入奖励活动"/>
+          </el-form-item>
         </el-col>
         <el-col>
           <el-form-item label="任务介绍" prop="missionIntroduction">
-          <el-input v-model="mission" placeholder="输入累计充值金额" disabled/>
-        </el-form-item>
+            <el-input v-model="mission" placeholder="输入累计充值金额" disabled/>
+          </el-form-item>
         </el-col>
         <el-col>
           <el-form-item label="活跃" prop="status" style="min-width: 290px">
-          <template #default="scope">
-            <el-switch
-                v-model="form.status"
-                :active-value="1"
-                :inactive-value="0"
-            ></el-switch>
-          </template>
-        </el-form-item>
+            <template #default="scope">
+              <el-switch
+                  v-model="form.status"
+                  :active-value="1"
+                  :inactive-value="0"
+              ></el-switch>
+            </template>
+          </el-form-item>
         </el-col>
         <el-col>
-          <el-form-item label="Description" prop="description" >
-            <el-input v-model="form.description" type="textarea" placeholder="Description" :rows="3" />
+          <el-form-item label="Description" prop="description">
+            <el-input v-model="form.description" type="textarea" placeholder="Description" :rows="3"/>
           </el-form-item>
         </el-col>
         <el-col>
           <el-form-item>
-          <el-upload
-              ref="upload"
-              :action="uploadFileUrl"
-              :auto-upload="false"
-              :before-upload="beforeAvatarUpload"
-              :headers="headers"
-              :limit="1"
-              :multiple="false"
-              :on-change="selectFile"
-              :on-error="uploadFalse"
-              :on-exceed="uploadExceed"
-              :on-preview="handlePreview"
-              :on-remove="handleRemove"
-              :on-success="uploadSuccess"
-              class="upload-demo"
-              drag
-              name="advertisementFile"
-          >
-            <div class="el-upload__text">Drop file here or <em>点击上传</em></div>
-            <div class="el-upload__tip">
-              最大文件大小为 100 MB
+            <div class="centered-form">
+              <el-upload
+                  ref="upload"
+                  :action="uploadFileUrl"
+                  :auto-upload="false"
+                  :before-upload="beforeAvatarUpload"
+                  :headers="headers"
+                  :limit="1"
+                  :multiple="false"
+                  :on-change="selectFile"
+                  :on-error="uploadFalse"
+                  :on-exceed="uploadExceed"
+                  :on-preview="handlePreview"
+                  :on-remove="handleRemove"
+                  :on-success="uploadSuccess"
+                  class="upload-demo"
+                  drag
+                  name="advertisementFile"
+              >
+                <div class="el-upload__text">Drop file here or <em>点击上传</em></div>
+                <div class="el-upload__tip">
+                  最大文件大小为 100 MB
+                </div>
+              </el-upload>
             </div>
-          </el-upload>
-        </el-form-item>
+          </el-form-item>
         </el-col>
       </el-form>
       <template #footer>
@@ -479,8 +481,8 @@ const data = reactive({
       selectAll: false,
       showAddButton: false,
       showEditButton: false,
-      rechargeCategory:[],
-      checkedCurrency:[],
+      rechargeCategory: [],
+      checkedCurrency: [],
       /** 查询参数 query params*/
       queryParams: {
         missionSettingsId: 'WEEKLY',
@@ -493,7 +495,7 @@ const data = reactive({
       },
 
       auditParams: {
-        id:'WEEKLY'
+        id: 'WEEKLY'
       },
 
       settingsRules: {
@@ -540,13 +542,13 @@ const data = reactive({
       uploadFileUrl: uploadAdvertisementUrl(),
     })
 ;
-const { uploadFileUrl, queryParams, form, rules, headers, settingsRules, auditParams} = toRefs(data);
+const {uploadFileUrl, queryParams, form, rules, headers, settingsRules, auditParams} = toRefs(data);
 
 
 function handleMemberTierList() {
   getMemberTierList(data.queryParams).then(res => {
     data.memberTierList = res.data
-    console.log( data.memberTierList )
+    console.log(data.memberTierList)
   })
 }
 
@@ -710,10 +712,10 @@ function handleUpdate(row) {
   reset()
   const id = row.id || this.ids
   getMissionRepeatList(id).then(response => {
-    if( response.data.accumulatedRechargeSource != null ){
+    if (response.data.accumulatedRechargeSource != null) {
       data.rechargeCategory = response.data.accumulatedRechargeSource.split(',')
     }
-    if( response.data.taskCurrency != null ) {
+    if (response.data.taskCurrency != null) {
       data.checkedCurrency = response.data.taskCurrency.split(',')
     }
     form.value = response.data
@@ -823,7 +825,7 @@ function handleSettings() {
     populateCheckList(eventCollection, checkedEventCollection, 'EVENT_COLLECTION_ENTRANCE');
     populateCheckList(collectionRestriction, checkedCollectionRestriction, 'COLLECTION_RESTRICTION');
 
-    data.auditRestrictedTabs = JSON.parse( response.data.auditRestrictedPlatformsJson )
+    data.auditRestrictedTabs = JSON.parse(response.data.auditRestrictedPlatformsJson)
     settingsOpen.value = true;
   });
 }
@@ -835,11 +837,11 @@ function populateCheckList(collection, checkedList, key) {
       .filter(k => k.missionSettingsCode === key && k.status === 1)
 }
 
-function handleSelectedAudit(){
-  data.auditRestrictedTabs.forEach( x => {
-        if( x.selectedCheckboxes != null ){
-          x.platforms.forEach( f => {
-            f.status = x.selectedCheckboxes.includes(f.platform) ?  '1' : '0'
+function handleSelectedAudit() {
+  data.auditRestrictedTabs.forEach(x => {
+        if (x.selectedCheckboxes != null) {
+          x.platforms.forEach(f => {
+            f.status = x.selectedCheckboxes.includes(f.platform) ? '1' : '0'
           })
         }
       }
@@ -857,7 +859,7 @@ function submitSettings() {
         ruleDescription: settingsForm.value.ruleDescription,
         ruleDescriptionTranslated: settingsForm.value.ruleDescriptionTranslated,
         auditRestrictedPlatformsSwitch: settingsForm.value.auditRestrictedPlatformsSwitch,
-        auditRestrictedPlatformsJson: JSON.stringify( data.auditRestrictedTabs ),
+        auditRestrictedPlatformsJson: JSON.stringify(data.auditRestrictedTabs),
         homePagePromptSwitch: settingsForm.value.homePagePromptSwitch ? 1 : 0,
         auditMultiplier: settingsForm.value.auditMultiplier,
         missionSettingsOtherList: checkedEventCollection.value.concat(checkedCollectionRestriction.value)
@@ -888,7 +890,7 @@ function uploadSuccess() {
   getList()
 }
 
-function selectFile( file ) {
+function selectFile(file) {
   formData.append("file", file.raw)
   formData.append("name", file.name)
 }
@@ -912,9 +914,9 @@ function handlePreview(file) {
 function beforeAvatarUpload(file) {
   const fileExtension = file.name.split('.')[1]
   const isLt2M = file.size / 1024 / 1024 < 100
-  if (fileExtension != 'jpg' &&
-      fileExtension != 'png' &&
-      fileExtension != 'bmp') {
+  if (fileExtension !== 'jpg' &&
+      fileExtension !== 'png' &&
+      fileExtension !== 'bmp') {
     proxy.$modal.msgError('无效音乐')
   } else if (!isLt2M) {
     proxy.$modal.msgError('上传模板大小不能超过100MB!')
@@ -934,4 +936,7 @@ getList();
 </script>
 
 <style>
+.centered-form {
+//margin-left: 50px; max-width: 200px;
+}
 </style>

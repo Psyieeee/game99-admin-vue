@@ -150,7 +150,7 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="Mission Objectives" prop="missionObjectives" style="min-width: 290px">
+        <el-form-item label="任务目标" prop="missionObjectives" style="min-width: 290px">
           <el-select v-model="form.missionObjectives">
             <el-option
                 v-for="dict in activity_mission_objectives"
@@ -160,7 +160,7 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item v-if="form.missionObjectives === '累计充值'" label="Recharge Category"
+        <el-form-item v-if="form.missionObjectives === '累计充值'" label="充值类别"
                       prop="accumulatedRechargeSource" style="min-width: 290px">
           <el-checkbox-group v-model="data.rechargeCategory">
             <el-checkbox-button
@@ -229,33 +229,36 @@
             ></el-switch>
           </template>
         </el-form-item>
-        <el-form-item label="Description" prop="description" >
-          <el-input v-model="form.description" type="textarea" placeholder="Description" :rows="3" />
+        <el-form-item label="Description" prop="description">
+          <el-input v-model="form.description" type="textarea" placeholder="Description" :rows="3"/>
         </el-form-item>
         <el-form-item>
-          <el-upload
-              ref="upload"
-              :action="uploadFileUrl"
-              :auto-upload="false"
-              :before-upload="beforeAvatarUpload"
-              :headers="headers"
-              :limit="1"
-              :multiple="false"
-              :on-change="selectFile"
-              :on-error="uploadFalse"
-              :on-exceed="uploadExceed"
-              :on-preview="handlePreview"
-              :on-remove="handleRemove"
-              :on-success="uploadSuccess"
-              class="upload-demo"
-              drag
-              name="advertisementFile"
-          >
-            <div class="el-upload__text">Drop file here or <em>点击上传</em></div>
-            <div class="el-upload__tip">
-              最大文件大小为 100 MB
-            </div>
-          </el-upload>
+          <div class="centered-form">
+            <el-upload
+                ref="upload"
+                :action="uploadFileUrl"
+                :auto-upload="false"
+                :before-upload="beforeAvatarUpload"
+                :headers="headers"
+                :limit="1"
+                :multiple="false"
+                :on-change="selectFile"
+                :on-error="uploadFalse"
+                :on-exceed="uploadExceed"
+                :on-preview="handlePreview"
+                :on-remove="handleRemove"
+                :on-success="uploadSuccess"
+
+                class="upload-demo"
+                drag
+                name="advertisementFile"
+            >
+              <div class="el-upload__text">Drop file here or <em>点击上传</em></div>
+              <div class="el-upload__tip">
+                最大文件大小为 100 MB
+              </div>
+            </el-upload>
+          </div>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -456,70 +459,70 @@ const collectionRestriction = ref([]);
 const checkedCollectionRestriction = ref([]);
 const formData = new FormData();
 const data = reactive({
-      /** 查询参数 query params*/
-      auditRestrictedTabs:[],
+  /** 查询参数 query params*/
+  auditRestrictedTabs: [],
 
-      rechargeCategory:[],
+  rechargeCategory: [],
 
-      queryParams: {
-        missionSettingsId: 'DAILY',
-        pageNum: 1,
-        pageSize: 20,
-        type: null,
-        effect: null,
-        taskCode: null,
-        tipBubbleSwitch: null
-      },
+  queryParams: {
+    missionSettingsId: 'DAILY',
+    pageNum: 1,
+    pageSize: 20,
+    type: null,
+    effect: null,
+    taskCode: null,
+    tipBubbleSwitch: null
+  },
 
-      settingsRules: {
-        ruleDescriptionTranslated:
-            [
-              {required: true, message: 'Description Should not be empty', trigger: 'blur'}
-            ],
-        auditMultiplier:
-            [
-              {required: true, message: 'Audit Multiplier Should not be empty', trigger: 'blur'}
-            ],
-        taskDuration:
-            [
-              {required: true, message: 'Task Duration Should not be empty', trigger: 'blur'}
-            ]
-      },
+  settingsRules: {
+    ruleDescriptionTranslated:
+        [
+          {required: true, message: 'Description Should not be empty', trigger: 'blur'}
+        ],
+    auditMultiplier:
+        [
+          {required: true, message: 'Audit Multiplier Should not be empty', trigger: 'blur'}
+        ],
+    taskDuration:
+        [
+          {required: true, message: 'Task Duration Should not be empty', trigger: 'blur'}
+        ]
+  },
 
-      rules: {
-        cumulativeRechargeAmount:
-            [
-              {required: true, message: '不能为空', trigger: 'blur'}
-            ],
-        completionCount:
-            [
-              {required: true, message: '不能为空', trigger: 'blur'}
-            ],
-        reward:
-            [
-              {required: true, message: '不能为空', trigger: 'blur'}
-            ],
-        rewardActivity:
-            [
-              {required: true, message: '不能为空', trigger: 'blur'}
-            ]
-      },
+  rules: {
+    cumulativeRechargeAmount:
+        [
+          {required: true, message: '不能为空', trigger: 'blur'}
+        ],
+    completionCount:
+        [
+          {required: true, message: '不能为空', trigger: 'blur'}
+        ],
+    reward:
+        [
+          {required: true, message: '不能为空', trigger: 'blur'}
+        ],
+    rewardActivity:
+        [
+          {required: true, message: '不能为空', trigger: 'blur'}
+        ]
+  },
 
-      /** 表单参数 form parameter*/
-      form: {},
+  /** 表单参数 form parameter*/
+  form: {},
 
-      auditParams: {
-        id:'DAILY',
-      },
+  auditParams: {
+    id: 'DAILY',
+  },
 
-      uploadFileUrl: uploadAdvertisementUrl(),
+  uploadFileUrl: uploadAdvertisementUrl(),
 
-      headers: {
-        Authorization: 'Bearer ' + getToken()
-      }
-      ,
-    });
-const { uploadFileUrl, queryParams, form, rules, headers, settingsRules} = toRefs(data);
+  headers: {
+    Authorization: 'Bearer ' + getToken()
+  }
+  ,
+});
+const {uploadFileUrl, queryParams, form, rules, headers, settingsRules} = toRefs(data);
 
 function handleMemberTierList() {
   getMemberTierList(data.auditParams).then(res => {
@@ -527,11 +530,11 @@ function handleMemberTierList() {
   })
 }
 
-function handleSelectedAudit(){
-  data.auditRestrictedTabs.forEach( x => {
-        if( x.selectedCheckboxes != null ){
-          x.platforms.forEach( f => {
-            f.status = x.selectedCheckboxes.includes(f.platform) ?  '1' : '0'
+function handleSelectedAudit() {
+  data.auditRestrictedTabs.forEach(x => {
+        if (x.selectedCheckboxes != null) {
+          x.platforms.forEach(f => {
+            f.status = x.selectedCheckboxes.includes(f.platform) ? '1' : '0'
           })
         }
       }
@@ -575,7 +578,7 @@ function getList() {
   missionRepeatList(queryParams.value).then(response => {
     missionRepeatLists.value = response.data;
     missionTriggerList.value = missionRepeatLists.value[0];
-    console.log( JSON.stringify(missionTriggerList.value) + " @@")
+    console.log(JSON.stringify(missionTriggerList.value) + " @@")
     total.value = response.total;
     loading.value = false;
   });
@@ -714,7 +717,7 @@ function uploadSuccess() {
   getList()
 }
 
-function selectFile( file ) {
+function selectFile(file) {
   formData.append("file", file.raw)
   formData.append("name", file.name)
 }
@@ -740,10 +743,10 @@ function handleUpdate(row) {
   reset()
   const id = row.id || this.ids
   getMissionRepeatList(id).then(response => {
-    if( response.data.accumulatedRechargeSource != null ){
+    if (response.data.accumulatedRechargeSource != null) {
       data.rechargeCategory = response.data.accumulatedRechargeSource.split(',')
     }
-    if( response.data.taskCurrency != null ){
+    if (response.data.taskCurrency != null) {
       checkedCurrency.value = response.data.taskCurrency.split(',')
     }
     form.value = response.data
@@ -780,7 +783,7 @@ function handleSettings() {
     // populateCheckList(currencyCollection, checkedCurrency, 'CURRENCY');
     populateCheckList(eventCollection, checkedEventCollection, 'EVENT_COLLECTION_ENTRANCE');
     populateCheckList(collectionRestriction, checkedCollectionRestriction, 'COLLECTION_RESTRICTION');
-    data.auditRestrictedTabs = JSON.parse( response.data.auditRestrictedPlatformsJson  )
+    data.auditRestrictedTabs = JSON.parse(response.data.auditRestrictedPlatformsJson)
     // handleCheckedSettingsCurrencyChange();
     settingsOpen.value = true;
   });
@@ -807,7 +810,7 @@ function submitSettings() {
         auditMultiplier: settingsForm.value.auditMultiplier,
         homePagePromptSwitch: settingsForm.value.homePagePromptSwitch ? 1 : 0,
         missionSettingsOtherList: checkedEventCollection.value.concat(checkedCollectionRestriction.value),
-        auditRestrictedPlatformsJson: JSON.stringify( data.auditRestrictedTabs )
+        auditRestrictedPlatformsJson: JSON.stringify(data.auditRestrictedTabs)
       }
 
       updateSettings(params).then(() => {
@@ -902,4 +905,8 @@ getList();
 </script>
 
 <style>
+.centered-form {
+  //margin-left: 50px;
+  max-width: 200px;
+}
 </style>
