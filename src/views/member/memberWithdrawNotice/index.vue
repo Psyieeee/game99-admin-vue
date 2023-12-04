@@ -1,36 +1,5 @@
 <template>
   <div class="app-container">
-    <el-form label="Member Withdraw Notice" v-show="showSearch" ref="queryForm" :inline="true" :model="queryParams" label-width="98px">
-      <el-form-item prop="类型" style="min-width: 50px">
-        <el-input
-            v-model="queryParams.type"
-            clearable
-            placeholder="类型"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item prop="名称" style="min-width: 50px">
-        <el-input
-            v-model="queryParams.name"
-            clearable
-            placeholder="名称"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item prop="现状" style="min-width: 50px">
-        <el-input
-            v-model="queryParams.status"
-            clearable
-            placeholder="现状"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-        <el-form-item>
-        <el-button icon="Search" size="small" type="primary" @click="handleQuery">搜索</el-button>
-        <el-button icon="Refresh" size="small" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
-
     <!--    button on the table for query-->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
@@ -43,23 +12,13 @@
         >新增
         </el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-            :disabled="multiple"
-            icon="Delete"
-            plain
-            size="small"
-            type="danger"
-            @click="handleDelete"
-        >删除
-        </el-button>
-      </el-col>
       <right-toolbar v-model="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <!--    display data in table -->
     <el-table v-loading="loading" :data="memberWithdrawNoticeList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
+      <el-table-column align="center" label="ID" min-width="180" prop="id"/>
       <el-table-column align="center" label="最低金额" min-width="180" prop="minAmount"/>
       <el-table-column align="center" label="Redis TTL" min-width="180" prop="redisTtl"/>
       <el-table-column align="center" label="弹出窗口持续时间" min-width="180" prop="popupDuration"/>
@@ -169,12 +128,6 @@ const {proxy} = getCurrentInstance();
 
 const memberWithdrawNoticeList = ref([]);
 const ids = ref([]);
-// const type = ref('-');
-// const name = ref('-');
-// const status = ref('-');
-// const sort = ref('-');
-// const path = ref('-');
-// const title = ref('');
 const total = ref(0);
 const open = ref(false);
 const showSearch = ref(true);
@@ -183,7 +136,6 @@ const multiple = ref(true);
 const loading = ref(true);
 
 const data = reactive({
-
   showAddButton: false,
   showEditButton: false,
   /** 查询参数 query params*/
@@ -310,15 +262,14 @@ function handleEffectChange(row){
     return;
   }
 
-  let text = row.status === '1' ? '启用' : '停用'
-  proxy.$modal.confirm('确认要"' + text + '""' + row.title + '"吗?', '警告', {
+  proxy.$modal.confirm("您确定要启用 ID 为 " + row.id + " 的配置吗？", '警告', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
   }).then(function () {
     enableConfig( row.id ).then( () => getList() )
   }).then(() => {
-    proxy.$modal.msgSuccess(text + '成功')
+    proxy.$modal.msgSuccess( "已成功启用 ID " + row.id + " 配置" );
   }).catch(function () {
     row.effect = !row.effect;
   })
