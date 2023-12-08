@@ -199,11 +199,111 @@
                   style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
               />
             </el-form-item>
+            <el-form-item label="Platform" prop="platform">
+              <el-checkbox-group v-model="form.selectedPlatforms">
+                <el-checkbox v-for="(option, index) in platforms" :key="index" :label="option" @change="handleChangePlatform(option)">{{ option }}</el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
             <label style="font-size: 25px; text-align: left">{{ vipBonusTypes.find((type) => type.id === form.typeId).name + ' Config'}}</label>
             <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
 
 <!-- Sign in Config -->
             <div v-if="form.typeId === 1">
+              <label>Upload Reward Icons</label>
+              <el-form-item v-if="form.selectedPlatforms.includes('Web H5')" prop="webRewardIcon">
+                <div style="padding-right: 10px">
+                  <div class="upload-reward-icon-button" @click="handleUploadStatusIcon('reward','Web H5','webH5')">WEB H5</div>
+                </div>
+                <div class="upload-image-container">
+                  <div v-for="(icon, index) in configurations.rewardIcons.webH5" :key="index" class="image-preview-container">
+                    <img :src="icon" alt="Reward Icon Preview" class="image-preview">
+                    <div class="reward-close-button" @click="configurations.rewardIcons.webH5.splice(index,1)">x</div>
+                  </div>
+                </div>
+              </el-form-item>
+              <el-form-item v-if="form.selectedPlatforms.includes('Mobile')" prop="mobileRewardIcon">
+                <div style="padding-right: 10px">
+                  <div class="upload-reward-icon-button" @click="handleUploadStatusIcon('reward','Mobile','mobile')">Mobile</div>
+                </div>
+                <div class="upload-image-container">
+                  <div v-for="(icon, index) in configurations.rewardIcons.mobile" :key="index" class="image-preview-container">
+                    <img :src="icon" alt="Reward Icon Preview" class="image-preview">
+                    <div class="reward-close-button" @click="configurations.rewardIcons.mobile.splice(index,1)">x</div>
+                  </div>
+                </div>
+              </el-form-item>
+              <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
+              <label>Upload Status Icons</label>
+              <el-form-item v-if="form.selectedPlatforms.includes('Web H5')" label="WEB H5" style="padding-top: 10px; font-weight: bold" prop="statusIcon">
+                <input type="file" ref="fileInput" multiple style="display: none" @change="onFileInputChange()" />
+                <div class="image-container">
+                  <div class="image-item">
+                    <div class="image-wrapper">
+                      <el-image class="image-preview" :src="configurations.signIn.statusIcon.webH5.claimable"/>
+                      <div v-if="configurations.signIn.statusIcon.webH5.claimable !== null" class="status-close-button" @click="configurations.signIn.statusIcon.webH5.claimable=null">x</div>
+                      <div v-else class="upload-status-icon-button" @click="handleUploadStatusIcon('status','Web H5','claimable')">Claimable</div>
+                    </div>
+                  </div>
+                  <div class="image-item">
+                    <div class="image-wrapper">
+                      <el-image class="image-preview" :src="configurations.signIn.statusIcon.webH5.claimed"/>
+                      <div v-if="configurations.signIn.statusIcon.webH5.claimed !== null" class="status-close-button" @click="configurations.signIn.statusIcon.webH5.claimed=null">x</div>
+                      <div v-else class="upload-status-icon-button" @click="handleUploadStatusIcon('status','Web H5','claimed')">Claimed</div>
+                    </div>
+                  </div>
+                  <div class="image-item">
+                    <div class="image-wrapper">
+                      <el-image class="image-preview" :src="configurations.signIn.statusIcon.webH5.notClaimable"/>
+                      <div v-if="configurations.signIn.statusIcon.webH5.notClaimable !== null" class="status-close-button" @click="configurations.signIn.statusIcon.webH5.notClaimable=null">x</div>
+                      <div v-else class="upload-status-icon-button" @click="handleUploadStatusIcon('status','Web H5','notClaimable')">Not Claimable</div>
+                    </div>
+                  </div>
+
+                  <div class="image-item">
+                    <div class="image-wrapper">
+                      <el-image class="image-preview" :src="configurations.signIn.statusIcon.webH5.notClaimed"/>
+                      <div v-if="configurations.signIn.statusIcon.webH5.notClaimed !== null" class="status-close-button" @click="configurations.signIn.statusIcon.webH5.notClaimed=null">x</div>
+                      <div v-else class="upload-status-icon-button" @click="handleUploadStatusIcon('status','Web H5','notClaimed')">Not Claimed</div>
+                    </div>
+                  </div>
+
+                </div>
+              </el-form-item>
+              <el-form-item v-if="form.selectedPlatforms.includes('Mobile')" label="MOBILE" style="padding-top: 10px; font-weight: bold" prop="statusIcon">
+                <input type="file" ref="fileInput" multiple style="display: none" @change="onFileInputChange()" />
+                <div class="image-container">
+                  <div class="image-item">
+                    <div class="image-wrapper">
+                      <el-image class="image-preview" :src="configurations.signIn.statusIcon.mobile.claimable"/>
+                      <div v-if="configurations.signIn.statusIcon.mobile.claimable !== null" class="status-close-button" @click="configurations.signIn.statusIcon.mobile.claimable=null">x</div>
+                      <div v-else class="upload-status-icon-button" @click="handleUploadStatusIcon('status','Mobile','claimable')">Claimable</div>
+                    </div>
+                  </div>
+                  <div class="image-item">
+                    <div class="image-wrapper">
+                      <el-image class="image-preview" :src="configurations.signIn.statusIcon.mobile.claimed"/>
+                      <div v-if="configurations.signIn.statusIcon.mobile.claimed !== null" class="status-close-button" @click="configurations.signIn.statusIcon.mobile.claimed=null">x</div>
+                      <div v-else class="upload-status-icon-button" @click="handleUploadStatusIcon('status','Mobile','claimed')">Claimed</div>
+                    </div>
+                  </div>
+                  <div class="image-item">
+                    <div class="image-wrapper">
+                      <el-image class="image-preview" :src="configurations.signIn.statusIcon.mobile.notClaimable"/>
+                      <div v-if="configurations.signIn.statusIcon.mobile.notClaimable !== null" class="status-close-button" @click="configurations.signIn.statusIcon.mobile.notClaimable=null">x</div>
+                      <div v-else class="upload-status-icon-button" @click="handleUploadStatusIcon('status','Mobile','notClaimable')">Not Claimable</div>
+                    </div>
+                  </div>
+
+                  <div class="image-item">
+                    <div class="image-wrapper">
+                      <el-image class="image-preview" :src="configurations.signIn.statusIcon.mobile.notClaimed"/>
+                      <div v-if="configurations.signIn.statusIcon.mobile.notClaimed !== null" class="status-close-button" @click="configurations.signIn.statusIcon.mobile.notClaimed=null">x</div>
+                      <div v-else class="upload-status-icon-button" @click="handleUploadStatusIcon('status','Mobile','notClaimed')">Not Claimed</div>
+                    </div>
+                  </div>
+                </div>
+              </el-form-item>
+              <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
               <el-form-item label="Collect Method" prop="collectMethod">
                 <el-radio-group v-model="configurations.signIn.collectMethod">
                   <el-radio label="1">Continuous</el-radio>
@@ -241,7 +341,7 @@
                 </div>
               </el-form-item>
               <el-form-item >
-                <el-table :data="configurations.signIn.dailyData" style="width: 80%" >
+                <el-table :data="configurations.signIn.dailyData" style="width: 80%; border: 5px solid #e0e0e0; border-radius: 5px" >
                   <el-table-column label="Day" width="70" align="center" prop="day">
                       <template #default="scope">
                         <div v-if="configurations.signIn.customDay === '1'">
@@ -293,19 +393,40 @@
                       <el-input v-model="scope.row.codingRequirement"/>
                     </template>
                   </el-table-column>
-                  <el-table-column label="Check-in Icon" align="center" width="180">
+                  <el-table-column v-if="form.selectedPlatforms.includes('Web H5')" label="Web Reward Icon" align="center" width="180">
                     <template #default="scope">
                       <el-select
                           filterable
-                          v-model="scope.row.iconUrl"
+                          v-model="scope.row.rewardIcon.webH5"
                           style="width: 120px"
                       >
                         <template #prefix>
-                          <el-image style="width: 50px; height: 50px; margin-top: 5px; margin-bottom: 5px; margin-left: 10px " :src="scope.row.iconUrl"/>
+                          <el-image style="width: 50px; height: 50px; margin-top: 5px; margin-bottom: 5px; margin-left: 10px " :src="scope.row.rewardIcon.webH5"/>
                         </template>
                         <el-option
                             label=" "
-                            v-for="icon in ( scope.row.rewardType === '1' ? configurations.rewardIcons : treasureIcons)"
+                            v-for="icon in ( scope.row.rewardType === '1' ? configurations.rewardIcons.webH5 : treasureIcons)"
+                            :value="icon"
+                            style="width: 120px; height: 100px; margin-left: -15px"
+                        >
+                          <el-image style="width: 50px; height: 50px;margin-top: 10px; margin-left: 25px" :src="icon"  />
+                        </el-option>
+                      </el-select>
+                    </template>
+                  </el-table-column>
+                  <el-table-column v-if="form.selectedPlatforms.includes('Mobile')" label="Mobile Reward Icon" align="center" width="180">
+                    <template #default="scope">
+                      <el-select
+                          filterable
+                          v-model="scope.row.rewardIcon.mobile"
+                          style="width: 120px"
+                      >
+                        <template #prefix>
+                          <el-image style="width: 50px; height: 50px; margin-top: 5px; margin-bottom: 5px; margin-left: 10px " :src="scope.row.rewardIcon.mobile"/>
+                        </template>
+                        <el-option
+                            label=" "
+                            v-for="icon in ( scope.row.rewardType === '1' ? configurations.rewardIcons.mobile : treasureIcons)"
                             :value="icon"
                             style="width: 120px; height: 100px; margin-left: -15px"
                         >
@@ -316,7 +437,9 @@
                   </el-table-column>
                 </el-table>
               </el-form-item>
+
             </div>
+
 
 <!-- Other Config -->
             <label style="font-size: 25px; text-align: left">Other Config</label>
@@ -358,8 +481,7 @@
               <div id="canvas"></div>
               <div class="form-group">
                 <label for="background">Background Color:</label>
-                <input style="margin-left: 10px; width: 100px; border: 2px solid #000000"
-                       v-model="createBanner.customize.properties.background" type="color" id="background"/>
+                <input style="margin-left: 10px; width: 100px; border: 2px solid #000000" v-model="createBanner.customize.properties.background" type="color" id="background"/>
               </div>
               <div class="form-group">
                 <label>Select Icon:</label><hr>
@@ -443,7 +565,7 @@
 
 <script name="VipBonusInfo" setup>
 import {url} from "@/utils/url";
-import {getCurrentInstance, reactive, ref, toRefs} from "vue";
+import {getCurrentInstance, reactive, ref, toRefs, watch} from "vue";
 import { ElMessage } from 'element-plus'
 import html2canvas from 'html2canvas';
 import {getVipBonusTypeList} from "@/api/config/vipBonusType";
@@ -476,6 +598,8 @@ const title    = ref(); //Form Title
 const total    = ref(0); //Total rows
 const open     = ref(false); //Opening form
 const ids      = ref([]); //Selected ids of table rows
+const fileInput = ref(null);
+const activityUploadIconParam = ref({type: '', field: ''})
 
 /** Create Banner Related */
 const treasureIcons = ref([
@@ -534,6 +658,7 @@ const data      =  reactive({
 });
 const {queryParams, rules, dateRange, form, createBanner, configurations} = toRefs(data);
 const formData = new FormData();
+const platforms = ref(['Select All', 'Web H5', "Mobile" ]);
 
 /**  Handle Table  */
 function handleSearchQuery(){
@@ -642,30 +767,67 @@ function handleResetData() {
 
   configurations.value = {
     vipLevel: 0,
-    rewardIcons: [],
+    rewardIcons: {
+      webH5: [],
+      mobile: []
+    },
     signIn: {
       collectMethod: '1',
       cycle: null,
       customDay: '2',
       dailyData: [],
       listOfDailyData: [],
+      statusIcon: {
+        webH5: {
+          claimable: null,
+          notClaimable: null,
+          claimed: null,
+          notClaimed: null
+        },
+        mobile: {
+          claimable: null,
+          notClaimable: null,
+          claimed: null,
+          notClaimed: null
+        }
+      }
     }
   };
 
   const f = form.value;
-  f.id = null
-  f.typeId = 1
-  f.title = null
-  f.scheduleType = '1'
-  f.startEffect = null
-  f.endEffect = null
-  f.isDisplayHome = false
-  f.configString = null
-  f.jumpType = '1'
-  f.content = ''
-  f.url = null
-  f.icon = null
+  f.id = null;
+  f.typeId = 1;
+  f.title = null;
+  f.scheduleType = '1';
+  f.startEffect = null;
+  f.selectedPlatforms = ['Mobile']
+  f.endEffect = null;
+  f.isDisplayHome = false;
+  f.configString = null;
+  f.jumpType = '1';
+  f.content = '';
+  f.url = null;
+  f.icon = null;
   dateRange.value = []
+}
+function asd (option) {
+
+}
+function handleChangePlatform(option) {
+  //This Logic is based on beforeChanges
+  const f = form.value;
+  const index = f.selectedPlatforms.indexOf(option);
+  const beforeChange = index === -1 ? [...f.selectedPlatforms, option] : [...f.selectedPlatforms.slice(0, index), ...f.selectedPlatforms.slice(index + 1)];
+  const isSelectAllChecked = beforeChange.includes('Select All');
+  const isAllSelected = beforeChange.length === platforms.value.length;
+
+  if (option === 'Select All') {
+    f.selectedPlatforms = isSelectAllChecked ? [] : platforms.value;
+  } else if (isAllSelected) {
+    f.selectedPlatforms.splice(f.selectedPlatforms.indexOf('Select All'), 1);
+  } else if (beforeChange.length === platforms.value.length - 2) {
+    f.selectedPlatforms.push(beforeChange.includes(option) ? option : 'Select All');
+  }
 }
 
 /**  Handle Images */
@@ -745,6 +907,33 @@ function handleImagePagination(isNext){
     createBanner.value.isActionFinished = false;
   },500)
 }
+function handleUploadStatusIcon (type, platform, field){
+  activityUploadIconParam.value = {type: type, platform: platform, field: field};
+  fileInput.value.click();
+}
+function onFileInputChange (){
+  const conf = configurations.value;
+  const signIn = conf.signIn;
+  const newFileInput = fileInput.value;
+  const files = Array.from(newFileInput.files)
+  if ( files.length < 1 ) return;
+
+  const param = activityUploadIconParam.value;
+  switch ( param.type ) {
+    case 'reward': {
+      files.forEach(file => {
+        conf.rewardIcons[param.field].push(URL.createObjectURL(file));
+      });
+      break;
+    }
+    case 'status': {
+      signIn.statusIcon[ param.platform === 'Mobile' ? 'mobile' : 'webH5'][param.field] = URL.createObjectURL(files[0]);
+      break
+    }
+  }
+  newFileInput.value = null;
+  activityUploadIconParam.value = null
+}
 
 /**  Handle Add/Update Bonus Activity */
 async function handleAddBonusActivity(){
@@ -794,7 +983,6 @@ function populateBannerConfiguration() {
 }
 function populateBonusTypeConfiguration(){
   let parsedEventConfig = JSON.parse(form.value.configString).eventConfig;
-
   switch ( form.value.typeId ) {
     case 1: //Sign In
         const conf = configurations.value
@@ -825,11 +1013,15 @@ async function handleSubmitForm() {
     customBannerConfig: create.type === '1' ? create.customize.properties : null
   });
 
-  let actionMethod = f.id === null ? vipBonusInfoAdd(f) : vipBonusInfoUpdate(f);
-  actionMethod.then(() => {
-    proxy.$modal.msgSuccess("修改成功");
-    open.value = false;
-  })
+  console.log(f.configString)
+
+
+
+  // let actionMethod = f.id === null ? vipBonusInfoAdd(f) : vipBonusInfoUpdate(f);
+  // actionMethod.then(() => {
+  //   proxy.$modal.msgSuccess("修改成功");
+  //   open.value = false;
+  // })
 }
 function getEventConfigByTypeId(){
   // TypeId = Vip Bonus Activity Type
@@ -870,7 +1062,7 @@ function customDay_populateSignInConfigTable(){
           },
           topUpRequirement: null,
           codingRequirement: null,
-          iconUrl: row.iconUrl
+          rewardIcon: row.rewardIcon
         }
     )
   }
@@ -892,7 +1084,10 @@ function populateSignInConfigTable(){
           },
           topUpRequirement: null,
           codingRequirement: null,
-          iconUrl: configurations.value.rewardIcons[i] || null
+          rewardIcon: {
+            webH5: configurations.value.rewardIcons.webH5[i] || null,
+            mobile: configurations.value.rewardIcons.mobile[i] || null
+          }
         }
     )
   }
@@ -926,7 +1121,9 @@ function handleVipLevelChange(){
   }
 }
 function handleRewardChangeType(scope){
-  scope.row.iconUrl = ( scope.row.rewardType === '1' ? coinIcons : treasureIcons ).value[0]
+  const rewardIcons = configurations.value.rewardIcons
+  scope.row.rewardIcon.webH5 = scope.row.rewardType === '1' ? rewardIcons.webH5[0] : treasureIcons.value[0];
+  scope.row.rewardIcon.mobile = scope.row.rewardType === '1' ? rewardIcons.mobile[0] : treasureIcons.value[0];
 }
 function saveSignInConfig(){
   const signIn = configurations.value.signIn;
@@ -993,5 +1190,128 @@ img {
 }
 .dialog-footer{
   float: right;
+}
+.image-container {
+  display: flex;
+}
+
+.image-item {
+  margin-left: 10px;
+}
+
+.status-close-button {
+  padding-bottom: 3px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #ffffff;
+  border: 2px solid #e0e0e0;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-80%, 30%); /* Adjust the values for fine-tuning */
+}
+
+.upload-status-icon-button:hover {
+  font-size: 9px;
+  color: #3498db;
+}
+.status-close-button:hover {
+  background-color: #ff000b;
+  color: #ffffff;
+  width: 25px; /* Adjust as needed */
+  height: 25px; /* Adjust as needed */
+  transform: translate(-55%, 15%); /* Adjust the values for fine-tuning */
+}
+
+.upload-reward-icon-button {
+  cursor: pointer;
+  font-size: 10px;
+  padding-top: 10px;
+  text-align: center;
+  width: 50px;
+  height: 50px;
+  background-color: #3F9DFDFF; /* Set your desired background color */
+  color: rgb(255, 255, 255); /* Set your desired text color */
+  font-weight: bold;
+  border: 3px solid #e0e0e0;
+  border-radius: 10px; /* Set your desired border-radius */
+}
+.upload-image-container {
+  padding-top: 5px;
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 140px;
+  min-height: 65px;
+  width: 550px;
+  border: 3px solid #e0e0e0;
+  padding-left: 5px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+}
+.image-preview-container {
+  display: inline-block; /* Display images in a row */
+  margin-right: 5px; /* Adjust the margin between images as needed */
+  margin-bottom:5px ;
+  max-height: 50px;
+}
+
+.reward-close-button {
+  padding-bottom: 1px;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 12px;
+  background-color: #FFFFFF;
+  border: 2px solid #e0e0e0;
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  transform: translate(190%,-370%);
+}
+
+.reward-close-button:hover {
+  background-color: #ff000b;
+  color: #ffffff;
+  width: 20px; /* Adjust as needed */
+  height: 20px; /* Adjust as needed */
+  transform: translate(130%, -280%); /* Adjust the values for fine-tuning */
+}
+
+.image-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-preview {
+  width: 50px;
+  height: 50px;
+  border: 3px solid #e0e0e0;
+  border-radius: 10px;
+  /* Add any additional styling for .image-preview if needed */
+}
+
+.upload-status-icon-button {
+  line-height: 1;
+  font-size: 8px;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: bold;
+  white-space: pre-line; /* Allows for line breaks specified in the text */
+  text-align: center; /* Centers the text within the button */
 }
 </style>
