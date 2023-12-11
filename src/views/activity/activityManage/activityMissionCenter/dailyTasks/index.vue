@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form label="Daily Tasks" v-show="showSearch" ref="queryForm" :inline="true" :model="queryParams"
+    <el-form label="日常任务" v-show="showSearch" ref="queryForm" :inline="true" :model="queryParams"
              label-width="98px">
       <el-form-item prop="现状" style="min-width: 50px">
         <el-input
@@ -49,7 +49,7 @@
             size="small"
             type="primary"
             @click="handleSettings"
-        >Daily Task Settings
+        >日常任务设置
         </el-button>
       </el-col>
       <right-toolbar v-model="showSearch" @queryTable="getList"></right-toolbar>
@@ -58,25 +58,25 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="missionRepeatLists" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="ID" min-width="70" prop="id"/>
-      <el-table-column align="center" label="Task Currency" min-width="180" prop="taskCurrency"/>
-      <el-table-column :show-overflow-tooltip="true" align="center" label="URL" min-width="180" prop="icon">
+      <el-table-column align="center" label="身份证" min-width="70" prop="id"/>
+      <el-table-column align="center" label="任务货币" min-width="180" prop="taskCurrency"/>
+      <el-table-column :show-overflow-tooltip="true" align="center" label="网址" min-width="180" prop="icon">
         <template #default="scope">
           <el-image :src="scope.row.icon" lazy fit="contain" style="width: 60px;"/>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Task Classification" min-width="180" prop="taskClassification"/>
-      <el-table-column align="center" label="Reward Amount" min-width="180" prop="reward"/>
-      <el-table-column align="center" label="Completion Count" min-width="180" prop="completionCount"/>
-      <el-table-column align="center" label="Mission Target" min-width="180" prop="missionObjectives"/>
-      <el-table-column align="center" label="Reward Activity" min-width="180" prop="rewardActivity"/>
-      <el-table-column align="center" label="Mission Introduction" min-width="180">
+      <el-table-column align="center" label="任务分类" min-width="180" prop="taskClassification"/>
+      <el-table-column align="center" label="奖励金额" min-width="180" prop="reward"/>
+      <el-table-column align="center" label="完成次数" min-width="180" prop="completionCount"/>
+      <el-table-column align="center" label="任务目标" min-width="180" prop="missionObjectives"/>
+      <el-table-column align="center" label="奖励活动" min-width="180" prop="rewardActivity"/>
+      <el-table-column align="center" label="任务介绍" min-width="180">
         <template #default="scope">
           <!-- Display both ID and Task Currency in the same cell -->
           累计充值${{ scope.row.cumulativeRechargeAmount }}, 奖励${{ scope.row.reward }}
         </template>
       </el-table-column>
-      <el-table-column align="center" min-width="150" label="Status" prop="status">
+      <el-table-column align="center" min-width="150" label="现状" prop="status">
         <template #default="scope">
           <el-switch
               v-model="scope.row.status"
@@ -86,9 +86,9 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Operator" min-width="180" prop="createdBy"/>
-      <el-table-column align="center" label="Operating Time" min-width="180" prop="updateTime"/>
-      <el-table-column align="center" label="Description" min-width="180" prop="description"/>
+      <el-table-column align="center" label="操作员" min-width="180" prop="createdBy"/>
+      <el-table-column align="center" label="运行时间" min-width="180" prop="updateTime"/>
+      <el-table-column align="center" label="说明" min-width="180" prop="description"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
@@ -123,11 +123,11 @@
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="600px">
       <el-form ref="missionRepeatRef" :model="form" :rules="rules" label-width="150px">
-        <el-form-item label="Currency" prop="currency" style=" min-width: 290px">
+        <el-form-item label="货币" prop="currency" style=" min-width: 290px">
           <el-checkbox
               v-model="selectAll"
               @change="handleCheckAllChange"
-          >Check all
+          >全部检查
           </el-checkbox>
         </el-form-item>
         <el-form-item prop="currency" style="min-width: 290px">
@@ -229,8 +229,8 @@
             ></el-switch>
           </template>
         </el-form-item>
-        <el-form-item label="Description" prop="description">
-          <el-input v-model="form.description" type="textarea" placeholder="Description" :rows="3"/>
+        <el-form-item label="说明" prop="description">
+          <el-input v-model="form.description" type="textarea" placeholder="说明" :rows="3"/>
         </el-form-item>
         <el-form-item>
           <div class="centered-form">
@@ -477,15 +477,15 @@ const data = reactive({
   settingsRules: {
     ruleDescriptionTranslated:
         [
-          {required: true, message: 'Description Should not be empty', trigger: 'blur'}
+          {required: true, message: '描述 不得为空', trigger: 'blur'}
         ],
     auditMultiplier:
         [
-          {required: true, message: 'Audit Multiplier Should not be empty', trigger: 'blur'}
+          {required: true, message: '审计乘数不应为空', trigger: 'blur'}
         ],
     taskDuration:
         [
-          {required: true, message: 'Task Duration Should not be empty', trigger: 'blur'}
+          {required: true, message: '任务持续时间 不应为空', trigger: 'blur'}
         ]
   },
 
