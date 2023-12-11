@@ -108,7 +108,7 @@
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="700px">
       <el-form :inline="true" ref="addMemberFooter" :model="form" :rules="rules" label-width="100px">
-            <el-form-item label="Content" prop="content" style="min-width: 290px">
+            <el-form-item label="所容纳之物" prop="content" style="min-width: 290px">
               <el-input
                   v-model="form.content"
                   clearable
@@ -176,7 +176,7 @@ const {queryParams, form, rules, headers} = toRefs(data);
 
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id);
-  single.value = selection.length != 1;
+  single.value = selection.length !== 1;
   multiple.value = !selection.length;
 }
 
@@ -234,13 +234,13 @@ function submitForm() {
       }
 
       if (form.value.id != null) {
-        updateFooter(form.value).then(response => {
+        updateFooter(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
         })
       } else {
-        addFooter(params).then(response => {
+        addFooter(params).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()

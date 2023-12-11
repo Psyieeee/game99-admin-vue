@@ -89,11 +89,11 @@
 
     <el-table v-loading="loading" :data="memberReferralList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="ID" prop="id"/>
-      <el-table-column align="center" label="Game Type" prop="gameType"/>
-      <el-table-column align="center" label="Level" prop="level"/>
-      <el-table-column align="center" label="Referral Percentage" prop="referralAmountPercentage"/>
-      <el-table-column align="center" label="Referral Bet Multiplier" prop="referralBetMultiplier"/>
+      <el-table-column align="center" label="身份证件" prop="id"/>
+      <el-table-column align="center" label="游戏类型" prop="gameType"/>
+      <el-table-column align="center" label="数量" prop="level"/>
+      <el-table-column align="center" label="推荐百分比" prop="referralAmountPercentage"/>
+      <el-table-column align="center" label="R推荐赌注乘数" prop="referralBetMultiplier"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" width="120">
         <template #default="scope">
           <el-button
@@ -141,23 +141,23 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="Level" prop="level" style="min-width: 290px">
+        <el-form-item label="数量" prop="level" style="min-width: 290px">
           <template #default="scope">
             <el-input-number v-model="form.level" :min="1" :max="3"/>
           </template>
         </el-form-item>
-        <el-form-item label="referralAmountPercentage" prop="referralAmountPercentage" style="min-width: 290px">
+        <el-form-item label="推荐金额百分比" prop="referralAmountPercentage" style="min-width: 290px">
           <el-input
               v-model="form.referralAmountPercentage"
               clearable
-              placeholder="referralAmountPercentage"
+              placeholder="推荐金额百分比"
           />
         </el-form-item>
-        <el-form-item label="referralBetMultiplier" prop="referralBetMultiplier" style="min-width: 290px">
+        <el-form-item label="推荐赌注乘数" prop="referralBetMultiplier" style="min-width: 290px">
           <el-input
               v-model="form.referralBetMultiplier"
               clearable
-              placeholder="referralBetMultiplier"
+              placeholder="推荐赌注乘数"
           />
         </el-form-item>
       </el-form>
@@ -327,7 +327,7 @@ function editScheduler() {
   loading.value = true
   console.log('schedule ' + scheduleForm.value.startTimer);
   console.log('end ' + scheduleForm.value.endTimer);
-  updateScheduledCommissionTime(scheduleForm.value).then(res => {
+  updateScheduledCommissionTime(scheduleForm.value).then(() => {
     loading.value = false;
     proxy.$modal.msgSuccess("成功修改佣金时间");
     scheduleDialog.value = false;
@@ -385,12 +385,12 @@ function submitForm() {
   proxy.$refs["memberReferralFormRef"].validate(valid => {
     if (valid) {
       for (const type of platformTypeList.value) {
-        if (type.agent == form.value.agent) {
+        if (type.agent === form.value.agent) {
           form.value.platformName = type.name
         }
       }
       if (form.value.id != null) {
-        updateMemberReferral(form.value).then(response => {
+        updateMemberReferral(form.value).then(() => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();

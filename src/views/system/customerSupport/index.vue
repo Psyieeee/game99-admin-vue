@@ -62,7 +62,7 @@
       <el-form :inline="true" ref="queryRef" :model="form" :rules="rules" label-width="100px">
         <div class="centered-form">
           <el-form-item label="VIP 水平" prop="vipLevel">
-            <el-select v-model="form.vipLevel" clearable placeholder="Select">
+            <el-select v-model="form.vipLevel" clearable placeholder="选择">
               <el-option
                   v-for="item in vipLevels"
                   :key="item"
@@ -72,10 +72,10 @@
             </el-select>
           </el-form-item>
           <el-form-item label="链接" prop="supportLink">
-            <el-input type="textarea" v-model="form.supportLink" placeholder="Support Link"/>
+            <el-input type="textarea" v-model="form.supportLink" placeholder="支撑连杆"/>
           </el-form-item>
           <el-form-item label="状态" prop="status">
-            <el-select v-model="form.status" clearable placeholder="Select">
+            <el-select v-model="form.status" clearable placeholder="状态">
               <el-option
                   v-for="item in statuses"
                   :key="item.value"
@@ -89,7 +89,6 @@
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">提交</el-button>
         <el-button @click="open=false">取 消</el-button>
-
       </div>
     </el-dialog>
 
@@ -118,11 +117,11 @@ const vipLevels = ref([]);
 const statuses = ref([
   {
     value: 1,
-    label: 'Active'
+    label: '积极的'
   },
   {
     value: 0,
-    label: 'Inactive'
+    label: '不活跃的'
   }])
 const data = reactive({
 

@@ -105,39 +105,39 @@
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="700px">
       <el-form :inline="true" ref="addMemberFooter" :model="form" :rules="rules" label-width="100px">
-            <el-form-item label="Type" prop="type" style="min-width: 290px">
+            <el-form-item label="类型" prop="type" style="min-width: 290px">
               <el-input
                   v-model="form.type"
                   clearable
-                  placeholder="type"
+                  placeholder="类型"
               />
             </el-form-item>
-            <el-form-item label="Name" prop="name" style="min-width: 290px">
+            <el-form-item label="名称" prop="name" style="min-width: 290px">
               <el-input
                   v-model="form.name"
                   clearable
-                  placeholder="name"
+                  placeholder="名称"
               />
             </el-form-item>
-            <el-form-item label="Status" prop="status" style="min-width: 290px">
+            <el-form-item label="状态" prop="status" style="min-width: 290px">
               <el-input
                   v-model="form.status"
                   clearable
-                  placeholder="status"
+                  placeholder="状态"
               />
             </el-form-item>
-            <el-form-item label="Sort" prop="sort" style="min-width: 290px">
+            <el-form-item label="排序" prop="sort" style="min-width: 290px">
               <el-input
                   v-model="form.sort"
                   clearable
-                  placeholder="sort"
+                  placeholder="排序"
               />
             </el-form-item>
-            <el-form-item label="Path" prop="path" style="min-width: 290px">
+            <el-form-item label="路径" prop="path" style="min-width: 290px">
               <el-input
                   v-model="form.path"
                   clearable
-                  placeholder="path"
+                  placeholder="路径"
               />
             </el-form-item>
       </el-form>
@@ -161,7 +161,6 @@ import {
     updateFooter
 } from "@/api/member/memberFooter";
 import {reactive, ref, toRefs} from "vue";
-import {url} from "@/utils/url";
 import {getToken} from "@/utils/auth";
 
 const router = useRouter();
@@ -210,7 +209,7 @@ const {queryParams, form, rules, headers} = toRefs(data);
 
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id);
-  single.value = selection.length != 1;
+  single.value = selection.length !== 1;
   multiple.value = !selection.length;
 }
 
@@ -272,13 +271,13 @@ function submitForm() {
       }
 
       if (form.value.id != null) {
-        updateFooter(form.value).then(response => {
+        updateFooter(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
         })
       } else {
-        addFooter(params).then(response => {
+        addFooter(params).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
