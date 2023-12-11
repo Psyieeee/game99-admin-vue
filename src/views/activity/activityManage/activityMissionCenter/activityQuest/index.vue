@@ -203,10 +203,10 @@
                width="600px">
       <el-form :inline="true" ref="settingsRef" :model="settingsForm" :rules="rules" label-width="270px">
           <el-col :span="24">
-            <el-form-item label="Circular Way" prop="reset"
+            <el-form-item label="环形路" prop="reset"
                           style="min-width: 290px">
               <template #default="scope">
-                <el-select v-model="settingsForm.reset" placeholder="please select your zone">
+                <el-select v-model="settingsForm.reset" placeholder="请选择您所在的区域">
                   <el-option label="Mission Cycle (每日周期（重置为 0:00）" :value="0" />
                   <el-option label="Weekly Cycle (每周循环（周一0:00重置)" :value="1" />
                 </el-select>
@@ -214,7 +214,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="Repeat Chest Open Cycle Time" prop="repeatOpenSwitch" style="min-width: 290px">
+            <el-form-item label="重复开胸周期时间" prop="repeatOpenSwitch" style="min-width: 290px">
               <template #default="scope">
                 <el-switch
                     v-model="settingsForm.repeatOpenSwitch"
@@ -225,17 +225,17 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="Audit Multiplier" prop="auditMultiplier" style="min-width: 290px">
+            <el-form-item label="审计乘数" prop="auditMultiplier" style="min-width: 290px">
               <el-input
                   v-model="settingsForm.auditMultiplier"
                   clearable
-                  placeholder="enter audit multiplier"
+                  placeholder="输入审计乘数"
                   type="number"
               />
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="Audit Restricted Platform" prop="auditRestrictedPlatformsSwitch" style="min-width: 290px">
+            <el-form-item label="审计限制平台" prop="auditRestrictedPlatformsSwitch" style="min-width: 290px">
               <template #default="scope">
                 <el-switch
                     v-model="settingsForm.auditRestrictedPlatformsSwitch"
