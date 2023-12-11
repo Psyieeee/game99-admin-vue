@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form label="Newbie Benefits" v-show="showSearch" ref="queryForm" :inline="true" :model="queryParams"
+    <el-form label="新手福利" v-show="showSearch" ref="queryForm" :inline="true" :model="queryParams"
              label-width="98px">
       <el-form-item prop="现状" style="min-width: 50px">
         <el-input
@@ -48,7 +48,7 @@
             size="small"
             type="primary"
             @click="handleSettings"
-        >Newbie Settings
+        >新手设置
         </el-button>
       </el-col>
       <right-toolbar v-model="showSearch" @queryTable="getList"/>
@@ -57,22 +57,22 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="newbieBenefitsList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="ID" min-width="70" prop="id"/>
-      <el-table-column align="center" label="Task Conditions" min-width="180" prop="taskConditions"/>
-      <el-table-column :show-overflow-tooltip="true" align="center" label="URL" min-width="180" prop="icon">
+      <el-table-column align="center" label="身份证" min-width="70" prop="id"/>
+      <el-table-column align="center" label="任务条件" min-width="180" prop="taskConditions"/>
+      <el-table-column :show-overflow-tooltip="true" align="center" label="网址" min-width="180" prop="icon">
         <template #default="scope">
           <el-image :src="scope.row.icon" lazy fit="contain" style="width: 60px;"/>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Reward Amount" min-width="180" prop="reward"/>
-      <el-table-column align="center" label="Completion Points" min-width="180" prop="completionCount"/>
-      <el-table-column align="center" label="Reward Activity" min-width="180" prop="rewardActivity"/>
-      <el-table-column align="center" label="Mission Introduction" min-width="180">
+      <el-table-column align="center" label="奖励金额" min-width="180" prop="reward"/>
+      <el-table-column align="center" label="完成点数" min-width="180" prop="completionCount"/>
+      <el-table-column align="center" label="奖励活动" min-width="180" prop="rewardActivity"/>
+      <el-table-column align="center" label="任务介绍" min-width="180">
         <template #default="scope">
           {{ scope.row.taskConditions }}, 您可以收到{{ scope.row.rewardAmount }}
         </template>
       </el-table-column>
-      <el-table-column align="center" min-width="150" label="On/Off" prop="status">
+      <el-table-column align="center" min-width="150" label="开/关" prop="status">
         <template #default="scope">
           <el-switch
               v-model="scope.row.status"
@@ -82,7 +82,7 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column align="center" min-width="150" label="Tip Bubble" prop="tipBubbleSwitch">
+      <el-table-column align="center" min-width="150" label="提示气泡" prop="tipBubbleSwitch">
         <template #default="scope">
           <el-switch
               v-model="scope.row.tipBubbleSwitch"
@@ -92,9 +92,9 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Operator" min-width="180" prop="updateBy"/>
-      <el-table-column align="center" label="Operating Time" min-width="180" prop="updateTime"/>
-      <el-table-column align="center" label="Description" min-width="180" prop="description"/>
+      <el-table-column align="center" label="操作员" min-width="180" prop="updateBy"/>
+      <el-table-column align="center" label="运行时间" min-width="180" prop="updateTime"/>
+      <el-table-column align="center" label="说明" min-width="180" prop="description"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
@@ -129,7 +129,7 @@
                width="550px">
       <el-form ref="newbieBenefitsRef" :model="form" :rules="rules" label-width="150px">
         <el-form-item label="任务分类" prop="taskConditions">
-          <el-select v-model="form.taskConditions" placeholder="Select">
+          <el-select v-model="form.taskConditions" placeholder="选择">
             <el-option
                 v-for="list in missionTrigger.missionTrigger"
                 :label="list"
@@ -137,16 +137,16 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="reward奖励金额" prop="reward">
+        <el-form-item label="奖励" prop="reward">
           <el-input type="number" v-model="form.reward" placeholder="请输入奖励金额"/>
         </el-form-item>
-        <el-form-item label="Completion Points" prop="completionCount">
+        <el-form-item label="完成点数" prop="completionCount">
           <el-input type="number" v-model="form.completionCount" placeholder="请输入奖励金额"/>
         </el-form-item>
-        <el-form-item label="activity奖励活动" prop="rewardActivity">
+        <el-form-item label="活动奖励" prop="rewardActivity">
           <el-input type="number" v-model="form.rewardActivity" placeholder="请输入奖励活动"/>
         </el-form-item>
-        <el-form-item label="Status (On/Off)" prop="status">
+        <el-form-item label="状态（开/关）" prop="status">
           <template #default="scope">
             <el-switch
                 v-model="form.status"
@@ -155,7 +155,7 @@
             ></el-switch>
           </template>
         </el-form-item>
-        <el-form-item label="Tip Bubble Switch" prop="tipBubble">
+        <el-form-item label="尖端气泡开关" prop="tipBubble">
           <template #default="scope">
             <el-switch
                 v-model="form.tipBubbleSwitch"
@@ -164,10 +164,10 @@
             ></el-switch>
           </template>
         </el-form-item>
-        <el-form-item label="Mission Introduction" prop="missionIntroduction">
+        <el-form-item label="任务介绍" prop="missionIntroduction">
           <el-input v-model="mission" placeholder="输入累计充值金额" disabled/>
         </el-form-item>
-        <el-form-item label="Description" prop="description">
+        <el-form-item label="说明" prop="description">
           <el-input v-model="form.description" type="textarea" placeholder="Description" :rows="3"/>
         </el-form-item>
         <el-form-item>
@@ -190,7 +190,7 @@
                 drag
                 name="advertisementFile"
             >
-              <div class="el-upload__text">Drop file here or <em>点击上传</em></div>
+              <div class="el-upload__text">将文件放在此处或 <em>点击上传</em></div>
               <div class="el-upload__tip">
                 最大文件大小为 100 MB
               </div>
@@ -215,7 +215,7 @@
                label-width="250px">
         <el-row>
           <el-col>
-            <el-form-item label="Currency" prop="currency">
+            <el-form-item label="货币" prop="currency">
               <el-checkbox
                   v-model="selectAll"
                   @change="handleCheckAllSettingsChange"
@@ -235,13 +235,13 @@
             </el-form-item>
           </el-col>
           <el-col>
-            <el-form-item label="Rule Description">
+            <el-form-item label="规则说明">
               <el-input type="textarea" rows="5" cols="100" v-model="settingsForm.ruleDescriptionTranslated"
                         prop="ruleDescriptionTranslated"/>
             </el-form-item>
           </el-col>
           <el-col>
-            <el-form-item label="Collection Method">
+            <el-form-item label="收集方法">
               <el-radio-group v-model="settingsForm.collectionMethodSwitch" class="ml-4">
                 <el-radio :label="0" size="large">Direct to Account</el-radio>
                 <el-radio :label="1" size="large">Manual Collection</el-radio>
@@ -249,7 +249,7 @@
             </el-form-item>
           </el-col>
           <el-col>
-            <el-form-item label="Event Collection Entrance" prop="eventCollection">
+            <el-form-item label="活动收集入口" prop="eventCollection">
               <el-checkbox-group disabled
                                  v-model="checkedEventCollection">
                 <el-checkbox v-for="ec in eventCollection" :key="ec.id" :label="ec">
@@ -259,7 +259,7 @@
             </el-form-item>
           </el-col>
           <el-col>
-            <el-form-item label="More Collection Restrictions">
+            <el-form-item label="更多收藏限制">
               <el-checkbox-group
                   v-model="checkedCollectionRestriction">
                 <el-checkbox v-for="cc in collectionRestriction" :key="cc.id" :label="cc">
@@ -269,7 +269,7 @@
             </el-form-item>
           </el-col>
           <el-col>
-            <el-form-item label="Audit Multiple">
+            <el-form-item label="多重审计">
               <el-input
                   class="w-50 m-2"
                   v-model="settingsForm.auditMultiplier"
@@ -280,7 +280,7 @@
             </el-form-item>
           </el-col>
           <el-col>
-            <el-form-item label="Audit Restricted Platform">
+            <el-form-item label="审计限制平台">
               <el-col>
                 <el-radio-group v-model="settingsForm.auditRestrictedPlatformsSwitch" class="ml-4">
                   <el-radio :label="0" size="large">Not Limited</el-radio>
@@ -304,7 +304,7 @@
             </el-form-item>
           </el-col>
           <el-col>
-            <el-form-item label="Task Duration">
+            <el-form-item label="任务期限">
               <el-radio-group v-model="settingsForm.taskDurationSwitch">
                 <el-radio :label="0" size="large">Long</el-radio>
                 <el-radio :label="1" size="large">Limited Time</el-radio>
@@ -324,7 +324,7 @@
             </el-form-item>
           </el-col>
           <el-col>
-            <el-form-item label="Participating Members" disabled="true">
+            <el-form-item label="参与成员" disabled="true">
               <el-checkbox disabled
                            label="Select All"
                            v-model="data.selectAll"
@@ -344,7 +344,7 @@
             </el-form-item>
           </el-col>
           <el-col>
-            <el-form-item label="Withdrawal limit reminder">
+            <el-form-item label="提款限额提醒">
               <el-switch
                   v-model="settingsForm.withdrawalLimitReminderSwitch"
                   :active-value="1"
@@ -443,15 +443,15 @@ const data = reactive({
   settingsRules: {
     ruleDescriptionTranslated:
         [
-          {required: true, message: 'Description Should not be empty', trigger: 'blur'}
+          {required: true, message: '描述 不得为空', trigger: 'blur'}
         ],
     auditMultiplier:
         [
-          {required: true, message: 'Audit Multiplier Should not be empty', trigger: 'blur'}
+          {required: true, message: '审计乘数不应为空', trigger: 'blur'}
         ],
     taskDuration:
         [
-          {required: true, message: 'Task Duration Should not be empty', trigger: 'blur'}
+          {required: true, message: '任务持续时间 不应为空', trigger: 'blur'}
         ]
   },
 
@@ -705,7 +705,7 @@ function submitSettings() {
   proxy.$refs['settingsRef'].validate(async valid => {
 
     if (checkedCurrency.value.length <= 0) {
-      proxy.$modal.msgError('Currency is required')
+      proxy.$modal.msgError('需要货币')
       return;
     }
     handleSelectedAudit();
