@@ -279,13 +279,13 @@
                label-width="250px">
         <el-row>
           <el-col>
-            <el-form-item label="Rule Description">
+            <el-form-item label="规则说明">
               <el-input type="textarea" rows="5" cols="100" v-model="settingsForm.ruleDescriptionTranslated"
                         prop="ruleDescriptionTranslated"/>
             </el-form-item>
           </el-col>
           <el-col>
-            <el-form-item label="Participating Members" disabled="true">
+            <el-form-item label="参与成员" disabled="true">
               <el-checkbox disabled
                            label="Select All"
                            v-model="data.selectAll"
@@ -305,7 +305,7 @@
             </el-form-item>
           </el-col>
           <el-col>
-            <el-form-item label="Collection Method">
+            <el-form-item label="收集方法">
               <el-radio-group v-model="settingsForm.collectionMethodSwitch" class="ml-4">
                 <el-radio :label="0" size="large">Direct to Account</el-radio>
                 <el-radio :label="1" size="large">Manual Collection</el-radio>
@@ -313,7 +313,7 @@
             </el-form-item>
           </el-col>
           <el-col>
-            <el-form-item label="Event Collection Entrance" prop="eventCollection">
+            <el-form-item label="活动收集入口" prop="eventCollection">
               <el-checkbox-group disabled
                                  v-model="checkedEventCollection">
                 <el-checkbox v-for="ec in eventCollection" :key="ec.id" :label="ec">
@@ -323,7 +323,7 @@
             </el-form-item>
           </el-col>
           <el-col>
-            <el-form-item label="More Collection Restrictions">
+            <el-form-item label="更多收藏限制">
               <el-checkbox-group
                   v-model="checkedCollectionRestriction">
                 <el-checkbox v-for="cc in collectionRestriction" :key="cc.id" :label="cc">
@@ -333,14 +333,14 @@
             </el-form-item>
           </el-col>
           <el-col>
-            <el-form-item label="Homepage pop-up prompt">
+            <el-form-item label="主页弹出提示">
               <el-switch v-model="settingsForm.homePagePromptSwitch"
                          :active-value="1"
                          :inactive-value="0"/>
             </el-form-item>
           </el-col>
           <el-col>
-            <el-form-item label="Audit Multiple">
+            <el-form-item label="多重审计">
               <el-input
                   class="w-50 m-2"
                   v-model="settingsForm.auditMultiplier"
@@ -351,7 +351,7 @@
             </el-form-item>
           </el-col>
           <el-col>
-            <el-form-item label="Audit Restricted Platform">
+            <el-form-item label="审计限制平台">
               <el-col>
                 <el-radio-group v-model="settingsForm.auditRestrictedPlatformsSwitch" class="ml-4">
                   <el-radio :label="0" size="large">Not Limited</el-radio>
