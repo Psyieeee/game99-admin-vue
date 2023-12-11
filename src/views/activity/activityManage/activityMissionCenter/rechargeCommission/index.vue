@@ -1,37 +1,11 @@
 <template>
   <div class="app-container">
-    <!--    button on the table for query-->
-    <el-row :gutter="10" class="mb8">
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--            icon="Plus"-->
-<!--            plain-->
-<!--            size="small"-->
-<!--            type="primary"-->
-<!--            @click="handleAdd"-->
-<!--        >新增-->
-<!--        </el-button>-->
-<!--      </el-col>-->
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--            :disabled="multiple"-->
-<!--            icon="Delete"-->
-<!--            plain-->
-<!--            size="small"-->
-<!--            type="danger"-->
-<!--            @click="handleDelete"-->
-<!--        >删除-->
-<!--        </el-button>-->
-<!--      </el-col>-->
-      <right-toolbar @queryTable="getList"></right-toolbar>
-    </el-row>
 
-    <!--    display data in table -->
     <el-table v-loading="loading" :data="rechargeCommissionList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="Level" min-width="180" prop="level"/>
-      <el-table-column align="center" label="Commission Rate" min-width="180" prop="commissionRate"/>
-      <el-table-column align="center" label="Audit Multiplier" min-width="180" prop="auditMultiplier"/>
+      <el-table-column align="center" label="级别" min-width="180" prop="level"/>
+      <el-table-column align="center" label="佣金率" min-width="180" prop="commissionRate"/>
+      <el-table-column align="center" label="审计乘数" min-width="180" prop="auditMultiplier"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
@@ -40,13 +14,6 @@
               type="primary"
               @click="handleUpdate(scope.row)">修改
           </el-button>
-<!--          <el-button-->
-<!--              icon="Delete" link-->
-<!--              size="small"-->
-<!--              style="color: #e05e5e"-->
-<!--              type="danger"-->
-<!--              @click="handleDelete(scope.row)">删除-->
-<!--          </el-button>-->
         </template>
       </el-table-column>
     </el-table>
@@ -65,15 +32,15 @@
                width="500px">
       <el-form :inline="true" ref="addRechargeCommission" :model="form" :rules="rules" label-width="160px">
         <div class="centered-form">
-          <el-form-item label="Level" prop="auditMultiplier" >
-            <el-input type="number" v-model="form.level" placeholder="Level" disabled />
+          <el-form-item label="级别" prop="auditMultiplier" >
+            <el-input type="number" v-model="form.level" placeholder="级别" disabled />
           </el-form-item>
-          <el-form-item label="Audit Multiplier" prop="auditMultiplier">
-            <el-input type="number" v-model="form.auditMultiplier" placeholder="Audit Multiplier"/>
+          <el-form-item label="审计乘数" prop="auditMultiplier">
+            <el-input type="number" v-model="form.auditMultiplier" placeholder="审计乘数"/>
           </el-form-item>
           <el-col>
-            <el-form-item label="Commission Rate" prop="commissionRate" >
-              <el-input type="number" v-model="form.commissionRate" placeholder="Commission Rate"/>
+            <el-form-item label="佣金率" prop="commissionRate" >
+              <el-input type="number" v-model="form.commissionRate" placeholder="佣金率"/>
             </el-form-item>
           </el-col>
         </div>
@@ -225,7 +192,7 @@ function handleUpdate(row) {
     console.log( JSON.stringify( response ))
     form.value = response.data
     open.value = true
-    title.value = 'Update Information'
+    title.value = '更新信息'
   })
 }
 
