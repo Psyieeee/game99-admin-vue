@@ -200,8 +200,8 @@
 
     <el-dialog v-model="settingsOpen" :close-on-click-modal="false" title="汪跃度设署" append-to-body
                style="padding-bottom: 20px"
-               width="600px">
-      <el-form :inline="true" ref="settingsRef" :model="settingsForm" :rules="rules" label-width="270px">
+               width="400px">
+      <el-form :inline="true" ref="settingsRef" :model="settingsForm" :rules="rules" label-width="150px">
           <el-col :span="24">
             <el-form-item label="环形路" prop="reset"
                           style="min-width: 290px">
