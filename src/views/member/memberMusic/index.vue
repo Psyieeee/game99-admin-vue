@@ -299,7 +299,7 @@ function reset() {
     createTime: null,
     updateTime: null
   }
-  proxy.$refs.upload.clearFiles();
+  // proxy.$refs.upload.clearFiles();
   proxy.resetForm('memberMusicRef')
 }
 

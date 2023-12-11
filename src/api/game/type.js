@@ -10,11 +10,10 @@ export function listType(query) {
     })
 }
 
-export function listAllType(query) {
+export function listAllType() {
     return request({
         url: url.game99GameAdminWeb + '/game/type/listAll',
-        method: 'get',
-        params: query
+        method: 'get'
     })
 }
 
