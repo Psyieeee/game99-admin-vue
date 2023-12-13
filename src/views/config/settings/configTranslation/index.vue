@@ -31,12 +31,11 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="recordList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="名字" min-width="180" prop="name"/>
-      <el-table-column align="center" label="Chinese" min-width="180" prop="chinese"/>
-      <el-table-column align="center" label="English" min-width="180" prop="english"/>
-      <el-table-column align="center" label="Indonesian" min-width="180" prop="indonesian"/>
-      <el-table-column align="center" label="Portuguese - Brazil" min-width="180" prop="portugueseBrazil"/>
-      <el-table-column align="center" label="Traditional Chinese" min-width="180" prop="traditionalChinese"/>
+      <el-table-column align="center" label="密钥" min-width="180" prop="name"/>
+      <el-table-column align="center" label="语言" min-width="180" prop="language">
+        <template #default="scope">{{languages.find((e) => e.value === scope.row.language).label}}</template>
+      </el-table-column>
+      <el-table-column align="center" label="价值" min-width="180" prop="value"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
@@ -62,25 +61,23 @@
     <!-- Add or modify list dialog-->
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="500px">
-      <el-form ref="queryForm" :model="form" :rules="rules" label-width="150px">
-            <el-form-item label="名字" prop="name">
-              <el-input v-model="form.name" placeholder="名字"/>
-            </el-form-item>
-            <el-form-item label="Chinese" prop="chinese">
-              <el-input v-model="form.chinese" placeholder="Chinese" type="textarea"/>
-            </el-form-item>
-            <el-form-item label="English" prop="english">
-              <el-input v-model="form.english" placeholder="English" type="textarea"/>
-            </el-form-item>
-            <el-form-item label="Indonesian" prop="indonesian">
-              <el-input v-model="form.indonesian" placeholder="Indonesian" type="textarea"/>
-            </el-form-item>
-            <el-form-item label="Portuguese - Brazil" prop="portugueseBrazil">
-              <el-input v-model="form.portugueseBrazil" placeholder="Portuguese - Brazil" type="textarea"/>
-            </el-form-item>
-            <el-form-item label="Traditional Chinese" prop="traditionalChinese">
-              <el-input v-model="form.traditionalChinese" placeholder="Traditional Chinese" type="textarea"/>
-            </el-form-item>
+      <el-form ref="queryForm" :model="form" :rules="rules" label-width="90px">
+        <el-form-item label="密钥" prop="name">
+          <el-input v-model="form.name" placeholder="密钥"/>
+        </el-form-item>
+        <el-form-item label="语言" prop="language">
+          <el-select v-model="form.language" clearable placeholder="选择">
+            <el-option
+                v-for="language in languages"
+                :key="language.value"
+                :label="language.label"
+                :value="language.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="价值" prop="value">
+          <el-input v-model="form.value" placeholder="价值" type="textarea"/>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -109,6 +106,30 @@ const loading = ref(true);
 const multiple = ref(true);
 const open = ref(false);
 
+const languages = ref([
+  {
+    value: 'en-US',
+    label: '英语 - 美国'
+  },
+  {
+    value: 'zh-CN',
+    label: '简体中文'
+  },
+  {
+    value: 'zh-TW',
+    label: '繁体中文'
+  },
+  {
+    value: 'id-ID',
+    label: '印尼语'
+  },
+  {
+    value: 'pt-BR',
+    label: '葡萄牙语 - 巴西'
+  }
+  ])
+
+
 const data = reactive({
   /** 查询参数 query params*/
   queryParams: {},
@@ -117,7 +138,13 @@ const data = reactive({
   form: {},
 
   rules: {
-    downloadLink: [
+    name: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    language: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    value: [
       {required: true, message: '无效的值', trigger: 'blur'}
     ]
   },
@@ -187,6 +214,7 @@ function submitForm() {
 
 /** handle update data */
 function handleUpdate(row) {
+  reset()
   getConfigTranslation(row.id).then(response => {
     form.value = response.data;
   });
