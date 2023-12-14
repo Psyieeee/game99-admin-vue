@@ -69,23 +69,28 @@
     <el-table v-loading="loading" :data="vipBonusInfoList" @selection-change="handleMultipleSelection">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="Title" align="center" prop="title" min-width="180"/>
-      <el-table-column label="Bonus Type" align="center" prop="typeId" :formatter="formatterActivityType"  min-width="160"/>
-      <el-table-column label="Icon" align="center" prop="icon">
-          <template #default="scope">
-            <el-image
-                style="height: 50px;"
-                :src="scope.row.icon"
-                fit="contain">
-            </el-image>
-          </template>
-        </el-table-column>
-      <el-table-column label="Content" align="center" prop="content"  min-width="160">
+      <el-table-column label="Bonus Type" align="center" prop="typeId" :formatter="formatterActivityType"  min-width="100"/>
+      <el-table-column label="Supported Platform" align="center" prop="platforms" min-width="120"/>
+<!--      <el-table-column label="Icon" align="center" prop="icon">-->
+<!--          <template #default="scope">-->
+<!--            <el-image-->
+<!--                style="height: 50px;"-->
+<!--                :src="scope.row.icon"-->
+<!--                fit="contain">-->
+<!--            </el-image>-->
+<!--          </template>-->
+<!--        </el-table-column>-->
+      <el-table-column label="Content" align="center" prop="content"  min-width="100">
         <template v-slot="{row}">
           <div v-html="row.content" style="max-height: 80px"></div>
         </template>
       </el-table-column>
-      <el-table-column label="Jump Link" align="center" prop="url"  min-width="160"/>
-      <el-table-column label="Create Time" align="center" prop="createTime"  min-width="160"/>
+      <el-table-column label="Jump Link" align="center" prop="url"  min-width="100"/>
+      <el-table-column label="Schedule Type" align="center" prop="scheduleType"  min-width="100"/>
+      <el-table-column label="Start Effect" align="center" prop="startEffect"  min-width="120"/>
+      <el-table-column label="End Effect" align="center" prop="endEffect"  min-width="120"/>
+      <el-table-column label="Create Time" align="center" prop="createTime"  min-width="120"/>
+      <el-table-column label="Home Popup" align="center" prop="isDisplayHome"  min-width="100"/>
       <el-table-column label="Effect" align="center" prop="effect">
         <template #default="scope">
           <el-switch
@@ -133,7 +138,7 @@
     <el-dialog
         :title="title"
         v-model="open"
-        width="80%"
+        width="40%"
         style="height: auto;
         padding-bottom: 20px"
         append--body
@@ -143,7 +148,7 @@
       <el-form ref="vipBonusForm" :model="form" :rules="rules" label-width="120">
         <div class="el-row">
 <!-- Configurations -->
-          <div class="el-col el-col-14">
+          <div> <!--<div class="el-col el-col-14">-->
             <label style="font-size: 25px; text-align: left">Basic Config</label>
             <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
 
@@ -458,96 +463,96 @@
             </div>
           </div>
 <!-- Banner Creation -->
-          <div class="el-col el-col-8">
-            <label style="font-size: 25px; text-align: left">Create Banner</label>
-            <el-radio-group style="float: right;" v-model="createBanner.type" @change="getBannerCreationRelatedImages(1)">
-              <el-radio style="width: 120px" label="1" border>Customize</el-radio>
-              <el-radio style="width: 120px" label="2" border>Pre-Made</el-radio>
-            </el-radio-group><hr style="margin-top: 20px; margin-bottom: 20px">
-            <label style="font-size: 20px">Preview</label>
-<!-- Customize -->
-            <div v-if="createBanner.type === '1'">
-              <div class="preview" style="position: relative" id="original">
-                <div :style="`background-color: ${createBanner.customize.properties.background}`">
-                  <div style="display: inline-flex; justify-content: center; height: 250px; align-items: center">
-                    <img :src="createBanner.customize.properties.icon" style=" margin-right: 10px;width: 230px; height: 230px"/>
-                  </div>
-                <pre :style="`display: inline-block; margin-top: 20px; position: absolute; color: ${createBanner.customize.properties.textStyle.color}; font-family: ${createBanner.customize.properties.textStyle.font}; font-size: ${createBanner.customize.properties.textStyle.size}px`">{{createBanner.customize.properties.text}}</pre>
-              </div>
-            </div><hr style="margin-top: 20px">
-              <div id="canvas"></div>
-              <div class="form-group">
-                <label for="background">Background Color:</label>
-                <input style="margin-left: 10px; width: 100px; border: 2px solid #000000" v-model="createBanner.customize.properties.background" type="color" id="background"/>
-              </div>
-              <div class="form-group">
-                <label>Select Icon:</label><hr>
-                <div style="display: grid; grid-template-columns: repeat(5, 1fr);">
-                  <div v-for="(icon, index) in createBanner.customize.iconCollection"
-                       :key="index"
-                       @click="  createBanner.customize.properties.icon=icon"
-                       :class="{ 'selected-image' : icon === createBanner.customize.properties.icon }"
-                       style="cursor: pointer;">
-                    <img :src="icon" alt="Icon" style="max-height: 70px; max-width: 70px;" />
-                  </div>
-                </div>
-                <div class="pagination" style="margin-top: 10px">
-                  <button :disabled="createBanner.isActionFinished" @click="handleImagePagination(false)">Previous</button>
-                  <button :disabled="createBanner.isActionFinished" style="margin-left: 10px" @click="handleImagePagination(true)">Next</button>
-                  <span> Page:  {{ createBanner.pagination.param.pageNum  }} / {{createBanner.pagination.pageTotal}}</span>
-                  <input style="float: right" type="file" id="imageUpload" :disabled="createBanner.isActionFinished" accept="image/* " @change="handleUploadImage">
-                  <button style="float: right; margin-right: 10px" class="upload-button" :disabled="createBanner.isActionFinished" @click="handleRemoveImage()">Remove</button>
-                </div>
-              </div><hr>
-              <div class="form-group">
-                <p>Event Description:</p>
-                <label for="font">Font: </label>
-                <el-select style="width: 200px" v-model="createBanner.customize.properties.textStyle.font">
-                  <el-option v-for="font in fontOptions" :key="font" :label="font" :value="font"></el-option>
-                </el-select>
-                <label for="text" style="margin-left: 20px">Font Color:</label>
-                <input style="margin-left: 10px; width: 100px; border: 2px solid #000000" v-model="createBanner.customize.properties.textStyle.color" type="color" id="text"/>
-                <div style="margin-top: 10px">
-                  <label for="text">Text Size: </label>
-                  <el-slider
-                      v-model="createBanner.customize.properties.textStyle.size"
-                      :min="8"
-                      :max="48"
-                      style="width: 300px">
-                  </el-slider>
-                </div>
-                <div>
-                  <textarea style="height: 100px;width: 300px; margin-top: 5px" v-model="createBanner.customize.properties.text">
-                  </textarea>
-                </div>
-              </div>
-            </div>
-<!-- Pre-Made -->
-            <div v-if="createBanner.type === '2'">
-              <div class="preview">
-              <img :src="createBanner.preMade.banner" style="width: 510px "/>
-            </div><hr style="margin-top: 20px; margin-bottom: 20px" >
-              <div class="form-group">
-              <label style="margin-bottom: 20px">Select Banner:</label>
-              <div style="display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 10px">
-                <div v-for="(image, index) in createBanner.preMade.bannerCollection"
-                     :key="index"
-                     @click="createBanner.preMade.banner=image"
-                     :class="{ 'selected-image': image === createBanner.preMade.banner }"
-                     style="cursor: pointer;">
-                  <img :src="image" alt="Banner" style="max-height: 150px; max-width: 200px" />
-                </div>
-              </div>
-              <div class="pagination" style="margin-top: 10px">
-                <button :disabled="createBanner.isActionFinished" @click="handleImagePagination(false)">Previous</button>
-                <button :disabled="createBanner.isActionFinished" style="margin-left: 10px" @click="handleImagePagination(true)">Next</button>
-                <span> Page:  {{ createBanner.pagination.param.pageNum  }} / {{ createBanner.pagination.pageTotal }}</span>
-                <input style="float: right" type="file" id="imageUpload" accept="image/* " :disabled="createBanner.isActionFinished" @change="handleUploadImage">
-                <button style="float: right; margin-right: 10px" class="upload-button" :disabled="createBanner.isActionFinished" @click="handleRemoveImage">Remove</button>
-              </div>
-            </div><hr>
-            </div>
-          </div>
+<!--          <div class="el-col el-col-8">-->
+<!--            <label style="font-size: 25px; text-align: left">Create Banner</label>-->
+<!--            <el-radio-group style="float: right;" v-model="createBanner.type" @change="getBannerCreationRelatedImages(1)">-->
+<!--              <el-radio style="width: 120px" label="1" border>Customize</el-radio>-->
+<!--              <el-radio style="width: 120px" label="2" border>Pre-Made</el-radio>-->
+<!--            </el-radio-group><hr style="margin-top: 20px; margin-bottom: 20px">-->
+<!--            <label style="font-size: 20px">Preview</label>-->
+<!--&lt;!&ndash; Customize &ndash;&gt;-->
+<!--            <div v-if="createBanner.type === '1'">-->
+<!--              <div class="preview" style="position: relative" id="original">-->
+<!--                <div :style="`background-color: ${createBanner.customize.properties.background}`">-->
+<!--                  <div style="display: inline-flex; justify-content: center; height: 250px; align-items: center">-->
+<!--                    <img :src="createBanner.customize.properties.icon" style=" margin-right: 10px;width: 230px; height: 230px"/>-->
+<!--                  </div>-->
+<!--                <pre :style="`display: inline-block; margin-top: 20px; position: absolute; color: ${createBanner.customize.properties.textStyle.color}; font-family: ${createBanner.customize.properties.textStyle.font}; font-size: ${createBanner.customize.properties.textStyle.size}px`">{{createBanner.customize.properties.text}}</pre>-->
+<!--              </div>-->
+<!--            </div><hr style="margin-top: 20px">-->
+<!--              <div id="canvas"></div>-->
+<!--              <div class="form-group">-->
+<!--                <label for="background">Background Color:</label>-->
+<!--                <input style="margin-left: 10px; width: 100px; border: 2px solid #000000" v-model="createBanner.customize.properties.background" type="color" id="background"/>-->
+<!--              </div>-->
+<!--              <div class="form-group">-->
+<!--                <label>Select Icon:</label><hr>-->
+<!--                <div style="display: grid; grid-template-columns: repeat(5, 1fr);">-->
+<!--                  <div v-for="(icon, index) in createBanner.customize.iconCollection"-->
+<!--                       :key="index"-->
+<!--                       @click="  createBanner.customize.properties.icon=icon"-->
+<!--                       :class="{ 'selected-image' : icon === createBanner.customize.properties.icon }"-->
+<!--                       style="cursor: pointer;">-->
+<!--                    <img :src="icon" alt="Icon" style="max-height: 70px; max-width: 70px;" />-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--                <div class="pagination" style="margin-top: 10px">-->
+<!--                  <button :disabled="createBanner.isActionFinished" @click="handleImagePagination(false)">Previous</button>-->
+<!--                  <button :disabled="createBanner.isActionFinished" style="margin-left: 10px" @click="handleImagePagination(true)">Next</button>-->
+<!--                  <span> Page:  {{ createBanner.pagination.param.pageNum  }} / {{createBanner.pagination.pageTotal}}</span>-->
+<!--                  <input style="float: right" type="file" id="imageUpload" :disabled="createBanner.isActionFinished" accept="image/* " @change="handleUploadImage">-->
+<!--                  <button style="float: right; margin-right: 10px" class="upload-button" :disabled="createBanner.isActionFinished" @click="handleRemoveImage()">Remove</button>-->
+<!--                </div>-->
+<!--              </div><hr>-->
+<!--              <div class="form-group">-->
+<!--                <p>Event Description:</p>-->
+<!--                <label for="font">Font: </label>-->
+<!--                <el-select style="width: 200px" v-model="createBanner.customize.properties.textStyle.font">-->
+<!--                  <el-option v-for="font in fontOptions" :key="font" :label="font" :value="font"></el-option>-->
+<!--                </el-select>-->
+<!--                <label for="text" style="margin-left: 20px">Font Color:</label>-->
+<!--                <input style="margin-left: 10px; width: 100px; border: 2px solid #000000" v-model="createBanner.customize.properties.textStyle.color" type="color" id="text"/>-->
+<!--                <div style="margin-top: 10px">-->
+<!--                  <label for="text">Text Size: </label>-->
+<!--                  <el-slider-->
+<!--                      v-model="createBanner.customize.properties.textStyle.size"-->
+<!--                      :min="8"-->
+<!--                      :max="48"-->
+<!--                      style="width: 300px">-->
+<!--                  </el-slider>-->
+<!--                </div>-->
+<!--                <div>-->
+<!--                  <textarea style="height: 100px;width: 300px; margin-top: 5px" v-model="createBanner.customize.properties.text">-->
+<!--                  </textarea>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--&lt;!&ndash; Pre-Made &ndash;&gt;-->
+<!--            <div v-if="createBanner.type === '2'">-->
+<!--              <div class="preview">-->
+<!--              <img :src="createBanner.preMade.banner" style="width: 510px "/>-->
+<!--            </div><hr style="margin-top: 20px; margin-bottom: 20px" >-->
+<!--              <div class="form-group">-->
+<!--              <label style="margin-bottom: 20px">Select Banner:</label>-->
+<!--              <div style="display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 10px">-->
+<!--                <div v-for="(image, index) in createBanner.preMade.bannerCollection"-->
+<!--                     :key="index"-->
+<!--                     @click="createBanner.preMade.banner=image"-->
+<!--                     :class="{ 'selected-image': image === createBanner.preMade.banner }"-->
+<!--                     style="cursor: pointer;">-->
+<!--                  <img :src="image" alt="Banner" style="max-height: 150px; max-width: 200px" />-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <div class="pagination" style="margin-top: 10px">-->
+<!--                <button :disabled="createBanner.isActionFinished" @click="handleImagePagination(false)">Previous</button>-->
+<!--                <button :disabled="createBanner.isActionFinished" style="margin-left: 10px" @click="handleImagePagination(true)">Next</button>-->
+<!--                <span> Page:  {{ createBanner.pagination.param.pageNum  }} / {{ createBanner.pagination.pageTotal }}</span>-->
+<!--                <input style="float: right" type="file" id="imageUpload" accept="image/* " :disabled="createBanner.isActionFinished" @change="handleUploadImage">-->
+<!--                <button style="float: right; margin-right: 10px" class="upload-button" :disabled="createBanner.isActionFinished" @click="handleRemoveImage">Remove</button>-->
+<!--              </div>-->
+<!--            </div><hr>-->
+<!--            </div>-->
+<!--          </div>-->
         </div>
       </el-form>
 
@@ -705,7 +710,7 @@ function listVipBonusActivities(){
   })
 }
 function handleEffectChange(row){
-  if ( isButtonDisabled ) return;
+  if ( isButtonDisabled.value ) return;
   let text = row.effect === '1' ? '启用' : '停用'
   proxy.$modal.confirm('确认要"' + text + '""' + row.title + '"吗?', '警告', {
     confirmButtonText: '确定',
@@ -732,34 +737,34 @@ function handleClosedForm() {
   listVipBonusActivities()
 }
 function handleResetData() {
-  createBanner.value = {
-    type: '1',
-    isActionFinished: false,
-    customize: {
-      iconCollection: null,
-      properties: {
-        background: '#030303',
-        icon: null,
-        text: 'PUT TEXT HERE',
-        textStyle: {
-          font: "Arial, sans-serif",
-          size: 30,
-          color: '#ffffff'
-        }
-      }
-    },
-    preMade: {
-      bannerCollection: null,
-      banner: null,
-    },
-    pagination: {
-      param: {
-        pageNum: 1,
-        pageSize: 10
-      },
-      pageTotal: 1
-    }
-  };
+  // createBanner.value = {
+  //   type: '1',
+  //   isActionFinished: false,
+  //   customize: {
+  //     iconCollection: null,
+  //     properties: {
+  //       background: '#030303',
+  //       icon: null,
+  //       text: 'PUT TEXT HERE',
+  //       textStyle: {
+  //         font: "Arial, sans-serif",
+  //         size: 30,
+  //         color: '#ffffff'
+  //       }
+  //     }
+  //   },
+  //   preMade: {
+  //     bannerCollection: null,
+  //     banner: null,
+  //   },
+  //   pagination: {
+  //     param: {
+  //       pageNum: 1,
+  //       pageSize: 10
+  //     },
+  //     pageTotal: 1
+  //   }
+  // };
 
   configurations.value = {
     vipLevel: 0,
@@ -966,7 +971,7 @@ function onFileInputChange() {
 /**  Handle Add/Update Bonus Activity */
 async function handleAddBonusActivity(){
   await handleResetData()
-  await getBannerCreationRelatedImages(1);
+  // await getBannerCreationRelatedImages(1);
   title.value = "ADD BONUS ACTIVITY"
   open.value  = true
 }
@@ -974,7 +979,7 @@ function handleUpdateForm(row) {
   handleResetData()
   vipBonusInfoFindById(row.id).then( async res => {
     await populateForm(res.data)
-    await populateBannerConfiguration()
+    // await populateBannerConfiguration()
     await populateBonusTypeConfiguration();
   }).then( () => {
     title.value = "UPDATE BONUS ACTIVITY"
