@@ -200,7 +200,7 @@
               />
             </el-form-item>
             <el-form-item label="Platform" prop="platform">
-              <el-checkbox-group v-model="form.selectedPlatforms">
+              <el-checkbox-group v-model="form.platforms">
                 <el-checkbox v-for="(option, index) in platforms" :key="index" :label="option" @change="handleChangePlatform(option)">{{ option }}</el-checkbox>
               </el-checkbox-group>
             </el-form-item>
@@ -210,95 +210,95 @@
 <!-- Sign in Config -->
             <div v-if="form.typeId === 1">
               <label>Upload Reward Icons</label>
-              <el-form-item v-if="form.selectedPlatforms.includes('Web H5')" prop="webRewardIcon">
+              <el-form-item v-if="form.platforms.includes('web')" prop="webRewardIcon">
                 <div style="padding-right: 10px">
-                  <div class="upload-reward-icon-button" @click="handleUploadStatusIcon('reward','Web H5','webH5')">WEB H5</div>
+                  <div class="upload-reward-icon-button" @click="handleUploadIcon('rewardImg','web','web')">web</div>
                 </div>
                 <div class="upload-image-container">
-                  <div v-for="(icon, index) in configurations.rewardIcons.webH5" :key="index" class="image-preview-container">
+                  <div v-for="(icon, index) in configurations.rewardIcons.web" :key="index" class="image-preview-container">
                     <img :src="icon" alt="Reward Icon Preview" class="image-preview">
-                    <div class="reward-close-button" @click="configurations.rewardIcons.webH5.splice(index,1)">x</div>
+                    <div class="reward-close-button" @click="removeImage('web','rewardImg','web', icon)">x</div>
                   </div>
                 </div>
               </el-form-item>
-              <el-form-item v-if="form.selectedPlatforms.includes('Mobile')" prop="mobileRewardIcon">
+              <el-form-item v-if="form.platforms.includes('mobile')" prop="mobileRewardIcon">
                 <div style="padding-right: 10px">
-                  <div class="upload-reward-icon-button" @click="handleUploadStatusIcon('reward','Mobile','mobile')">Mobile</div>
+                  <div class="upload-reward-icon-button" @click="handleUploadIcon('rewardImg','mobile','mobile')">mobile</div>
                 </div>
                 <div class="upload-image-container">
                   <div v-for="(icon, index) in configurations.rewardIcons.mobile" :key="index" class="image-preview-container">
                     <img :src="icon" alt="Reward Icon Preview" class="image-preview">
-                    <div class="reward-close-button" @click="configurations.rewardIcons.mobile.splice(index,1)">x</div>
+                    <div class="reward-close-button" @click="removeImage('mobile','rewardImg','mobile', icon)">x</div>
                   </div>
                 </div>
               </el-form-item>
               <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
               <label>Upload Status Icons</label>
-              <el-form-item v-if="form.selectedPlatforms.includes('Web H5')" label="WEB H5" style="padding-top: 10px; font-weight: bold" prop="statusIcon">
+              <el-form-item v-if="form.platforms.includes('web')" label="web" style="padding-top: 10px; font-weight: bold" prop="statusIcon">
                 <input type="file" ref="fileInput" multiple style="display: none" @change="onFileInputChange()" />
                 <div class="image-container">
                   <div class="image-item">
                     <div class="image-wrapper">
-                      <el-image class="image-preview" :src="configurations.signIn.statusIcon.webH5.claimable"/>
-                      <div v-if="configurations.signIn.statusIcon.webH5.claimable !== null" class="status-close-button" @click="configurations.signIn.statusIcon.webH5.claimable=null">x</div>
-                      <div v-else class="upload-status-icon-button" @click="handleUploadStatusIcon('status','Web H5','claimable')">Claimable</div>
+                      <el-image class="image-preview" :src="configurations.signIn.statusIcon.web.claimable"/>
+                      <div v-if="configurations.signIn.statusIcon.web.claimable !== null" class="status-close-button" @click="removeImage('web','statusImg','claimable',configurations.signIn.statusIcon.web.claimable)">x</div>
+                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','claimable')">Claimable</div>
                     </div>
                   </div>
                   <div class="image-item">
                     <div class="image-wrapper">
-                      <el-image class="image-preview" :src="configurations.signIn.statusIcon.webH5.claimed"/>
-                      <div v-if="configurations.signIn.statusIcon.webH5.claimed !== null" class="status-close-button" @click="configurations.signIn.statusIcon.webH5.claimed=null">x</div>
-                      <div v-else class="upload-status-icon-button" @click="handleUploadStatusIcon('status','Web H5','claimed')">Claimed</div>
+                      <el-image class="image-preview" :src="configurations.signIn.statusIcon.web.claimed"/>
+                      <div v-if="configurations.signIn.statusIcon.web.claimed !== null" class="status-close-button" @click="removeImage('web','statusImg','claimed',configurations.signIn.statusIcon.web.claimed)">x</div>
+                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','claimed')">Claimed</div>
                     </div>
                   </div>
                   <div class="image-item">
                     <div class="image-wrapper">
-                      <el-image class="image-preview" :src="configurations.signIn.statusIcon.webH5.notClaimable"/>
-                      <div v-if="configurations.signIn.statusIcon.webH5.notClaimable !== null" class="status-close-button" @click="configurations.signIn.statusIcon.webH5.notClaimable=null">x</div>
-                      <div v-else class="upload-status-icon-button" @click="handleUploadStatusIcon('status','Web H5','notClaimable')">Not Claimable</div>
+                      <el-image class="image-preview" :src="configurations.signIn.statusIcon.web.notClaimable"/>
+                      <div v-if="configurations.signIn.statusIcon.web.notClaimable !== null" class="status-close-button" @click="removeImage('web','statusImg','notClaimable',configurations.signIn.statusIcon.web.notClaimable)">x</div>
+                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','notClaimable')">Not Claimable</div>
                     </div>
                   </div>
 
                   <div class="image-item">
                     <div class="image-wrapper">
-                      <el-image class="image-preview" :src="configurations.signIn.statusIcon.webH5.notClaimed"/>
-                      <div v-if="configurations.signIn.statusIcon.webH5.notClaimed !== null" class="status-close-button" @click="configurations.signIn.statusIcon.webH5.notClaimed=null">x</div>
-                      <div v-else class="upload-status-icon-button" @click="handleUploadStatusIcon('status','Web H5','notClaimed')">Not Claimed</div>
+                      <el-image class="image-preview" :src="configurations.signIn.statusIcon.web.notClaimed"/>
+                      <div v-if="configurations.signIn.statusIcon.web.notClaimed !== null" class="status-close-button" @click="removeImage('web','statusImg','notClaimed',configurations.signIn.statusIcon.web.notClaimed)">x</div>
+                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','notClaimed')">Not Claimed</div>
                     </div>
                   </div>
 
                 </div>
               </el-form-item>
-              <el-form-item v-if="form.selectedPlatforms.includes('Mobile')" label="MOBILE" style="padding-top: 10px; font-weight: bold" prop="statusIcon">
+              <el-form-item v-if="form.platforms.includes('mobile')" label="mobile" style="padding-top: 10px; font-weight: bold" prop="statusIcon">
                 <input type="file" ref="fileInput" multiple style="display: none" @change="onFileInputChange()" />
                 <div class="image-container">
                   <div class="image-item">
                     <div class="image-wrapper">
                       <el-image class="image-preview" :src="configurations.signIn.statusIcon.mobile.claimable"/>
-                      <div v-if="configurations.signIn.statusIcon.mobile.claimable !== null" class="status-close-button" @click="configurations.signIn.statusIcon.mobile.claimable=null">x</div>
-                      <div v-else class="upload-status-icon-button" @click="handleUploadStatusIcon('status','Mobile','claimable')">Claimable</div>
+                      <div v-if="configurations.signIn.statusIcon.mobile.claimable !== null" class="status-close-button"  @click="removeImage('mobile','statusImg','claimable',configurations.signIn.statusIcon.mobile.claimable)">x</div>
+                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','claimable')">Claimable</div>
                     </div>
                   </div>
                   <div class="image-item">
                     <div class="image-wrapper">
                       <el-image class="image-preview" :src="configurations.signIn.statusIcon.mobile.claimed"/>
-                      <div v-if="configurations.signIn.statusIcon.mobile.claimed !== null" class="status-close-button" @click="configurations.signIn.statusIcon.mobile.claimed=null">x</div>
-                      <div v-else class="upload-status-icon-button" @click="handleUploadStatusIcon('status','Mobile','claimed')">Claimed</div>
+                      <div v-if="configurations.signIn.statusIcon.mobile.claimed !== null" class="status-close-button" @click="removeImage('mobile','statusImg','claimed',configurations.signIn.statusIcon.mobile.claimed)">x</div>
+                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','claimed')">Claimed</div>
                     </div>
                   </div>
                   <div class="image-item">
                     <div class="image-wrapper">
                       <el-image class="image-preview" :src="configurations.signIn.statusIcon.mobile.notClaimable"/>
-                      <div v-if="configurations.signIn.statusIcon.mobile.notClaimable !== null" class="status-close-button" @click="configurations.signIn.statusIcon.mobile.notClaimable=null">x</div>
-                      <div v-else class="upload-status-icon-button" @click="handleUploadStatusIcon('status','Mobile','notClaimable')">Not Claimable</div>
+                      <div v-if="configurations.signIn.statusIcon.mobile.notClaimable !== null" class="status-close-button" @click="removeImage('mobile','statusImg','notClaimable',configurations.signIn.statusIcon.mobile.notClaimable)">x</div>
+                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','notClaimable')">Not Claimable</div>
                     </div>
                   </div>
 
                   <div class="image-item">
                     <div class="image-wrapper">
                       <el-image class="image-preview" :src="configurations.signIn.statusIcon.mobile.notClaimed"/>
-                      <div v-if="configurations.signIn.statusIcon.mobile.notClaimed !== null" class="status-close-button" @click="configurations.signIn.statusIcon.mobile.notClaimed=null">x</div>
-                      <div v-else class="upload-status-icon-button" @click="handleUploadStatusIcon('status','Mobile','notClaimed')">Not Claimed</div>
+                      <div v-if="configurations.signIn.statusIcon.mobile.notClaimed !== null" class="status-close-button" @click="removeImage('mobile','statusImg','notClaimed',configurations.signIn.statusIcon.mobile.notClaimed)">x</div>
+                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','notClaimed')">Not Claimed</div>
                     </div>
                   </div>
                 </div>
@@ -340,109 +340,106 @@
                   <el-button icon="Refresh" size="small" @click="resetSignInConfig">Reset</el-button>
                 </div>
               </el-form-item>
-              <el-form-item >
-                <el-table :data="configurations.signIn.dailyData" style="width: 80%; border: 5px solid #e0e0e0; border-radius: 5px" >
-                  <el-table-column label="Day" width="70" align="center" prop="day">
-                      <template #default="scope">
-                        <div v-if="configurations.signIn.customDay === '1'">
-                          <el-input v-model="scope.row.day"/>
-                        </div>
-                        <div v-else>
-                          {{ scope.row.day }}
-                        </div>
+              <el-table :data="configurations.signIn.dailyData" style="max-width: 760px; border: 5px solid #e0e0e0; border-radius: 5px" >
+                <el-table-column label="Day" width="50px" align="center" prop="day">
+                  <template #default="scope">
+                    <div v-if="configurations.signIn.customDay === '1'">
+                      <el-input v-model="scope.row.day"/>
+                    </div>
+                    <div v-else>
+                      {{ scope.row.day }}
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column label="Reward Type" width="105px" align="center"  prop="rewardType">
+                  <template #default="scope">
+                    <el-select
+                        filterable
+                        v-model="scope.row.rewardType"
+                        style="width: 100px"
+                        @change="handleRewardChangeType(scope)"
+                    >
+                      <el-option
+                          label="Fixed"
+                          value="1"
+                      ></el-option>
+                      <el-option
+                          label="Random"
+                          value="2"
+                      ></el-option>
+                    </el-select>
+                  </template>
+                </el-table-column>
+                <el-table-column label="Amount" width="75px" align="center">
+                  <template #default="scope">
+                    <template v-if="scope.row.rewardType === '1'">
+                      <el-input v-model="scope.row.rewardAmount.max"/>
+                    </template>
+                    <template v-else>
+                      <el-input style="width: 50px; right: 5px" v-model="scope.row.rewardAmount.min"/>
+                      -
+                      <el-input style="width: 50px; left: 5px" v-model="scope.row.rewardAmount.max"/>
+                    </template>
+                  </template>
+                </el-table-column>
+                <el-table-column label="Required Deposit" width="135px" align="center"  prop="topUpRequirement">
+                  <template #default="scope">
+                    <el-input v-model="scope.row.topUpRequirement"/>
+                  </template>
+                </el-table-column>
+                <el-table-column label="Required Bet" width="105px" align="center"  prop="codingRequirement">
+                  <template #default="scope">
+                    <el-input v-model="scope.row.codingRequirement"/>
+                  </template>
+                </el-table-column>
+                <el-table-column label="Web Reward Icon" align="center" width="135px">
+                  <template #default="scope">
+                    <el-select
+                        filterable
+                        v-model="scope.row.rewardIcon.web"
+                        style="width: 120px"
+                    >
+                      <template #prefix>
+                        <el-image style="width: 60px; height: 60px; margin-top: 5px; margin-bottom: 5px; margin-left: 10px " :src="scope.row.rewardIcon.web"/>
                       </template>
-                  </el-table-column>
-                  <el-table-column label="Reward Type" width="110px" align="center"  prop="rewardType">
-                    <template #default="scope">
-                      <el-select
-                          filterable
-                          v-model="scope.row.rewardType"
-                          style="width: 100px"
-                          @change="handleRewardChangeType(scope)"
+                      <el-option
+                          label=" "
+                          v-for="icon in ( scope.row.rewardType === '1' ? configurations.rewardIcons.web : treasureIcons)"
+                          :value="icon"
+                          style="width: 120px; height: 100px; margin-left: -15px"
                       >
-                        <el-option
-                            label="Fixed"
-                            value="1"
-                        ></el-option>
-                        <el-option
-                            label="Random"
-                            value="2"
-                        ></el-option>
-                      </el-select>
-                    </template>
-                  </el-table-column>
-                  <el-table-column label="Reward Amount" width="150" align="center">
-                    <template #default="scope">
-                      <template v-if="scope.row.rewardType === '1'">
-                        <el-input v-model="scope.row.rewardAmount.max"/>
+                        <el-image style="width: 50px; height: 50px;margin-top: 10px; margin-left: 25px" :src="icon"  />
+                      </el-option>
+                    </el-select>
+                  </template>
+                </el-table-column>
+                <el-table-column label="Mobile Reward Icon" align="center" width="150px">
+                  <template #default="scope">
+                    <el-select
+                        filterable
+                        v-model="scope.row.rewardIcon.mobile"
+                        style="width: 120px"
+                    >
+                      <template #prefix>
+                        <el-image style="width: 60px; height: 60px; margin-top: 5px; margin-bottom: 5px; margin-left: 10px " :src="scope.row.rewardIcon.mobile"/>
                       </template>
-                      <template v-else>
-                        <el-input style="width: 50px; right: 5px" v-model="scope.row.rewardAmount.min"/>
-                        -
-                        <el-input style="width: 50px; left: 5px" v-model="scope.row.rewardAmount.max"/>
-                      </template>
-                    </template>
-                  </el-table-column>
-                  <el-table-column label="Top-up Requirement" width="160" align="center"  prop="topUpRequirement">
-                    <template #default="scope">
-                      <el-input v-model="scope.row.topUpRequirement"/>
-                    </template>
-                  </el-table-column>
-                  <el-table-column label="Coding Requirement" width="160" align="center"  prop="codingRequirement">
-                    <template #default="scope">
-                      <el-input v-model="scope.row.codingRequirement"/>
-                    </template>
-                  </el-table-column>
-                  <el-table-column v-if="form.selectedPlatforms.includes('Web H5')" label="Web Reward Icon" align="center" width="180">
-                    <template #default="scope">
-                      <el-select
-                          filterable
-                          v-model="scope.row.rewardIcon.webH5"
-                          style="width: 120px"
+                      <el-option
+                          label=" "
+                          v-for="icon in ( scope.row.rewardType === '1' ? configurations.rewardIcons.mobile : treasureIcons)"
+                          :value="icon"
+                          style="width: 120px; height: 100px; margin-left: -15px"
                       >
-                        <template #prefix>
-                          <el-image style="width: 50px; height: 50px; margin-top: 5px; margin-bottom: 5px; margin-left: 10px " :src="scope.row.rewardIcon.webH5"/>
-                        </template>
-                        <el-option
-                            label=" "
-                            v-for="icon in ( scope.row.rewardType === '1' ? configurations.rewardIcons.webH5 : treasureIcons)"
-                            :value="icon"
-                            style="width: 120px; height: 100px; margin-left: -15px"
-                        >
-                          <el-image style="width: 50px; height: 50px;margin-top: 10px; margin-left: 25px" :src="icon"  />
-                        </el-option>
-                      </el-select>
-                    </template>
-                  </el-table-column>
-                  <el-table-column v-if="form.selectedPlatforms.includes('Mobile')" label="Mobile Reward Icon" align="center" width="180">
-                    <template #default="scope">
-                      <el-select
-                          filterable
-                          v-model="scope.row.rewardIcon.mobile"
-                          style="width: 120px"
-                      >
-                        <template #prefix>
-                          <el-image style="width: 50px; height: 50px; margin-top: 5px; margin-bottom: 5px; margin-left: 10px " :src="scope.row.rewardIcon.mobile"/>
-                        </template>
-                        <el-option
-                            label=" "
-                            v-for="icon in ( scope.row.rewardType === '1' ? configurations.rewardIcons.mobile : treasureIcons)"
-                            :value="icon"
-                            style="width: 120px; height: 100px; margin-left: -15px"
-                        >
-                          <el-image style="width: 50px; height: 50px;margin-top: 10px; margin-left: 25px" :src="icon"  />
-                        </el-option>
-                      </el-select>
-                    </template>
-                  </el-table-column>
-                </el-table>
-              </el-form-item>
-
+                        <el-image style="width: 50px; height: 50px;margin-top: 10px; margin-left: 25px" :src="icon"  />
+                      </el-option>
+                    </el-select>
+                  </template>
+                </el-table-column>
+              </el-table>
             </div>
 
 
 <!-- Other Config -->
-            <label style="font-size: 25px; text-align: left">Other Config</label>
+            <label style="font-size: 25px;padding-top: 10px; text-align: left">Other Config</label>
             <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
             <el-form-item label="Jump Type" prop="jumpType">
               <el-radio-group v-model="form.jumpType">
@@ -583,9 +580,8 @@ import {
   removeVipBonusBanner,
   removeVipBonusLogo,
   uploadVipBonusBanner,
-  uploadVipBonusLogo,
+  uploadVipBonusLogo, getUploadedImages, removeAndListImages, cleanImagesByType,
 } from "@/api/config/vipBonusInfo";
-import {resetForm} from "@/utils/common";
 
 const isButtonDisabled    = ref(true); //Used for disabling button
 const vipBonusInfoList = ref([]);
@@ -599,7 +595,8 @@ const total    = ref(0); //Total rows
 const open     = ref(false); //Opening form
 const ids      = ref([]); //Selected ids of table rows
 const fileInput = ref(null);
-const activityUploadIconParam = ref({type: '', field: ''})
+const activityUploadIconParam = ref({type: '',platform: '', field: ''})
+const rewardStatus = ref( ['claimable', 'claimed', 'notClaimable', 'notClaimed'])
 
 /** Create Banner Related */
 const treasureIcons = ref([
@@ -657,8 +654,8 @@ const data      =  reactive({
   configurations:{}
 });
 const {queryParams, rules, dateRange, form, createBanner, configurations} = toRefs(data);
-const formData = new FormData();
-const platforms = ref(['Select All', 'Web H5', "Mobile" ]);
+let formData = new FormData();
+const platforms = ref(['all', 'web', "mobile" ]);
 
 /**  Handle Table  */
 function handleSearchQuery(){
@@ -732,7 +729,6 @@ function formatterActivityType(row) {
 }
 /** Handle Form */
 function handleClosedForm() {
-  handleResetData()
   listVipBonusActivities()
 }
 function handleResetData() {
@@ -768,7 +764,7 @@ function handleResetData() {
   configurations.value = {
     vipLevel: 0,
     rewardIcons: {
-      webH5: [],
+      web: [],
       mobile: []
     },
     signIn: {
@@ -778,7 +774,7 @@ function handleResetData() {
       dailyData: [],
       listOfDailyData: [],
       statusIcon: {
-        webH5: {
+        web: {
           claimable: null,
           notClaimable: null,
           claimed: null,
@@ -800,7 +796,7 @@ function handleResetData() {
   f.title = null;
   f.scheduleType = '1';
   f.startEffect = null;
-  f.selectedPlatforms = ['Mobile']
+  f.platforms = ['mobile']
   f.endEffect = null;
   f.isDisplayHome = false;
   f.configString = null;
@@ -809,24 +805,23 @@ function handleResetData() {
   f.url = null;
   f.icon = null;
   dateRange.value = []
-}
-function asd (option) {
 
+  cleanImagesByType(['rewardImg', 'statusImg'])
 }
 function handleChangePlatform(option) {
   //This Logic is based on beforeChanges
   const f = form.value;
-  const index = f.selectedPlatforms.indexOf(option);
-  const beforeChange = index === -1 ? [...f.selectedPlatforms, option] : [...f.selectedPlatforms.slice(0, index), ...f.selectedPlatforms.slice(index + 1)];
-  const isSelectAllChecked = beforeChange.includes('Select All');
+  const index = f.platforms.indexOf(option);
+  const beforeChange = index === -1 ? [...f.platforms, option] : [...f.platforms.slice(0, index), ...f.platforms.slice(index + 1)];
+  const isSelectAllChecked = beforeChange.includes('all');
   const isAllSelected = beforeChange.length === platforms.value.length;
 
-  if (option === 'Select All') {
-    f.selectedPlatforms = isSelectAllChecked ? [] : platforms.value;
+  if (option === 'all') {
+    f.platforms = isAllSelected ? platforms.value : isSelectAllChecked ? [] : platforms.value;
   } else if (isAllSelected) {
-    f.selectedPlatforms.splice(f.selectedPlatforms.indexOf('Select All'), 1);
+    f.platforms.splice(f.platforms.indexOf('all'), 1);
   } else if (beforeChange.length === platforms.value.length - 2) {
-    f.selectedPlatforms.push(beforeChange.includes(option) ? option : 'Select All');
+    f.platforms.push(beforeChange.includes(option) ? option : 'all');
   }
 }
 
@@ -893,6 +888,11 @@ function getBannerCreationRelatedImages (pageNum) {
 function prependActivityInfoImageBaseURI(img) {
   return url.baseUrl + url.game99PlatformAdminWeb + "/config/vipBonusInfo/image?url=" + img;
 }
+function getOriginalImageLink(img){
+  const urlRegex = /url=(https?:\/\/[^&]+)/;
+  const match = img.match(urlRegex);
+  return match ? match[1] : img;
+}
 function handleImagePagination(isNext){
   event.preventDefault();
   const pageTotal = createBanner.value.pagination.pageTotal;
@@ -907,32 +907,60 @@ function handleImagePagination(isNext){
     createBanner.value.isActionFinished = false;
   },500)
 }
-function handleUploadStatusIcon (type, platform, field){
+function handleUploadIcon (type, platform, field){
   activityUploadIconParam.value = {type: type, platform: platform, field: field};
   fileInput.value.click();
 }
-function onFileInputChange (){
+async function removeImage(platform, type, field, imageUrl) {
+  let updatedImages;
+  await removeAndListImages(type, platform, field, getOriginalImageLink(imageUrl)).then(  res => {
+    res.data = res.data.map(img => prependActivityInfoImageBaseURI(img));
+    updatedImages = res.data;
+  }).then(()=>{
+    switch ( type ) {
+      case 'rewardImg': {
+        configurations.value.rewardIcons[platform] = updatedImages;
+        break;
+      }
+      case 'statusImg': {
+        configurations.value.signIn.statusIcon[platform][field] = null;
+        break;
+      }
+      //TODO: Add more field in the future
+    }
+  });
+}
+function onFileInputChange() {
   const conf = configurations.value;
   const signIn = conf.signIn;
   const newFileInput = fileInput.value;
-  const files = Array.from(newFileInput.files)
-  if ( files.length < 1 ) return;
-
+  const files = Array.from(newFileInput.files);
+  const formData = new FormData();
   const param = activityUploadIconParam.value;
-  switch ( param.type ) {
-    case 'reward': {
-      files.forEach(file => {
-        conf.rewardIcons[param.field].push(URL.createObjectURL(file));
-      });
-      break;
+
+  files.forEach( file => {
+    formData.append('files', file);
+  })
+  formData.append('type', param.type)
+  formData.append('platform', param.platform)
+  formData.append('field', param.field)
+
+  getUploadedImages(formData).then(res => {
+    res.data = res.data.map(img => prependActivityInfoImageBaseURI(img));
+    const result = Array.isArray(res.data) ? res.data : [res.data];
+    switch (param.type){
+      case 'rewardImg': {
+        conf.rewardIcons[param.field] = result;
+        break;
+      }
+      case 'statusImg': {
+        signIn.statusIcon[param.platform][param.field] = result[0];
+        break;
+      }
     }
-    case 'status': {
-      signIn.statusIcon[ param.platform === 'Mobile' ? 'mobile' : 'webH5'][param.field] = URL.createObjectURL(files[0]);
-      break
-    }
-  }
+  });
   newFileInput.value = null;
-  activityUploadIconParam.value = null
+  activityUploadIconParam.value = null;
 }
 
 /**  Handle Add/Update Bonus Activity */
@@ -967,6 +995,7 @@ function populateForm( r ){
   f.content = r.content
   f.url = r.url
   f.icon = r.icon
+  f.platforms = r.platforms.split(',');
   dateRange.value = r.scheduleType === 1 ? [ form.value.startEffect, form.value.endEffect ] : []
 }
 function populateBannerConfiguration() {
@@ -1012,22 +1041,38 @@ async function handleSubmitForm() {
     eventConfig: getEventConfigByTypeId(),
     customBannerConfig: create.type === '1' ? create.customize.properties : null
   });
+  f.platforms = f.platforms.join(',');
 
-  console.log(f.configString)
-
-
-
-  // let actionMethod = f.id === null ? vipBonusInfoAdd(f) : vipBonusInfoUpdate(f);
-  // actionMethod.then(() => {
-  //   proxy.$modal.msgSuccess("修改成功");
-  //   open.value = false;
-  // })
+  let actionMethod = f.id === null ? vipBonusInfoAdd(f) : vipBonusInfoUpdate(f);
+  actionMethod.then(() => {
+    proxy.$modal.msgSuccess("修改成功");
+    open.value = false;
+  })
 }
 function getEventConfigByTypeId(){
   // TypeId = Vip Bonus Activity Type
   const config = configurations.value;
+  const statusIcon = config.signIn.statusIcon;
+  const listOfDailyData = config.signIn.listOfDailyData;
   switch ( form.value.typeId ) {
-    case 1: return config.signIn;
+    case 1: {
+      const platforms = form.value.platforms.filter( platform => platform !== 'all');
+      rewardStatus.value.forEach( status => {
+        platforms.forEach( platform => {
+          const img = statusIcon[platform][status];
+          statusIcon[platform][status] = img === null ? null : getOriginalImageLink(img);
+        })
+      })
+
+      listOfDailyData.forEach( dailyData => {
+        dailyData.config.forEach (data => {
+          platforms.forEach( platform => {
+            data.rewardIcon[platform] = getOriginalImageLink(data.rewardIcon[platform]);
+          })
+        })
+      });
+      return config.signIn;
+    }
       //TODO: Update this when added more vip bonus activity
     default: return null;
   }
@@ -1073,7 +1118,6 @@ function populateSignInConfigTable(){
   signIn.dailyData  = [];
 
   for ( let i = 0; i < cycle; i++ ) {
-    let row = null
     signIn.dailyData .push(
         {
           day: i+1,
@@ -1085,8 +1129,8 @@ function populateSignInConfigTable(){
           topUpRequirement: null,
           codingRequirement: null,
           rewardIcon: {
-            webH5: configurations.value.rewardIcons.webH5[i] || null,
-            mobile: configurations.value.rewardIcons.mobile[i] || null
+            web: getOriginalImageLink(configurations.value.rewardIcons.web[i]) || null,
+            mobile: getOriginalImageLink(configurations.value.rewardIcons.mobile[i]) || null
           }
         }
     )
@@ -1122,7 +1166,7 @@ function handleVipLevelChange(){
 }
 function handleRewardChangeType(scope){
   const rewardIcons = configurations.value.rewardIcons
-  scope.row.rewardIcon.webH5 = scope.row.rewardType === '1' ? rewardIcons.webH5[0] : treasureIcons.value[0];
+  scope.row.rewardIcon.web = scope.row.rewardType === '1' ? rewardIcons.web[0] : treasureIcons.value[0];
   scope.row.rewardIcon.mobile = scope.row.rewardType === '1' ? rewardIcons.mobile[0] : treasureIcons.value[0];
 }
 function saveSignInConfig(){
