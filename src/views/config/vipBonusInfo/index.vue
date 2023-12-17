@@ -230,7 +230,7 @@
                 </el-radio-group>
               </el-form-item>
               <el-form-item label="Cycle" prop="cycle">
-                  <el-input style="width: 350px" v-model="configurations.signIn.cycle" placeholder="Please enter a number of days" @change="populateSignInConfigTable(configurations.signIn.cycle)"/>
+                  <el-input min="1" max="7" style="width: 350px" v-model="configurations.signIn.cycle" placeholder="Please enter a number of days" @change="populateSignInConfigTable(configurations.signIn.cycle)"/>
               </el-form-item>
               <el-form-item label="Custom Day" prop="customDay" @change="populateSignInConfigTable(configurations.signIn.cycle)">
                 <el-radio-group v-model="configurations.signIn.customDay" >
