@@ -31,12 +31,12 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="tableList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="VIP 水平" min-width="180" prop="vipLevel"/>
+      <el-table-column align="center" label="VIP等级" min-width="180" prop="vipLevel"/>
       <el-table-column align="center" label="每日取款限额计数" min-width="180" prop="dailyWithdrawLimitTimes"/>
-      <el-table-column align="center" label="提款限额" min-width="180" prop="withdrawLimitAmount"/>
-      <el-table-column align="center" label="超过提款限额的费用" min-width="180" prop="exceedWithdrawalFee"/>
+      <el-table-column align="center" label="取款限额" min-width="180" prop="withdrawLimitAmount"/>
+      <el-table-column align="center" label="超过取款限额的费用" min-width="180" prop="exceedWithdrawalFee"/>
       <el-table-column align="center" label="状态" min-width="180" prop="status">
-        <template #default="scope">{{scope.row.status===1?"Active":"Inactive"}}</template>
+        <template #default="scope">{{scope.row.status===1?"启用":"停用"}}</template>
       </el-table-column>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
