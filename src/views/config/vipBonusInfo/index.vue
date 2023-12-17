@@ -131,7 +131,6 @@
               icon="Delete"
               @click="handleDeleteTableData(scope.row)"
               v-hasPermi="['config:vipBonusInfo:remove']">删除
-              >删除
           </el-button>
         </template>
       </el-table-column>
