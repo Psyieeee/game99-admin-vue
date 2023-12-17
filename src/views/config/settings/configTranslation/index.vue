@@ -1,5 +1,31 @@
 <template>
   <div class="app-container">
+
+    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" >
+      <el-form-item label="键" prop="name">
+        <el-input
+            v-model="queryParams.name"
+            placeholder="键"
+            clearable
+            @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="语言" prop="language">
+        <el-select v-model="queryParams.language" placeholder="语言" clearable>
+          <el-option
+              v-for="language in languages"
+              :key="language.value"
+              :label="language.label"
+              :value="language.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+      </el-form-item>
+    </el-form>
+
     <!--    button on the table for query-->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
@@ -25,17 +51,17 @@
         >删除
         </el-button>
       </el-col>
-      <right-toolbar @queryTable="getList"></right-toolbar>
+      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <!--    display data in table -->
     <el-table v-loading="loading" :data="recordList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="密钥" min-width="180" prop="name"/>
+      <el-table-column align="center" label="键" min-width="180" prop="name"/>
       <el-table-column align="center" label="语言" min-width="180" prop="language">
         <template #default="scope">{{languages.find((e) => e.value === scope.row.language).label}}</template>
       </el-table-column>
-      <el-table-column align="center" label="价值" min-width="180" prop="value"/>
+      <el-table-column align="center" label="值" min-width="180" prop="value"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
@@ -57,13 +83,21 @@
       </el-table-column>
     </el-table>
 
+    <pagination
+        v-show="total"
+        :total="total"
+        :page-sizes="[20,40,100]"
+        v-model:page="queryParams.pageNum"
+        v-model:limit="queryParams.pageSize"
+        @pagination="getList"
+    />
 
     <!-- Add or modify list dialog-->
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="500px">
       <el-form ref="queryForm" :model="form" :rules="rules" label-width="90px">
-        <el-form-item label="密钥" prop="name">
-          <el-input v-model="form.name" placeholder="密钥"/>
+        <el-form-item label="键" prop="name">
+          <el-input v-model="form.name" placeholder="键"/>
         </el-form-item>
         <el-form-item label="语言" prop="language">
           <el-select v-model="form.language" clearable placeholder="选择">
@@ -75,8 +109,8 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="价值" prop="value">
-          <el-input v-model="form.value" placeholder="价值" type="textarea"/>
+        <el-form-item label="值" prop="value">
+          <el-input v-model="form.value" placeholder="值" type="textarea"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -105,26 +139,24 @@ const title = ref('');
 const loading = ref(true);
 const multiple = ref(true);
 const open = ref(false);
+const showSearch = ref(true);
+const total = ref(0);
 
 const languages = ref([
   {
-    value: 'en-US',
+    value: 'en',
     label: '英语 - 美国'
   },
   {
-    value: 'zh-CN',
-    label: '简体中文'
+    value: 'hk',
+    label: '中文（香港）'
   },
   {
-    value: 'zh-TW',
-    label: '繁体中文'
-  },
-  {
-    value: 'id-ID',
+    value: 'in',
     label: '印尼语'
   },
   {
-    value: 'pt-BR',
+    value: 'pt',
     label: '葡萄牙语 - 巴西'
   }
   ])
@@ -132,7 +164,10 @@ const languages = ref([
 
 const data = reactive({
   /** 查询参数 query params*/
-  queryParams: {},
+  queryParams: {
+    pageNum: 1,
+    pageSize: 20
+  },
 
   /** 表单参数 form parameter*/
   form: {},
@@ -152,6 +187,17 @@ const data = reactive({
 });
 const {queryParams, form, rules} = toRefs(data);
 
+function handleQuery() {
+  queryParams.pageNum = 1
+  getList()
+}
+
+function resetQuery() {
+  proxy.resetForm('queryRef')
+  handleQuery()
+  loading.value = false
+}
+
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id);
   console.log( "selection " + !selection.length)
@@ -162,23 +208,14 @@ function handleSelectionChange(selection) {
 function getList() {
   loading.value = true;
   configTranslationList(queryParams.value).then(response => {
-    console.log("*******************")
-    console.log(response.data)
     recordList.value = response.data;
+    total.value = response.total
     loading.value = false;
   });
 }
 
 // 表单重置
 function reset() {
-  form.value = {
-    name: null,
-    chinese: null,
-    english: null,
-    indonesian: null,
-    portugueseBrazil: null,
-    traditionalChinese: null
-  }
   proxy.resetForm('queryForm');
 }
 
@@ -192,8 +229,6 @@ function handleAdd() {
 /** submit new data and handle insert data api*/
 function submitForm() {
   proxy.$refs['queryForm'].validate(async valid => {
-    console.log("form value: ");
-    console.log(form.value);
     if (valid) {
       if (form.value.id != null) {
         updateConfigTranslation(form.value).then(() => {
