@@ -41,7 +41,7 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="家弹出开关" prop="homePrompt" align="center" width="80">
+      <el-table-column label="弹框开关" prop="homePrompt" align="center" width="80">
         <template #default="scope">
           <el-switch
               v-model="scope.row.homePrompt"
