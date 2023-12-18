@@ -1,5 +1,22 @@
 <template>
   <div class="app-container">
+    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" >
+      <el-form-item label="语言" prop="type">
+        <el-select v-model="queryParams.type" placeholder="语言" clearable>
+          <el-option
+              v-for="type in types"
+              :key="type.value"
+              :label="type.label"
+              :value="type.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+      </el-form-item>
+    </el-form>
+
     <!--    button on the table for query-->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
@@ -25,18 +42,18 @@
         >删除
         </el-button>
       </el-col>
-      <right-toolbar @queryTable="getList"></right-toolbar>
+      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <!--    display data in table -->
     <el-table v-loading="loading" :data="storeList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="Amount" min-width="180" prop="amount"/>
-      <el-table-column align="center" label="Type" min-width="180" prop="type">
+      <el-table-column align="center" label="费用" min-width="180" prop="amount"/>
+      <el-table-column align="center" label="类型" min-width="180" prop="type">
         <template #default="scope">{{types[scope.row.type].label}}</template>
       </el-table-column>
-      <el-table-column align="center" label="Bonus" min-width="180" prop="bonus"/>
-      <el-table-column align="center" label="Image" prop="image">
+      <el-table-column align="center" label="奖金" min-width="180" prop="bonus"/>
+      <el-table-column align="center" label="图像" prop="image">
         <template #default="scope" >
           <a
               v-if="scope.row.image !== ''"
@@ -74,7 +91,14 @@
         </template>
       </el-table-column>
     </el-table>
-
+    <pagination
+        v-show="total"
+        :total="total"
+        :page-sizes="[10,20,50]"
+        v-model:page="queryParams.pageNum"
+        v-model:limit="queryParams.pageSize"
+        @pagination="getList"
+    />
 
     <!-- 添加或修改公司入款银行列表对话框 Add or modify company deposit bank list dialog-->
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
@@ -82,10 +106,10 @@
       <el-form ref="queryForm" :model="form" :rules="rules" label-width="120px">
         <div class="el-row">
           <div class="el-col-lg-12">
-            <el-form-item label="Amount" prop="amount">
-              <el-input type="number" v-model="form.amount" placeholder="Amount"/>
+            <el-form-item label="费用" prop="amount">
+              <el-input type="number" v-model="form.amount" placeholder="费用"/>
             </el-form-item>
-            <el-form-item label="Type" prop="type">
+            <el-form-item label="类型" prop="type">
               <el-select v-model="form.type" clearable placeholder="Select">
                 <el-option
                     v-for="type in types"
@@ -95,8 +119,8 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="Bonus" prop="bonus" >
-              <el-input type="number" v-model="form.bonus" placeholder="Bonus"/>
+            <el-form-item label="奖金" prop="bonus" >
+              <el-input type="number" v-model="form.bonus" placeholder="奖金"/>
             </el-form-item>
             <el-form-item>
               <el-upload
@@ -153,6 +177,8 @@ const multiple = ref(true);
 const open = ref(false);
 const upload = ref([]);
 const formData = new FormData();
+const showSearch = ref(true);
+const total = ref(0);
 const types = ref([
     {
       value: 0,
@@ -168,7 +194,10 @@ const types = ref([
     }])
 const data = reactive({
   /** 查询参数 query params*/
-  queryParams: {},
+  queryParams: {
+    pageNum: 1,
+    pageSize: 10
+  },
 
   /** 表单参数 form parameter*/
   form: {},
@@ -178,6 +207,16 @@ const data = reactive({
 });
 const {queryParams, form, rules} = toRefs(data);
 
+function handleQuery() {
+  queryParams.pageNum = 1
+  getList()
+}
+
+function resetQuery() {
+  proxy.resetForm('queryRef')
+  handleQuery()
+  loading.value = false
+}
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id);
   console.log( "selection " + !selection.length)
@@ -190,6 +229,7 @@ function getList() {
   lojaList(queryParams.value).then(response => {
     storeList.value = response.data;
     loading.value = false;
+    total.value = response.total
   });
 }
 
