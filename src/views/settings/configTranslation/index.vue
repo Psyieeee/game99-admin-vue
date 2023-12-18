@@ -129,7 +129,7 @@ import {
   addConfigTranslation,
   updateConfigTranslation,
   getConfigTranslation,
-} from "@/api/config/configTranslation.js";
+} from "@/api/settings/configTranslation.js";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 const {proxy} = getCurrentInstance();
 
