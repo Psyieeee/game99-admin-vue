@@ -17,14 +17,14 @@
         >
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="Transaction Type" label-width="130px">
+      <el-form-item label="交易类型" label-width="130px">
         <el-select v-model="queryParams.transactionType" clearable placeholder="Please select transaction type">
-          <el-option label="DEPOSIT" value="DEPOSIT"></el-option>
-          <el-option label="WITHDRAW" value="WITHDRAW"></el-option>
-          <el-option label="RECEIVE" value="RECEIVE"></el-option>
+          <el-option label="存入" value="DEPOSIT"></el-option>
+          <el-option label="取出" value="WITHDRAW"></el-option>
+          <el-option label="利息钱" value="RECEIVE"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="Member Id" prop="memberId" label-width="90px">
+      <el-form-item label="会员ID" prop="memberId" label-width="90px">
         <el-input
             v-model.trim="queryParams.memberId"
             placeholder="Please enter your member ID"
@@ -57,12 +57,12 @@
 
 <!--    display data into table 将所有数据列表显示到表格中-->
     <el-table :stripe="true" v-loading="loading" :data="interestLogList">
-      <el-table-column label="Member Id" align="center" prop="memberId" min-width="80"/>
-      <el-table-column label="Name" align="center" prop="nickName" min-width="120"/>
+      <el-table-column label="会员ID" align="center" prop="memberId" min-width="80"/>
+      <el-table-column label="名字" align="center" prop="nickName" min-width="120"/>
       <el-table-column label="APR(%)" align="center" prop="rate" min-width="130"/>
-      <el-table-column label="Transaction Type" align="center" prop="transactionType" min-width="130"/>
-      <el-table-column label="Amount" align="center" prop="amount"/>
-      <el-table-column label="Create Time" align="center" prop="createTime" min-width="180"/>
+      <el-table-column label="交易类型" align="center" prop="transactionType" min-width="130"/>
+      <el-table-column label="量" align="center" prop="amount"/>
+      <el-table-column label="创建时间" align="center" prop="createTime" min-width="180"/>
     </el-table>
 
     <pagination
