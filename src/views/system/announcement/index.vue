@@ -9,8 +9,7 @@
             plain
             size="small"
             type="primary"
-            @click="handleAdd"
-        >新增
+            @click="handleAdd">新增
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -21,8 +20,7 @@
             plain
             size="small"
             type="danger"
-            @click="handleDelete"
-        >删除
+            @click="handleDelete">删除
         </el-button>
       </el-col>
       <right-toolbar @queryTable="getList"></right-toolbar>
@@ -33,7 +31,6 @@
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column label="标题" prop="title" align="center"/>
       <el-table-column label="内容" prop="content" align="center"/>
-      <el-table-column label="作者" prop="author" align="center"/>
       <el-table-column label="状态" prop="status" align="center" width="80">
         <template #default="scope">
           <el-switch
@@ -44,7 +41,7 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="家弹出" prop="homePrompt" align="center" width="80">
+      <el-table-column label="家弹出开关" prop="homePrompt" align="center" width="80">
         <template #default="scope">
           <el-switch
               v-model="scope.row.homePrompt"
@@ -54,7 +51,6 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="显示时间" prop="displayTime" align="center"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
