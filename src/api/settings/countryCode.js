@@ -49,3 +49,10 @@ export function fileUpload(data) {
         data
     })
 }
+
+export function changeStatus(id, status) {
+    return request({
+        url: url.game99PlatformAdminWeb + "/countryCode/changeStatus/" + id + "/" + status,
+        method: 'put'
+    })
+}

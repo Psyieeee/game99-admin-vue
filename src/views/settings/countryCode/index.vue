@@ -51,6 +51,16 @@
           </a>
         </template>
       </el-table-column>
+      <el-table-column label="地位" prop="status" align="center" width="180">
+        <template #default="scope">
+          <el-switch
+              v-model="scope.row.status"
+              :active-value=1
+              :inactive-value=0
+              @click="toggleSwitch(scope.row)">
+          </el-switch>
+        </template>
+      </el-table-column>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
@@ -82,6 +92,12 @@
         </el-form-item>
         <el-form-item label="国家代码" prop="code" >
           <el-input v-model="form.code" placeholder="国家代码"/>
+        </el-form-item>
+        <el-form-item label="地位" prop="status">
+          <el-switch v-model="form.status"
+                     :active-value=1
+                     :inactive-value=0
+          />
         </el-form-item>
         <el-form-item>
           <el-upload
@@ -123,7 +139,8 @@ import {
   addCountryCode,
   updateCountryCode,
   getCountryCode,
-  fileUpload
+  fileUpload,
+  changeStatus
 } from "@/api/settings/countryCode";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 const {proxy} = getCurrentInstance();
@@ -174,6 +191,7 @@ function reset() {
   form.value = {
     country: null,
     code: null,
+    status: 1
   }
   clearUpload()
   proxy.resetForm('queryForm');
@@ -274,6 +292,28 @@ function handlePreview(file) {
   } else {
     proxy.$modal.msgError('此文件导入失败')
   }
+}
+
+function toggleSwitch (row) {
+  const text = row.status === 1 ? '启用' : '停用'
+  proxy.$confirm('确认要' + text + '"?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消'
+  }).then(function () {
+    let status;
+    loading.value = true
+    status = changeStatus(row.id, row.status);
+    if (status) {
+      return status
+    }
+  }).then(() => {
+    loading.value = false
+    proxy.$modal.msgSuccess(text + '成功')
+    getList()
+  }).catch(function () {
+    loading.value = false
+    row.status = row.status === 0 ? 1 : 0
+  })
 }
 
 getList()
