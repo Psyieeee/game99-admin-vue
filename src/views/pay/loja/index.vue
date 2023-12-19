@@ -26,8 +26,7 @@
             plain
             size="small"
             type="primary"
-            @click="handleAdd"
-        >新增
+            @click="handleAdd">新增
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -38,8 +37,7 @@
             plain
             size="small"
             type="danger"
-            @click="handleDelete"
-        >删除
+            @click="handleDelete">删除
         </el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
@@ -182,15 +180,15 @@ const total = ref(0);
 const types = ref([
     {
       value: 0,
-      label: 'First Recharge'
+      label: '首次充值'
     },
     {
       value: 1,
-      label: 'Popular'
+      label: '热门充值'
     },
     {
       value: 2,
-      label: 'Regular'
+      label: '普通充值'
     }])
 const data = reactive({
   /** 查询参数 query params*/
