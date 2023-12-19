@@ -84,23 +84,17 @@
           <el-form-item label="内容" prop="content">
             <el-input v-model="form.content" placeholder="内容" type="textarea"/>
           </el-form-item>
-          <el-form-item label="作者" prop="author">
-            <el-input v-model="form.author" placeholder="作者" />
-          </el-form-item>
           <el-form-item label="状态" prop="status">
             <el-switch v-model="form.status"
                        :active-value=1
                        :inactive-value=0
             />
           </el-form-item>
-          <el-form-item label="家弹出" prop="homePrompt">
+          <el-form-item label="弹框开关" prop="homePrompt">
             <el-switch v-model="form.homePrompt"
                        :active-value=1
                        :inactive-value=0
             />
-          </el-form-item>
-          <el-form-item label="显示时间" prop="displayTime">
-            <el-input v-model="form.displayTime" placeholder="显示时间" />
           </el-form-item>
         </div>
       </el-form>
