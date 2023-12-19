@@ -33,7 +33,16 @@
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="VIP 水平" min-width="180" prop="vipLevel"/>
       <el-table-column align="center" label="链接" min-width="180" prop="supportLink"/>
-      <el-table-column align="center" label="状态" min-width="180" prop="status"/>
+      <el-table-column label="地位" prop="status" align="center" width="180">
+        <template #default="scope">
+          <el-switch
+              v-model="scope.row.status"
+              :active-value=1
+              :inactive-value=0
+              @click="toggleSwitch(scope.row)">
+          </el-switch>
+        </template>
+      </el-table-column>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
@@ -74,15 +83,11 @@
           <el-form-item label="链接" prop="supportLink">
             <el-input type="textarea" v-model="form.supportLink" placeholder="支撑连杆"/>
           </el-form-item>
-          <el-form-item label="状态" prop="status">
-            <el-select v-model="form.status" clearable placeholder="状态">
-              <el-option
-                  v-for="item in statuses"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-              />
-            </el-select>
+          <el-form-item label="地位" prop="status">
+            <el-switch v-model="form.status"
+                       :active-value=1
+                       :inactive-value=0
+            />
           </el-form-item>
         </div>
       </el-form>
@@ -102,7 +107,9 @@ import {
   deleteCustomerSupport,
   addCustomerSupport,
   updateCustomerSupport,
-  getCustomerSupport, customerSupportVipLevels
+  getCustomerSupport,
+  customerSupportVipLevels,
+  changeStatus
 } from "@/api/system/customerSupport";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 const {proxy} = getCurrentInstance();
@@ -114,15 +121,6 @@ const loading = ref(true);
 const multiple = ref(true);
 const open = ref(false);
 const vipLevels = ref([]);
-const statuses = ref([
-  {
-    value: 1,
-    label: '积极的'
-  },
-  {
-    value: 0,
-    label: '不活跃的'
-  }])
 const data = reactive({
 
   /** 查询参数 query params*/
@@ -230,6 +228,28 @@ function handleDelete(row) {
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess('删除成功')
+  })
+}
+
+function toggleSwitch (row) {
+  const text = row.status === 1 ? '启用' : '停用'
+  proxy.$confirm('确认要' + text + '"?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消'
+  }).then(function () {
+    let status;
+    loading.value = true
+    status = changeStatus(row.id, row.status);
+    if (status) {
+      return status
+    }
+  }).then(() => {
+    loading.value = false
+    proxy.$modal.msgSuccess(text + '成功')
+    getList()
+  }).catch(function () {
+    loading.value = false
+    row.status = row.status === 0 ? 1 : 0
   })
 }
 

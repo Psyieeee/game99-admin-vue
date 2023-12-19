@@ -45,3 +45,10 @@ export function getCustomerSupport(id) {
         method: 'get'
     })
 }
+
+export function changeStatus(id, status) {
+    return request({
+        url: url.game99PlatformAdminWeb + "/customerSupportAdmin/changeStatus/" + id + "/" + status,
+        method: 'put'
+    })
+}
