@@ -4,7 +4,7 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['customerSupport:content:add']"
+            v-hasPermi="['settings:loginMethod:add']"
             icon="Plus"
             plain
             size="small"
@@ -15,7 +15,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['customerSupport:content:delete']"
+            v-hasPermi="['settings:loginMethod:delete']"
             :disabled="multiple"
             icon="Delete"
             plain
@@ -29,10 +29,10 @@
     </el-row>
 
     <!--    display data in table -->
-    <el-table v-loading="loading" :data="tableList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="recordList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="VIP 水平" min-width="180" prop="vipLevel"/>
-      <el-table-column align="center" label="链接" min-width="180" prop="supportLink"/>
+      <el-table-column align="center" label="名字" min-width="180" prop="name"/>
+      <el-table-column align="center" label="代码" min-width="180" prop="code"/>
       <el-table-column label="地位" prop="status" align="center" width="180">
         <template #default="scope">
           <el-switch
@@ -46,14 +46,14 @@
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
-              v-hasPermi="['customerSupport:content:edit']"
+              v-hasPermi="['settings:loginMethod:edit']"
               icon="Edit" link
               size="small"
               type="primary"
               @click="handleUpdate(scope.row)">修改
           </el-button>
           <el-button
-              v-hasPermi="['customerSupport:content:delete']"
+              v-hasPermi="['settings:loginMethod:delete']"
               icon="Delete" link
               size="small"
               style="color: #e05e5e"
@@ -65,64 +65,51 @@
     </el-table>
 
 
-    <!-- 添加或修改记录 Add or modify records-->
+    <!-- 添加或修改公司入款银行列表对话框 Add or modify company deposit bank list dialog-->
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
-               width="400px">
-      <el-form :inline="true" ref="queryRef" :model="form" :rules="rules" label-width="100px">
-        <div class="centered-form">
-          <el-form-item label="VIP 水平" prop="vipLevel">
-            <el-select v-model="form.vipLevel" clearable placeholder="选择">
-              <el-option
-                  v-for="item in vipLevels"
-                  :key="item"
-                  :label="item"
-                  :value="item"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="链接" prop="supportLink">
-            <el-input type="textarea" v-model="form.supportLink" placeholder="支撑连杆"/>
-          </el-form-item>
-          <el-form-item label="地位" prop="status">
-            <el-switch v-model="form.status"
-                       :active-value=1
-                       :inactive-value=0
-            />
-          </el-form-item>
-        </div>
+               width="600px">
+      <el-form ref="queryForm" :model="form" :rules="rules" label-width="100px">
+        <el-form-item label="名字" prop="name">
+          <el-input v-model="form.name" placeholder="名字"/>
+        </el-form-item>
+        <el-form-item label="代码" prop="code" >
+          <el-input v-model="form.code" placeholder="代码"/>
+        </el-form-item>
+        <el-form-item label="地位" prop="status">
+          <el-switch v-model="form.status"
+                     :active-value=1
+                     :inactive-value=0
+          />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">提交</el-button>
+        <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="open=false">取 消</el-button>
       </div>
     </el-dialog>
-
   </div>
 </template>
 
 <script setup>
 
 import {
-  customerSupportList,
-  deleteCustomerSupport,
-  addCustomerSupport,
-  updateCustomerSupport,
-  getCustomerSupport,
-  customerSupportVipLevels,
+  listRecord,
+  deleteRecord,
+  addRecord,
+  updateRecord,
+  getRecord,
   changeStatus
-} from "@/api/system/customerSupport";
+} from "@/api/settings/loginMethod";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 const {proxy} = getCurrentInstance();
 
-const tableList = ref([]);
+const recordList = ref([]);
 const ids = ref([]);
 const title = ref('');
 const loading = ref(true);
 const multiple = ref(true);
 const open = ref(false);
-const vipLevels = ref([]);
 const data = reactive({
-
   /** 查询参数 query params*/
   queryParams: {},
 
@@ -130,72 +117,60 @@ const data = reactive({
   form: {},
 
   rules: {
-    vipLevel: [
+    name: [
       {required: true, message: '无效的值', trigger: 'blur'}
     ],
-    supportLink: [
+    code: [
       {required: true, message: '无效的值', trigger: 'blur'}
     ]
-  }
+  },
 
 });
 const {queryParams, form, rules} = toRefs(data);
 
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id);
-  console.log( "selection " + !selection.length)
   multiple.value = !selection.length;
 }
 
 /** fetch all data from back-end as getList */
 function getList() {
   loading.value = true;
-  customerSupportList(queryParams.value).then(response => {
-    tableList.value = response.data;
-    //loading.value = false;
-  }).then(
-      customerSupportVipLevels(queryParams.value).then(response => {
-        vipLevels.value = response.data;
-        loading.value = false;
-      })
-  );
+  listRecord(queryParams.value).then(response => {
+    recordList.value = response.data;
+    loading.value = false;
+  });
 }
 
 // 表单重置
 function reset() {
   form.value = {
-    vipLevel: null,
-    supportLink: null,
+    name: null,
+    code: null,
     status: 1
   }
-  proxy.resetForm('queryRef');
+  proxy.resetForm('queryForm');
 }
 
 /** handle add new data */
 function handleAdd() {
   reset()
   open.value = true
-  title.value = '添加客户支持'
+  title.value = '添加记录'
 }
 
 /** submit new data and handle insert data api*/
 function submitForm() {
-  proxy.$refs['queryRef'].validate(async valid => {
+  proxy.$refs['queryForm'].validate(async valid => {
     if (valid) {
-      const params = {
-        vipLevel: form.value.vipLevel,
-        supportLink: form.value.supportLink,
-        status: form.value.status
-      }
-
       if (form.value.id != null) {
-        updateCustomerSupport(form.value).then(() => {
+        updateRecord(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
         })
       } else {
-        addCustomerSupport(params).then(() => {
+        addRecord(form.value).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
@@ -207,13 +182,11 @@ function submitForm() {
 
 /** handle update data */
 function handleUpdate(row) {
-  reset();
-  getCustomerSupport(row.id).then(response => {
+  getRecord(row.id).then(response => {
     form.value = response.data;
   });
-  console.log(JSON.stringify(form.value) + " @@@@")
   open.value = true
-  title.value = '更新信息'
+  title.value = '更新记录'
 }
 
 /**  删除按钮操作 handle delete */
@@ -224,12 +197,13 @@ function handleDelete(row) {
     cancelButtonText: '取消',
     type: 'warning'
   }).then(function () {
-    return deleteCustomerSupport(idss)
+    return deleteRecord(idss)
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess('删除成功')
   })
 }
+
 
 function toggleSwitch (row) {
   const text = row.status === 1 ? '启用' : '停用'
@@ -255,10 +229,3 @@ function toggleSwitch (row) {
 
 getList()
 </script>
-
-<style>
-.centered-form {
-  margin-left: 50px;
-  max-width: 400px;
-}
-</style>
