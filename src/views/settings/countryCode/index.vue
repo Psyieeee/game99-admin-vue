@@ -33,6 +33,7 @@
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="国家" min-width="180" prop="country"/>
       <el-table-column align="center" label="国家代码" min-width="180" prop="code"/>
+      <el-table-column align="center" label="排序号" min-width="180" prop="sort"/>
       <el-table-column align="center" label="图标" prop="icon">
         <template #default="scope" >
           <a
@@ -92,6 +93,9 @@
         </el-form-item>
         <el-form-item label="国家代码" prop="code" >
           <el-input v-model="form.code" placeholder="国家代码"/>
+        </el-form-item>
+        <el-form-item label="排序号" prop="sort" >
+          <el-input type="number" v-model="form.sort" placeholder="排序号"/>
         </el-form-item>
         <el-form-item label="地位" prop="status">
           <el-switch v-model="form.status"
@@ -165,6 +169,9 @@ const data = reactive({
       {required: true, message: '无效的值', trigger: 'blur'}
     ],
     code: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    sort: [
       {required: true, message: '无效的值', trigger: 'blur'}
     ]
   },
