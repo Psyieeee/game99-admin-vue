@@ -513,11 +513,11 @@ function change(index_, title_) {
   /** 如果是重置密码,保险箱,体现 switch according to index */
   switch (index.value) {
     case 6 :
-      hint = '确定重置保险箱?'
+      hint = '提示?'
       open(hint, 1)
       break
     case 7 :
-      hint = '请输入您的谷歌验证码'
+      hint = '提示'
       open(hint, 2)
       break
     case 8 :
@@ -525,7 +525,7 @@ function change(index_, title_) {
       open(hint, 3)
       break
     case 9 :
-      hint = '请输入Vip等级'
+      hint = '修改VIP等级'
       open(hint, 4)
       break
     case 2 :
@@ -546,7 +546,7 @@ function reset() {
 /**  打开提示框 open prompt box*/
 function open(hint, type) {
   if (type === 1) {
-    proxy.$modal.confirm(hint, '提示', {
+    proxy.$modal.confirm(hint, '输入您的谷歌验证码', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning'
@@ -572,7 +572,7 @@ function open(hint, type) {
       })
     })
   } else if (type == 2) {
-    proxy.$modal.prompt(hint, '提示', {
+    proxy.$modal.prompt(hint, '请输入您的谷歌验证码', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       inputPattern: /^[0-9]{1,10}$/,

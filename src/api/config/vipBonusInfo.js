@@ -121,7 +121,39 @@ export function getRewardIcons(){
     })
 }
 
+export function getUploadedImages(data){
+    return request({
+        url:url.game99PlatformAdminWeb+"/config/vipBonusInfo/getUploadedImages",
+        method:'post',
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        },
+        data
+    })
+}
 
+export function removeAndListImages(type,platform,field, imageUrl){
+    return request({
+        url:url.game99PlatformAdminWeb+"/config/vipBonusInfo/getImagesAfterRemoved",
+        method:'post',
+        data: {
+            url: imageUrl,
+            platform: platform,
+            type: type,
+            field: field
+        }
+    })
+}
+
+export function cleanImagesByType(types){
+    return request({
+        url:url.game99PlatformAdminWeb+"/config/vipBonusInfo/cleanImagesByType",
+        method:'post',
+        data: {
+            types: types
+        }
+    })
+}
 
 
 
