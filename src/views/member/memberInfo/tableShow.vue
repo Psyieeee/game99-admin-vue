@@ -85,12 +85,12 @@
         </div>
       </div>
     </div>
-    <div class="lotteryInfo">
-      <div class="title">彩票检测</div>
-      <div class="mount" style="width: 80%">
-        <div class="font">异常投注次数: {{ dataInfo.彩票异常投注次数 }}</div>
-      </div>
-    </div>
+<!--    <div class="lotteryInfo">-->
+<!--      <div class="title">彩票检测</div>-->
+<!--      <div class="mount" style="width: 80%">-->
+<!--        <div class="font">异常投注次数: {{ dataInfo.彩票异常投注次数 }}</div>-->
+<!--      </div>-->
+<!--    </div>-->
     <div class="playInfo">
       <div class="title" style="border-right:  1px solid rgba(0, 0, 0, 0.10);">游戏盈利(一月内)</div>
       <div class="mount" style="width: 80%">
