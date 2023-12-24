@@ -31,7 +31,7 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="tableList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="VIP 水平" min-width="180" prop="vipLevel"/>
+      <el-table-column align="center" label="VIP等级" min-width="180" prop="vipLevel"/>
       <el-table-column align="center" label="链接" min-width="180" prop="supportLink"/>
       <el-table-column label="地位" prop="status" align="center" width="180">
         <template #default="scope">
