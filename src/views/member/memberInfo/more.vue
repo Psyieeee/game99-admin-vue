@@ -513,7 +513,7 @@ function change(index_, title_) {
   /** 如果是重置密码,保险箱,体现 switch according to index */
   switch (index.value) {
     case 6 :
-      hint = '确定重置保险箱?'
+      hint = '提示?'
       open(hint, 1)
       break
     case 7 :
@@ -546,7 +546,7 @@ function reset() {
 /**  打开提示框 open prompt box*/
 function open(hint, type) {
   if (type === 1) {
-    proxy.$modal.confirm(hint, '提示', {
+    proxy.$modal.confirm(hint, '输入您的谷歌验证码', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning'
