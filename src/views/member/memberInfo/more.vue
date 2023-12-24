@@ -517,7 +517,7 @@ function change(index_, title_) {
       open(hint, 1)
       break
     case 7 :
-      hint = '请输入您的谷歌验证码'
+      hint = '提示'
       open(hint, 2)
       break
     case 8 :
@@ -572,7 +572,7 @@ function open(hint, type) {
       })
     })
   } else if (type == 2) {
-    proxy.$modal.prompt(hint, '提示', {
+    proxy.$modal.prompt(hint, '请输入您的谷歌验证码', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       inputPattern: /^[0-9]{1,10}$/,
