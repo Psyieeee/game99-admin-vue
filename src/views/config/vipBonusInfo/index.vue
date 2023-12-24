@@ -583,7 +583,7 @@ import {
   vipBonusInfoUpdateStatus,
   getVipBonusInfoList,
   getAllVipBonusBanner,
-  getAllVipBonusLogo, getRewardIcons,
+  getAllVipBonusLogo,
   removeVipBonusBanner,
   removeVipBonusLogo,
   uploadVipBonusBanner,
