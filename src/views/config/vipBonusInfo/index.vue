@@ -927,6 +927,7 @@ async function removeImage(platform, type, field, imageUrl) {
     switch ( type ) {
       case 'rewardImg': {
         configurations.value.rewardIcons[platform] = updatedImages;
+        updateSignInRewardIcons({type: type, platform: platform, field: field});
         break;
       }
       case 'statusImg': {
@@ -1124,15 +1125,25 @@ function customDay_populateSignInConfigTable(){
 }
 function updateSignInRewardIcons(param) {
   const icons = configurations.value.rewardIcons[param.platform];
-  const dataList = configurations.value.signIn.listOfDailyData;
+  const signIn = configurations.value.signIn;
+  const dataList = signIn.listOfDailyData;
 
   if (icons.length <= 0) return;
 
-  dataList.forEach((dataPerVip) => {
-    icons.forEach((icon, i) => {
-      dataPerVip.config[i].rewardIcon[param.platform] = getOriginalImageLink(icon);
+  if ( dataList.length <= 0 ) {
+    signIn.dailyData.forEach( (data,i) => {
+      data.rewardIcon[param.platform] = icons[i];
     });
-  });
+  } else {
+    dataList.forEach((dataPerVip) => {
+      dataPerVip = Array.isArray(dataPerVip) ? dataPerVip : [dataPerVip];
+      dataPerVip.forEach( data => {
+        data.config.forEach( (config,i) => {
+          config.rewardIcon[param.platform] = i >= icons.length ? null : icons[i];
+        })
+      })
+    });
+  }
 }
 
 function populateSignInConfigTable(){
