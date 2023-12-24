@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form v-show="showSearch" ref="queryRef" :inline="true" :model="queryParams" label-width="88px">
+    <el-form v-show="showSearch" ref="queryRef" :inline="true" :model="queryParams">
       <el-form-item class="input-wd25" label="游戏类型" prop="gameType">
         <el-select v-model="queryParams.gameType" clearable placeholder="请选择平台 游戏类型">
           <el-option
@@ -96,15 +96,15 @@
       <el-table-column align="center" label="R推荐赌注乘数" prop="referralBetMultiplier"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" width="120">
         <template #default="scope">
-          <el-button
-              v-hasPermi="['member:memberReferral:update']"
-              icon="Edit"
-              link
-              size="small"
-              type="primary"
-              @click="handleUpdate(scope.row)"
-          >修改
-          </el-button>
+<!--          <el-button-->
+<!--              v-hasPermi="['member:memberReferral:update']"-->
+<!--              icon="Edit"-->
+<!--              link-->
+<!--              size="small"-->
+<!--              type="primary"-->
+<!--              @click="handleUpdate(scope.row)"-->
+<!--          >修改-->
+<!--          </el-button>-->
           <el-button
               v-hasPermi="['member:memberReferral:remove']"
               fixed="right"

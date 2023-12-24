@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" >
-      <el-form-item label="语言" prop="type">
-        <el-select v-model="queryParams.type" placeholder="语言" clearable>
+      <el-form-item label="类型" prop="type">
+        <el-select v-model="queryParams.type" placeholder="类型" clearable>
           <el-option
               v-for="type in types"
               :key="type.value"
@@ -46,7 +46,7 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="storeList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="费用" min-width="180" prop="amount"/>
+      <el-table-column align="center" label="充值金额" min-width="180" prop="amount"/>
       <el-table-column align="center" label="类型" min-width="180" prop="type">
         <template #default="scope">{{types[scope.row.type].label}}</template>
       </el-table-column>
@@ -104,8 +104,8 @@
       <el-form ref="queryForm" :model="form" :rules="rules" label-width="120px">
         <div class="el-row">
           <div class="el-col-lg-12">
-            <el-form-item label="费用" prop="amount">
-              <el-input type="number" v-model="form.amount" placeholder="费用"/>
+            <el-form-item label="充值金额" prop="amount">
+              <el-input type="number" v-model="form.amount" placeholder="充值金额"/>
             </el-form-item>
             <el-form-item label="类型" prop="type">
               <el-select v-model="form.type" clearable placeholder="Select">
@@ -290,7 +290,7 @@ function handleUpdate(row) {
   });
   console.log(JSON.stringify(form.value) + " @@@@")
   open.value = true
-  title.value = '更新记录'
+  title.value = '修改充值赠送配置'
 }
 
 /**  删除按钮操作 handle delete */
