@@ -525,7 +525,7 @@ function change(index_, title_) {
       open(hint, 3)
       break
     case 9 :
-      hint = '请输入Vip等级'
+      hint = '修改VIP等级'
       open(hint, 4)
       break
     case 2 :
