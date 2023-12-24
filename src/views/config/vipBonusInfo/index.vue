@@ -1,24 +1,24 @@
 <template>
   <div class="app-container">
     <el-form :disabled="isButtonDisabled" :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item prop="title" class="input-wd20">
+      <el-form-item prop="标题" class="input-wd20">
         <el-input
             v-model="queryParams.title"
-            placeholder="Enter Title"
+            placeholder="输入标题"
             clearable
             @keyup.enter="handleSearchQuery"/>
       </el-form-item>
-      <el-form-item prop="effect">
-        <el-select v-model="queryParams.effect" placeholder="Effect" clearable>
+      <el-form-item prop="效果">
+        <el-select v-model="queryParams.effect" placeholder="效果" clearable>
           <el-option label="Disabled" value="0"></el-option>
           <el-option label="Enabled" value="1"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="Bonus Type" prop="typeId" label-width="100px">
+      <el-form-item label="奖励类型" prop="typeId" label-width="100px">
         <el-select
             filterable
             v-model="queryParams.typeId"
-            placeholder="Select Bonus Type"
+            placeholder="选择奖金类型"
             clearable
             style="width: 350px">
           <el-option
@@ -29,8 +29,8 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="Search" size="small" @click="handleSearchQuery">Search</el-button>
-        <el-button icon="Refresh" size="small" @click="handleResetQuery">Reset</el-button>
+        <el-button type="primary" icon="Search" size="small" @click="handleSearchQuery">搜索</el-button>
+        <el-button icon="Refresh" size="small" @click="handleResetQuery">重置</el-button>
       </el-form-item>
     </el-form>
 
@@ -42,7 +42,7 @@
             size="small"
             :disabled="isButtonDisabled"
             @click="handleAddBonusActivity"
-            v-hasPermi="['config:vipBonusInfo:add']">Add
+            v-hasPermi="['config:vipBonusInfo:add']">添加
         </el-button>
         <el-button
             type="danger"
@@ -51,7 +51,7 @@
             size="small"
             :disabled="multiple"
             @click="handleDeleteTableData"
-            v-hasPermi="['config:vipBonusInfo:remove']">Delete
+            v-hasPermi="['config:vipBonusInfo:remove']">删除
         </el-button>
         <el-button
             type="warning"
@@ -60,7 +60,7 @@
             size="small"
             :disabled="isButtonDisabled"
             @click="handleExportData"
-            v-hasPermi="['config:vipBonusInfo:export']">Export
+            v-hasPermi="['config:vipBonusInfo:export']">导出
         </el-button>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="listVipBonusActivities"></right-toolbar>
     </el-row>
@@ -68,9 +68,9 @@
 <!-- display data into table-->
     <el-table v-loading="loading" :data="vipBonusInfoList" @selection-change="handleMultipleSelection">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="Title" align="center" prop="title" min-width="180"/>
-      <el-table-column label="Bonus Type" align="center" prop="typeId" :formatter="formatterActivityType"  min-width="100"/>
-      <el-table-column label="Supported Platform" align="center" prop="platforms" min-width="120"/>
+      <el-table-column label="标题" align="center" prop="title" min-width="180"/>
+      <el-table-column label="奖励类型" align="center" prop="typeId" :formatter="formatterActivityType"  min-width="100"/>
+      <el-table-column label="支持的平台" align="center" prop="platforms" min-width="120"/>
 <!--      <el-table-column label="Icon" align="center" prop="icon">-->
 <!--          <template #default="scope">-->
 <!--            <el-image-->
@@ -80,18 +80,18 @@
 <!--            </el-image>-->
 <!--          </template>-->
 <!--        </el-table-column>-->
-      <el-table-column label="Content" align="center" prop="content"  min-width="100">
+      <el-table-column label="内容" align="center" prop="content"  min-width="100">
         <template v-slot="{row}">
           <div v-html="row.content" style="max-height: 80px"></div>
         </template>
       </el-table-column>
-      <el-table-column label="Jump Link" align="center" prop="url"  min-width="100"/>
-      <el-table-column label="Schedule Type" align="center" prop="scheduleType"  min-width="100"/>
-      <el-table-column label="Start Effect" align="center" prop="startEffect"  min-width="120"/>
-      <el-table-column label="End Effect" align="center" prop="endEffect"  min-width="120"/>
-      <el-table-column label="Create Time" align="center" prop="createTime"  min-width="120"/>
-      <el-table-column label="Home Popup" align="center" prop="isDisplayHome"  min-width="100"/>
-      <el-table-column label="Effect" align="center" prop="effect">
+      <el-table-column label="跳转链接" align="center" prop="url"  min-width="100"/>
+      <el-table-column label="日程类型" align="center" prop="scheduleType"  min-width="100"/>
+      <el-table-column label="开始效果" align="center" prop="startEffect"  min-width="120"/>
+      <el-table-column label="结束效果" align="center" prop="endEffect"  min-width="120"/>
+      <el-table-column label="创建时间" align="center" prop="createTime"  min-width="120"/>
+      <el-table-column label="主页弹出窗口" align="center" prop="isDisplayHome"  min-width="100"/>
+      <el-table-column label="效果" align="center" prop="effect">
         <template #default="scope">
           <el-switch
               v-model="scope.row.effect"
@@ -102,7 +102,7 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="Action" align="center" class-name="small-padding fixed-width" fixed="right" min-width="120">
+      <el-table-column label="动作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="120">
         <template #default="scope">
           <el-button
               :disabled="isButtonDisabled"
@@ -111,7 +111,7 @@
               link
               icon="Edit"
               @click="handleUpdateForm(scope.row)"
-              v-hasPermi="['config:vipBonusInfo:edit']">Edit
+              v-hasPermi="['config:vipBonusInfo:edit']">编辑
           </el-button>
           <el-button
               :disabled="isButtonDisabled"
@@ -120,7 +120,7 @@
               link
               icon="Delete"
               @click="handleDeleteTableData(scope.row)"
-              v-hasPermi="['config:vipBonusInfo:remove']"> Delete
+              v-hasPermi="['config:vipBonusInfo:remove']"> 删除
           </el-button>
         </template>
       </el-table-column>
@@ -138,9 +138,12 @@
     <el-dialog
         :title="title"
         v-model="open"
-        width="40%"
-        style="height: auto;
-        padding-bottom: 20px"
+        style="
+          min-width: 60%;
+          max-width: 80%;
+          height: auto;
+          padding-bottom: 20px
+        "
         append--body
         @closed="handleClosedForm"
         :close-on-click-modal="false"
@@ -148,11 +151,11 @@
       <el-form ref="vipBonusForm" :model="form" :rules="rules" label-width="120">
         <div class="el-row">
 <!-- Configurations -->
-          <div> <!--<div class="el-col el-col-14">-->
-            <label style="font-size: 25px; text-align: left">Basic Config</label>
+<!--          <div style="min-width: 40%"> -->
+          <div class="el-col el-col-9" style="padding-right: 50px">
+            <label style="font-size: 25px; text-align: left">基本配置</label>
             <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
-
-            <el-form-item label="Bonus Type" prop="typeId">
+            <el-form-item label="奖金类型" prop="typeId">
               <el-select
                   filterable
                   v-model="form.typeId"
@@ -166,17 +169,16 @@
                     :value="bonusType.id"/>
               </el-select>
             </el-form-item><br>
-            <el-form-item label="Title" prop="title">
+            <el-form-item label="标题" prop="title">
               <el-input style="width: 350px" v-model="form.title" placeholder="请输入标题"/>
             </el-form-item> <br>
-            <el-form-item label="Schedule Type" prop="scheduleType">
+            <el-form-item label="时间表类型" prop="scheduleType">
               <el-radio-group v-model="form.scheduleType">
-                <el-radio label="1">Fixed Time</el-radio>
-                <el-radio label="2">Permanent</el-radio>
+                <el-radio label="1">固定时间</el-radio>
+                <el-radio label="2">永久性</el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form-item v-show="form.scheduleType === '1'" label="Effective Time" prop="dateRange" >
-              <div>
+            <el-form-item v-show="form.scheduleType === '1'" label="有效时间" style="width: 50%;" prop="dateRange" >
                 <el-date-picker type="daterange"
                                 v-model="dateRange"
                                 start-placeholder="开始时间"
@@ -186,9 +188,8 @@
                                 format="YYYY-MM-DD"
                                 value-format="YYYY-MM-DD HH:mm:ss"
                                 @change="calculateNumberOfDays"/>
-              </div>
             </el-form-item>
-            <el-form-item v-show="form.scheduleType === '2'" label="Start Date" prop="startDate">
+            <el-form-item v-show="form.scheduleType === '2'" label="开始日期" prop="startDate">
               <el-date-picker type="date"
                               v-model="form.startEffect"
                               placeholder="开始时间"
@@ -197,24 +198,43 @@
                               clearable>
               </el-date-picker>
             </el-form-item>
-            <el-form-item label="Home Popup" label-width="120">
+            <el-form-item label="主页弹出窗口" label-width="120">
               <el-switch
                   v-model="form.isDisplayHome"
                   class="ml-2"
                   style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
               />
             </el-form-item>
-            <el-form-item label="Platform" prop="platform">
+            <el-form-item label="平台" prop="platform">
               <el-checkbox-group v-model="form.platforms">
                 <el-checkbox v-for="(option, index) in platforms" :key="index" :label="option" @change="handleChangePlatform(option)">{{ option }}</el-checkbox>
               </el-checkbox-group>
             </el-form-item>
-            <label style="font-size: 25px; text-align: left">{{ vipBonusTypes.find((type) => type.id === form.typeId).name + ' Config'}}</label>
+<!-- Other Config -->
+            <label style="font-size: 25px;padding-top: 10px; text-align: left">其他配置</label>
             <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
-
+            <el-form-item label="跳跃类型" prop="jumpType">
+              <el-radio-group v-model="form.jumpType">
+                <el-radio label="0">奖励活动详情</el-radio>
+                <el-radio label="1">跳转链接</el-radio>
+              </el-radio-group>
+            </el-form-item>
+<!-- Jump Type -->
+            <div style="max-width: 1000px">
+              <el-form-item label="内容" prop="content" v-if="form.jumpType === '0'">
+                <WangEditor v-model="form.content" image-path="VipBonusInfo" style="max-width: 700px"/>
+              </el-form-item>
+              <el-form-item label="Url" prop="url" v-if="form.jumpType === '1'">
+                <el-input v-model="form.url" placeholder="请输入图标跳转链接"/>
+              </el-form-item>
+            </div>
+          </div>
+          <div class="el-col el-col-14" style="padding-bottom: 50px">
+            <label style="font-size: 25px; text-align: left">{{ vipBonusTypes.find((type) => type.id === form.typeId).name + ' 配置'}}</label>
+            <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
 <!-- Sign in Config -->
             <div v-if="form.typeId === 1">
-              <label>Upload Reward Icons</label>
+              <label>上传奖励图标</label>
               <el-form-item v-if="form.platforms.includes('web')" prop="webRewardIcon">
                 <div style="padding-right: 10px">
                   <div class="upload-reward-icon-button" @click="handleUploadIcon('rewardImg','web','web')">web</div>
@@ -238,7 +258,7 @@
                 </div>
               </el-form-item>
               <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
-              <label>Upload Status Icons</label>
+              <label>上传状态图标</label>
               <el-form-item v-if="form.platforms.includes('web')" label="web" style="padding-top: 10px; font-weight: bold" prop="statusIcon">
                 <input type="file" ref="fileInput" multiple style="display: none" @change="onFileInputChange()" />
                 <div class="image-container">
@@ -246,21 +266,21 @@
                     <div class="image-wrapper">
                       <el-image class="image-preview" :src="configurations.signIn.statusIcon.web.claimable"/>
                       <div v-if="configurations.signIn.statusIcon.web.claimable !== null" class="status-close-button" @click="removeImage('web','statusImg','claimable',configurations.signIn.statusIcon.web.claimable)">x</div>
-                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','claimable')">Claimable</div>
+                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','claimable')">可索赔</div>
                     </div>
                   </div>
                   <div class="image-item">
                     <div class="image-wrapper">
                       <el-image class="image-preview" :src="configurations.signIn.statusIcon.web.claimed"/>
                       <div v-if="configurations.signIn.statusIcon.web.claimed !== null" class="status-close-button" @click="removeImage('web','statusImg','claimed',configurations.signIn.statusIcon.web.claimed)">x</div>
-                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','claimed')">Claimed</div>
+                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','claimed')">已申请</div>
                     </div>
                   </div>
                   <div class="image-item">
                     <div class="image-wrapper">
                       <el-image class="image-preview" :src="configurations.signIn.statusIcon.web.notClaimable"/>
                       <div v-if="configurations.signIn.statusIcon.web.notClaimable !== null" class="status-close-button" @click="removeImage('web','statusImg','notClaimable',configurations.signIn.statusIcon.web.notClaimable)">x</div>
-                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','notClaimable')">Not Claimable</div>
+                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','notClaimable')">不可索赔</div>
                     </div>
                   </div>
 
@@ -268,7 +288,7 @@
                     <div class="image-wrapper">
                       <el-image class="image-preview" :src="configurations.signIn.statusIcon.web.notClaimed"/>
                       <div v-if="configurations.signIn.statusIcon.web.notClaimed !== null" class="status-close-button" @click="removeImage('web','statusImg','notClaimed',configurations.signIn.statusIcon.web.notClaimed)">x</div>
-                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','notClaimed')">Not Claimed</div>
+                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','notClaimed')">未申请</div>
                     </div>
                   </div>
 
@@ -281,21 +301,21 @@
                     <div class="image-wrapper">
                       <el-image class="image-preview" :src="configurations.signIn.statusIcon.mobile.claimable"/>
                       <div v-if="configurations.signIn.statusIcon.mobile.claimable !== null" class="status-close-button"  @click="removeImage('mobile','statusImg','claimable',configurations.signIn.statusIcon.mobile.claimable)">x</div>
-                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','claimable')">Claimable</div>
+                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','claimable')">可索赔</div>
                     </div>
                   </div>
                   <div class="image-item">
                     <div class="image-wrapper">
                       <el-image class="image-preview" :src="configurations.signIn.statusIcon.mobile.claimed"/>
                       <div v-if="configurations.signIn.statusIcon.mobile.claimed !== null" class="status-close-button" @click="removeImage('mobile','statusImg','claimed',configurations.signIn.statusIcon.mobile.claimed)">x</div>
-                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','claimed')">Claimed</div>
+                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','claimed')">已申请</div>
                     </div>
                   </div>
                   <div class="image-item">
                     <div class="image-wrapper">
                       <el-image class="image-preview" :src="configurations.signIn.statusIcon.mobile.notClaimable"/>
                       <div v-if="configurations.signIn.statusIcon.mobile.notClaimable !== null" class="status-close-button" @click="removeImage('mobile','statusImg','notClaimable',configurations.signIn.statusIcon.mobile.notClaimable)">x</div>
-                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','notClaimable')">Not Claimable</div>
+                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','notClaimable')">不可索赔</div>
                     </div>
                   </div>
 
@@ -303,29 +323,29 @@
                     <div class="image-wrapper">
                       <el-image class="image-preview" :src="configurations.signIn.statusIcon.mobile.notClaimed"/>
                       <div v-if="configurations.signIn.statusIcon.mobile.notClaimed !== null" class="status-close-button" @click="removeImage('mobile','statusImg','notClaimed',configurations.signIn.statusIcon.mobile.notClaimed)">x</div>
-                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','notClaimed')">Not Claimed</div>
+                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','notClaimed')">未申请</div>
                     </div>
                   </div>
                 </div>
               </el-form-item>
-              <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
-              <el-form-item label="Collect Method" prop="collectMethod">
+              <hr style="max-width: 800px; margin-top: 32px; margin-left: 0">
+              <el-form-item label="收集方法" prop="collectMethod">
                 <el-radio-group v-model="configurations.signIn.collectMethod">
-                  <el-radio label="1">Continuous</el-radio>
-                  <el-radio label="2">Cumulative</el-radio>
-                  <el-radio label="3">Corresponding Day</el-radio>
+                  <el-radio label="1">连续</el-radio>
+                  <el-radio label="2">累计</el-radio>
+                  <el-radio label="3">对应日</el-radio>
                 </el-radio-group>
               </el-form-item>
-              <el-form-item label="Cycle" prop="cycle">
-                  <el-input style="width: 350px" v-model="configurations.signIn.cycle" placeholder="Please enter a number of days" @change="populateSignInConfigTable(configurations.signIn.cycle)"/>
+              <el-form-item label="周期" prop="cycle">
+                <el-input style="width: 350px" v-model="configurations.signIn.cycle" placeholder="Please enter a number of days" @change="populateSignInConfigTable(configurations.signIn.cycle)"/>
               </el-form-item>
-              <el-form-item label="Custom Day" prop="customDay" @change="populateSignInConfigTable(configurations.signIn.cycle)">
+              <el-form-item label="自定义日" prop="customDay" @change="populateSignInConfigTable(configurations.signIn.cycle)">
                 <el-radio-group v-model="configurations.signIn.customDay" >
-                  <el-radio label="1">Enable</el-radio>
-                  <el-radio label="2">Disable</el-radio>
+                  <el-radio label="1">启用</el-radio>
+                  <el-radio label="2">禁用</el-radio>
                 </el-radio-group>
               </el-form-item>
-              <el-form-item label="VIP Level">
+              <el-form-item label="VIP 级别">
                 <el-select
                     v-model="configurations.vipLevel"
                     filterable
@@ -341,124 +361,106 @@
                   ></el-option>
                 </el-select>
                 <div style="padding-left: 10px">
-                  <el-button type="primary" size="small" @click="saveSignInConfig">Save</el-button>
-                  <el-button icon="Refresh" size="small" @click="resetSignInConfig">Reset</el-button>
+                  <el-button type="primary" size="small" @click="saveSignInConfig">节省</el-button>
+                  <el-button icon="Refresh" size="small" @click="resetSignInConfig">重置</el-button>
                 </div>
               </el-form-item>
-              <el-table :data="configurations.signIn.dailyData" style="max-width: 760px; border: 5px solid #e0e0e0; border-radius: 5px" >
-                <el-table-column label="Day" width="50px" align="center" prop="day">
-                  <template #default="scope">
-                    <div v-if="configurations.signIn.customDay === '1'">
-                      <el-input v-model="scope.row.day"/>
-                    </div>
-                    <div v-else>
-                      {{ scope.row.day }}
-                    </div>
-                  </template>
-                </el-table-column>
-                <el-table-column label="Reward Type" width="105px" align="center"  prop="rewardType">
-                  <template #default="scope">
-                    <el-select
-                        filterable
-                        v-model="scope.row.rewardType"
-                        style="width: 100px"
-                        @change="handleRewardChangeType(scope)"
-                    >
-                      <el-option
-                          label="Fixed"
-                          value="1"
-                      ></el-option>
-                      <el-option
-                          label="Random"
-                          value="2"
-                      ></el-option>
-                    </el-select>
-                  </template>
-                </el-table-column>
-                <el-table-column label="Amount" width="75px" align="center">
-                  <template #default="scope">
-                    <template v-if="scope.row.rewardType === '1'">
-                      <el-input v-model="scope.row.rewardAmount.max"/>
+              <el-form-item style="left: 0">
+                <el-table :data="configurations.signIn.dailyData" style="max-width: 680px; max-height: 350px;overflow-y:auto; border: 5px solid #e0e0e0; border-radius: 5px" >
+                  <el-table-column label="日" width="50px" align="center" prop="day">
+                    <template #default="scope">
+                      <div v-if="configurations.signIn.customDay === '1'">
+                        <el-input v-model="scope.row.day"/>
+                      </div>
+                      <div v-else>
+                        {{ scope.row.day }}
+                      </div>
                     </template>
-                    <template v-else>
-                      <el-input style="width: 50px; right: 5px" v-model="scope.row.rewardAmount.min"/>
-                      -
-                      <el-input style="width: 50px; left: 5px" v-model="scope.row.rewardAmount.max"/>
+                  </el-table-column>
+                  <el-table-column label="奖励类型" width="105px" align="center"  prop="rewardType">
+                    <template #default="scope">
+                      <el-select
+                          filterable
+                          v-model="scope.row.rewardType"
+                          style="width: 100px"
+                          @change="handleRewardChangeType(scope)"
+                      >
+                        <el-option
+                            label="固定式"
+                            value="1"
+                        ></el-option>
+                        <el-option
+                            label="随机"
+                            value="2"
+                        ></el-option>
+                      </el-select>
                     </template>
-                  </template>
-                </el-table-column>
-                <el-table-column label="Required Deposit" width="135px" align="center"  prop="topUpRequirement">
-                  <template #default="scope">
-                    <el-input v-model="scope.row.topUpRequirement"/>
-                  </template>
-                </el-table-column>
-                <el-table-column label="Required Bet" width="105px" align="center"  prop="codingRequirement">
-                  <template #default="scope">
-                    <el-input v-model="scope.row.codingRequirement"/>
-                  </template>
-                </el-table-column>
-                <el-table-column label="Web Reward Icon" align="center" width="135px">
-                  <template #default="scope">
-                    <el-select
-                        filterable
-                        v-model="scope.row.rewardIcon.web"
-                        style="width: 120px"
-                    >
-                      <template #prefix>
-                        <el-image style="width: 60px; height: 60px; margin-top: 5px; margin-bottom: 5px; margin-left: 10px " :src="scope.row.rewardIcon.web"/>
+                  </el-table-column>
+                  <el-table-column label="金额" width="70px" align="center">
+                    <template #default="scope">
+                      <template v-if="scope.row.rewardType === '1'">
+                        <el-input v-model="scope.row.rewardAmount.max"/>
                       </template>
-                      <el-option
-                          label=" "
-                          v-for="icon in ( scope.row.rewardType === '1' ? configurations.rewardIcons.web : treasureIcons)"
-                          :value="icon"
-                          style="width: 120px; height: 100px; margin-left: -15px"
-                      >
-                        <el-image style="width: 50px; height: 50px;margin-top: 10px; margin-left: 25px" :src="icon"  />
-                      </el-option>
-                    </el-select>
-                  </template>
-                </el-table-column>
-                <el-table-column label="Mobile Reward Icon" align="center" width="150px">
-                  <template #default="scope">
-                    <el-select
-                        filterable
-                        v-model="scope.row.rewardIcon.mobile"
-                        style="width: 120px"
-                    >
-                      <template #prefix>
-                        <el-image style="width: 60px; height: 60px; margin-top: 5px; margin-bottom: 5px; margin-left: 10px " :src="scope.row.rewardIcon.mobile"/>
+                      <template v-else>
+                        <el-input style="width: 50px; right: 5px" v-model="scope.row.rewardAmount.min"/>
+                        -
+                        <el-input style="width: 50px; left: 5px" v-model="scope.row.rewardAmount.max"/>
                       </template>
-                      <el-option
-                          label=" "
-                          v-for="icon in ( scope.row.rewardType === '1' ? configurations.rewardIcons.mobile : treasureIcons)"
-                          :value="icon"
-                          style="width: 120px; height: 100px; margin-left: -15px"
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="所需存款" width="70px" align="center"  prop="topUpRequirement">
+                    <template #default="scope">
+                      <el-input v-model="scope.row.topUpRequirement"/>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="所需投注" width="70px" align="center"  prop="codingRequirement">
+                    <template #default="scope">
+                      <el-input v-model="scope.row.codingRequirement"/>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="Web 奖励图标" align="center" width="135px">
+                    <template #default="scope">
+                      <el-select
+                          filterable
+                          v-model="scope.row.rewardIcon.web"
+                          style="width: 120px"
                       >
-                        <el-image style="width: 50px; height: 50px;margin-top: 10px; margin-left: 25px" :src="icon"  />
-                      </el-option>
-                    </el-select>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </div>
-
-
-<!-- Other Config -->
-            <label style="font-size: 25px;padding-top: 10px; text-align: left">Other Config</label>
-            <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
-            <el-form-item label="Jump Type" prop="jumpType">
-              <el-radio-group v-model="form.jumpType">
-                <el-radio label="0">Bonus Activity Details</el-radio>
-                <el-radio label="1">Jump Link</el-radio>
-              </el-radio-group>
-            </el-form-item>
-<!-- Jump Type -->
-            <div style="max-width: 1000px">
-              <el-form-item label="Content" prop="content" v-if="form.jumpType === '0'">
-                <WangEditor v-model="form.content" image-path="VipBonusInfo" style="max-width: 700px"/>
-              </el-form-item>
-              <el-form-item label="Url" prop="url" v-if="form.jumpType === '1'">
-                <el-input v-model="form.url" placeholder="请输入图标跳转链接"/>
+                        <template #prefix>
+                          <el-image style="width: 60px; height: 60px; margin-top: 5px; margin-bottom: 5px; margin-left: 10px " :src="scope.row.rewardIcon.web"/>
+                        </template>
+                        <el-option
+                            label=" "
+                            v-for="icon in ( scope.row.rewardType === '1' ? configurations.rewardIcons.web : treasureIcons)"
+                            :value="icon"
+                            style="width: 120px; height: 100px; margin-left: -15px"
+                        >
+                          <el-image style="width: 50px; height: 50px;margin-top: 10px; margin-left: 25px" :src="icon"  />
+                        </el-option>
+                      </el-select>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="Mobile 奖励图标" align="center" width="150px">
+                    <template #default="scope">
+                      <el-select
+                          filterable
+                          v-model="scope.row.rewardIcon.mobile"
+                          style="width: 120px"
+                      >
+                        <template #prefix>
+                          <el-image style="width: 60px; height: 60px; margin-top: 5px; margin-bottom: 5px; margin-left: 10px " :src="scope.row.rewardIcon.mobile"/>
+                        </template>
+                        <el-option
+                            label=" "
+                            v-for="icon in ( scope.row.rewardType === '1' ? configurations.rewardIcons.mobile : treasureIcons)"
+                            :value="icon"
+                            style="width: 120px; height: 100px; margin-left: -15px"
+                        >
+                          <el-image style="width: 50px; height: 50px;margin-top: 10px; margin-left: 25px" :src="icon"  />
+                        </el-option>
+                      </el-select>
+                    </template>
+                  </el-table-column>
+                </el-table>
               </el-form-item>
             </div>
           </div>
@@ -558,8 +560,8 @@
 
 <!-- Footer -->
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleSubmitForm">Submit</el-button>
-        <el-button @click="open=false">Close</el-button>
+        <el-button type="primary" @click="handleSubmitForm">提交</el-button>
+        <el-button @click="open=false">关闭</el-button>
       </div>
     </el-dialog>
   </div>
@@ -972,7 +974,7 @@ function onFileInputChange() {
 async function handleAddBonusActivity(){
   await handleResetData()
   // await getBannerCreationRelatedImages(1);
-  title.value = "ADD BONUS ACTIVITY"
+  title.value = "添加奖励活动"
   open.value  = true
 }
 function handleUpdateForm(row) {
@@ -982,7 +984,7 @@ function handleUpdateForm(row) {
     // await populateBannerConfiguration()
     await populateBonusTypeConfiguration();
   }).then( () => {
-    title.value = "UPDATE BONUS ACTIVITY"
+    title.value = "更新奖励活动"
     open.value = true;
   })
 }
@@ -1353,7 +1355,7 @@ img {
 
 .upload-status-icon-button {
   line-height: 1;
-  font-size: 8px;
+  font-size: 12px;
   cursor: pointer;
   position: absolute;
   top: 50%;
