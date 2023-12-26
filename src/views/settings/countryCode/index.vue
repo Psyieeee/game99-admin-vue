@@ -52,7 +52,7 @@
           </a>
         </template>
       </el-table-column>
-      <el-table-column label="地位" prop="status" align="center" width="180">
+      <el-table-column label="状态" prop="status" align="center" width="180">
         <template #default="scope">
           <el-switch
               v-model="scope.row.status"
@@ -97,7 +97,7 @@
         <el-form-item label="排序号" prop="sort" >
           <el-input type="number" v-model="form.sort" placeholder="排序号"/>
         </el-form-item>
-        <el-form-item label="地位" prop="status">
+        <el-form-item label="状态" prop="status">
           <el-switch v-model="form.status"
                      :active-value=1
                      :inactive-value=0
@@ -214,7 +214,7 @@ function clearUpload(){
 function handleAdd() {
   reset()
   open.value = true
-  title.value = '添加记录'
+  title.value = '新增国家打码配置'
 }
 
 /** submit new data and handle insert data api*/
