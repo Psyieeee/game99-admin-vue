@@ -1,8 +1,23 @@
 <template>
   <div class="app-container">
+    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" >
+      <el-form-item label="键" prop="name">
+        <el-input
+            v-model="queryParams.memberId"
+            placeholder="键"
+            clearable
+            @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+      </el-form-item>
+    </el-form>
+
     <!--    button on the table for query-->
     <el-row :gutter="10" class="mb8">
-      <right-toolbar @queryTable="getList"></right-toolbar>
+      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <!--    display data in table -->
@@ -34,6 +49,7 @@ const {proxy} = getCurrentInstance();
 const tableList = ref([]);
 const loading = ref(true);
 const total = ref(0);
+const showSearch = ref(true);
 const data = reactive({
   /** 查询参数 query params*/
   queryParams: {
@@ -55,6 +71,17 @@ function getList() {
     loading.value = false;
     total.value = response.total
   });
+}
+
+function handleQuery() {
+  queryParams.pageNum = 1
+  getList()
+}
+
+function resetQuery() {
+  proxy.resetForm('queryRef')
+  handleQuery()
+  loading.value = false
 }
 
 getList()
