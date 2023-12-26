@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" >
-      <el-form-item label="键" prop="name">
+      <el-form-item label="键" prop="memberId">
         <el-input
             v-model="queryParams.memberId"
             placeholder="键"
