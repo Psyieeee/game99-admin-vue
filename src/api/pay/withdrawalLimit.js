@@ -45,3 +45,10 @@ export function getWithdrawalLimit(id) {
         method: 'get'
     })
 }
+
+export function changeStatus(id, status) {
+    return request({
+        url: url.game99PayAdminWeb + "/withdrawalLimitAdmin/changeStatus/" + id + "/" + status,
+        method: 'put'
+    })
+}
