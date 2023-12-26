@@ -144,6 +144,37 @@ export function getAllRewardIcon(){
     })
 }
 
+export function getUploadedImages(data){
+    return request({
+        url:url.game99PlatformAdminWeb+"/activity/activityInfo/getUploadedImages",
+        method:'post',
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        },
+        data
+    })
+}
+
+export function listImages(data){
+    return request({
+        url:url.game99PlatformAdminWeb+"/activity/activityInfo/listImages",
+        method:'post',
+        data: data
+    })
+}
+
+export function removeAndListImages(type,field, imageUrl){
+    return request({
+        url:url.game99PlatformAdminWeb+"/activity/activityInfo/getImagesAfterRemoved",
+        method:'post',
+        data: {
+            url: imageUrl,
+            type: type,
+            field: field
+        }
+    })
+}
+
 
 
 
