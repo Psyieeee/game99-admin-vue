@@ -139,9 +139,8 @@
         :title="title"
         v-model="open"
         style="
-          min-width: 60%;
-          max-width: 80%;
-          height: auto;
+          min-width: 1600px;
+          max-width: 70%;
           padding-bottom: 20px
         "
         append--body
@@ -152,7 +151,7 @@
         <div class="el-row">
 <!-- Configurations -->
 <!--          <div style="min-width: 40%"> -->
-          <div class="el-col el-col-9" style="padding-right: 50px">
+          <div class="el-col el-col-11" style="padding-right: 50px">
             <label style="font-size: 25px; text-align: left">基本配置</label>
             <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
             <el-form-item label="奖金类型" prop="typeId">
@@ -222,14 +221,14 @@
 <!-- Jump Type -->
             <div style="max-width: 1000px">
               <el-form-item label="内容" prop="content" v-if="form.jumpType === '0'">
-                <WangEditor v-model="form.content" image-path="VipBonusInfo" style="max-width: 700px"/>
+                <WangEditor v-model="form.content" image-path="VipBonusInfo" style="max-width: 680px"/>
               </el-form-item>
               <el-form-item label="Url" prop="url" v-if="form.jumpType === '1'">
-                <el-input v-model="form.url" placeholder="请输入图标跳转链接"/>
+                <el-input v-model="form.url" placeholder="请输入图标跳转链接" style="max-width: 680px"/>
               </el-form-item>
             </div>
           </div>
-          <div class="el-col el-col-14" style="padding-bottom: 50px">
+          <div class="el-col el-col-12">
             <label style="font-size: 25px; text-align: left">{{ vipBonusTypes.find((type) => type.id === form.typeId).name + ' 配置'}}</label>
             <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
 <!-- Sign in Config -->
@@ -262,69 +261,50 @@
               <el-form-item v-if="form.platforms.includes('web')" label="web" style="padding-top: 10px; font-weight: bold" prop="statusIcon">
                 <input type="file" ref="fileInput" multiple style="display: none" @change="onFileInputChange()" />
                 <div class="image-container">
-                  <div class="image-item">
-                    <div class="image-wrapper">
-                      <el-image class="image-preview" :src="configurations.signIn.statusIcon.web.claimable"/>
-                      <div v-if="configurations.signIn.statusIcon.web.claimable !== null" class="status-close-button" @click="removeImage('web','statusImg','claimable',configurations.signIn.statusIcon.web.claimable)">x</div>
-                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','claimable')">可索赔</div>
-                    </div>
+                  <div class="image-wrapper">
+                    <el-image class="status-image-preview" :src="configurations.signIn.statusIcon.web.claimable"/>
+                    <div v-if="configurations.signIn.statusIcon.web.claimable !== null" class="status-close-button" @click="removeImage('web','statusImg','claimable',configurations.signIn.statusIcon.web.claimable)">x</div>
+                    <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','claimable')">可索赔</div>
                   </div>
-                  <div class="image-item">
-                    <div class="image-wrapper">
-                      <el-image class="image-preview" :src="configurations.signIn.statusIcon.web.claimed"/>
-                      <div v-if="configurations.signIn.statusIcon.web.claimed !== null" class="status-close-button" @click="removeImage('web','statusImg','claimed',configurations.signIn.statusIcon.web.claimed)">x</div>
-                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','claimed')">已申请</div>
-                    </div>
+                  <div class="image-wrapper">
+                    <el-image class="status-image-preview" :src="configurations.signIn.statusIcon.web.claimed"/>
+                    <div v-if="configurations.signIn.statusIcon.web.claimed !== null" class="status-close-button" @click="removeImage('web','statusImg','claimed',configurations.signIn.statusIcon.web.claimed)">x</div>
+                    <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','claimed')">已申请</div>
                   </div>
-                  <div class="image-item">
-                    <div class="image-wrapper">
-                      <el-image class="image-preview" :src="configurations.signIn.statusIcon.web.notClaimable"/>
-                      <div v-if="configurations.signIn.statusIcon.web.notClaimable !== null" class="status-close-button" @click="removeImage('web','statusImg','notClaimable',configurations.signIn.statusIcon.web.notClaimable)">x</div>
-                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','notClaimable')">不可索赔</div>
-                    </div>
+                  <div class="image-wrapper">
+                    <el-image class="status-image-preview" :src="configurations.signIn.statusIcon.web.notClaimable"/>
+                    <div v-if="configurations.signIn.statusIcon.web.notClaimable !== null" class="status-close-button" @click="removeImage('web','statusImg','notClaimable',configurations.signIn.statusIcon.web.notClaimable)">x</div>
+                    <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','notClaimable')">不可索赔</div>
                   </div>
-
-                  <div class="image-item">
-                    <div class="image-wrapper">
-                      <el-image class="image-preview" :src="configurations.signIn.statusIcon.web.notClaimed"/>
-                      <div v-if="configurations.signIn.statusIcon.web.notClaimed !== null" class="status-close-button" @click="removeImage('web','statusImg','notClaimed',configurations.signIn.statusIcon.web.notClaimed)">x</div>
-                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','notClaimed')">未申请</div>
-                    </div>
+                  <div class="image-wrapper">
+                    <el-image class="status-image-preview" :src="configurations.signIn.statusIcon.web.notClaimed"/>
+                    <div v-if="configurations.signIn.statusIcon.web.notClaimed !== null" class="status-close-button" @click="removeImage('web','statusImg','notClaimed',configurations.signIn.statusIcon.web.notClaimed)">x</div>
+                    <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','notClaimed')">未申请</div>
                   </div>
-
                 </div>
               </el-form-item>
               <el-form-item v-if="form.platforms.includes('mobile')" label="mobile" style="padding-top: 10px; font-weight: bold" prop="statusIcon">
                 <input type="file" ref="fileInput" multiple style="display: none" @change="onFileInputChange()" />
                 <div class="image-container">
-                  <div class="image-item">
-                    <div class="image-wrapper">
-                      <el-image class="image-preview" :src="configurations.signIn.statusIcon.mobile.claimable"/>
-                      <div v-if="configurations.signIn.statusIcon.mobile.claimable !== null" class="status-close-button"  @click="removeImage('mobile','statusImg','claimable',configurations.signIn.statusIcon.mobile.claimable)">x</div>
-                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','claimable')">可索赔</div>
-                    </div>
+                  <div class="image-wrapper">
+                    <el-image class="status-image-preview" :src="configurations.signIn.statusIcon.mobile.claimable"/>
+                    <div v-if="configurations.signIn.statusIcon.mobile.claimable !== null" class="status-close-button"  @click="removeImage('mobile','statusImg','claimable',configurations.signIn.statusIcon.mobile.claimable)">x</div>
+                    <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','claimable')">可索赔</div>
                   </div>
-                  <div class="image-item">
-                    <div class="image-wrapper">
-                      <el-image class="image-preview" :src="configurations.signIn.statusIcon.mobile.claimed"/>
-                      <div v-if="configurations.signIn.statusIcon.mobile.claimed !== null" class="status-close-button" @click="removeImage('mobile','statusImg','claimed',configurations.signIn.statusIcon.mobile.claimed)">x</div>
-                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','claimed')">已申请</div>
-                    </div>
+                  <div class="image-wrapper">
+                    <el-image class="status-image-preview" :src="configurations.signIn.statusIcon.mobile.claimed"/>
+                    <div v-if="configurations.signIn.statusIcon.mobile.claimed !== null" class="status-close-button" @click="removeImage('mobile','statusImg','claimed',configurations.signIn.statusIcon.mobile.claimed)">x</div>
+                    <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','claimed')">已申请</div>
                   </div>
-                  <div class="image-item">
-                    <div class="image-wrapper">
-                      <el-image class="image-preview" :src="configurations.signIn.statusIcon.mobile.notClaimable"/>
-                      <div v-if="configurations.signIn.statusIcon.mobile.notClaimable !== null" class="status-close-button" @click="removeImage('mobile','statusImg','notClaimable',configurations.signIn.statusIcon.mobile.notClaimable)">x</div>
-                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','notClaimable')">不可索赔</div>
-                    </div>
+                  <div class="image-wrapper">
+                    <el-image class="status-image-preview" :src="configurations.signIn.statusIcon.mobile.notClaimable"/>
+                    <div v-if="configurations.signIn.statusIcon.mobile.notClaimable !== null" class="status-close-button" @click="removeImage('mobile','statusImg','notClaimable',configurations.signIn.statusIcon.mobile.notClaimable)">x</div>
+                    <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','notClaimable')">不可索赔</div>
                   </div>
-
-                  <div class="image-item">
-                    <div class="image-wrapper">
-                      <el-image class="image-preview" :src="configurations.signIn.statusIcon.mobile.notClaimed"/>
-                      <div v-if="configurations.signIn.statusIcon.mobile.notClaimed !== null" class="status-close-button" @click="removeImage('mobile','statusImg','notClaimed',configurations.signIn.statusIcon.mobile.notClaimed)">x</div>
-                      <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','notClaimed')">未申请</div>
-                    </div>
+                  <div class="image-wrapper">
+                    <el-image class="status-image-preview" :src="configurations.signIn.statusIcon.mobile.notClaimed"/>
+                    <div v-if="configurations.signIn.statusIcon.mobile.notClaimed !== null" class="status-close-button" @click="removeImage('mobile','statusImg','notClaimed',configurations.signIn.statusIcon.mobile.notClaimed)">x</div>
+                    <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','notClaimed')">未申请</div>
                   </div>
                 </div>
               </el-form-item>
@@ -365,8 +345,8 @@
                   <el-button icon="Refresh" size="small" @click="resetSignInConfig">重置</el-button>
                 </div>
               </el-form-item>
-              <el-form-item style="left: 0">
-                <el-table :data="configurations.signIn.dailyData" style="max-width: 660px; max-height: 350px;overflow-y:auto; border: 5px solid #e0e0e0; border-radius: 5px" >
+              <el-form-item>
+                <el-table :data="configurations.signIn.dailyData" style="max-width: 670px; max-height: 430px;overflow-y:auto; border: 5px solid #e0e0e0; border-radius: 5px" >
                   <el-table-column label="日" width="50px" align="center" prop="day">
                     <template #default="scope">
                       <div v-if="configurations.signIn.customDay === '1'">
@@ -1301,7 +1281,7 @@ img {
 }
 
 .upload-status-icon-button:hover {
-  font-size: 9px;
+  font-size: 10px;
   color: #3498db;
 }
 .status-close-button:hover {
@@ -1329,7 +1309,7 @@ img {
   padding-top: 5px;
   overflow-x: auto;
   overflow-y: auto;
-  max-height: 140px;
+  max-height: 120px;
   min-height: 65px;
   width: 550px;
   border: 3px solid #e0e0e0;
@@ -1370,10 +1350,9 @@ img {
 }
 
 .image-wrapper {
+  padding-left: 10px;
   position: relative;
   display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .image-preview {
@@ -1384,16 +1363,20 @@ img {
   /* Add any additional styling for .image-preview if needed */
 }
 
+.status-image-preview {
+  width: 80px;
+  height: 80px;
+  border: 3px solid #e0e0e0;
+  border-radius: 10px;
+  /* Add any additional styling for .image-preview if needed */
+}
+
 .upload-status-icon-button {
-  line-height: 1;
-  font-size: 12px;
+  font-size: 10px;
   cursor: pointer;
   position: absolute;
   top: 50%;
-  left: 50%;
+  left: 55%;
   transform: translate(-50%, -50%);
-  font-weight: bold;
-  white-space: pre-line; /* Allows for line breaks specified in the text */
-  text-align: center; /* Centers the text within the button */
 }
 </style>
