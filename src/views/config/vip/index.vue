@@ -64,9 +64,9 @@
          <el-form-item label="周俸禄" prop="weekBonus">
            <el-input v-model="form.weekBonus" placeholder="请输入周俸禄" type="number" />
          </el-form-item>
-<!--         <el-form-item label="月俸禄" prop="monthBonus">
+         <el-form-item label="月俸禄" prop="monthBonus">
            <el-input v-model="form.monthBonus" placeholder="请输入月俸禄" type="number" />
-         </el-form-item>-->
+         </el-form-item>
          <el-form-item label="需求打码量" prop="bcode">
            <el-input v-model="form.bcode" placeholder="请输入需求打码量" type="number" />
          </el-form-item>
@@ -93,9 +93,9 @@
          <el-form-item label="周俸禄" prop="weekBonus">
            <el-input v-model="form.weekBonus" placeholder="请输入周俸禄" type="number" />
          </el-form-item>
-<!--         <el-form-item label="月俸禄" prop="monthBonus">
+        <el-form-item label="月俸禄" prop="monthBonus">
            <el-input v-model="form.monthBonus" placeholder="请输入月俸禄" type="number" />
-         </el-form-item>-->
+         </el-form-item>
          <el-form-item label="需求打码量" prop="bcode">
            <el-input v-model="form.bcode" placeholder="请输入需求打码量" type="number" />
          </el-form-item>
