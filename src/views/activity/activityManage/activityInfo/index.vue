@@ -25,7 +25,7 @@
             clearable
             style="width: 240px">
           <el-option
-              v-for="activityType in activityTypeOptions"
+              v-for="activityType in activityTypes"
               :key="activityType.id"
               :label="activityType.name"
               :value="activityType.id"/>
@@ -36,7 +36,6 @@
         <el-button icon="Refresh" size="small" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
-
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
@@ -147,10 +146,23 @@
     />
 
     <!-- 添加或修改活动信息对话框  add or update -->
-    <el-dialog :title="title" v-model="open" width="80%" style="height: auto;padding-bottom: 20px" append--body>
+    <el-dialog
+        :title="title"
+        v-model="open"
+        width="1500px"
+        style="
+          height: auto;
+          padding-bottom: 20px
+        "
+        append--body
+    >
       <el-form ref="activityForm" :model="form" :rules="rules" label-width="120">
+<!-- Configurations -->
         <div class="el-row">
-          <div class="el-col el-col-14">
+          <div class="el-col el-col-12" style="padding-right: 50px">
+            <label style="font-size: 25px; text-align: left">基本配置</label>
+            <hr style="max-width: 800px; margin-top: 15px; margin-left: 0">
+
             <el-form-item label="活动类型" prop="typeId">
               <el-select
                   filterable
@@ -159,7 +171,7 @@
                   clearable
                   style="width: 350px">
                 <el-option
-                    v-for="activityType in activityTypeOptions"
+                    v-for="activityType in activityTypes"
                     :key="activityType.id"
                     :label="activityType.name"
                     :value="activityType.id"/>
@@ -168,52 +180,32 @@
             <el-form-item label="标题" prop="title">
               <el-input style="width: 350px" v-model="form.title" placeholder="请输入标题"/>
             </el-form-item> <br>
-            <el-form-item label="Schedule Type" prop="scheduleType">
+            <el-form-item label="时间表类型" prop="scheduleType">
               <el-radio-group v-model="form.scheduleType">
                 <el-radio label="1">Fixed Time</el-radio>
                 <el-radio label="2">Permanent</el-radio>
               </el-radio-group>
             </el-form-item>
-            <div v-if="form.scheduleType === '1'">
-              <el-form-item label="Effective Time" prop="selectDate">
-                <div>
-                  <el-date-picker type="daterange"
-                                  v-model="form.selectDate"
-                                  start-placeholder="开始时间"
-                                  end-placeholder="开始时间"
-                                  range-separator="至"
-                                  clearable
-                                  format="YYYY-MM-DD"
-                                  value-format="YYYY-MM-DD HH:mm:ss"
-                                  @change="calculateNumberOfDays"
-                  />
-                </div>
-              </el-form-item>
-              <el-form-item label="Show Time" prop="showTime">
-                <div>
-                  <el-date-picker type="daterange"
-                                  v-model="form.showTime"
-                                  start-placeholder="开始时间"
-                                  end-placeholder="开始时间"
-                                  range-separator="至"
-                                  clearable
-                                  format="YYYY-MM-DD"
-                                  value-format="YYYY-MM-DD HH:mm:ss"
-                  />
-                </div>
-              </el-form-item>
-            </div>
-            <div v-if="form.scheduleType === '2'">
-              <el-form-item label="Start Date" prop="startDate">
-                <el-date-picker type="date"
-                                v-model="form.startEffect"
-                                placeholder="开始时间"
-                                format="YYYY-MM-DD"
-                                value-format="YYYY-MM-DD HH:mm:ss"
-                                clearable>
-                </el-date-picker>
-              </el-form-item>
-            </div>
+            <el-form-item v-show="form.scheduleType === '1'" label="有效时间" style="width: 50%;" prop="dateRange" >
+              <el-date-picker type="daterange"
+                              v-model="selectDate"
+                              start-placeholder="开始时间"
+                              end-placeholder="开始时间"
+                              range-separator="至"
+                              clearable
+                              format="YYYY-MM-DD"
+                              value-format="YYYY-MM-DD HH:mm:ss"
+                              @change="calculateNumberOfDays"/>
+            </el-form-item>
+            <el-form-item v-show="form.scheduleType === '2'" label="开始日期" prop="startDate">
+              <el-date-picker type="date"
+                              v-model="form.startEffect"
+                              placeholder="开始时间"
+                              format="YYYY-MM-DD"
+                              value-format="YYYY-MM-DD HH:mm:ss"
+                              clearable>
+              </el-date-picker>
+            </el-form-item>
             <el-form-item label="Home Popup" label-width="120">
               <el-switch
                   v-model="form.isDisplayHome"
@@ -221,8 +213,12 @@
                   style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
               />
             </el-form-item>
+
+            <label style="font-size: 25px; text-align: left">{{ activityTypes.find((type) => type.id === form.typeId).name + ' 配置'}}</label>
+            <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
+
 <!--         入款优惠 DEPOSIT TYPE -->
-            <div v-if="form.typeId === 1">
+            <div v-if="form.typeId === 19">
               <el-form-item label="Reset Cycle" prop="resetCycle" @change="handleResetCycleChange(events.deposit.resetCycle)">
                 <el-radio-group v-model="events.deposit.resetCycle">
                   <el-radio label="1">Single</el-radio>
@@ -247,15 +243,15 @@
 
               <el-form-item v-if="events.deposit.activityCondition !== '1'" label-width="120" label="Deposit Method" prop="depositMethod">
                 <el-checkbox v-model="selectAllDepositMethod" @change="handleDepositSelectAll" style="padding-right: 10px">Select All</el-checkbox>
-                  <el-checkbox-group v-model="events.deposit.depositMethod">
-                    <el-checkbox v-for="item in depositOptions"
-                                 :label="item.value"
-                                 size="large"
-                                 style="width: auto"
-                    >
-                      {{ item.name }}
-                    </el-checkbox>
-                  </el-checkbox-group>
+                <el-checkbox-group v-model="events.deposit.depositMethod">
+                  <el-checkbox v-for="item in depositOptions"
+                               :label="item.value"
+                               size="large"
+                               style="width: auto"
+                  >
+                    {{ item.name }}
+                  </el-checkbox>
+                </el-checkbox-group>
               </el-form-item>
 
               <el-form-item label="Bonus Method" prop="bonusMethod">
@@ -288,11 +284,11 @@
                       </template>
                     </template>
                   </el-table-column>
-                    <el-table-column v-if="events.deposit.bonusMethod === '3'" label="Reward Limit" width="110px" align="center" prop="rewardLimit">
-                      <template #default="scope">
-                        <el-input v-model="scope.row.rewardLimit"/>
-                      </template>
-                    </el-table-column>
+                  <el-table-column v-if="events.deposit.bonusMethod === '3'" label="Reward Limit" width="110px" align="center" prop="rewardLimit">
+                    <template #default="scope">
+                      <el-input v-model="scope.row.rewardLimit"/>
+                    </template>
+                  </el-table-column>
                   <el-table-column label="Activity Description" width="150" align="center"  prop="activityDescription">
                     <template #default="scope">
                       <el-input v-model="scope.row.activityDescription" placeholder="Example Example"/>
@@ -308,51 +304,25 @@
               </el-form-item>
             </div>
 <!--         SIGN IN -->
-            <div v-if="form.typeId === 2">
-              <el-form-item label="Sign Method" prop="signMethod">
+            <div v-if="form.typeId === 20">
+              <el-form-item label="收集方法" prop="signMethod">
                 <el-radio-group v-model="events.signIn.signMethod">
                   <el-radio label="1">Continuous</el-radio>
                   <el-radio label="2">Cumulative</el-radio>
                   <el-radio label="3">Daily</el-radio>
                 </el-radio-group>
               </el-form-item>
-              <el-form-item label="Cycle" prop="cycle">
-                  <el-input style="width: 350px" v-model="events.signIn.cycle" placeholder="Please enter a number of days" @change="signInConfig(events.signIn.cycle)"/>
-              </el-form-item>
-              <el-form-item label="Prospect" prop="prospect">
-                <el-radio-group v-model="events.signIn.prospect">
-                  <el-radio label="1">Normal</el-radio>
-                  <el-radio label="2">VIP</el-radio>
-                </el-radio-group>
-              </el-form-item>
-              <el-form-item label="VIP Level" v-if="events.signIn.prospect === '2'">
-                <el-select
-                    v-model="events.vipLevel"
-                    filterable
-                    clearable
-                    style="width: 350px"
-                    @change="handleVipLevelChange"
-                >
-                  <el-option
-                      v-for="i in 30"
-                      :key="i"
-                      :label="'VIP ' + i"
-                      :value="i"
-                  ></el-option>
-                </el-select>
-                <div style="padding-left: 10px">
-                  <el-button type="primary" size="small" @click="saveVipConfig">Save</el-button>
-                  <el-button icon="Refresh" size="small" @click="resetVipConfig">Reset</el-button>
-                </div>
+              <el-form-item label="周期" prop="cycle">
+                <el-input style="width: 350px" v-model="events.signIn.cycle" placeholder="Please enter a number of days" @change="signInConfig(events.signIn.cycle)"/>
               </el-form-item>
               <el-form-item >
-                <el-table :data="signInData" style="width: 80%" >
-                  <el-table-column label="Day" width="70" align="center" prop="day">
+                <el-table :data="signInData" style="max-width: 560px; max-height: 390px;overflow-y:auto; border: 5px solid #e0e0e0; border-radius: 5px"  >
+                  <el-table-column label="日" width="50px" align="center" prop="day">
                     <template #default="scope">
                       {{ scope.row.day }}
                     </template>
                   </el-table-column>
-                  <el-table-column label="Type" width="100px" align="center"  prop="type">
+                  <el-table-column label="奖励类型" width="105px" align="center"  prop="type">
                     <template #default="scope">
                       <el-select
                           filterable
@@ -371,7 +341,7 @@
                       </el-select>
                     </template>
                   </el-table-column>
-                  <el-table-column label="Reward Amount" width="150" align="center">
+                  <el-table-column label="金额" width="80px" align="center">
                     <template #default="scope">
                       <template v-if="scope.row.type === '1'">
                         <el-input type="number" v-model="scope.row.rewardAmount.max"/>
@@ -383,17 +353,17 @@
                       </template>
                     </template>
                   </el-table-column>
-                  <el-table-column label="Top-up Requirement" width="160" align="center"  prop="topUpRequirement">
+                  <el-table-column label="所需存款" width="80px" align="center"  prop="topUpRequirement">
                     <template #default="scope">
                       <el-input v-model="scope.row.topUpRequirement"/>
                     </template>
                   </el-table-column>
-                  <el-table-column label="Coding Requirement" width="160" align="center"  prop="codingRequirement">
+                  <el-table-column label="所需投注" width="80px" align="center"  prop="codingRequirement">
                     <template #default="scope">
                       <el-input v-model="scope.row.codingRequirement"/>
                     </template>
                   </el-table-column>
-                  <el-table-column label="Check-in Icon" align="center" width="180">
+                  <el-table-column label="奖励图标" align="center" width="165px">
                     <template #default="scope">
                       <el-select
                           filterable
@@ -416,22 +386,29 @@
                   </el-table-column>
                 </el-table>
               </el-form-item>
+    </div>
+
+<!-- Other Config -->
+            <label style="font-size: 25px;padding-top: 10px; text-align: left">其他配置</label>
+            <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
+<!-- Jump Type -->
+            <div style="max-width: 1000px">
+              <el-form-item label="跳转类型" prop="type">
+                <el-radio-group v-model="form.type">
+                  <el-radio label="0">活动详情</el-radio>
+                  <el-radio label="1">内部浏览器</el-radio>
+                  <el-radio label="2">外部浏览器</el-radio>
+                </el-radio-group>
+              </el-form-item>
+              <el-form-item label="活动详情" prop="content" v-if="form.type === '0'">
+                <WangEditor v-model="form.content" style="max-width: 680px" image-path="ActivityInfo" />
+              </el-form-item>
+              <el-form-item label="跳转链接" prop="url" v-if="form.type === '1' || form.type === '2'">
+                <el-input v-model="form.url" placeholder="请输入图标跳转链接 " style="max-width: 680px"/>
+              </el-form-item>
             </div>
-            <el-form-item label="跳转类型" prop="type">
-              <el-radio-group v-model="form.type">
-                <el-radio label="0">活动详情</el-radio>
-                <el-radio label="1">内部浏览器</el-radio>
-                <el-radio label="2">外部浏览器</el-radio>
-              </el-radio-group>
-            </el-form-item>
-            <el-form-item label="活动详情" prop="content" v-if="form.type == 0">
-              <WangEditor v-model="form.content" image-path="ActivityInfo"/>
-            </el-form-item>
-            <el-form-item label="跳转链接" prop="url" v-if="form.type == 1 || form.type == 2">
-              <el-input v-model="form.url" placeholder="请输入图标跳转链接"/>
-            </el-form-item>
-        </div>
-          <div class="el-col el-col-8">
+          </div>
+          <div class="el-col el-col-12">
             <div>
               <label style="font-size: 25px; text-align: left">Create Banner</label>
               <el-radio-group style="float: right;" v-model="createBanner.type" >
@@ -444,14 +421,21 @@
             <div v-loading="loading" v-if="createBanner.type === '1'">
               <div class="preview" style="position: relative" id="original">
                 <div :style="`background-color: ${createBanner.customImage.background}`">
-                  <div style="display: inline-flex; justify-content: center; height: 250px; align-items: center">
-                    <img :src="createBanner.customImage.icon" style=" margin-right: 10px;width: 230px; height: 230px"/>
+                  <div style="display: inline-flex; justify-content: center; height: 320px; align-items: center">
+                    <img :src="createBanner.customImage.icon" style=" margin-left: 15px;width: 280px; height: 280px; padding-right: 10px"/>
                   </div>
-                  <pre :style="`display: inline-block; margin-top: 20px; position: absolute; color: ${createBanner.customImage.textStyle.color}; font-family: ${createBanner.customImage.textStyle.font}; font-size: ${createBanner.customImage.textStyle.size}px`">{{createBanner.customImage.text}}</pre>
+                  <pre :style=
+                   "`
+                    display: inline-block;
+                    margin-top: 20px;
+                    position: absolute;
+                    color: ${createBanner.customImage.textStyle.color};
+                    font-family: ${createBanner.customImage.textStyle.font};
+                    font-size: ${createBanner.customImage.textStyle.size}px
+                  `"
+                  >{{createBanner.customImage.text}}</pre>
                 </div>
-              </div><hr style="margin-top: 20px">
-              <div id="canvas">
-              </div>
+              </div><hr style="margin-top: 10px">
               <div class="form-group">
                 <label for="background">Background Color:</label>
                 <input style="margin-left: 10px; width: 100px; border: 2px solid #000000"
@@ -459,24 +443,26 @@
               </div>
               <div class="form-group">
                 <label>Select Icon:</label><hr>
-                <div style="display: grid; grid-template-columns: repeat(5, 1fr);">
+                <div style="display: grid; grid-template-columns: repeat(10, 1fr);">
                   <div v-for="(icon, index) in createBanner.iconCollection"
                        :key="index"
                        @click="selectIcon(icon)"
                        :class="{ 'selected-image' : icon === createBanner.selectedIcon }"
                        style="cursor: pointer;">
                     <img :src="icon" alt="Icon" style="max-height: 70px; max-width: 70px;" />
+                    <div class="reward-close-button" @click="removeImage('createBannerIcon',null, icon)">x</div>
+
                   </div>
                 </div>
                 <div class="pagination" style="margin-top: 10px">
                   <button @click="prevPage(1)">Previous</button>
                   <button style="margin-left: 10px" @click="nextPage(1)">Next</button>
                   <span> Page:  {{ createBanner.pagination.icons.info.pageNum  }} / {{createBanner.pagination.icons.totalPages}}</span>
-                  <input style="float: right" type="file" id="imageUpload" accept="image/* " @change="populateForm">
-                  <button style="float: right; margin-right: 10px" class="upload-button" @click="removeImage(1)">Remove</button>
+                  <input type="file" ref="fileInput" multiple style="display: none" @change="onFileInputChange()" />
+                  <button style="float: right; margin-right: 10px" class="upload-button" @click="handleUploadImage('createBannerIcon',null)">Add</button>
                 </div>
-              </div><hr>
-
+              </div>
+              <hr>
               <div class="form-group">
                 <p>Event Description:</p>
                 <label for="font">Font: </label>
@@ -501,7 +487,6 @@
                 </div>
               </div>
             </div>
-
             <div v-if="createBanner.type === '2'">
               <div class="preview">
                 <img :src="banner" style="width: 510px "/>
@@ -530,12 +515,12 @@
           </div>
         </div>
       </el-form>
+<!-- Footer -->
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="open=false">取 消</el-button>
       </div>
     </el-dialog>
-
   </div>
 </template>
 
@@ -559,14 +544,16 @@ import {
   removeEventsBanner,
   removeEventsIcon,
   uploadEventsBanner,
-  uploadEventsIcon
+  uploadEventsIcon,
+  getUploadedImages,
+  listImages, removeAndListImages
 } from "@/api/activity/ativityInfo";
 
 const {proxy} = getCurrentInstance();
 /** 活动信息表格数据 */
 const activityInfoList = ref([]);
 /** 活动类型 activity type list */
-const activityTypeOptions = ref([]);
+const activityTypes = ref([]);
 /** 非单个禁用 */
 const single = ref(true);
 /** 非多个禁用 */
@@ -683,8 +670,9 @@ const data =  reactive({
       icons: {
         totalPages: 1,
         info: {
+          type: 'createBannerIcon',
           pageNum: 1,
-          pageSize: 10
+          pageSize: 20
         }
       },
       banners: {
@@ -738,6 +726,9 @@ const data =  reactive({
   },
   /** updateTime */
 });
+const fileInput = ref(null);
+const activityUploadIconParam = ref({type: '', field: ''})
+
 
 const {queryParams,form,rules, banner, events, createBanner, rewardIconCollection} = toRefs(data);
 const {activityInfo_status} = proxy.useDict("activityInfo_status");
@@ -791,7 +782,7 @@ function signInConfig(days){
           },
           topUpRequirement: null,
           codingRequirement: null,
-          iconUrl: rewardIconCollection.value[0]
+          iconUrl: rewardIconCollection.value[i]
         }
     )
   }
@@ -854,42 +845,52 @@ function listRewardIcons ( param ) {
   })
 }
 
-function listImages (actionType) {
-  if ( actionType === 1 ) {
-    listEventIcons(createBanner.value.pagination.icons.info)
-  }
-  if ( actionType === 2) {
-    listEventBanners(createBanner.value.pagination.banners.info)
-  }
-  if ( actionType === null) {
-    listEventIcons(createBanner.value.pagination.icons.info)
-    listEventBanners(createBanner.value.pagination.banners.info)
-    listRewardIcons()
-  }
+// function listImages (actionType) {
+//   if ( actionType === 1 ) {
+//     listEventIcons(createBanner.value.pagination.icons.info)
+//   }
+//   if ( actionType === 2) {
+//     listEventBanners(createBanner.value.pagination.banners.info)
+//   }
+//   if ( actionType === null) {
+//     listEventIcons(createBanner.value.pagination.icons.info)
+//     listEventBanners(createBanner.value.pagination.banners.info)
+//     listRewardIcons()
+//   }
+// }
+async function removeImage(type, field, imageUrl) {
+  await removeAndListImages(type, field, getOriginalImageLink(imageUrl)).then( () => {
+    listImage(createBanner.value.pagination.icons)
+  })
 }
-function removeImage(){
-  event.preventDefault();
-  loading.value = true
-  if ( createBanner.value.type === '1' ) {
-    removeEventsIcon(createBanner.value.selectedIcon).then( res => {
-      getAllEventsIcon().then(res => {
-        icons.value = res.data;
-        createBanner.value.customImage.icon = icons.value[0]
-        createBanner.value.iconCollection = icons.value.slice(0,10)
-        loading.value = false
-      })
-    })
-  } else {
-    removeEventsBanner(createBanner.value.selectedBanner).then( res => {
-      getAllEventsBanner().then(res => {
-        banners.value = res.data;
-        banner.value = banners.value[0];
-        createBanner.value.bannerCollection = banners.value.slice(0,6);
-        loading.value = false
-      })
-    })
-  }
+function getOriginalImageLink(img){
+  const urlRegex = /url=(https?:\/\/[^&]+)/;
+  const match = img.match(urlRegex);
+  return match ? match[1] : img;
 }
+// function removeImage(){
+//   event.preventDefault();
+//   loading.value = true
+//   if ( createBanner.value.type === '1' ) {
+//     removeEventsIcon(createBanner.value.selectedIcon).then( res => {
+//       getAllEventsIcon().then(res => {
+//         icons.value = res.data;
+//         createBanner.value.customImage.icon = icons.value[0]
+//         createBanner.value.iconCollection = icons.value.slice(0,10)
+//         loading.value = false
+//       })
+//     })
+//   } else {
+//     removeEventsBanner(createBanner.value.selectedBanner).then( res => {
+//       getAllEventsBanner().then(res => {
+//         banners.value = res.data;
+//         banner.value = banners.value[0];
+//         createBanner.value.bannerCollection = banners.value.slice(0,6);
+//         loading.value = false
+//       })
+//     })
+//   }
+// }
 function prependActivityInfoImageBaseURI(img) {
   return url.baseUrl + url.game99PlatformAdminWeb + "/activity/activityInfo/image?url=" + img;
 }
@@ -898,7 +899,7 @@ function nextPage(actionType) {
   const pageInfo = actionType === 1 ? createBanner.value.pagination.icons : createBanner.value.pagination.banners;
   if ( pageInfo.info.pageNum < pageInfo.totalPages ) {
     pageInfo.info.pageNum++;
-    listImages(actionType)
+    listImage(pageInfo)
   }
 }
 function prevPage(actionType){
@@ -906,9 +907,46 @@ function prevPage(actionType){
   const pageInfo = actionType === 1 ? createBanner.value.pagination.icons : createBanner.value.pagination.banners;
   if ( pageInfo.info.pageNum > 1 ) {
     pageInfo.info.pageNum--;
-    listImages(actionType)
+    listImage(pageInfo)
   }
 }
+function handleUploadImage (type, field){
+  event.preventDefault();
+  activityUploadIconParam.value = {type: type, field: field};
+  fileInput.value.click();
+}
+function onFileInputChange(){
+  const newFileInput = fileInput.value;
+  const files = Array.from(newFileInput.files);
+  const formData = new FormData();
+  const param = activityUploadIconParam.value;
+
+  files.forEach( file => {
+    formData.append('files', file);
+  })
+  formData.append('type', param.type)
+  formData.append('field', param.field)
+
+  getUploadedImages(formData).then(res => {
+    res.data = res.data.map(img => prependActivityInfoImageBaseURI(img));
+    const result = Array.isArray(res.data) ? res.data : [res.data];
+    switch (param.type){
+      case 'createBannerIcon' : {
+        createBanner.value.iconCollection = result;
+          break;
+      }
+      case 'preMadeBanner': {
+        createBanner.value.bannerCollection = result;
+        break;
+      }
+    }
+  }).then( ()=> {
+    newFileInput.value = null;
+    activityUploadIconParam.value = null;
+  });
+}
+
+
 function populateForm( event ) {
   loading.value = true
   formData.set( "file", event.currentTarget.files[0] )
@@ -955,7 +993,7 @@ function getList(){
 }
 function activityTypeList(){
   getActivityTypeAllList().then((res)=>{
-    activityTypeOptions.value = res
+    activityTypes.value = res;
   })
 }
 /**  多选框选中数据 select multiple rows*/
@@ -977,7 +1015,7 @@ function formatterType(row) {
   }
 }
 function formatterActivityType(row) {
-  for (const a of activityTypeOptions.value) {
+  for (const a of activityTypes.value) {
     if (a.id === row.typeId) {
       return a.name;
     }
@@ -997,48 +1035,80 @@ function resetQuery(){
 }
 /** 表单重置 reset form*/
 function reset() {
-  form.value = {
-    title: null,
-    isDisplayHome: false,
-    scheduleType: '1',
-    selectDate: [],
-    showTime:[],
-    type: null,
-    content: '',
-    url: null,
-    typeId: 1,
-    event: null,
-    configString: '',
-    icon: null,
-    sort : null,
-    creationType: '1'
-  };
-  proxy.resetForm("activityForm");
+  const f = form.value;
+  f.id = null;
+  f.typeId = activityTypes.value[1].id;
+  f.title = null;
+  f.scheduleType = '1';
+  f.selectDate = [];
+  f.showTime = [];
+  f.isDisplayHome = false;
+  f.configString = null;
+  f.type = null;
+  f.content = '';
+  f.url = null;
+  f.icon = null;
+  f.event = null;
+  f.sort = null;
+  f.creationType = '1';
+
+  signInData.value = []
+  events.value.signIn = {}
+
+
 }
 /** 新增按钮操作 handle add button*/
 function handleAdd(){
   reset()
-  listEventIcons(createBanner.value.pagination.icons.info)
-  listEventBanners(createBanner.value.pagination.banners.info)
+  const param = createBanner.value.pagination;
+  listImage(param.icons)
   listRewardIcons()
   open.value = true
   title.value = "添加活动信息"
 }
+
+function listImage(param){
+  listImages(param.info).then( res => {
+    res.rows = res.rows.map(img => prependActivityInfoImageBaseURI(img));
+    createBanner.value.iconCollection = res.rows;
+    createBanner.value.customImage.icon = res.rows[0];
+    createBanner.value.selectedIcon = res.rows[0]
+    param.totalPages = Math.ceil(res.total / param.info.pageSize );
+  })
+}
 /** 修改按钮操作 handle update*/
 function handleUpdate(row){
   reset();
-  listImages(null)
+  const param = createBanner.value.pagination;
+  listImage(param.icons)
+  listRewardIcons()
   const id = row.id ||ids.value
   activityInfoFindById(id).then(response => {
-    response.data.type = response.data.type + ""
-    form.value = response.data;
+    const rspData = response.data;
+    const f = form.value;
+    f.id = rspData.id;
+    f.typeId = rspData.typeId;
+    f.title = rspData.title;
+    f.scheduleType = rspData.scheduleType.toString();
+    f.selectDate = [rspData.startEffect, rspData.endEffect];
+    f.isDisplayHome = rspData.isDisplayHome;
+    f.configString = rspData.configString;
+    f.type = rspData.type.toString();
+    f.content = rspData.content;
+    f.url = rspData.url;
+    f.icon = rspData.icon;
+    f.sort = rspData.sort;
+
     let parsedResponse =  JSON.parse(response.data.configString);
+    console.log(parsedResponse)
+
     let data = parsedResponse.eventConfig.signInData
+
     switch ( response.data.typeId ) {
-      case 1:
+      case 19:
         depositData.value = parsedResponse.eventConfig.tableData;
         break;
-      case 2:
+      case 20:
         events.value.signIn.cycle = parsedResponse.eventConfig.cycle
         events.value.signIn.signMethod = parsedResponse.eventConfig.signMethod;
         events.value.signIn.prospect = parsedResponse.eventConfig.prospect
@@ -1087,10 +1157,10 @@ function submitForm() {
       form.value.creationType = createBanner.value.type
 
       switch ( form.value.typeId ) {
-        case 1:
+        case 19:
           form.value.event = events.value.deposit
           break;
-        case 2:
+        case 20:
           if ( events.value.signIn.prospect === '2' ) {
             events.value.signIn.signInData = events.value.vipSignInData
           }
@@ -1194,10 +1264,10 @@ img {
   margin-bottom: 20px;
 }
 .preview {
-  height: 300px;
-  max-width: 600px;
+  height: 330px;
+  max-width: 800px;
   margin-top: 10px;
-  padding: 20px;
+  padding: 5px;
   border: 1px solid #ccc;
 }
 .selected-image {
@@ -1205,5 +1275,29 @@ img {
 }
 .dialog-footer{
   float: right;
+}
+.reward-close-button {
+  padding-bottom: 1px;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 12px;
+  background-color: #FFFFFF;
+  border: 2px solid #e0e0e0;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  transform: translate(230%,-350%);
+}
+
+.reward-close-button:hover {
+  background-color: #ff000b;
+  color: #ffffff;
+  width: 25px; /* Adjust as needed */
+  height: 25px; /* Adjust as needed */
+  transform: translate(170%, -290%); /* Adjust the values for fine-tuning */
 }
 </style>
