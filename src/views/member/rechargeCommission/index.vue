@@ -158,6 +158,7 @@ function handleQuery() {
 function getList() {
   loading.value = true;
   rechargeCommissionListData(queryParams.value).then(response => {
+    console.log(" ASDASD")
     rechargeCommissionList.value = response.data;
     total.value = response.total;
     loading.value = false;

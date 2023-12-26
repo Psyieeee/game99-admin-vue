@@ -65,6 +65,6 @@ export function noEffectSms(id) {
 export function smsTest(id, mobile) {
     return request({
         url: url.game99PlatformAdminWeb + '/config/sms/smsTest/' + id + '/' + mobile,
-        method: 'put'
+        method: 'post'
     })
 }

@@ -366,7 +366,7 @@
                 </div>
               </el-form-item>
               <el-form-item style="left: 0">
-                <el-table :data="configurations.signIn.dailyData" style="max-width: 680px; max-height: 350px;overflow-y:auto; border: 5px solid #e0e0e0; border-radius: 5px" >
+                <el-table :data="configurations.signIn.dailyData" style="max-width: 660px; max-height: 350px;overflow-y:auto; border: 5px solid #e0e0e0; border-radius: 5px" >
                   <el-table-column label="日" width="50px" align="center" prop="day">
                     <template #default="scope">
                       <div v-if="configurations.signIn.customDay === '1'">
@@ -583,7 +583,7 @@ import {
   vipBonusInfoUpdateStatus,
   getVipBonusInfoList,
   getAllVipBonusBanner,
-  getAllVipBonusLogo, getRewardIcons,
+  getAllVipBonusLogo,
   removeVipBonusBanner,
   removeVipBonusLogo,
   uploadVipBonusBanner,
@@ -927,6 +927,7 @@ async function removeImage(platform, type, field, imageUrl) {
     switch ( type ) {
       case 'rewardImg': {
         configurations.value.rewardIcons[platform] = updatedImages;
+        updateSignInRewardIcons({type: type, platform: platform, field: field});
         break;
       }
       case 'statusImg': {
@@ -965,9 +966,12 @@ function onFileInputChange() {
         break;
       }
     }
+  }).then( ()=> {
+    newFileInput.value = null;
+    activityUploadIconParam.value = null;
+    if ( title.value === '添加奖励活动') populateSignInConfigTable();
+    else updateSignInRewardIcons(param);
   });
-  newFileInput.value = null;
-  activityUploadIconParam.value = null;
 }
 
 /**  Handle Add/Update Bonus Activity */
@@ -1119,12 +1123,39 @@ function customDay_populateSignInConfigTable(){
     )
   }
 }
+function updateSignInRewardIcons(param) {
+  const icons = configurations.value.rewardIcons[param.platform];
+  const signIn = configurations.value.signIn;
+  const dataList = signIn.listOfDailyData;
+
+  if (icons.length <= 0) return;
+
+  if ( dataList.length <= 0 ) {
+    signIn.dailyData.forEach( (data,i) => {
+      data.rewardIcon[param.platform] = icons[i];
+    });
+  } else {
+    dataList.forEach((dataPerVip) => {
+      dataPerVip = Array.isArray(dataPerVip) ? dataPerVip : [dataPerVip];
+      dataPerVip.forEach( data => {
+        data.config.forEach( (config,i) => {
+          config.rewardIcon[param.platform] = i >= icons.length ? null : icons[i];
+        })
+      })
+    });
+  }
+}
+
 function populateSignInConfigTable(){
+  const rewardIcons = configurations.value.rewardIcons;
   const signIn = configurations.value.signIn;
   let cycle = signIn.cycle;
   signIn.dailyData  = [];
 
   for ( let i = 0; i < cycle; i++ ) {
+    const webImg = rewardIcons.web[i];
+    const mobileImg = rewardIcons.mobile[i];
+
     signIn.dailyData .push(
         {
           day: i+1,
@@ -1136,8 +1167,8 @@ function populateSignInConfigTable(){
           topUpRequirement: null,
           codingRequirement: null,
           rewardIcon: {
-            web: getOriginalImageLink(configurations.value.rewardIcons.web[i]) || null,
-            mobile: getOriginalImageLink(configurations.value.rewardIcons.mobile[i]) || null
+            web: webImg === undefined ? null : getOriginalImageLink(webImg),
+            mobile: mobileImg === undefined ? null : getOriginalImageLink(mobileImg)
           }
         }
     )
