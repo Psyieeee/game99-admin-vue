@@ -150,6 +150,7 @@
         :title="title"
         v-model="open"
         width="1500px"
+        @closed="getList"
         style="
           height: auto;
           padding-bottom: 20px
@@ -219,31 +220,31 @@
 
 <!--         入款优惠 DEPOSIT TYPE -->
             <div v-if="form.typeId === 19">
-              <el-form-item label="Reset Cycle" prop="resetCycle" @change="handleResetCycleChange(events.deposit.resetCycle)">
-                <el-radio-group v-model="events.deposit.resetCycle">
+              <el-form-item label="Reset Cycle" prop="resetCycle" @change="handleResetCycleChange(configurations.deposit.resetCycle)">
+                <el-radio-group v-model="configurations.deposit.resetCycle">
                   <el-radio label="1">Single</el-radio>
                   <el-radio label="2">Daily</el-radio>
                   <el-radio label="3">Weekly</el-radio>
                 </el-radio-group>
               </el-form-item>
-              <el-form-item v-if="events.deposit.resetCycle !== '1'" label="Limited Recharge" label-width="160">
+              <el-form-item v-if="configurations.deposit.resetCycle !== '1'" label="Limited Recharge" label-width="160">
                 <el-switch
-                    v-model="events.deposit.limitedRechargeSwitch"
+                    v-model="configurations.deposit.limitedRechargeSwitch"
                     class="ml-2"
                     style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
                 />
               </el-form-item>
               <el-form-item label="Activity Condition" prop="activityCondition">
-                <el-radio-group v-model="events.deposit.activityCondition">
-                  <el-radio v-if="events.deposit.resetCycle === '1'" label="1">First Deposit</el-radio>
+                <el-radio-group v-model="configurations.deposit.activityCondition">
+                  <el-radio v-if="configurations.deposit.resetCycle === '1'" label="1">First Deposit</el-radio>
                   <el-radio label="2">Total Deposit</el-radio>
                   <el-radio label="3">Single Recharge</el-radio>
                 </el-radio-group>
               </el-form-item>
 
-              <el-form-item v-if="events.deposit.activityCondition !== '1'" label-width="120" label="Deposit Method" prop="depositMethod">
+              <el-form-item v-if="configurations.deposit.activityCondition !== '1'" label-width="120" label="Deposit Method" prop="depositMethod">
                 <el-checkbox v-model="selectAllDepositMethod" @change="handleDepositSelectAll" style="padding-right: 10px">Select All</el-checkbox>
-                <el-checkbox-group v-model="events.deposit.depositMethod">
+                <el-checkbox-group v-model="configurations.deposit.depositMethod">
                   <el-checkbox v-for="item in depositOptions"
                                :label="item.value"
                                size="large"
@@ -255,7 +256,7 @@
               </el-form-item>
 
               <el-form-item label="Bonus Method" prop="bonusMethod">
-                <el-radio-group v-model="events.deposit.bonusMethod">
+                <el-radio-group v-model="configurations.deposit.bonusMethod">
                   <el-radio label="1">Fixed Amount</el-radio>
                   <el-radio label="2">Random Amount</el-radio>
                   <el-radio label="3">Ratio Amount</el-radio>
@@ -270,10 +271,10 @@
                   </el-table-column>
                   <el-table-column label="Bonus Amount" width="150" align="center">
                     <template #default="scope">
-                      <template v-if="events.deposit.bonusMethod === '1'">
+                      <template v-if="configurations.deposit.bonusMethod === '1'">
                         <el-input v-model="scope.row.bonusAmount.max"/>
                       </template>
-                      <template v-else-if="events.deposit.bonusMethod === '2'">
+                      <template v-else-if="configurations.deposit.bonusMethod === '2'">
                         <el-input style="width: 50px; right: 5px" v-model="scope.row.bonusAmount.min"/>
                         -
                         <el-input style="width: 50px; left: 5px" v-model="scope.row.bonusAmount.max"/>
@@ -284,7 +285,7 @@
                       </template>
                     </template>
                   </el-table-column>
-                  <el-table-column v-if="events.deposit.bonusMethod === '3'" label="Reward Limit" width="110px" align="center" prop="rewardLimit">
+                  <el-table-column v-if="configurations.deposit.bonusMethod === '3'" label="Reward Limit" width="110px" align="center" prop="rewardLimit">
                     <template #default="scope">
                       <el-input v-model="scope.row.rewardLimit"/>
                     </template>
@@ -306,14 +307,14 @@
 <!--         SIGN IN -->
             <div v-if="form.typeId === 20">
               <el-form-item label="收集方法" prop="signMethod">
-                <el-radio-group v-model="events.signIn.signMethod">
+                <el-radio-group v-model="configurations.signIn.signMethod">
                   <el-radio label="1">Continuous</el-radio>
                   <el-radio label="2">Cumulative</el-radio>
                   <el-radio label="3">Daily</el-radio>
                 </el-radio-group>
               </el-form-item>
               <el-form-item label="周期" prop="cycle">
-                <el-input style="width: 350px" v-model="events.signIn.cycle" placeholder="Please enter a number of days" @change="signInConfig(events.signIn.cycle)"/>
+                <el-input style="width: 350px" v-model="configurations.signIn.cycle" placeholder="Please enter a number of days" @change="signInConfig"/>
               </el-form-item>
               <el-form-item >
                 <el-table :data="signInData" style="max-width: 560px; max-height: 390px;overflow-y:auto; border: 5px solid #e0e0e0; border-radius: 5px"  >
@@ -375,7 +376,7 @@
                         </template>
                         <el-option
                             label=" "
-                            v-for="icon in ( scope.row.type === '1' ? rewardIconCollection : treasureIcons)"
+                            v-for="icon in ( scope.row.type === '1' ? configurations.rewardIcons : treasureIcons)"
                             :value="icon"
                             style="width: 120px; height: 100px; margin-left: -15px"
                         >
@@ -411,53 +412,53 @@
           <div class="el-col el-col-12">
             <div>
               <label style="font-size: 25px; text-align: left">Create Banner</label>
-              <el-radio-group style="float: right;" v-model="createBanner.type" >
+              <el-radio-group style="float: right;" v-model="createBanner.type" @change="changeBannerCreationType(createBanner.type)">
                 <el-radio style="width: 120px" label="1" border>Customize</el-radio>
                 <el-radio style="width: 120px" label="2" border>Pre-Made</el-radio>
               </el-radio-group><hr style="margin-top: 20px; margin-bottom: 20px">
             </div>
             <label style="font-size: 20px">Preview</label>
 
-            <div v-loading="loading" v-if="createBanner.type === '1'">
+            <div v-if="createBanner.type === '1'">
               <div class="preview" style="position: relative" id="original">
-                <div :style="`background-color: ${createBanner.customImage.background}`">
+                <div :style="`background-color: ${createBanner.customize.properties.background}`">
                   <div style="display: inline-flex; justify-content: center; height: 320px; align-items: center">
-                    <img :src="createBanner.customImage.icon" style=" margin-left: 15px;width: 280px; height: 280px; padding-right: 10px"/>
+                    <img :src="createBanner.customize.properties.icon" style=" margin-left: 15px;width: 280px; height: 280px; padding-right: 10px"/>
                   </div>
                   <pre :style=
                    "`
                     display: inline-block;
                     margin-top: 20px;
                     position: absolute;
-                    color: ${createBanner.customImage.textStyle.color};
-                    font-family: ${createBanner.customImage.textStyle.font};
-                    font-size: ${createBanner.customImage.textStyle.size}px
+                    color: ${createBanner.customize.properties.textStyle.color};
+                    font-family: ${createBanner.customize.properties.textStyle.font};
+                    font-size: ${createBanner.customize.properties.textStyle.size}px
                   `"
-                  >{{createBanner.customImage.text}}</pre>
+                  >{{createBanner.customize.properties.text}}</pre>
                 </div>
               </div><hr style="margin-top: 10px">
               <div class="form-group">
                 <label for="background">Background Color:</label>
                 <input style="margin-left: 10px; width: 100px; border: 2px solid #000000"
-                       v-model="createBanner.customImage.background" type="color" id="background"/>
+                       v-model="createBanner.customize.properties.background" type="color" id="background"/>
               </div>
               <div class="form-group">
                 <label>Select Icon:</label><hr>
-                <div style="display: grid; grid-template-columns: repeat(10, 1fr);">
-                  <div v-for="(icon, index) in createBanner.iconCollection"
+                <div style="display: grid; grid-template-columns: repeat(10, 1fr)">
+                  <div v-for="(icon, index) in createBanner.customize.iconCollection"
                        :key="index"
-                       @click="selectIcon(icon)"
-                       :class="{ 'selected-image' : icon === createBanner.selectedIcon }"
+                       @click="createBanner.customize.properties.icon = icon"
+                       :class="{ 'selected-image' : icon === createBanner.customize.properties.icon }"
                        style="cursor: pointer;">
-                    <img :src="icon" alt="Icon" style="max-height: 70px; max-width: 70px;" />
-                    <div class="reward-close-button" @click="removeImage('createBannerIcon',null, icon)">x</div>
+                    <img :src="icon" alt="Icon" style="max-height: 70px; max-width: 70px;padding: 5px 5px 0px" />
+                    <div class="custom-banner-close-button" @click="removeImage('createBannerIcon',null, icon)">x</div>
 
                   </div>
                 </div>
                 <div class="pagination" style="margin-top: 10px">
-                  <button @click="prevPage(1)">Previous</button>
-                  <button style="margin-left: 10px" @click="nextPage(1)">Next</button>
-                  <span> Page:  {{ createBanner.pagination.icons.info.pageNum  }} / {{createBanner.pagination.icons.totalPages}}</span>
+                  <button @click="prevPage('createBannerIcon')">Previous</button>
+                  <button style="margin-left: 10px" @click="nextPage('createBannerIcon')">Next</button>
+                  <span> Page:  {{ createBanner.pagination.param.pageNum  }} / {{createBanner.pagination.pageTotal}}</span>
                   <input type="file" ref="fileInput" multiple style="display: none" @change="onFileInputChange()" />
                   <button style="float: right; margin-right: 10px" class="upload-button" @click="handleUploadImage('createBannerIcon',null)">Add</button>
                 </div>
@@ -466,15 +467,15 @@
               <div class="form-group">
                 <p>Event Description:</p>
                 <label for="font">Font: </label>
-                <el-select style="width: 200px" v-model="createBanner.customImage.textStyle.font">
+                <el-select style="width: 200px" v-model="createBanner.customize.properties.textStyle.font">
                   <el-option v-for="font in fontOptions" :key="font" :label="font" :value="font"></el-option>
                 </el-select>
                 <label for="text" style="margin-left: 20px">Font Color:</label>
-                <input style="margin-left: 10px; width: 100px; border: 2px solid #000000" v-model="createBanner.customImage.textStyle.color" type="color" id="text"/>
+                <input style="margin-left: 10px; width: 100px; border: 2px solid #000000" v-model="createBanner.customize.properties.textStyle.color" type="color" id="text"/>
                 <div style="margin-top: 10px">
                   <label for="text">Text Size: </label>
                   <el-slider
-                      v-model="createBanner.customImage.textStyle.size"
+                      v-model="createBanner.customize.properties.textStyle.size"
                       :min="8"
                       :max="48"
                       style="width: 300px"
@@ -482,33 +483,34 @@
                   </el-slider>
                 </div>
                 <div>
-                  <textarea style="height: 100px;width: 300px; margin-top: 5px" v-model="createBanner.customImage.text">
+                  <textarea style="height: 100px;width: 300px; margin-top: 5px" v-model="createBanner.customize.properties.text">
                   </textarea>
                 </div>
               </div>
             </div>
             <div v-if="createBanner.type === '2'">
               <div class="preview">
-                <img :src="banner" style="width: 510px "/>
+                <img :src="createBanner.preMade.banner" style="width: 715px "/>
               </div><hr style="margin-top: 20px; margin-bottom: 20px" >
 
               <div class="form-group">
                 <label style="margin-bottom: 20px">Select Banner:</label>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 10px">
-                  <div v-for="(image, index) in createBanner.bannerCollection"
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 10px; border: 5px solid #e0e0e0; border-radius: 5px">
+                  <div v-for="(banner, index) in createBanner.preMade.bannerCollection"
                        :key="index"
-                       @click="selectBanner(image)"
-                       :class="{ 'selected-image': image === createBanner.selectedBanner }"
+                       @click="createBanner.preMade.banner = banner"
+                       :class="{ 'selected-image': banner === createBanner.preMade.banner }"
                        style="cursor: pointer;">
-                    <img :src="image" alt="Banner" style="max-height: 150px; max-width: 200px" />
+                    <img :src="banner" alt="Banner" style="max-height: 150px; max-width: 240px;  padding: 5px " />
+                    <div class="preMade-banner-close-button" @click="removeImage('preMadeBanner',null, banner)">x</div>
                   </div>
                 </div>
                 <div class="pagination" style="margin-top: 10px">
-                  <button @click="prevPage(2)">Previous</button>
-                  <button style="margin-left: 10px" @click="nextPage(2)">Next</button>
-                  <span> Page:  {{ createBanner.pagination.banners.info.pageNum  }} / {{ createBanner.pagination.banners.totalPages }}</span>
-                  <input style="float: right" type="file" id="imageUpload" accept="image/* " @change="populateForm">
-                  <button style="float: right; margin-right: 10px" class="upload-button" @click="removeImage">Remove</button>
+                  <button @click="prevPage('preMadeBanner')">Previous</button>
+                  <button style="margin-left: 10px" @click="nextPage('preMadeBanner')">Next</button>
+                  <span> Page:  {{ createBanner.pagination.param.pageNum  }} / {{ createBanner.pagination.pageTotal }}</span>
+                  <input type="file" ref="fileInput" multiple style="display: none" @change="onFileInputChange()" />
+                  <button style="float: right; margin-right: 10px" class="upload-button" @click="handleUploadImage('preMadeBanner',null)">Add</button>
                 </div>
               </div><hr>
             </div>
@@ -548,6 +550,7 @@ import {
   getUploadedImages,
   listImages, removeAndListImages
 } from "@/api/activity/ativityInfo";
+import {vipBonusInfoAdd, vipBonusInfoUpdate} from "@/api/config/vipBonusInfo";
 
 const {proxy} = getCurrentInstance();
 /** 活动信息表格数据 */
@@ -628,7 +631,7 @@ const depositData = ref([
 const signInData = ref([]);
 const loading = ref(true);
 const open = ref(false);
-const selectDate = ref(false);
+const selectDate = ref([]);
 const selectAllDepositMethod = ref(false);
 const data =  reactive({
   queryParams:{
@@ -641,68 +644,9 @@ const data =  reactive({
     type:null,
     typeId:null
   },
-  selectDate: [],
-  showTime: [],
   form:{},
-  events: {
-    vipLevel: 1,
-    vipSignInData: [],
-    deposit: {
-      resetCycle: '1',
-      limitedRechargeSwitch: false,
-      activityCondition: '1',
-      depositMethod: [],
-      bonusMethod: '1',
-      tableData: depositData,
-    },
-    signIn:{
-      signMethod: '1',
-      prospect: '1',
-      cycle: null,
-      signInData: signInData,
-    }
-  },
-  createBanner: {
-    type: '1',
-    iconCollection: null,
-    totalIcons: null,
-    pagination: {
-      icons: {
-        totalPages: 1,
-        info: {
-          type: 'createBannerIcon',
-          pageNum: 1,
-          pageSize: 20
-        }
-      },
-      banners: {
-        totalPages: 1,
-        info: {
-          pageNum: 1,
-          pageSize: 6
-        }
-      },
-    },
-    icon_currentPage: 1,
-    iconsPerPage: 10,
-    selectedIcon: null,
-    bannerCollection: null,
-    banner_currentPage: 1,
-    bannersPerPage: 6,
-    selectedBanner: null,
-    customImage: {
-      background: '#030303',
-      icon: null,
-      text: 'PUT TEXT HERE',
-      textStyle: {
-        font: "Arial, sans-serif",
-        size: 30,
-        color: '#ffffff'
-      },
-    },
-  },
-  rewardIconCollection: null,
-  banner: null,
+  configurations: {},
+  createBanner: {},
   rules:{
     selectDate:[
       { type: 'array', required: true, message: '请选择时间范围', trigger: 'change' },
@@ -730,7 +674,7 @@ const fileInput = ref(null);
 const activityUploadIconParam = ref({type: '', field: ''})
 
 
-const {queryParams,form,rules, banner, events, createBanner, rewardIconCollection} = toRefs(data);
+const {queryParams,form,rules, banner, configurations, createBanner} = toRefs(data);
 const {activityInfo_status} = proxy.useDict("activityInfo_status");
 const formData = new FormData();
 
@@ -750,28 +694,30 @@ function removeDepositConfig(index){
 }
 function handleResetCycleChange(resetCycle) {
   if ( resetCycle === '2') {
-    events.value.deposit.activityCondition = '2'
+    configurations.value.deposit.activityCondition = '2'
   }
 }
 function handleDepositSelectAll(){
-  events.value.deposit.depositMethod = selectAllDepositMethod.value ? depositOptions.value.map(item => item.value) : [];
+  configurations.value.deposit.depositMethod = selectAllDepositMethod.value ? depositOptions.value.map(item => item.value) : [];
 }
 
 
 //SIGN IN RELATED
 function calculateNumberOfDays(){
-  if ( form.value.selectDate.length === 2){
-    const start = new Date(form.value.selectDate[0]);
-    const end = new Date(form.value.selectDate[1]);
+  if ( selectDate.value.length === 2){
+    const start = new Date(selectDate.value[0]);
+    const end = new Date(selectDate.value[1]);
     const timeDifference = end - start;
     const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
-    events.value.signIn.cycle = daysDifference + 1;
-    signInConfig( events.value.signIn.cycle )
+    configurations.value.signIn.cycle = daysDifference + 1;
+    signInConfig( configurations.value.signIn.cycle )
   }
 }
-function signInConfig(days){
+function signInConfig(){
+  const cycle = configurations.value.signIn.cycle;
+
   signInData.value = []
-  for ( let i = signInData.value.length; i < days; i++ ) {
+  for ( let i = signInData.value.length; i < cycle; i++ ) {
     signInData.value.push(
         {
           day: i+1,
@@ -782,38 +728,38 @@ function signInConfig(days){
           },
           topUpRequirement: null,
           codingRequirement: null,
-          iconUrl: rewardIconCollection.value[i]
+          iconUrl: configurations.value.rewardIcons[i]
         }
     )
   }
 }
 function saveVipConfig(){
-  const event = events.value.signIn
+  const event = configurations.value.signIn
   const obj = {
-    level: events.value.vipLevel,
+    level: configurations.value.vipLevel,
     value: event.signInData
   };
 
-  const indexOfExistingData = events.value.vipSignInData.findIndex(data => data.level === events.value.vipLevel);
+  const indexOfExistingData = configurations.value.vipSignInData.findIndex(data => data.level === configurations.value.vipLevel);
   const hasData = indexOfExistingData !== -1;
 
   if ( hasData ) {
-    events.value.vipSignInData[indexOfExistingData].value = event.signInData;
+    configurations.value.vipSignInData[indexOfExistingData].value = event.signInData;
   } else {
-    events.value.vipSignInData.push( obj );
+    configurations.value.vipSignInData.push( obj );
   }
   ElMessage.success('Success')
 }
 function resetVipConfig(){
-  signInConfig(events.value.signIn.cycle)
+  signInConfig(configurations.value.signIn.cycle)
 }
 function handleVipLevelChange(){
-  let currIndex = events.value.vipLevel-1;
+  let currIndex = configurations.value.vipLevel-1;
 
-  if ( events.value.vipSignInData[currIndex] === undefined ) {
+  if ( configurations.value.vipSignInData[currIndex] === undefined ) {
     resetVipConfig()
   } else {
-    signInData.value = events.value.vipSignInData[currIndex].value;
+    signInData.value = configurations.value.vipSignInData[currIndex].value;
   }
 }
 
@@ -841,7 +787,7 @@ function listEventBanners ( param ) {
 
 function listRewardIcons ( param ) {
   getAllRewardIcon(param).then(res => {
-    rewardIconCollection.value = res.data
+    configurations.value.rewardIcons = res.data
   })
 }
 
@@ -859,9 +805,8 @@ function listRewardIcons ( param ) {
 //   }
 // }
 async function removeImage(type, field, imageUrl) {
-  await removeAndListImages(type, field, getOriginalImageLink(imageUrl)).then( () => {
-    listImage(createBanner.value.pagination.icons)
-  })
+  await removeAndListImages(type, field, getOriginalImageLink(imageUrl))
+  listImage(type)
 }
 function getOriginalImageLink(img){
   const urlRegex = /url=(https?:\/\/[^&]+)/;
@@ -894,20 +839,20 @@ function getOriginalImageLink(img){
 function prependActivityInfoImageBaseURI(img) {
   return url.baseUrl + url.game99PlatformAdminWeb + "/activity/activityInfo/image?url=" + img;
 }
-function nextPage(actionType) {
+function nextPage(type) {
   event.preventDefault();
-  const pageInfo = actionType === 1 ? createBanner.value.pagination.icons : createBanner.value.pagination.banners;
-  if ( pageInfo.info.pageNum < pageInfo.totalPages ) {
-    pageInfo.info.pageNum++;
-    listImage(pageInfo)
+  const pagination = createBanner.value.pagination;
+  if ( pagination.param.pageNum < pagination.pageTotal ) {
+    pagination.param.pageNum++;
+    listImage(type)
   }
 }
-function prevPage(actionType){
+function prevPage(type){
   event.preventDefault();
-  const pageInfo = actionType === 1 ? createBanner.value.pagination.icons : createBanner.value.pagination.banners;
-  if ( pageInfo.info.pageNum > 1 ) {
-    pageInfo.info.pageNum--;
-    listImage(pageInfo)
+  const param = createBanner.value.pagination.param;
+  if ( param.pageNum > 1 ) {
+    param.pageNum --;
+    listImage(type);
   }
 }
 function handleUploadImage (type, field){
@@ -927,19 +872,8 @@ function onFileInputChange(){
   formData.append('type', param.type)
   formData.append('field', param.field)
 
-  getUploadedImages(formData).then(res => {
-    res.data = res.data.map(img => prependActivityInfoImageBaseURI(img));
-    const result = Array.isArray(res.data) ? res.data : [res.data];
-    switch (param.type){
-      case 'createBannerIcon' : {
-        createBanner.value.iconCollection = result;
-          break;
-      }
-      case 'preMadeBanner': {
-        createBanner.value.bannerCollection = result;
-        break;
-      }
-    }
+  getUploadedImages(formData).then( () => {
+    listImage(param.type);
   }).then( ()=> {
     newFileInput.value = null;
     activityUploadIconParam.value = null;
@@ -947,30 +881,30 @@ function onFileInputChange(){
 }
 
 
-function populateForm( event ) {
-  loading.value = true
-  formData.set( "file", event.currentTarget.files[0] )
-  if ( createBanner.value.type === '1' ) {
-    uploadEventsIcon( formData ).then( res => {
-      getAllEventsIcon().then(res => {
-        icons.value = res.data;
-        createBanner.value.customImage.icon = icons.value[0]
-        createBanner.value.iconCollection = icons.value.slice(0,10)
-        loading.value = false
-      })
-    })
-  } else {
-    uploadEventsBanner( formData ).then( res => {
-      getAllEventsBanner().then(res => {
-        banners.value = res.data;
-        banner.value = banners.value[0];
-        createBanner.value.bannerCollection = banners.value.slice(0,6);
-        loading.value = false
-      })
-    })
-  }
-
-}
+// function populateForm( event ) {
+//   loading.value = true
+//   formData.set( "file", event.currentTarget.files[0] )
+//   if ( createBanner.value.type === '1' ) {
+//     uploadEventsIcon( formData ).then( res => {
+//       getAllEventsIcon().then(res => {
+//         icons.value = res.data;
+//         createBanner.value.customImage.icon = icons.value[0]
+//         createBanner.value.iconCollection = icons.value.slice(0,10)
+//         loading.value = false
+//       })
+//     })
+//   } else {
+//     uploadEventsBanner( formData ).then( res => {
+//       getAllEventsBanner().then(res => {
+//         banners.value = res.data;
+//         banner.value = banners.value[0];
+//         createBanner.value.bannerCollection = banners.value.slice(0,6);
+//         loading.value = false
+//       })
+//     })
+//   }
+//
+// }
 function selectIcon (icon){
   createBanner.value.selectedIcon = icon
   createBanner.value.customImage.icon = icon
@@ -1034,166 +968,251 @@ function resetQuery(){
   loading.value = false;
 }
 /** 表单重置 reset form*/
-function reset() {
+function resetForm(){
+  selectDate.value = [];
   const f = form.value;
   f.id = null;
   f.typeId = activityTypes.value[1].id;
   f.title = null;
   f.scheduleType = '1';
-  f.selectDate = [];
-  f.showTime = [];
   f.isDisplayHome = false;
+  f.startEffect = null;
   f.configString = null;
-  f.type = null;
+  f.type = '1';
   f.content = '';
-  f.url = null;
+  f.url = '';
   f.icon = null;
-  f.event = null;
   f.sort = null;
   f.creationType = '1';
+}
+function resetCreateBannerConfig(){
+  createBanner.value = {
+    type: '1',
+    customize: {
+      iconCollection: null,
+      properties: {
+        background: '#030303',
+        icon: null,
+        text: 'PUT TEXT HERE',
+        textStyle: {
+          font: "Arial, san-serif",
+          size: 30,
+          color: '#ffffff'
+        }
+      }
+    },
+    preMade: {
+      bannerCollection: null,
+      banner: null
+    },
 
-  signInData.value = []
-  events.value.signIn = {}
+    pagination: {
+      pageTotal: 1,
+      param: {
+        pageNum: 1,
+        pageSize: 20
+      }
+    },
+  }
+}
+function resetEventConfig(){
+  signInData.value = [];
+  configurations.value = {
+    rewardIcons: [],
+    deposit: {
+      resetCycle: '1',
+      limitedRechargeSwitch: false,
+      activityCondition: '1',
+      depositMethod: [],
+      bonusMethod: '1',
+      tableData: depositData
+    },
+    signIn: {
+      signMethod: '1',
+      cycle: null,
+      signInData: signInData
+    }
+  }
+}
 
-
+function reset() {
+  resetCreateBannerConfig();
+  resetEventConfig()
+  resetForm()
 }
 /** 新增按钮操作 handle add button*/
 function handleAdd(){
   reset()
-  const param = createBanner.value.pagination;
-  listImage(param.icons)
+  listImage('createBannerIcon')
   listRewardIcons()
   open.value = true
   title.value = "添加活动信息"
 }
 
-function listImage(param){
-  listImages(param.info).then( res => {
-    res.rows = res.rows.map(img => prependActivityInfoImageBaseURI(img));
-    createBanner.value.iconCollection = res.rows;
-    createBanner.value.customImage.icon = res.rows[0];
-    createBanner.value.selectedIcon = res.rows[0]
-    param.totalPages = Math.ceil(res.total / param.info.pageSize );
-  })
+function resetCreateBannerImages(){
+  const create = createBanner.value;
+  create.customize.iconCollection = null;
+  create.customize.properties.icon = null;
+  create.preMade.bannerCollection = null;
+  create.preMade.banner = null;
 }
+
+function changeBannerCreationType(type){
+  resetCreateBannerImages();
+  listImage(type === '1' ? 'createBannerIcon' : 'preMadeBanner' )
+}
+
+async function listImage(type) {
+  const creation = createBanner.value;
+  const pagination = creation.pagination;
+
+  let result = {
+    images: null,
+    pageTotal: null
+  }
+
+  const param = pagination.param;
+  param.pageSize = type === 'createBannerIcon' ? 20 : 9;
+  param.type = type;
+
+  await listImages(param).then(res => {
+    res.rows = res.rows.map(img => prependActivityInfoImageBaseURI(img));
+    const totalPages = Math.ceil(res.total / param.pageSize);
+    result.images = res.rows;
+    result.pageTotal = Math.max(1, totalPages);
+  }).then( () => {
+    if ( result.pageTotal < param.pageNum ) {
+      const tempPageNum = param.pageNum - 1;
+      param.pageNum = Math.max(1,tempPageNum);
+      listImage(type)
+    }
+  }).then( () => {
+    switch (type) {
+      case 'createBannerIcon': {
+        const customize = creation.customize;
+        customize.iconCollection = result.images;
+        customize.properties.icon = result.images[0];
+      }
+      case 'preMadeBanner': {
+        const preMade = creation.preMade;
+        preMade.bannerCollection = result.images;
+        preMade.banner = result.images[0];
+      }
+    }
+    pagination.pageTotal = result.pageTotal;
+  });
+}
+
+function populateForm(rspData){
+  selectDate.value = rspData.scheduleType === 1 ? [rspData.startEffect, rspData.endEffect] : [];
+  const f = form.value;
+  f.id = rspData.id;
+  f.typeId = rspData.typeId;
+  f.title = rspData.title;
+  f.scheduleType = rspData.scheduleType.toString();
+  f.startEffect = rspData.startEffect
+  f.isDisplayHome = rspData.isDisplayHome;
+  f.configString = rspData.configString;
+  f.type = rspData.type.toString();
+  f.content = rspData.content;
+  f.url = rspData.url;
+  f.icon = rspData.icon;
+  f.sort = rspData.sort;
+}
+async function populateBannerConfiguration(){
+  const configString = form.value.configString;
+  const parsedConfigString = JSON.parse(configString);
+  const customBannerConfig = parsedConfigString.customBannerConfig;
+  const isCustomized = customBannerConfig === null ? false : true;
+
+  await listImage( isCustomized ? 'createBannerIcon' : 'preMadeBanner').then( ()=> {
+    const create = createBanner.value;
+    if ( isCustomized ) {
+      create.type = '1'
+      create.customize.properties = customBannerConfig;
+    } else {
+      create.type = '2'
+      create.preMade.banner = form.value.icon;
+    }
+  });
+
+}
+
+function populateBonusTypeConfiguration(){
+  let parsedEventConfig = JSON.parse(form.value.configString).eventConfig;
+  if (parsedEventConfig === null ) return
+  const conf = configurations.value
+  switch ( form.value.typeId ) {
+    case 19: {
+      conf.deposit = parsedEventConfig;
+    }
+    case 20: {
+      listRewardIcons()
+      const signIn = configurations.value.signIn;
+      signIn.cycle = parsedEventConfig.cycle;
+      signIn.signMethod = parsedEventConfig.signMethod;
+      signIn.signInData = parsedEventConfig.signInData;
+      signInData.value = parsedEventConfig.signInData;
+    }
+  }
+}
+
 /** 修改按钮操作 handle update*/
 function handleUpdate(row){
   reset();
-  const param = createBanner.value.pagination;
-  listImage(param.icons)
-  listRewardIcons()
-  const id = row.id ||ids.value
-  activityInfoFindById(id).then(response => {
-    const rspData = response.data;
-    const f = form.value;
-    f.id = rspData.id;
-    f.typeId = rspData.typeId;
-    f.title = rspData.title;
-    f.scheduleType = rspData.scheduleType.toString();
-    f.selectDate = [rspData.startEffect, rspData.endEffect];
-    f.isDisplayHome = rspData.isDisplayHome;
-    f.configString = rspData.configString;
-    f.type = rspData.type.toString();
-    f.content = rspData.content;
-    f.url = rspData.url;
-    f.icon = rspData.icon;
-    f.sort = rspData.sort;
-
-    let parsedResponse =  JSON.parse(response.data.configString);
-    console.log(parsedResponse)
-
-    let data = parsedResponse.eventConfig.signInData
-
-    switch ( response.data.typeId ) {
-      case 19:
-        depositData.value = parsedResponse.eventConfig.tableData;
-        break;
-      case 20:
-        events.value.signIn.cycle = parsedResponse.eventConfig.cycle
-        events.value.signIn.signMethod = parsedResponse.eventConfig.signMethod;
-        events.value.signIn.prospect = parsedResponse.eventConfig.prospect
-        if ( parsedResponse.eventConfig.prospect === "2" ) {
-          events.value.signIn.signInData = signInData;
-          events.value.vipSignInData = data;
-          handleVipLevelChange()
-        } else {
-          events.value.signIn.signInData = data
-        }
-        break;
-    }
-
-    if ( parsedResponse.customBannerConfig !== null ) {
-      createBanner.value.customImage = parsedResponse.customBannerConfig;
-      createBanner.value.type = '1'
-    } else {
-      createBanner.value.type = '2'
-    }
-    form.value.creationType = createBanner.value.type
-    form.value.scheduleType = response.data.scheduleType.toString()
-    form.value.selectDate = [ response.data.startEffect, response.data.endEffect ]
-    form.value.showTime = [ response.data.startShow, response.data.endShow ]
-    open.value = true;
+  activityInfoFindById(row.id).then( async res => {
+    await populateForm(res.data)
+    await populateBonusTypeConfiguration()
+    await populateBannerConfiguration();
+  }).then( () => {
     title.value = "修改活动信息";
-  });
+    open.value = true;
+  })
+
 }
+async function getCustomizedOrPreMadeIcon() {
+  let icon = getOriginalImageLink(createBanner.value.preMade.banner);
+  if (createBanner.value.type === '1') {
+    const container = document.getElementById('original');
+    await html2canvas(container).then(function (canvas) {
+      icon = canvas.toDataURL('image/png');
+    });
+  }
+  return icon;
+}
+
+function getEventConfigByTypeId(){
+  const config = configurations.value;
+  switch (form.value.typeId) {
+    case 19: return config.deposit;
+    case 20: return config.signIn;
+    default: return null; // or handle other cases as needed
+  }
+}
+
 /** 提交按钮 submit form*/
-function submitForm() {
+async function submitForm() {
   proxy.$refs["activityForm"].validate(async valid => {
-    loading.value = true;
-    if (valid) {
-      let config = {
-        eventConfig: null,
-        customBannerConfig: createBanner.value.customImage
-      }
-      if ( createBanner.value.type === '1' ) {
-        const container = document.getElementById('original');
-        await html2canvas( container ).then( function (canvas) {
-          form.value.icon = canvas.toDataURL( 'image/png' );
-        });
-      } else {
-        form.value.icon = banner.value
-        config.customBannerConfig = null
-      }
-      form.value.creationType = createBanner.value.type
-
-      switch ( form.value.typeId ) {
-        case 19:
-          form.value.event = events.value.deposit
-          break;
-        case 20:
-          if ( events.value.signIn.prospect === '2' ) {
-            events.value.signIn.signInData = events.value.vipSignInData
-          }
-          form.value.event = events.value.signIn
-            console.log(form.value.event)
-          break;
-      }
-
-      if (form.value.scheduleType === '1') {
-        form.value.startEffect = form.value.selectDate[0]
-        form.value.endEffect = form.value.selectDate[1]
-        form.value.startShow = form.value.showTime[0]
-        form.value.endShow = form.value.showTime[1]
-      }
-
-      config.eventConfig = form.value.event
-      form.value.configString = JSON.stringify( config )
-      if (form.value.id != null) {
-        activityInfoUpdate(form.value).then(response => {
-          proxy.$modal.msgSuccess("修改成功");
-          open.value = false;
-          getList();
-        });
-      } else {
-        activityInfoAdd(form.value).then(response => {
-          proxy.$modal.msgSuccess("新增成功");
-          open.value = false;
-          getList();
-        });
-      }
-    }
-    loading.value = false;
+    if (!valid) return;
   });
+
+  const f = form.value;
+  const isScheduleFixed = f.scheduleType === '1';
+  const create = createBanner.value;
+
+  f.icon = await getCustomizedOrPreMadeIcon();
+  f.startEffect = isScheduleFixed ? selectDate.value[0] : f.startEffect;
+  f.endEffect = isScheduleFixed ? selectDate.value[1] : null;
+  f.configString = JSON.stringify({
+    eventConfig: getEventConfigByTypeId(),
+    customBannerConfig: create.type === '1' ? create.customize.properties : null
+  });
+
+  let actionMethod = f.id === null ? activityInfoAdd(f) : activityInfoUpdate(f);
+  actionMethod.then(() => {
+    proxy.$modal.msgSuccess("修改成功");
+    open.value = false;
+  })
 }
 /** 删除按钮操作 handle delete data */
 function handleDelete(row){
@@ -1271,12 +1290,12 @@ img {
   border: 1px solid #ccc;
 }
 .selected-image {
-  border: 2px solid #00dfff;
+  border: 3px solid #00dfff;
 }
 .dialog-footer{
   float: right;
 }
-.reward-close-button {
+.custom-banner-close-button {
   padding-bottom: 1px;
   position: relative;
   justify-content: center;
@@ -1293,7 +1312,32 @@ img {
   transform: translate(230%,-350%);
 }
 
-.reward-close-button:hover {
+.preMade-banner-close-button {
+  padding-bottom: 1px;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 12px;
+  background-color: #FFFFFF;
+  border: 2px solid #e0e0e0;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  transform: translate(820%,-530%);
+}
+
+.preMade-banner-close-button:hover {
+  background-color: #ff000b;
+  color: #ffffff;
+  width: 30px; /* Adjust as needed */
+  height: 30px; /* Adjust as needed */
+  transform: translate(660%, -460%); /* Adjust the values for fine-tuning */
+}
+
+.custom-banner-close-button:hover {
   background-color: #ff000b;
   color: #ffffff;
   width: 25px; /* Adjust as needed */
