@@ -267,12 +267,12 @@
               @click="handleMore(scope.row)"
           >更多
           </el-button>
-          <el-button
-              type="warning"
-              plain
-              @click="boxDish(scope.row)"
-          >保险箱余额提出
-          </el-button>
+<!--          <el-button-->
+<!--              type="warning"-->
+<!--              plain-->
+<!--              @click="boxDish(scope.row)"-->
+<!--          >保险箱余额提出-->
+<!--          </el-button>-->
         </template>
       </el-table-column>
     </el-table>
