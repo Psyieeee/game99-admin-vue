@@ -135,6 +135,7 @@
         </el-table-column>
         <el-table-column label="订单时间" width="160" align="center" prop="payTime" sortable/>
         <el-table-column label="更新时间" align="center" prop="updateTime" width="160" sortable/>
+        <el-table-column label="rechargeType" align="center" prop="rechargeType" width="160" sortable/>
         <el-table-column label="是否首次" align="center" prop="first" width="90">
           <template #default="scope">
             <dict-tag :options="first" :value="scope.row.first"/>
@@ -217,6 +218,9 @@
           <el-form-item label="支付状态" prop="status">
             <el-input v-model="form.status" readonly/>
           </el-form-item>
+            <el-form-item label="rechargeType" prop="rechargeType">
+            <el-input v-model="form.rechargeType" readonly/>
+          </el-form-item>
           <el-form-item label="请求金额" prop="money">
             <el-input v-model="form.money" readonly/>
           </el-form-item>
@@ -288,6 +292,7 @@ const data = reactive({
     platformName: null,
     searchOrderNo: null,
     channelName: null,
+    rechargeType:null,
     status: null,
     realMoney: null,
     downLoadDate: [],
