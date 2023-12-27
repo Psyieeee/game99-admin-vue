@@ -99,8 +99,7 @@
             </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" v-if="data.showAddButton" @click="submitForm">提交</el-button>
-        <el-button type="primary" v-if="data.showEditButton" @click="handleUpdate">编辑</el-button>
+        <el-button type="primary" @click="submitForm">提交</el-button>
         <el-button @click="open=false">取 消</el-button>
 
       </div>
@@ -134,10 +133,9 @@ const showSearch = ref(true);
 const single = ref(true);
 const multiple = ref(true);
 const loading = ref(true);
+const title = ref('');
 
 const data = reactive({
-  showAddButton: false,
-  showEditButton: false,
   /** 查询参数 query params*/
   queryParams: {
     pageNum: 1,
@@ -197,48 +195,33 @@ function resetQuery() {
 
 /** handle add new data */
 function handleAdd() {
-  data.showAddButton = true
-  data.showEditButton = false
   reset()
   open.value = true
-  title.value = '添加页脚'
+  title.value = '添加配置'
 }
 
 /** submit new data and handle insert data api*/
 function submitForm() {
-  proxy.$refs['addMemberWithdrawNotice'].validate(async valid => {
-    if (valid) {
-      const params = {
-        minAmount: form.value.minAmount,
-        redisTtl: form.value.redisTtl,
-        popupDuration: form.value.popupDuration,
-        pollingInterval: form.value.pollingInterval,
-      }
-
-      if (form.value.id != null) {
-        edit(form.value).then(response => {
-          proxy.$modal.msgSuccess('修改成功')
-          open.value = false
-          getList()
-        })
-      } else {
-        add(params).then(response => {
-          proxy.$modal.msgSuccess('新增成功')
-          open.value = false
-          getList()
-        })
-      }
-    }
-  })
+  if (form.value.id != null) {
+    edit(form.value).then(response => {
+      proxy.$modal.msgSuccess('修改成功')
+      open.value = false
+      getList()
+    })
+  } else {
+    add(params).then(response => {
+      proxy.$modal.msgSuccess('新增成功')
+      open.value = false
+      getList()
+    })
+  }
 }
 
 /** handle update data */
 function handleUpdate(row) {
-  data.showEditButton = true
-  data.showAddButton = false
   form.value = row
   open.value = true
-  title.value = '添加页脚'
+  title.value = '编辑配置'
 }
 
 /**  删除按钮操作 handle delete */
