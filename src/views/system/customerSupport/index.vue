@@ -33,7 +33,7 @@
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="VIP等级" min-width="180" prop="vipLevel"/>
       <el-table-column align="center" label="链接" min-width="180" prop="supportLink"/>
-      <el-table-column label="地位" prop="status" align="center" width="180">
+      <el-table-column label="状态" prop="status" align="center" width="180">
         <template #default="scope">
           <el-switch
               v-model="scope.row.status"
@@ -83,7 +83,7 @@
           <el-form-item label="链接" prop="supportLink">
             <el-input type="textarea" v-model="form.supportLink" placeholder="支撑连杆"/>
           </el-form-item>
-          <el-form-item label="地位" prop="status">
+          <el-form-item label="状态" prop="status">
             <el-switch v-model="form.status"
                        :active-value=1
                        :inactive-value=0
