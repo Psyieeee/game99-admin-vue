@@ -208,7 +208,7 @@
       <el-table-column label="手机" prop="phone"  align="center"  width="120px"/>
       <el-table-column label="会员vip" align="center" prop="vip" width="70px"/>
       <el-table-column label="余额" :show-overflow-tooltip="true" align="center" prop="accountNow" min-width="120"/>
-      <el-table-column label="保险箱余额" :show-overflow-tooltip="true" align="center" prop="boxAccount"
+      <el-table-column label="保险箱余额" :show-overflow-tooltip="true" align="center" prop="interestDeposit"
                        min-width="120"/>
       <el-table-column label="状态" align="center" min-width="110px">
         <template v-slot="{row}">
@@ -267,12 +267,12 @@
               @click="handleMore(scope.row)"
           >更多
           </el-button>
-          <el-button
-              type="warning"
-              plain
-              @click="boxDish(scope.row)"
-          >保险箱余额提出
-          </el-button>
+<!--          <el-button-->
+<!--              type="warning"-->
+<!--              plain-->
+<!--              @click="boxDish(scope.row)"-->
+<!--          >保险箱余额提出-->
+<!--          </el-button>-->
         </template>
       </el-table-column>
     </el-table>

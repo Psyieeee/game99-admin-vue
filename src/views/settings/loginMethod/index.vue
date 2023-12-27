@@ -4,7 +4,7 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['settings:configTranslation:add']"
+            v-hasPermi="['settings:loginMethod:add']"
             icon="Plus"
             plain
             size="small"
@@ -15,7 +15,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['settings:configTranslation:delete']"
+            v-hasPermi="['settings:loginMethod:delete']"
             :disabled="multiple"
             icon="Delete"
             plain
@@ -31,22 +31,29 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="recordList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="密钥" min-width="180" prop="name"/>
-      <el-table-column align="center" label="语言" min-width="180" prop="language">
-        <template #default="scope">{{languages.find((e) => e.value === scope.row.language).label}}</template>
+      <el-table-column align="center" label="名字" min-width="180" prop="name"/>
+      <el-table-column align="center" label="代码" min-width="180" prop="code"/>
+      <el-table-column label="地位" prop="status" align="center" width="180">
+        <template #default="scope">
+          <el-switch
+              v-model="scope.row.status"
+              :active-value=1
+              :inactive-value=0
+              @click="toggleSwitch(scope.row)">
+          </el-switch>
+        </template>
       </el-table-column>
-      <el-table-column align="center" label="价值" min-width="180" prop="value"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
-              v-hasPermi="['settings:configTranslation:edit']"
+              v-hasPermi="['settings:loginMethod:edit']"
               icon="Edit" link
               size="small"
               type="primary"
               @click="handleUpdate(scope.row)">修改
           </el-button>
           <el-button
-              v-hasPermi="['settings:configTranslation:delete']"
+              v-hasPermi="['settings:loginMethod:delete']"
               icon="Delete" link
               size="small"
               style="color: #e05e5e"
@@ -58,25 +65,21 @@
     </el-table>
 
 
-    <!-- Add or modify list dialog-->
+    <!-- 添加或修改公司入款银行列表对话框 Add or modify company deposit bank list dialog-->
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
-               width="500px">
-      <el-form ref="queryForm" :model="form" :rules="rules" label-width="90px">
-        <el-form-item label="密钥" prop="name">
-          <el-input v-model="form.name" placeholder="密钥"/>
+               width="600px">
+      <el-form ref="queryForm" :model="form" :rules="rules" label-width="100px">
+        <el-form-item label="名字" prop="name">
+          <el-input v-model="form.name" placeholder="名字"/>
         </el-form-item>
-        <el-form-item label="语言" prop="language">
-          <el-select v-model="form.language" clearable placeholder="选择">
-            <el-option
-                v-for="language in languages"
-                :key="language.value"
-                :label="language.label"
-                :value="language.value"
-            />
-          </el-select>
+        <el-form-item label="代码" prop="code" >
+          <el-input v-model="form.code" placeholder="代码"/>
         </el-form-item>
-        <el-form-item label="价值" prop="value">
-          <el-input v-model="form.value" placeholder="价值" type="textarea"/>
+        <el-form-item label="地位" prop="status">
+          <el-switch v-model="form.status"
+                     :active-value=1
+                     :inactive-value=0
+          />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -90,12 +93,13 @@
 <script setup>
 
 import {
-  configTranslationList,
-  deleteConfigTranslation,
-  addConfigTranslation,
-  updateConfigTranslation,
-  getConfigTranslation,
-} from "@/api/config/configTranslation.js";
+  listRecord,
+  deleteRecord,
+  addRecord,
+  updateRecord,
+  getRecord,
+  changeStatus
+} from "@/api/settings/loginMethod";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 const {proxy} = getCurrentInstance();
 
@@ -105,31 +109,6 @@ const title = ref('');
 const loading = ref(true);
 const multiple = ref(true);
 const open = ref(false);
-
-const languages = ref([
-  {
-    value: 'en-US',
-    label: '英语 - 美国'
-  },
-  {
-    value: 'zh-CN',
-    label: '简体中文'
-  },
-  {
-    value: 'zh-TW',
-    label: '繁体中文'
-  },
-  {
-    value: 'id-ID',
-    label: '印尼语'
-  },
-  {
-    value: 'pt-BR',
-    label: '葡萄牙语 - 巴西'
-  }
-  ])
-
-
 const data = reactive({
   /** 查询参数 query params*/
   queryParams: {},
@@ -141,10 +120,7 @@ const data = reactive({
     name: [
       {required: true, message: '无效的值', trigger: 'blur'}
     ],
-    language: [
-      {required: true, message: '无效的值', trigger: 'blur'}
-    ],
-    value: [
+    code: [
       {required: true, message: '无效的值', trigger: 'blur'}
     ]
   },
@@ -154,16 +130,13 @@ const {queryParams, form, rules} = toRefs(data);
 
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id);
-  console.log( "selection " + !selection.length)
   multiple.value = !selection.length;
 }
 
 /** fetch all data from back-end as getList */
 function getList() {
   loading.value = true;
-  configTranslationList(queryParams.value).then(response => {
-    console.log("*******************")
-    console.log(response.data)
+  listRecord(queryParams.value).then(response => {
     recordList.value = response.data;
     loading.value = false;
   });
@@ -173,11 +146,8 @@ function getList() {
 function reset() {
   form.value = {
     name: null,
-    chinese: null,
-    english: null,
-    indonesian: null,
-    portugueseBrazil: null,
-    traditionalChinese: null
+    code: null,
+    status: 1
   }
   proxy.resetForm('queryForm');
 }
@@ -192,17 +162,15 @@ function handleAdd() {
 /** submit new data and handle insert data api*/
 function submitForm() {
   proxy.$refs['queryForm'].validate(async valid => {
-    console.log("form value: ");
-    console.log(form.value);
     if (valid) {
       if (form.value.id != null) {
-        updateConfigTranslation(form.value).then(() => {
+        updateRecord(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
         })
       } else {
-        addConfigTranslation(form.value).then(() => {
+        addRecord(form.value).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
@@ -214,27 +182,48 @@ function submitForm() {
 
 /** handle update data */
 function handleUpdate(row) {
-  reset()
-  getConfigTranslation(row.id).then(response => {
+  getRecord(row.id).then(response => {
     form.value = response.data;
   });
-  console.log(JSON.stringify(form.value) + " @@@@")
   open.value = true
   title.value = '更新记录'
 }
 
 /**  删除按钮操作 handle delete */
-function handleDelete(row ) {
+function handleDelete(row) {
   const idss = row.id || ids.value
   proxy.$confirm('是否确认删除?', '警告', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
   }).then(function () {
-    return deleteConfigTranslation(idss)
+    return deleteRecord(idss)
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess('删除成功')
+  })
+}
+
+
+function toggleSwitch (row) {
+  const text = row.status === 1 ? '启用' : '停用'
+  proxy.$confirm('确认要' + text + '"?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消'
+  }).then(function () {
+    let status;
+    loading.value = true
+    status = changeStatus(row.id, row.status);
+    if (status) {
+      return status
+    }
+  }).then(() => {
+    loading.value = false
+    proxy.$modal.msgSuccess(text + '成功')
+    getList()
+  }).catch(function () {
+    loading.value = false
+    row.status = row.status === 0 ? 1 : 0
   })
 }
 

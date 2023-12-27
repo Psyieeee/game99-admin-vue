@@ -21,6 +21,7 @@
       <el-table-column label="提供时间限制" prop="provideTimesLimit" align="center"/>
       <el-table-column label="每日次数限制" prop="perDayTimesLimit" align="center"/>
       <el-table-column label="总金额" prop="totalAmount" align="center"/>
+      <el-table-column label="每次收款" prop="amountPerCollect" align="center"/>
       <el-table-column label="每日合计" prop="perDayAmount" align="center"/>
       <el-table-column label="最低金额" prop="memberMinMoney" align="center"/>
       <el-table-column label="注册时间后" prop="afterRegisterTime" align="center"/>
@@ -61,6 +62,9 @@
           </el-form-item>
           <el-form-item label="总金额" prop="totalAmount">
             <el-input v-model="form.totalAmount" placeholder="总金额" type="number" />
+          </el-form-item>
+            <el-form-item label="每次收款" prop="amountPerCollect">
+            <el-input v-model="form.amountPerCollect" placeholder="总金额" type="number" />
           </el-form-item>
           <el-form-item label="每日合计" prop="perDayAmount">
             <el-input v-model="form.perDayAmount" placeholder="每日合计" type="number" />
@@ -153,6 +157,7 @@ function reset() {
     provideTimesLimit: null,
     perDayTimesLimit: null,
     totalAmount: null,
+    amountPerCollect:null,
     perDayAmount: null,
     memberMinMoney: null,
     afterRegisterTime: null,

@@ -31,12 +31,12 @@
           <span>资金明细</span>
         </button>
 
-        <button
-            type="button"
-            class="el-button el-button--success el-button--small is-plain"
-            @click="change(6,'重置保险箱')">
-          <span>重置保险箱</span>
-        </button>
+<!--        <button-->
+<!--            type="button"-->
+<!--            class="el-button el-button&#45;&#45;success el-button&#45;&#45;small is-plain"-->
+<!--            @click="change(6,'重置保险箱')">-->
+<!--          <span>重置保险箱</span>-->
+<!--        </button>-->
 
         <button
             type="button"
@@ -156,21 +156,21 @@
               </el-select>
             </template>
           </el-table-column>
-          <el-table-column prop="bankAccount" label="银行卡号" :show-overflow-tooltip="true" min-width="150"
+          <el-table-column prop="cpfAccount" label="银行卡号" :show-overflow-tooltip="true" min-width="150"
                            align="center">
             <template v-slot="{row}" v-if="index===5">
-              <el-input v-model="row.bankAccount"></el-input>
+              <el-input v-model="row.account"></el-input>
               <el-input type="hidden" v-model="row.oldBankAccount"></el-input>
               <el-input type="hidden" v-model="row.oldBankId"></el-input>
               <el-input type="hidden" v-model="row.oldRealName"></el-input>
             </template>
           </el-table-column>
-          <el-table-column align="center" prop="bankAddress" label="银行地址" :show-overflow-tooltip="true"
-                           min-width="140">
-            <template v-slot="{row}" v-if="index===5">
-              <el-input v-model="row.bankAddress"></el-input>
-            </template>
-          </el-table-column>
+<!--          <el-table-column align="center" prop="bankAddress" label="银行地址" :show-overflow-tooltip="true"-->
+<!--                           min-width="140">-->
+<!--            <template v-slot="{row}" v-if="index===5">-->
+<!--              <el-input v-model="row.bankAddress"></el-input>-->
+<!--            </template>-->
+<!--          </el-table-column>-->
           <el-table-column prop="createTime" label=" 绑定时间" :show-overflow-tooltip="true" min-width="110"
                            align="center"></el-table-column>
           <el-table-column label="操作" min-width="140" align="center">
@@ -513,11 +513,11 @@ function change(index_, title_) {
   /** 如果是重置密码,保险箱,体现 switch according to index */
   switch (index.value) {
     case 6 :
-      hint = '确定重置保险箱?'
+      hint = '提示?'
       open(hint, 1)
       break
     case 7 :
-      hint = '请输入您的谷歌验证码'
+      hint = '提示'
       open(hint, 2)
       break
     case 8 :
@@ -525,7 +525,7 @@ function change(index_, title_) {
       open(hint, 3)
       break
     case 9 :
-      hint = '请输入Vip等级'
+      hint = '修改VIP等级'
       open(hint, 4)
       break
     case 2 :
@@ -546,7 +546,7 @@ function reset() {
 /**  打开提示框 open prompt box*/
 function open(hint, type) {
   if (type === 1) {
-    proxy.$modal.confirm(hint, '提示', {
+    proxy.$modal.confirm(hint, '输入您的谷歌验证码', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning'
@@ -572,7 +572,7 @@ function open(hint, type) {
       })
     })
   } else if (type == 2) {
-    proxy.$modal.prompt(hint, '提示', {
+    proxy.$modal.prompt(hint, '请输入您的谷歌验证码', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       inputPattern: /^[0-9]{1,10}$/,

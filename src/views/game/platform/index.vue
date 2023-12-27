@@ -62,8 +62,8 @@
         </template>
       </el-table-column>
       <!--      Transferred to type/index.vue-->
-      <el-table-column label="洗码比例" align="center" prop="rateClean" width="100"/>
-      <el-table-column label="打码比例" align="center" prop="rateBeat" width="100"/>
+<!--      <el-table-column label="洗码比例" align="center" prop="rateClean" width="100"/>-->
+<!--      <el-table-column label="打码比例" align="center" prop="rateBeat" width="100"/>-->
       <el-table-column label="激活状态" align="center" prop="effect" width="100">
         <template #default="scope">
           <el-switch
@@ -167,12 +167,12 @@
         <el-form-item label="排序号" prop="sort">
           <el-input v-model="form.sort" placeholder="请输入排序号"/>
         </el-form-item>
-        <el-form-item label="洗码比例" prop="rateClean">
-          <el-input type="number" class="no-number" v-model="form.rateClean" placeholder="请输入洗码比例"/>
-        </el-form-item>
-        <el-form-item label="打码比例" prop="rateBeat">
-          <el-input type="number" class="no-number" v-model="form.rateBeat" placeholder="请输入打码比例"/>
-        </el-form-item>
+<!--        <el-form-item label="洗码比例" prop="rateClean">-->
+<!--          <el-input type="number" class="no-number" v-model="form.rateClean" placeholder="请输入洗码比例"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="打码比例" prop="rateBeat">-->
+<!--          <el-input type="number" class="no-number" v-model="form.rateBeat" placeholder="请输入打码比例"/>-->
+<!--        </el-form-item>-->
       </el-form>
       <template #footer>
         <div>

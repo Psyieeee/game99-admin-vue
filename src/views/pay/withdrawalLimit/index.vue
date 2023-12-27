@@ -31,12 +31,19 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="tableList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="VIP 水平" min-width="180" prop="vipLevel"/>
+      <el-table-column align="center" label="VIP等级" min-width="180" prop="vipLevel"/>
       <el-table-column align="center" label="每日取款限额计数" min-width="180" prop="dailyWithdrawLimitTimes"/>
-      <el-table-column align="center" label="提款限额" min-width="180" prop="withdrawLimitAmount"/>
-      <el-table-column align="center" label="超过提款限额的费用" min-width="180" prop="exceedWithdrawalFee"/>
-      <el-table-column align="center" label="状态" min-width="180" prop="status">
-        <template #default="scope">{{scope.row.status===1?"Active":"Inactive"}}</template>
+      <el-table-column align="center" label="取款限额" min-width="180" prop="withdrawLimitAmount"/>
+      <el-table-column align="center" label="超过取款限额的费用" min-width="180" prop="exceedWithdrawalFee"/>
+      <el-table-column label="状态" prop="status" align="center" width="180">
+        <template #default="scope">
+          <el-switch
+              v-model="scope.row.status"
+              :active-value=1
+              :inactive-value=0
+              @click="toggleSwitch(scope.row)">
+          </el-switch>
+        </template>
       </el-table-column>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
@@ -62,10 +69,9 @@
 
     <!-- 添加或修改记录 Add or modify records-->
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
-               width="400px">
-      <el-form :inline="true" ref="queryRef" :model="form" :rules="rules" label-width="100px">
-        <div class="centered-form">
-          <el-form-item label="VIP 水平" prop="vipLevel">
+               width="500px">
+      <el-form :inline="true" ref="queryRef" :model="form" :rules="rules" label-width="150px">
+          <el-form-item label="VIP水平" prop="vipLevel">
             <el-select v-model="form.vipLevel" clearable placeholder="Select">
               <el-option
                   v-for="item in vipLevels"
@@ -76,25 +82,20 @@
             </el-select>
           </el-form-item>
           <el-form-item label="每日取款限额计数" prop="dailyWithdrawLimitTimes">
-            <el-input type="number" v-model="form.dailyWithdrawLimitTimes" placeholder="每日提现计数"/>
+            <el-input type="number" v-model="form.dailyWithdrawLimitTimes" placeholder="每日取款限额计数"/>
           </el-form-item>
-          <el-form-item label="提款限额" prop="withdrawLimitAmount">
-            <el-input type="number" v-model="form.withdrawLimitAmount" placeholder="提款限额"/>
+          <el-form-item label="取款限额" prop="withdrawLimitAmount">
+            <el-input type="number" v-model="form.withdrawLimitAmount" placeholder="取款限额"/>
           </el-form-item>
-          <el-form-item label="超过取款限额" prop="exceedWithdrawalFee">
-            <el-input type="number" v-model="form.exceedWithdrawalFee" placeholder="超过提款限额的费用"/>
+          <el-form-item label="超过取款限额的费用" prop="exceedWithdrawalFee">
+            <el-input type="number" v-model="form.exceedWithdrawalFee" placeholder="超过取款限额的费用"/>
           </el-form-item>
-          <el-form-item label="状态" prop="status">
-            <el-select v-model="form.status" clearable placeholder="Select">
-              <el-option
-                  v-for="item in statuses"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-        </div>
+        <el-form-item label="状态" prop="status">
+          <el-switch v-model="form.status"
+                     :active-value=1
+                     :inactive-value=0
+          />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">提交</el-button>
@@ -113,7 +114,9 @@ import {
   deleteWithdrawalLimit,
   addWithdrawalLimit,
   updateWithdrawalLimit,
-  getWithdrawalLimit, withdrawalLimitVipLevels
+  getWithdrawalLimit,
+  withdrawalLimitVipLevels,
+  changeStatus
 } from "@/api/pay/withdrawalLimit";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 const {proxy} = getCurrentInstance();
@@ -125,15 +128,6 @@ const loading = ref(true);
 const multiple = ref(true);
 const open = ref(false);
 const vipLevels = ref([]);
-const statuses = ref([
-  {
-    value: 1,
-    label: 'Active'
-  },
-  {
-    value: 0,
-    label: 'Inactive'
-  }])
 const data = reactive({
   /** 查询参数 query params*/
   queryParams: {},
@@ -252,13 +246,27 @@ function handleDelete(row) {
   })
 }
 
+function toggleSwitch (row) {
+  const text = row.status === 1 ? '启用' : '停用'
+  proxy.$confirm('确认要' + text + '"?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消'
+  }).then(function () {
+    let status;
+    loading.value = true
+    status = changeStatus(row.id, row.status);
+    if (status) {
+      return status
+    }
+  }).then(() => {
+    loading.value = false
+    proxy.$modal.msgSuccess(text + '成功')
+    getList()
+  }).catch(function () {
+    loading.value = false
+    row.status = row.status === 0 ? 1 : 0
+  })
+}
 
 getList()
 </script>
-
-<style>
-.centered-form {
-  margin-left: 40px;
-  max-width: 400px;
-}
-</style>

@@ -265,7 +265,6 @@ function reset() {
     createTime: null,
     updateTime: null
   }
-  proxy.$refs.upload.clearFiles();
   proxy.resetForm('memberAdvertisementRef');
 }
 

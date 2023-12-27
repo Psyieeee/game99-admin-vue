@@ -1,85 +1,78 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" >
-      <el-form-item label="类型" prop="type">
-        <el-select v-model="queryParams.type" placeholder="类型" clearable>
-          <el-option
-              v-for="type in types"
-              :key="type.value"
-              :label="type.label"
-              :value="type.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
-
     <!--    button on the table for query-->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['loja:content:add']"
+            v-hasPermi="['settings:countryCode:add']"
             icon="Plus"
             plain
             size="small"
             type="primary"
-            @click="handleAdd">新增
+            @click="handleAdd"
+        >新增
         </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['loja:content:delete']"
+            v-hasPermi="['settings:countryCode:delete']"
             :disabled="multiple"
             icon="Delete"
             plain
             size="small"
             type="danger"
-            @click="handleDelete">删除
+            @click="handleDelete"
+        >删除
         </el-button>
       </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar @queryTable="getList"></right-toolbar>
     </el-row>
 
     <!--    display data in table -->
     <el-table v-loading="loading" :data="storeList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="充值金额" min-width="180" prop="amount"/>
-      <el-table-column align="center" label="类型" min-width="180" prop="type">
-        <template #default="scope">{{types[scope.row.type].label}}</template>
-      </el-table-column>
-      <el-table-column align="center" label="奖金" min-width="180" prop="bonus"/>
-      <el-table-column align="center" label="图像" prop="image">
+      <el-table-column align="center" label="国家" min-width="180" prop="country"/>
+      <el-table-column align="center" label="国家代码" min-width="180" prop="code"/>
+      <el-table-column align="center" label="排序号" min-width="180" prop="sort"/>
+      <el-table-column align="center" label="图标" prop="icon">
         <template #default="scope" >
           <a
-              v-if="scope.row.image !== ''"
-              :href="scope.row.image"
+              v-if="scope.row.icon !== ''"
+              :href="scope.row.icon"
               style="color: #409eff; font-size: 12px"
               target="_blank"
           >
             <el-image
                 style="height: 50px;"
-                :src="scope.row.image"
+                :src="scope.row.icon"
                 fit="contain"
-                :href="scope.row.image"
+                :href="scope.row.icon"
                 target="_blank"
             />
           </a>
         </template>
       </el-table-column>
+      <el-table-column label="状态" prop="status" align="center" width="180">
+        <template #default="scope">
+          <el-switch
+              v-model="scope.row.status"
+              :active-value=1
+              :inactive-value=0
+              @click="toggleSwitch(scope.row)">
+          </el-switch>
+        </template>
+      </el-table-column>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
-              v-hasPermi="['loja:content:edit']"
+              v-hasPermi="['settings:countryCode:edit']"
               icon="Edit" link
               size="small"
               type="primary"
               @click="handleUpdate(scope.row)">修改
           </el-button>
           <el-button
-              v-hasPermi="['loja:content:delete']"
+              v-hasPermi="['settings:countryCode:delete']"
               icon="Delete" link
               size="small"
               style="color: #e05e5e"
@@ -89,62 +82,50 @@
         </template>
       </el-table-column>
     </el-table>
-    <pagination
-        v-show="total"
-        :total="total"
-        :page-sizes="[10,20,50]"
-        v-model:page="queryParams.pageNum"
-        v-model:limit="queryParams.pageSize"
-        @pagination="getList"
-    />
+
 
     <!-- 添加或修改公司入款银行列表对话框 Add or modify company deposit bank list dialog-->
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
-               width="700px">
-      <el-form ref="queryForm" :model="form" :rules="rules" label-width="120px">
-        <div class="el-row">
-          <div class="el-col-lg-12">
-            <el-form-item label="充值金额" prop="amount">
-              <el-input type="number" v-model="form.amount" placeholder="充值金额"/>
-            </el-form-item>
-            <el-form-item label="类型" prop="type">
-              <el-select v-model="form.type" clearable placeholder="Select">
-                <el-option
-                    v-for="type in types"
-                    :key="type.value"
-                    :label="type.label"
-                    :value="type.value"
-                />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="奖金" prop="bonus" >
-              <el-input type="number" v-model="form.bonus" placeholder="奖金"/>
-            </el-form-item>
-            <el-form-item>
-              <el-upload
-                  v-model:file-list="upload"
-                  :auto-upload="false"
-                  :limit="1"
-                  :multiple="false"
-                  :on-change="selectFile"
-                  :on-error="uploadFalse"
-                  :on-exceed="handleExceed"
-                  :on-preview="handlePreview"
-                  :on-remove="handleRemove"
-                  :on-success="uploadSuccess"
-                  class="upload-demo"
-                  drag
-                  name="lojaImage"
-              >
-                <!--                  :before-upload="beforeAvatarUpload"-->
-                <div class="el-upload__text">Drop file here or <em>点击上传</em></div>
-                <div class="el-upload__tip">
-                  最大文件大小为 100 MB
-                </div>
-              </el-upload>
-            </el-form-item>
-          </div>
-        </div>
+               width="600px">
+      <el-form ref="queryForm" :model="form" :rules="rules" label-width="100px">
+        <el-form-item label="国家" prop="country">
+          <el-input v-model="form.country" placeholder="国家"/>
+        </el-form-item>
+        <el-form-item label="国家代码" prop="code" >
+          <el-input v-model="form.code" placeholder="国家代码"/>
+        </el-form-item>
+        <el-form-item label="排序号" prop="sort" >
+          <el-input type="number" v-model="form.sort" placeholder="排序号"/>
+        </el-form-item>
+        <el-form-item label="状态" prop="status">
+          <el-switch v-model="form.status"
+                     :active-value=1
+                     :inactive-value=0
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-upload
+              v-model:file-list="upload"
+              :auto-upload="false"
+              :limit="1"
+              :multiple="false"
+              :on-change="selectFile"
+              :on-error="uploadFalse"
+              :on-exceed="handleExceed"
+              :on-preview="handlePreview"
+              :on-remove="handleRemove"
+              :on-success="uploadSuccess"
+              class="upload-demo"
+              drag
+              name="countryIcon"
+          >
+            <!--                  :before-upload="beforeAvatarUpload"-->
+            <div class="el-upload__text">Drop file here or <em>点击上传</em></div>
+            <div class="el-upload__tip">
+              最大文件大小为 100 MB
+            </div>
+          </el-upload>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -157,13 +138,14 @@
 <script setup>
 
 import {
-  lojaList,
-  deleteLoja,
-  addLoja,
-  updateLoja,
-  getLoja,
-  fileUpload
-} from "@/api/pay/loja";
+  countryCodeList,
+  deleteCountryCode,
+  addCountryCode,
+  updateCountryCode,
+  getCountryCode,
+  fileUpload,
+  changeStatus
+} from "@/api/settings/countryCode";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 const {proxy} = getCurrentInstance();
 
@@ -175,69 +157,48 @@ const multiple = ref(true);
 const open = ref(false);
 const upload = ref([]);
 const formData = new FormData();
-const showSearch = ref(true);
-const total = ref(0);
-const types = ref([
-    {
-      value: 0,
-      label: '首次充值'
-    },
-    {
-      value: 1,
-      label: '热门充值'
-    },
-    {
-      value: 2,
-      label: '普通充值'
-    }])
 const data = reactive({
   /** 查询参数 query params*/
-  queryParams: {
-    pageNum: 1,
-    pageSize: 10
-  },
+  queryParams: {},
 
   /** 表单参数 form parameter*/
   form: {},
 
-  rules: {},
+  rules: {
+    country: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    code: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    sort: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ]
+  },
 
 });
 const {queryParams, form, rules} = toRefs(data);
 
-function handleQuery() {
-  queryParams.pageNum = 1
-  getList()
-}
-
-function resetQuery() {
-  proxy.resetForm('queryRef')
-  handleQuery()
-  loading.value = false
-}
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id);
-  console.log( "selection " + !selection.length)
   multiple.value = !selection.length;
 }
 
 /** fetch all data from back-end as getList */
 function getList() {
   loading.value = true;
-  lojaList(queryParams.value).then(response => {
+  countryCodeList(queryParams.value).then(response => {
     storeList.value = response.data;
     loading.value = false;
-    total.value = response.total
   });
 }
 
 // 表单重置
 function reset() {
   form.value = {
-    amount: null,
-    type: null,
-    bonus: null,
-    image: null
+    country: null,
+    code: null,
+    status: 1
   }
   clearUpload()
   proxy.resetForm('queryForm');
@@ -253,7 +214,7 @@ function clearUpload(){
 function handleAdd() {
   reset()
   open.value = true
-  title.value = '添加记录'
+  title.value = '新增国家打码配置'
 }
 
 /** submit new data and handle insert data api*/
@@ -262,17 +223,17 @@ function submitForm() {
     if (valid) {
       if (formData.get("file") != null) {
         await fileUpload(formData).then(res => {
-          form.value.image = res.data
+          form.value.icon = res.data
         });
       }
       if (form.value.id != null) {
-        updateLoja(form.value).then(() => {
+        updateCountryCode(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
         })
       } else {
-        addLoja(form.value).then(() => {
+        addCountryCode(form.value).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
@@ -285,12 +246,11 @@ function submitForm() {
 /** handle update data */
 function handleUpdate(row) {
   clearUpload()
-  getLoja(row.id).then(response => {
+  getCountryCode(row.id).then(response => {
     form.value = response.data;
   });
-  console.log(JSON.stringify(form.value) + " @@@@")
   open.value = true
-  title.value = '修改充值赠送配置'
+  title.value = '更新记录'
 }
 
 /**  删除按钮操作 handle delete */
@@ -301,7 +261,7 @@ function handleDelete(row) {
     cancelButtonText: '取消',
     type: 'warning'
   }).then(function () {
-    return deleteLoja(idss)
+    return deleteCountryCode(idss)
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess('删除成功')
@@ -339,6 +299,28 @@ function handlePreview(file) {
   } else {
     proxy.$modal.msgError('此文件导入失败')
   }
+}
+
+function toggleSwitch (row) {
+  const text = row.status === 1 ? '启用' : '停用'
+  proxy.$confirm('确认要' + text + '"?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消'
+  }).then(function () {
+    let status;
+    loading.value = true
+    status = changeStatus(row.id, row.status);
+    if (status) {
+      return status
+    }
+  }).then(() => {
+    loading.value = false
+    proxy.$modal.msgSuccess(text + '成功')
+    getList()
+  }).catch(function () {
+    loading.value = false
+    row.status = row.status === 0 ? 1 : 0
+  })
 }
 
 getList()
