@@ -261,9 +261,9 @@
                     <dict-tag :options="first" :value="scope.row.first"/>
                 </template>
             </el-table-column>
-            <el-table-column label="收款人" min-width="100" align="center" prop="bankUserName">
+            <el-table-column label="收款人" min-width="100" align="center" prop="realName">
                 <template v-slot="{row}">
-                    <a style="color: #00afff" @click="copyColumn(row.bankUserName)">{{ row.bankUserName }}</a>
+                    <a style="color: #00afff" @click="copyColumn(row.realName)">{{ row.realName }}</a>
                 </template>
             </el-table-column>
             <el-table-column label="银行名称" min-width="120" align="center" prop="bankId">
@@ -273,9 +273,9 @@
                     </div>
                 </template>
             </el-table-column>
-            <el-table-column label="银行账号" min-width="180" align="center" prop="bankAccount">
+            <el-table-column label="银行账号" min-width="180" align="center" prop="cardAccount">
                 <template v-slot="{row}">
-                    <a style="color: #00afff" @click="copyColumn(row.bankAccount)">{{ row.bankAccount }}</a>
+                    <a style="color: #00afff" @click="copyColumn(row.cardAccount)">{{ row.cardAccount }}</a>
                 </template>
             </el-table-column>
             <el-table-column label="状态" width="100" align="center" prop="status">
