@@ -52,7 +52,7 @@
          @pagination="getList"/>
 
      <!-- 添加或修改【请填写功能名称】对话框 -->
-     <el-dialog :close-on-click-modal="false" :title="title" v-model="open" width="500px" style="height: 420px" append-to-body>
+     <el-dialog :close-on-click-modal="false" :title="title" v-model="open" width="500px" style="height: 440px" append-to-body>
        <el-form ref="configVipRef" :model="form" :rules="rules" label-width="90px">
          <el-form-item label="vip等级" prop="level">
            <el-input v-model="form.level" placeholder="请输入vip等级" type="number"
@@ -67,7 +67,7 @@
          <el-form-item label="月俸禄" prop="monthBonus">
            <el-input v-model="form.monthBonus" placeholder="请输入月俸禄" type="number" />
          </el-form-item>
-         <el-form-item label="需求打码量" prop="bcode">
+         <el-form-item label="需总充值" prop="bcode">
            <el-input v-model="form.bcode" placeholder="请输入需求打码量" type="number" />
          </el-form-item>
          <el-form-item label="救援奖金率" prop="rescueBonusRate">
@@ -81,7 +81,7 @@
      </el-dialog>
 
 <!--update vip form-->
-     <el-dialog :close-on-click-modal="false" :title="title" v-model="openEdit" width="500px" style="height: 350px" append-to-body>
+     <el-dialog :close-on-click-modal="false" :title="title" v-model="openEdit" width="500px" style="height: 440px" append-to-body>
        <el-form ref="configVipUpdateRef" :model="form" :rules="rules" label-width="90px">
          <el-form-item label="vip等级" prop="level">
            <el-input v-model="form.level" placeholder="请输入vip等级" type="number"
@@ -96,7 +96,7 @@
         <el-form-item label="月俸禄" prop="monthBonus">
            <el-input v-model="form.monthBonus" placeholder="请输入月俸禄" type="number" />
          </el-form-item>
-         <el-form-item label="需求打码量" prop="bcode">
+         <el-form-item label="需总充值" prop="bcode">
            <el-input v-model="form.bcode" placeholder="请输入需求打码量" type="number" />
          </el-form-item>
          <el-form-item label="救援奖金率" prop="rescueBonusRate">
@@ -207,7 +207,7 @@ function resetUpdateForm() {
 /** 新增按钮操作 handle add*/
 function handleAdd(){
   reset()
-  title.value = " 新增会员VIP配置"
+  title.value = "新增会员VIP配置"
   open.value = true
 }
 
@@ -217,7 +217,7 @@ function handleUpdate(row){
   configVipDataById(row.level).then(res=>{
     form.value = res.data
     openEdit.value = true
-    title.value = "修改推广设置"
+    title.value = "修改VIP配置"
   })
 }
 

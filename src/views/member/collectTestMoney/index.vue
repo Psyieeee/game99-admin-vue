@@ -1,13 +1,27 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" >
-      <el-form-item label="键" prop="memberId">
+      <el-form-item label="会员ID" prop="memberId">
         <el-input
             v-model="queryParams.memberId"
-            placeholder="键"
+            placeholder="请输入会员ID"
             clearable
             @keyup.enter="handleQuery"
         />
+      </el-form-item>
+      <el-form-item label="回调日期" prop="updateTime">
+        <el-date-picker type="datetimerange"
+                        v-model="updateTime"
+                        format="YYYY-MM-DD HH:mm:ss"
+                        value-format="YYYY-MM-DD HH:mm:ss"
+                        :style="{width: '95%'}"
+                        start-placeholder="开始时间"
+                        end-placeholder="开始时间"
+                        range-separator="至"
+                        clearable
+                        :default-time="getDefaultTime()"
+                        :shortcuts="proxy.pickerDateTimeShortcuts">
+        </el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -43,6 +57,7 @@ import {
   collectTestMoneyList
 } from "@/api/member/collectTestMoney";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
+import {getDefaultTime} from "@/utils/dateUtils.js";
 const {proxy} = getCurrentInstance();
 
 
@@ -60,13 +75,14 @@ const data = reactive({
   /** 表单参数 form parameter*/
   form: {},
 
+  updateTime: [proxy.parseTime(proxy.getTodayStartTime()), proxy.parseTime(proxy.getTodayEndTime())],
 });
-const {queryParams, form} = toRefs(data);
+const {queryParams, form, updateTime} = toRefs(data);
 
 /** fetch all data from back-end as getList */
 function getList() {
   loading.value = true;
-  collectTestMoneyList(queryParams.value).then(response => {
+  collectTestMoneyList(proxy.addDateRange(queryParams.value, updateTime.value)).then(response => {
     tableList.value = response.data;
     loading.value = false;
     total.value = response.total
@@ -79,6 +95,7 @@ function handleQuery() {
 }
 
 function resetQuery() {
+  updateTime.value = []
   proxy.resetForm('queryRef')
   handleQuery()
   loading.value = false

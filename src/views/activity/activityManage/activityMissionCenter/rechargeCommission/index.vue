@@ -5,7 +5,7 @@
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="级别" min-width="180" prop="level"/>
       <el-table-column align="center" label="佣金率" min-width="180" prop="commissionRate"/>
-      <el-table-column align="center" label="审计乘数" min-width="180" prop="auditMultiplier"/>
+      <el-table-column align="center" label="需求打码倍数" min-width="180" prop="auditMultiplier"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
@@ -35,7 +35,7 @@
           <el-form-item label="级别" prop="auditMultiplier" >
             <el-input type="number" v-model="form.level" placeholder="级别" disabled />
           </el-form-item>
-          <el-form-item label="审计乘数" prop="auditMultiplier">
+          <el-form-item label="需求打码倍数" prop="auditMultiplier">
             <el-input type="number" v-model="form.auditMultiplier" placeholder="审计乘数"/>
           </el-form-item>
           <el-col>
