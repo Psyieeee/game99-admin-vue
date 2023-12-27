@@ -156,21 +156,21 @@
               </el-select>
             </template>
           </el-table-column>
-          <el-table-column prop="bankAccount" label="银行卡号" :show-overflow-tooltip="true" min-width="150"
+          <el-table-column prop="cpfAccount" label="银行卡号" :show-overflow-tooltip="true" min-width="150"
                            align="center">
             <template v-slot="{row}" v-if="index===5">
-              <el-input v-model="row.bankAccount"></el-input>
+              <el-input v-model="row.account"></el-input>
               <el-input type="hidden" v-model="row.oldBankAccount"></el-input>
               <el-input type="hidden" v-model="row.oldBankId"></el-input>
               <el-input type="hidden" v-model="row.oldRealName"></el-input>
             </template>
           </el-table-column>
-          <el-table-column align="center" prop="bankAddress" label="银行地址" :show-overflow-tooltip="true"
-                           min-width="140">
-            <template v-slot="{row}" v-if="index===5">
-              <el-input v-model="row.bankAddress"></el-input>
-            </template>
-          </el-table-column>
+<!--          <el-table-column align="center" prop="bankAddress" label="银行地址" :show-overflow-tooltip="true"-->
+<!--                           min-width="140">-->
+<!--            <template v-slot="{row}" v-if="index===5">-->
+<!--              <el-input v-model="row.bankAddress"></el-input>-->
+<!--            </template>-->
+<!--          </el-table-column>-->
           <el-table-column prop="createTime" label=" 绑定时间" :show-overflow-tooltip="true" min-width="110"
                            align="center"></el-table-column>
           <el-table-column label="操作" min-width="140" align="center">
