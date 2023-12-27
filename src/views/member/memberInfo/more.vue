@@ -434,8 +434,6 @@ const data = reactive({
     ],
     newMobile: [
       {required: true, message: '新手机号码不能为空', trigger: 'blur'},
-      {max: 11, message: "新手机号码长度不能超过11位"},
-      {min: 11, message: "新手机号码长度不能超过11位"},
       {validator: validMobile, trigger: "blur"}
     ],
     googleAuthCode: [
