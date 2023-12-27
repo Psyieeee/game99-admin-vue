@@ -31,12 +31,12 @@
           <span>资金明细</span>
         </button>
 
-        <button
-            type="button"
-            class="el-button el-button--success el-button--small is-plain"
-            @click="change(6,'重置保险箱')">
-          <span>重置保险箱</span>
-        </button>
+<!--        <button-->
+<!--            type="button"-->
+<!--            class="el-button el-button&#45;&#45;success el-button&#45;&#45;small is-plain"-->
+<!--            @click="change(6,'重置保险箱')">-->
+<!--          <span>重置保险箱</span>-->
+<!--        </button>-->
 
         <button
             type="button"
