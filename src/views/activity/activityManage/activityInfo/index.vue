@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+<!-- query-->
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item prop="title" class="input-wd20">
         <el-input
@@ -145,12 +146,12 @@
         @pagination="getList"
     />
 
-    <!-- 添加或修改活动信息对话框  add or update -->
+<!-- add or update -->
     <el-dialog
         :title="title"
         v-model="open"
-        width="1500px"
-        @closed="getList"
+        width="1700px"
+        @close="reset"
         style="
           height: auto;
           padding-bottom: 20px
@@ -207,7 +208,7 @@
                               clearable>
               </el-date-picker>
             </el-form-item>
-            <el-form-item label="Home Popup" label-width="120">
+            <el-form-item label="主页弹出窗口" label-width="120">
               <el-switch
                   v-model="form.isDisplayHome"
                   class="ml-2"
@@ -215,12 +216,14 @@
               />
             </el-form-item>
 
-            <label style="font-size: 25px; text-align: left">{{ activityTypes.find((type) => type.id === form.typeId).name + ' 配置'}}</label>
-            <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
+            <div v-if="eventIds.includes(form.typeId)">
+              <label style="font-size: 25px; text-align: left">{{ activityTypes.find((type) => type.id === form.typeId).name + ' 配置'}}</label>
+              <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
+            </div>
 
 <!--         入款优惠 DEPOSIT TYPE -->
             <div v-if="form.typeId === 19">
-              <el-form-item label="Reset Cycle" prop="resetCycle" @change="handleResetCycleChange(configurations.deposit.resetCycle)">
+              <el-form-item label="重置周期" prop="resetCycle" @change="handleResetCycleChange(configurations.deposit.resetCycle)">
                 <el-radio-group v-model="configurations.deposit.resetCycle">
                   <el-radio label="1">Single</el-radio>
                   <el-radio label="2">Daily</el-radio>
@@ -234,7 +237,7 @@
                     style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
                 />
               </el-form-item>
-              <el-form-item label="Activity Condition" prop="activityCondition">
+              <el-form-item label="活动条件" prop="activityCondition">
                 <el-radio-group v-model="configurations.deposit.activityCondition">
                   <el-radio v-if="configurations.deposit.resetCycle === '1'" label="1">First Deposit</el-radio>
                   <el-radio label="2">Total Deposit</el-radio>
@@ -255,21 +258,21 @@
                 </el-checkbox-group>
               </el-form-item>
 
-              <el-form-item label="Bonus Method" prop="bonusMethod">
-                <el-radio-group v-model="configurations.deposit.bonusMethod">
+              <el-form-item label="奖励方法" prop="bonusMethod">
+                <el-radio-group v-model="configurations.deposit.bonusMethod" @change="handleBonusMethodChange()">
                   <el-radio label="1">Fixed Amount</el-radio>
                   <el-radio label="2">Random Amount</el-radio>
                   <el-radio label="3">Ratio Amount</el-radio>
                 </el-radio-group>
               </el-form-item>
               <el-form-item>
-                <el-table :data="depositData" style="width: 70%" >
-                  <el-table-column label="Deposit Amount" width="150" align="center" prop="depositAmount">
+                <el-table :data="depositData" style="max-width: 700px; max-height: 390px;overflow-y: auto; border: 5px solid #e0e0e0; border-radius: 5px" >
+                  <el-table-column label="存款金额" width="100" align="center" prop="depositAmount">
                     <template #default="scope">
-                      <el-input v-model="scope.row.depositAmount" placeholder="Deposit Amount"/>
+                      <el-input v-model="scope.row.depositAmount"/>
                     </template>
                   </el-table-column>
-                  <el-table-column label="Bonus Amount" width="150" align="center">
+                  <el-table-column label="奖金数额" width="150" align="center">
                     <template #default="scope">
                       <template v-if="configurations.deposit.bonusMethod === '1'">
                         <el-input v-model="scope.row.bonusAmount.max"/>
@@ -280,25 +283,24 @@
                         <el-input style="width: 50px; left: 5px" v-model="scope.row.bonusAmount.max"/>
                       </template>
                       <template v-else>
-                        <el-input style="width: 65px" v-model="scope.row.bonusAmount.max"/>
-                        <el-input :disabled="true" placeholder="%" style="width: 35px"/>
+                        <el-input style="width: 65px" v-model="scope.row.bonusAmount.max"/> {{ ' %'}}
                       </template>
                     </template>
                   </el-table-column>
-                  <el-table-column v-if="configurations.deposit.bonusMethod === '3'" label="Reward Limit" width="110px" align="center" prop="rewardLimit">
+                  <el-table-column v-if="configurations.deposit.bonusMethod === '3'" label="奖励限额" width="85" align="center" prop="rewardLimit">
                     <template #default="scope">
                       <el-input v-model="scope.row.rewardLimit"/>
                     </template>
                   </el-table-column>
-                  <el-table-column label="Activity Description" width="150" align="center"  prop="activityDescription">
+                  <el-table-column label="活动说明"  align="center"  prop="activityDescription">
                     <template #default="scope">
-                      <el-input v-model="scope.row.activityDescription" placeholder="Example Example"/>
+                      <el-input v-model="scope.row.activityDescription"/>
                     </template>
                   </el-table-column>
-                  <el-table-column label="Operation" width="200" align="center" >
+                  <el-table-column label="运行" width="140" align="center" >
                     <template #default="scope">
-                      <el-button @click="addDepositConfig">Add</el-button>
-                      <el-button :disabled="depositData.length === 1" @click="removeDepositConfig( scope.$index )">Remove</el-button>
+                      <el-button @click="addDepositConfig" style="width: 40px">Add</el-button>
+                      <el-button :disabled="depositData.length === 1" @click="removeDepositConfig( scope.$index )" style="width: 60px">Remove</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -317,7 +319,7 @@
                 <el-input style="width: 350px" v-model="configurations.signIn.cycle" placeholder="Please enter a number of days" @change="signInConfig"/>
               </el-form-item>
               <el-form-item >
-                <el-table :data="signInData" style="max-width: 560px; max-height: 390px;overflow-y:auto; border: 5px solid #e0e0e0; border-radius: 5px"  >
+                <el-table :data="signInData" style="max-width: 700px; max-height: 390px;overflow-y:auto; border: 5px solid #e0e0e0; border-radius: 5px"  >
                   <el-table-column label="日" width="50px" align="center" prop="day">
                     <template #default="scope">
                       {{ scope.row.day }}
@@ -329,7 +331,7 @@
                           filterable
                           v-model="scope.row.type"
                           style="width: 100px"
-                          @change="handleChangeType(scope)"
+                          @change="handleEventChangeType(scope)"
                       >
                         <el-option
                             label="Fixed"
@@ -342,7 +344,7 @@
                       </el-select>
                     </template>
                   </el-table-column>
-                  <el-table-column label="金额" width="80px" align="center">
+                  <el-table-column label="金额" align="center">
                     <template #default="scope">
                       <template v-if="scope.row.type === '1'">
                         <el-input type="number" v-model="scope.row.rewardAmount.max"/>
@@ -451,14 +453,14 @@
                        :class="{ 'selected-image' : icon === createBanner.customize.properties.icon }"
                        style="cursor: pointer;">
                     <img :src="icon" alt="Icon" style="max-height: 70px; max-width: 70px;padding: 5px 5px 0px" />
-                    <div class="custom-banner-close-button" @click="removeImage('createBannerIcon',null, icon)">x</div>
+                    <div class="custom-banner-close-button" @click="handleRemoveImage('createBannerIcon',null, icon)">x</div>
 
                   </div>
                 </div>
                 <div class="pagination" style="margin-top: 10px">
                   <button @click="prevPage('createBannerIcon')">Previous</button>
                   <button style="margin-left: 10px" @click="nextPage('createBannerIcon')">Next</button>
-                  <span> Page:  {{ createBanner.pagination.param.pageNum  }} / {{createBanner.pagination.pageTotal}}</span>
+                  <span> Page:  {{ createBanner.customize.pagination.param.pageNum  }} / {{createBanner.customize.pagination.pageTotal}}</span>
                   <input type="file" ref="fileInput" multiple style="display: none" @change="onFileInputChange()" />
                   <button style="float: right; margin-right: 10px" class="upload-button" @click="handleUploadImage('createBannerIcon',null)">Add</button>
                 </div>
@@ -490,7 +492,7 @@
             </div>
             <div v-if="createBanner.type === '2'">
               <div class="preview">
-                <img :src="createBanner.preMade.banner" style="width: 715px "/>
+                <img :src="createBanner.preMade.banner" style="width: 787px "/>
               </div><hr style="margin-top: 20px; margin-bottom: 20px" >
 
               <div class="form-group">
@@ -501,14 +503,16 @@
                        @click="createBanner.preMade.banner = banner"
                        :class="{ 'selected-image': banner === createBanner.preMade.banner }"
                        style="cursor: pointer;">
-                    <img :src="banner" alt="Banner" style="max-height: 150px; max-width: 240px;  padding: 5px " />
-                    <div class="preMade-banner-close-button" @click="removeImage('preMadeBanner',null, banner)">x</div>
+                      <div style="height: 150px; width: 240px">
+                        <img :src="banner" alt="Banner" style="height: 150px; width: 270px;  padding: 5px;" />
+                        <div class="preMade-banner-close-button" @click="handleRemoveImage('preMadeBanner',null, banner)">x</div>
+                      </div>
                   </div>
                 </div>
                 <div class="pagination" style="margin-top: 10px">
                   <button @click="prevPage('preMadeBanner')">Previous</button>
                   <button style="margin-left: 10px" @click="nextPage('preMadeBanner')">Next</button>
-                  <span> Page:  {{ createBanner.pagination.param.pageNum  }} / {{ createBanner.pagination.pageTotal }}</span>
+                  <span> Page:  {{ createBanner.preMade.pagination.param.pageNum  }} / {{ createBanner.preMade.pagination.pageTotal }}</span>
                   <input type="file" ref="fileInput" multiple style="display: none" @change="onFileInputChange()" />
                   <button style="float: right; margin-right: 10px" class="upload-button" @click="handleUploadImage('preMadeBanner',null)">Add</button>
                 </div>
@@ -518,7 +522,7 @@
         </div>
       </el-form>
 <!-- Footer -->
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer" style="float: right">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="open=false">取 消</el-button>
       </div>
@@ -529,7 +533,6 @@
 <script name="ActivityInfo" setup>
 import {url} from "@/utils/url";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
-import { ElMessage } from 'element-plus'
 import html2canvas from 'html2canvas';
 import {getActivityTypeAllList} from "@/api/activity/activityType";
 import WangEditor from "@/components/WangEditor";
@@ -541,16 +544,10 @@ import {
   activityInfoUpdate,
   activityInfoUpdateStatus,
   getActivityInfoList,
-  getAllEventsBanner,
-  getAllEventsIcon, getAllRewardIcon,
-  removeEventsBanner,
-  removeEventsIcon,
-  uploadEventsBanner,
-  uploadEventsIcon,
-  getUploadedImages,
-  listImages, removeAndListImages
+  getAllRewardIcon,
+  uploadImage,
+  listImages, removeImage
 } from "@/api/activity/ativityInfo";
-import {vipBonusInfoAdd, vipBonusInfoUpdate} from "@/api/config/vipBonusInfo";
 
 const {proxy} = getCurrentInstance();
 /** 活动信息表格数据 */
@@ -571,8 +568,6 @@ const treasureIcons = ref([
   'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdbx2.png',
   'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdbx3.png',
 ]);
-const banners = ref([]);
-const icons = ref( []);
 const fontOptions = ref([
   "Arial, sans-serif",
   "Helvetica, sans-serif",
@@ -672,46 +667,18 @@ const data =  reactive({
 });
 const fileInput = ref(null);
 const activityUploadIconParam = ref({type: '', field: ''})
+const eventIds = ref([19,20]);
 
 
-const {queryParams,form,rules, banner, configurations, createBanner} = toRefs(data);
+const {queryParams,form,rules, configurations, createBanner} = toRefs(data);
 const {activityInfo_status} = proxy.useDict("activityInfo_status");
 const formData = new FormData();
 
-//DEPOSIT RELATED
-function addDepositConfig(){
-  depositData.value.push(
-      {
-        depositAmount: null,
-        bonusAmount: { min: null, max: null },
-        activityDescription: null,
-        rewardLimit: null
-      }
-  )
-}
-function removeDepositConfig(index){
-  depositData.value.splice( index, 1 )
-}
-function handleResetCycleChange(resetCycle) {
-  if ( resetCycle === '2') {
-    configurations.value.deposit.activityCondition = '2'
-  }
-}
-function handleDepositSelectAll(){
-  configurations.value.deposit.depositMethod = selectAllDepositMethod.value ? depositOptions.value.map(item => item.value) : [];
-}
-
-
-//SIGN IN RELATED
-function calculateNumberOfDays(){
-  if ( selectDate.value.length === 2){
-    const start = new Date(selectDate.value[0]);
-    const end = new Date(selectDate.value[1]);
-    const timeDifference = end - start;
-    const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
-    configurations.value.signIn.cycle = daysDifference + 1;
-    signInConfig( configurations.value.signIn.cycle )
-  }
+/**  Handle Event Configurations */
+function handleEventChangeType(scope){
+  const index = scope.row.day - 1;
+  const collection = scope.row.type === '1' ? configurations.value.rewardIcons : treasureIcons.value;
+  scope.row.iconUrl = collection[index];
 }
 function signInConfig(){
   const cycle = configurations.value.signIn.cycle;
@@ -733,127 +700,104 @@ function signInConfig(){
     )
   }
 }
-function saveVipConfig(){
-  const event = configurations.value.signIn
-  const obj = {
-    level: configurations.value.vipLevel,
-    value: event.signInData
-  };
-
-  const indexOfExistingData = configurations.value.vipSignInData.findIndex(data => data.level === configurations.value.vipLevel);
-  const hasData = indexOfExistingData !== -1;
-
-  if ( hasData ) {
-    configurations.value.vipSignInData[indexOfExistingData].value = event.signInData;
-  } else {
-    configurations.value.vipSignInData.push( obj );
-  }
-  ElMessage.success('Success')
-}
-function resetVipConfig(){
-  signInConfig(configurations.value.signIn.cycle)
-}
-function handleVipLevelChange(){
-  let currIndex = configurations.value.vipLevel-1;
-
-  if ( configurations.value.vipSignInData[currIndex] === undefined ) {
-    resetVipConfig()
-  } else {
-    signInData.value = configurations.value.vipSignInData[currIndex].value;
+function calculateNumberOfDays(){
+  if ( selectDate.value.length === 2){
+    const start = new Date(selectDate.value[0]);
+    const end = new Date(selectDate.value[1]);
+    const timeDifference = end - start;
+    const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+    configurations.value.signIn.cycle = daysDifference + 1;
+    signInConfig( configurations.value.signIn.cycle )
   }
 }
+function handleDepositSelectAll(){
+  configurations.value.deposit.depositMethod = selectAllDepositMethod.value ? depositOptions.value.map(item => item.value) : [];
+}
+function removeDepositConfig(index){
+  depositData.value.splice( index, 1 )
+}
+function handleResetCycleChange(resetCycle) {
+  if ( resetCycle === '2') {
+    configurations.value.deposit.activityCondition = '2'
+  }
+}
+function addDepositConfig(){
+  depositData.value.push(
+      {
+        depositAmount: null,
+        bonusAmount: { min: null, max: null },
+        activityDescription: null,
+        rewardLimit: null
+      }
+  )
+}
+function handleBonusMethodChange(){
+  depositData.value = [
+    {
+      depositAmount: null,
+      bonusAmount: {
+        min: null,
+        max: null
+      },
+      activityDescription: null,
+      rewardLimit: null
+    }
+  ]
+}
 
-//BANNER RELATED
-function handleChangeType(scope){
-  scope.row.iconUrl = ( scope.row.type === '1' ? coinIcons : treasureIcons ).value[0]
+/**  Handle Images */
+function  getPaginationByImageType(type){
+  const create = createBanner.value;
+  switch (type){
+    case 'createBannerIcon': return create.customize.pagination;
+    case 'preMadeBanner': return create.preMade.pagination;
+  }
 }
-function listEventIcons ( param ) {
-  const _this = createBanner.value;
-  getAllEventsIcon(param).then(res => {
-    res.rows = res.rows.map( img => prependActivityInfoImageBaseURI( img ))
-    _this.iconCollection = res.rows;
-    _this.customImage.icon = res.rows[0];
-    _this.pagination.icons.totalPages = Math.ceil(res.total / _this.pagination.icons.info.pageSize );
-  })
-}
-function listEventBanners ( param ) {
-  const _this = createBanner.value;
-  getAllEventsBanner(param).then(res => {
-    _this.bannerCollection = res.rows;
-    banner.value = res.rows[0];
-    _this.pagination.banners.totalPages = Math.ceil(res.total / _this.pagination.banners.info.pageSize );
-  })
-}
+async function listImage(type) {
+  const pagination = getPaginationByImageType(type);
+  const param = pagination.param;
 
+  let result = {
+    images: null,
+    pageTotal: null
+  }
+
+  await listImages(param).then(res => {
+    res.rows = res.rows.map(img => prependActivityInfoImageBaseURI(img));
+    const totalPages = Math.ceil(res.total / param.pageSize);
+    result.images = res.rows;
+    result.pageTotal = Math.max(1, totalPages);
+  }).then( () => {
+    if ( result.pageTotal < param.pageNum ) {
+      const tempPageNum = param.pageNum - 1;
+      param.pageNum = Math.max(1,tempPageNum);
+      listImage(type)
+    }
+  }).then( () => {
+    const creation = createBanner.value;
+    switch (type) {
+      case 'createBannerIcon': {
+        const customize = creation.customize;
+        customize.iconCollection = result.images;
+        customize.properties.icon = result.images[0];
+        // customize.pagination.pageTotal = result.pageTotal;
+        break;
+      }
+      case 'preMadeBanner': {
+        const preMade = creation.preMade;
+        preMade.bannerCollection = result.images;
+        preMade.banner = result.images[0];
+        // preMade.pagination.pageTotal = result.pageTotal;
+        break;
+      }
+    }
+    pagination.pageTotal = result.pageTotal;
+  });
+}
 function listRewardIcons ( param ) {
   getAllRewardIcon(param).then(res => {
     configurations.value.rewardIcons = res.data
   })
-}
-
-// function listImages (actionType) {
-//   if ( actionType === 1 ) {
-//     listEventIcons(createBanner.value.pagination.icons.info)
-//   }
-//   if ( actionType === 2) {
-//     listEventBanners(createBanner.value.pagination.banners.info)
-//   }
-//   if ( actionType === null) {
-//     listEventIcons(createBanner.value.pagination.icons.info)
-//     listEventBanners(createBanner.value.pagination.banners.info)
-//     listRewardIcons()
-//   }
-// }
-async function removeImage(type, field, imageUrl) {
-  await removeAndListImages(type, field, getOriginalImageLink(imageUrl))
-  listImage(type)
-}
-function getOriginalImageLink(img){
-  const urlRegex = /url=(https?:\/\/[^&]+)/;
-  const match = img.match(urlRegex);
-  return match ? match[1] : img;
-}
-// function removeImage(){
-//   event.preventDefault();
-//   loading.value = true
-//   if ( createBanner.value.type === '1' ) {
-//     removeEventsIcon(createBanner.value.selectedIcon).then( res => {
-//       getAllEventsIcon().then(res => {
-//         icons.value = res.data;
-//         createBanner.value.customImage.icon = icons.value[0]
-//         createBanner.value.iconCollection = icons.value.slice(0,10)
-//         loading.value = false
-//       })
-//     })
-//   } else {
-//     removeEventsBanner(createBanner.value.selectedBanner).then( res => {
-//       getAllEventsBanner().then(res => {
-//         banners.value = res.data;
-//         banner.value = banners.value[0];
-//         createBanner.value.bannerCollection = banners.value.slice(0,6);
-//         loading.value = false
-//       })
-//     })
-//   }
-// }
-function prependActivityInfoImageBaseURI(img) {
-  return url.baseUrl + url.game99PlatformAdminWeb + "/activity/activityInfo/image?url=" + img;
-}
-function nextPage(type) {
-  event.preventDefault();
-  const pagination = createBanner.value.pagination;
-  if ( pagination.param.pageNum < pagination.pageTotal ) {
-    pagination.param.pageNum++;
-    listImage(type)
-  }
-}
-function prevPage(type){
-  event.preventDefault();
-  const param = createBanner.value.pagination.param;
-  if ( param.pageNum > 1 ) {
-    param.pageNum --;
-    listImage(type);
-  }
 }
 function handleUploadImage (type, field){
   event.preventDefault();
@@ -872,237 +816,99 @@ function onFileInputChange(){
   formData.append('type', param.type)
   formData.append('field', param.field)
 
-  getUploadedImages(formData).then( () => {
+  uploadImage(formData).then( () => {
     listImage(param.type);
   }).then( ()=> {
     newFileInput.value = null;
     activityUploadIconParam.value = null;
   });
 }
-
-
-// function populateForm( event ) {
-//   loading.value = true
-//   formData.set( "file", event.currentTarget.files[0] )
-//   if ( createBanner.value.type === '1' ) {
-//     uploadEventsIcon( formData ).then( res => {
-//       getAllEventsIcon().then(res => {
-//         icons.value = res.data;
-//         createBanner.value.customImage.icon = icons.value[0]
-//         createBanner.value.iconCollection = icons.value.slice(0,10)
-//         loading.value = false
-//       })
-//     })
-//   } else {
-//     uploadEventsBanner( formData ).then( res => {
-//       getAllEventsBanner().then(res => {
-//         banners.value = res.data;
-//         banner.value = banners.value[0];
-//         createBanner.value.bannerCollection = banners.value.slice(0,6);
-//         loading.value = false
-//       })
-//     })
-//   }
-//
-// }
-function selectIcon (icon){
-  createBanner.value.selectedIcon = icon
-  createBanner.value.customImage.icon = icon
+async function handleRemoveImage(type, field, imageUrl) {
+  await removeImage(type, field, getOriginalImageLink(imageUrl))
+  await listImage(type)
 }
-function selectBanner (image){
-  createBanner.value.selectedBanner = image
-  banner.value = image
-}
-
-/**
- * 查询活动信息列表 get list of data
- */
-function getList(){
-  loading.value = true
-  getActivityInfoList(proxy.addDateRange(queryParams.value)).then((res)=>{
-    activityInfoList.value = res.data
-    total.value = res.total
-    loading.value = false
-  })
-}
-function activityTypeList(){
-  getActivityTypeAllList().then((res)=>{
-    activityTypes.value = res;
-  })
-}
-/**  多选框选中数据 select multiple rows*/
-function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.id)
-  single.value = selection.length !== 1
-  multiple.value = !selection.length
-}
-/** 0=活动详情 1=跳转链接 */
-function formatterType(row) {
-  if (row.type == 0) {
-    return '活动详情'
-  } else if (row.type == 1) {
-    return '内部浏览器'
-  } else if( row.type == 2 ) {
-    return '外部浏览器'
-  } else {
-    return ''
-  }
-}
-function formatterActivityType(row) {
-  for (const a of activityTypes.value) {
-    if (a.id === row.typeId) {
-      return a.name;
-    }
-  }
-  return "";
-}
-/** 搜索按钮操作 handle query*/
-function handleQuery(){
-  queryParams.pageNum = 1;
-  getList()
-}
-/** 搜索按钮操作 handle query*/
-function resetQuery(){
-  proxy.resetForm("queryForm");
-  handleQuery();
-  loading.value = false;
-}
-/** 表单重置 reset form*/
-function resetForm(){
-  selectDate.value = [];
-  const f = form.value;
-  f.id = null;
-  f.typeId = activityTypes.value[1].id;
-  f.title = null;
-  f.scheduleType = '1';
-  f.isDisplayHome = false;
-  f.startEffect = null;
-  f.configString = null;
-  f.type = '1';
-  f.content = '';
-  f.url = '';
-  f.icon = null;
-  f.sort = null;
-  f.creationType = '1';
-}
-function resetCreateBannerConfig(){
-  createBanner.value = {
-    type: '1',
-    customize: {
-      iconCollection: null,
-      properties: {
-        background: '#030303',
-        icon: null,
-        text: 'PUT TEXT HERE',
-        textStyle: {
-          font: "Arial, san-serif",
-          size: 30,
-          color: '#ffffff'
-        }
-      }
-    },
-    preMade: {
-      bannerCollection: null,
-      banner: null
-    },
-
-    pagination: {
-      pageTotal: 1,
-      param: {
-        pageNum: 1,
-        pageSize: 20
-      }
-    },
-  }
-}
-function resetEventConfig(){
-  signInData.value = [];
-  configurations.value = {
-    rewardIcons: [],
-    deposit: {
-      resetCycle: '1',
-      limitedRechargeSwitch: false,
-      activityCondition: '1',
-      depositMethod: [],
-      bonusMethod: '1',
-      tableData: depositData
-    },
-    signIn: {
-      signMethod: '1',
-      cycle: null,
-      signInData: signInData
-    }
-  }
-}
-
-function reset() {
-  resetCreateBannerConfig();
-  resetEventConfig()
-  resetForm()
-}
-/** 新增按钮操作 handle add button*/
-function handleAdd(){
-  reset()
-  listImage('createBannerIcon')
-  listRewardIcons()
-  open.value = true
-  title.value = "添加活动信息"
-}
-
-function resetCreateBannerImages(){
+function nextPage(type) {
+  event.preventDefault();
   const create = createBanner.value;
-  create.customize.iconCollection = null;
-  create.customize.properties.icon = null;
-  create.preMade.bannerCollection = null;
-  create.preMade.banner = null;
-}
-
-function changeBannerCreationType(type){
-  resetCreateBannerImages();
-  listImage(type === '1' ? 'createBannerIcon' : 'preMadeBanner' )
-}
-
-async function listImage(type) {
-  const creation = createBanner.value;
-  const pagination = creation.pagination;
-
-  let result = {
-    images: null,
-    pageTotal: null
+  const pagination = type === 'createBannerIcon' ? create.customize.pagination : create.preMade.pagination;
+  if ( pagination.param.pageNum < pagination.pageTotal ) {
+    pagination.param.pageNum++;
+    listImage(type)
   }
-
+}
+function prevPage(type){
+  event.preventDefault();
+  const create = createBanner.value;
+  const pagination = type === 'createBannerIcon' ? create.customize.pagination : create.preMade.pagination;
   const param = pagination.param;
-  param.pageSize = type === 'createBannerIcon' ? 20 : 9;
-  param.type = type;
-
-  await listImages(param).then(res => {
-    res.rows = res.rows.map(img => prependActivityInfoImageBaseURI(img));
-    const totalPages = Math.ceil(res.total / param.pageSize);
-    result.images = res.rows;
-    result.pageTotal = Math.max(1, totalPages);
-  }).then( () => {
-    if ( result.pageTotal < param.pageNum ) {
-      const tempPageNum = param.pageNum - 1;
-      param.pageNum = Math.max(1,tempPageNum);
-      listImage(type)
-    }
-  }).then( () => {
-    switch (type) {
-      case 'createBannerIcon': {
-        const customize = creation.customize;
-        customize.iconCollection = result.images;
-        customize.properties.icon = result.images[0];
-      }
-      case 'preMadeBanner': {
-        const preMade = creation.preMade;
-        preMade.bannerCollection = result.images;
-        preMade.banner = result.images[0];
-      }
-    }
-    pagination.pageTotal = result.pageTotal;
-  });
+  if ( param.pageNum > 1 ) {
+    param.pageNum --;
+    listImage(type);
+  }
+}
+function getOriginalImageLink(img){
+  const urlRegex = /url=(https?:\/\/[^&]+)/;
+  const match = img.match(urlRegex);
+  return match ? match[1] : img;
+}
+function prependActivityInfoImageBaseURI(img) {
+  return url.baseUrl + url.game99PlatformAdminWeb + "/activity/activityInfo/image?url=" + img;
+}
+function changeBannerCreationType(type){
+  const create = createBanner.value;
+  const collection = type === '1' ? create.customize.iconCollection : create.preMade.bannerCollection;
+  if ( collection === null ) listImage(type === '1' ? 'createBannerIcon' : 'preMadeBanner');
 }
 
+
+/** Handle add button*/
+async function handleAdd(){
+  await reset()
+  await listImage('createBannerIcon')
+  await listRewardIcons()
+  title.value = "添加活动信息"
+  open.value = true
+}
+/** Handle delete data */
+function handleDelete(row){
+  const id = row.id || ids.value;
+  proxy.$modal.confirm('是否确认删除"' + row.title + '"?', "警告", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning"
+  }).then(function () {
+    return activityInfoDelete(id);
+  }).then(() => {
+    getList();
+    proxy.$modal.msgSuccess("删除成功");
+  })
+}
+/** Handle export data*/
+function handleExport(){
+  proxy.$modal.confirm('确认处理Excel并下载，数据量大的时候会延迟，请耐心等待...', '警告', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(function () {
+    return activityInfoExport(proxy.addDateRange(queryParams.value,updateTime.value));
+  }).then(response => {
+    proxy.downloadExcel(response, '活动信息')
+  }).catch(() => {
+  })
+}
+
+/** Handle update*/
+function handleUpdate(row){
+  reset();
+  activityInfoFindById(row.id).then( async res => {
+    await populateForm(res.data)
+    await populateBonusTypeConfiguration()
+    await populateBannerConfiguration();
+  }).then( () => {
+    title.value = "修改活动信息";
+    open.value = true;
+  })
+}
 function populateForm(rspData){
   selectDate.value = rspData.scheduleType === 1 ? [rspData.startEffect, rspData.endEffect] : [];
   const f = form.value;
@@ -1137,7 +943,6 @@ async function populateBannerConfiguration(){
   });
 
 }
-
 function populateBonusTypeConfiguration(){
   let parsedEventConfig = JSON.parse(form.value.configString).eventConfig;
   if (parsedEventConfig === null ) return
@@ -1157,40 +962,7 @@ function populateBonusTypeConfiguration(){
   }
 }
 
-/** 修改按钮操作 handle update*/
-function handleUpdate(row){
-  reset();
-  activityInfoFindById(row.id).then( async res => {
-    await populateForm(res.data)
-    await populateBonusTypeConfiguration()
-    await populateBannerConfiguration();
-  }).then( () => {
-    title.value = "修改活动信息";
-    open.value = true;
-  })
-
-}
-async function getCustomizedOrPreMadeIcon() {
-  let icon = getOriginalImageLink(createBanner.value.preMade.banner);
-  if (createBanner.value.type === '1') {
-    const container = document.getElementById('original');
-    await html2canvas(container).then(function (canvas) {
-      icon = canvas.toDataURL('image/png');
-    });
-  }
-  return icon;
-}
-
-function getEventConfigByTypeId(){
-  const config = configurations.value;
-  switch (form.value.typeId) {
-    case 19: return config.deposit;
-    case 20: return config.signIn;
-    default: return null; // or handle other cases as needed
-  }
-}
-
-/** 提交按钮 submit form*/
+/** Handle Submit form*/
 async function submitForm() {
   proxy.$refs["activityForm"].validate(async valid => {
     if (!valid) return;
@@ -1210,36 +982,161 @@ async function submitForm() {
 
   let actionMethod = f.id === null ? activityInfoAdd(f) : activityInfoUpdate(f);
   actionMethod.then(() => {
+    getList()
+  }).then( () => {
     proxy.$modal.msgSuccess("修改成功");
     open.value = false;
   })
 }
-/** 删除按钮操作 handle delete data */
-function handleDelete(row){
-  const id = row.id || ids.value;
-  proxy.$modal.confirm('是否确认删除"' + row.title + '"?', "警告", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    type: "warning"
-  }).then(function () {
-    return activityInfoDelete(id);
-  }).then(() => {
-    getList();
-    proxy.$modal.msgSuccess("删除成功");
+async function getCustomizedOrPreMadeIcon() {
+  let icon;
+  if (createBanner.value.type === '1') {
+    const container = document.getElementById('original');
+    await html2canvas(container).then(function (canvas) {
+      icon = canvas.toDataURL('image/png');
+    });
+  } else {
+    icon = getOriginalImageLink(createBanner.value.preMade.banner);
+  }
+  return icon;
+}
+function getEventConfigByTypeId(){
+  const config = configurations.value;
+  switch (form.value.typeId) {
+    case 19: return config.deposit;
+    case 20: return config.signIn;
+    default: return null; // or handle other cases as needed
+  }
+}
+
+/** Handle Reset Form*/
+async function reset() {
+  await resetCreateBannerConfig();
+  await resetEventConfig()
+  await resetForm()
+}
+function resetEventConfig(){
+  signInData.value = [];
+  configurations.value = {
+    rewardIcons: [],
+    deposit: {
+      resetCycle: '1',
+      limitedRechargeSwitch: false,
+      activityCondition: '1',
+      depositMethod: [],
+      bonusMethod: '1',
+      tableData: depositData
+    },
+    signIn: {
+      signMethod: '1',
+      cycle: null,
+      signInData: signInData
+    }
+  }
+}
+function resetForm(){
+  selectDate.value = [];
+  const f = form.value;
+  f.id = null;
+  f.typeId = activityTypes.value[0].id;
+  f.title = null;
+  f.scheduleType = '1';
+  f.isDisplayHome = false;
+  f.startEffect = null;
+  f.configString = null;
+  f.type = '1';
+  f.content = '';
+  f.url = '';
+  f.icon = null;
+  f.sort = null;
+  f.creationType = '1';
+}
+function resetCreateBannerConfig(){
+  createBanner.value = {
+    type: '1',
+    customize: {
+      iconCollection: null,
+      properties: {
+        background: '#030303',
+        icon: null,
+        text: 'PUT TEXT HERE',
+        textStyle: {
+          font: "Arial, san-serif",
+          size: 30,
+          color: '#ffffff'
+        }
+      },
+      pagination: {
+        pageTotal: 1,
+        param: {
+          type: 'createBannerIcon',
+          pageNum: 1,
+          pageSize: 20
+        }
+      },
+    },
+    preMade: {
+      bannerCollection: null,
+      banner: null,
+      pagination: {
+        pageTotal: 1,
+        param: {
+          type: 'preMadeBanner',
+          pageNum: 1,
+          pageSize: 9
+        }
+      },
+    },
+  }
+}
+
+/**  Old Methods */
+function getList(){
+  loading.value = true
+  getActivityInfoList(proxy.addDateRange(queryParams.value)).then((res)=>{
+    activityInfoList.value = res.data
+    total.value = res.total
+    loading.value = false
   })
 }
-/** 导出按钮操作 handle export data*/
-function handleExport(){
-  proxy.$modal.confirm('确认处理Excel并下载，数据量大的时候会延迟，请耐心等待...', '警告', {
-    confirmButtonText: '确认',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(function () {
-    return activityInfoExport(proxy.addDateRange(queryParams.value,updateTime.value));
-  }).then(response => {
-    proxy.downloadExcel(response, '活动信息')
-  }).catch(() => {
+function activityTypeList(){
+  getActivityTypeAllList().then((res)=>{
+    activityTypes.value = res;
   })
+}
+function handleSelectionChange(selection) {
+  ids.value = selection.map(item => item.id)
+  single.value = selection.length !== 1
+  multiple.value = !selection.length
+}
+/** 0=Event Details 1=Jump Link */
+function formatterType(row) {
+  if (row.type == 0) {
+    return '活动详情'
+  } else if (row.type == 1) {
+    return '内部浏览器'
+  } else if( row.type == 2 ) {
+    return '外部浏览器'
+  } else {
+    return ''
+  }
+}
+function formatterActivityType(row) {
+  for (const a of activityTypes.value) {
+    if (a.id === row.typeId) {
+      return a.name;
+    }
+  }
+  return "";
+}
+function handleQuery(){
+  queryParams.pageNum = 1;
+  getList()
+}
+function resetQuery(){
+  proxy.resetForm("queryForm");
+  handleQuery();
+  loading.value = false;
 }
 /**  0停用1启用 */
 function handleEffectChange(row){
@@ -1279,9 +1176,11 @@ img {
   left: 0;
   height: 100%;
 }
+
 .form-group {
   margin-bottom: 20px;
 }
+
 .preview {
   height: 330px;
   max-width: 800px;
@@ -1289,12 +1188,11 @@ img {
   padding: 5px;
   border: 1px solid #ccc;
 }
+
 .selected-image {
   border: 3px solid #00dfff;
 }
-.dialog-footer{
-  float: right;
-}
+
 .custom-banner-close-button {
   padding-bottom: 1px;
   position: relative;
@@ -1312,6 +1210,14 @@ img {
   transform: translate(230%,-350%);
 }
 
+.custom-banner-close-button:hover {
+  background-color: #ff000b;
+  color: #ffffff;
+  width: 25px; /* Adjust as needed */
+  height: 25px; /* Adjust as needed */
+  transform: translate(170%, -290%); /* Adjust the values for fine-tuning */
+}
+
 .preMade-banner-close-button {
   padding-bottom: 1px;
   position: relative;
@@ -1326,7 +1232,7 @@ img {
   border-radius: 50%;
   width: 25px;
   height: 25px;
-  transform: translate(820%,-530%);
+  transform: translate(820%,-550%);
 }
 
 .preMade-banner-close-button:hover {
@@ -1337,11 +1243,4 @@ img {
   transform: translate(660%, -460%); /* Adjust the values for fine-tuning */
 }
 
-.custom-banner-close-button:hover {
-  background-color: #ff000b;
-  color: #ffffff;
-  width: 25px; /* Adjust as needed */
-  height: 25px; /* Adjust as needed */
-  transform: translate(170%, -290%); /* Adjust the values for fine-tuning */
-}
 </style>

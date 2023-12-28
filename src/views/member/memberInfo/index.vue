@@ -17,7 +17,7 @@
       <el-form-item label="搜索成员" prop="searchValue">
         <el-input
             v-model.trim="queryParams.searchValue"
-            placeholder="会员ID/手机号 , 逗号分隔"
+            placeholder="会员ID/手机号/电子邮件 , 逗号分隔"
             clearable
             type="primary"
             link
@@ -84,7 +84,7 @@
             @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item prop="email" style="width: 110px;" class="email">
+      <el-form-item prop="remark" style="width: 110px;" class="remark">
         <el-input
             v-model="queryParams.remark"
             placeholder="登录备注"
@@ -208,7 +208,8 @@
       <el-table-column label="手机" prop="phone"  align="center"  width="120px"/>
       <el-table-column label="会员vip" align="center" prop="vip" width="70px"/>
       <el-table-column label="余额" :show-overflow-tooltip="true" align="center" prop="accountNow" min-width="120"/>
-      <el-table-column label="保险箱余额" :show-overflow-tooltip="true" align="center" prop="interestDeposit"
+      <el-table-column label="奖金" :show-overflow-tooltip="true" align="center" prop="bonusMoney" min-width="120"/>
+      <el-table-column label="电子邮件" :show-overflow-tooltip="true" align="center" prop="email"
                        min-width="120"/>
       <el-table-column label="状态" align="center" min-width="110px">
         <template v-slot="{row}">

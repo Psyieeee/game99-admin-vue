@@ -18,11 +18,9 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="memberWithdrawNoticeList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="ID" min-width="180" prop="id"/>
-      <el-table-column align="center" label="最低金额" min-width="180" prop="minAmount"/>
-      <el-table-column align="center" label="Redis TTL" min-width="180" prop="redisTtl"/>
-      <el-table-column align="center" label="弹出窗口持续时间" min-width="180" prop="popupDuration"/>
-      <el-table-column align="center" label="轮询间隔" min-width="180" prop="pollingInterval"/>
+      <el-table-column align="center" label="最低" min-width="180" prop="minAmount"/>
+      <el-table-column align="center" label="喇吹彈出" min-width="180" prop="popupDuration"/>
+      <el-table-column align="center" label="时间间隔" min-width="180" prop="pollingInterval"/>
       <el-table-column align="center" label="影响" min-width="180" prop="effect">
         <template #default="scope">
           <el-switch
@@ -69,32 +67,25 @@
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="700px">
       <el-form :inline="true" ref="addMemberWithdrawNotice" :model="form" :rules="rules" label-width="100px">
-            <el-form-item label="Minimum Amount" prop="minAmount" style="min-width: 290px">
+            <el-form-item label="最低" prop="minAmount" style="min-width: 290px">
               <el-input
                   v-model="form.minAmount"
                   clearable
-                  placeholder="Minimum amount"
+                  placeholder="最低"
               />
             </el-form-item>
-            <el-form-item label="Redis TTL" prop="redisTtl" style="min-width: 290px">
-              <el-input
-                  v-model="form.redisTtl"
-                  clearable
-                  placeholder="Redis TTL"
-              />
-            </el-form-item>
-            <el-form-item label="Popup Duration" prop="popupDuration" style="min-width: 290px">
+            <el-form-item label="喇吹彈出" prop="popupDuration" style="min-width: 290px">
               <el-input
                   v-model="form.popupDuration"
                   clearable
-                  placeholder="Popup duration"
+                  placeholder="持续时间"
               />
             </el-form-item>
-            <el-form-item label="Polling interval" prop="pollingInterval" style="min-width: 290px">
+            <el-form-item label="时间间隔" prop="pollingInterval" style="min-width: 290px">
               <el-input
                   v-model="form.pollingInterval"
                   clearable
-                  placeholder="Polling interval"
+                  placeholder="间隔时间"
               />
             </el-form-item>
       </el-form>
