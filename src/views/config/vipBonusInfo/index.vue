@@ -80,12 +80,12 @@
 <!--            </el-image>-->
 <!--          </template>-->
 <!--        </el-table-column>-->
-      <el-table-column label="内容" align="center" prop="content"  min-width="100">
-        <template v-slot="{row}">
-          <div v-html="row.content" style="max-height: 80px"></div>
-        </template>
-      </el-table-column>
-      <el-table-column label="跳转链接" align="center" prop="url"  min-width="100"/>
+<!--      <el-table-column label="内容" align="center" prop="content"  min-width="100">-->
+<!--        <template v-slot="{row}">-->
+<!--          <div v-html="row.content" style="max-height: 80px"></div>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column label="跳转链接" align="center" prop="url"  min-width="100"/>-->
       <el-table-column label="日程类型" align="center" prop="scheduleType"  min-width="100"/>
       <el-table-column label="开始效果" align="center" prop="startEffect"  min-width="120"/>
       <el-table-column label="结束效果" align="center" prop="endEffect"  min-width="120"/>
@@ -210,23 +210,23 @@
               </el-checkbox-group>
             </el-form-item>
 <!-- Other Config -->
-            <label style="font-size: 25px;padding-top: 10px; text-align: left">其他配置</label>
-            <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
-            <el-form-item label="跳跃类型" prop="jumpType">
-              <el-radio-group v-model="form.jumpType">
-                <el-radio label="0">奖励活动详情</el-radio>
-                <el-radio label="1">跳转链接</el-radio>
-              </el-radio-group>
-            </el-form-item>
+<!--            <label style="font-size: 25px;padding-top: 10px; text-align: left">其他配置</label>-->
+<!--            <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">-->
+<!--            <el-form-item label="跳跃类型" prop="jumpType">-->
+<!--              <el-radio-group v-model="form.jumpType">-->
+<!--                <el-radio label="0">奖励活动详情</el-radio>-->
+<!--                <el-radio label="1">跳转链接</el-radio>-->
+<!--              </el-radio-group>-->
+<!--            </el-form-item>-->
 <!-- Jump Type -->
-            <div style="max-width: 1000px">
-              <el-form-item label="内容" prop="content" v-if="form.jumpType === '0'">
-                <WangEditor v-model="form.content" image-path="VipBonusInfo" style="max-width: 680px"/>
-              </el-form-item>
-              <el-form-item label="Url" prop="url" v-if="form.jumpType === '1'">
-                <el-input v-model="form.url" placeholder="请输入图标跳转链接" style="max-width: 680px"/>
-              </el-form-item>
-            </div>
+<!--            <div style="max-width: 1000px">-->
+<!--              <el-form-item label="内容" prop="content" v-if="form.jumpType === '0'">-->
+<!--                <WangEditor v-model="form.content" image-path="VipBonusInfo" style="max-width: 680px"/>-->
+<!--              </el-form-item>-->
+<!--              <el-form-item label="Url" prop="url" v-if="form.jumpType === '1'">-->
+<!--                <el-input v-model="form.url" placeholder="请输入图标跳转链接" style="max-width: 680px"/>-->
+<!--              </el-form-item>-->
+<!--            </div>-->
           </div>
           <div class="el-col el-col-12">
             <label style="font-size: 25px; text-align: left">{{ vipBonusTypes.find((type) => type.id === form.typeId).name + ' 配置'}}</label>
@@ -334,10 +334,10 @@
                     @change="handleVipLevelChange"
                 >
                   <el-option
-                      v-for="i in 31"
+                      v-for="i in 30"
                       :key="i"
-                      :label="'VIP ' + (i - 1) "
-                      :value="i - 1"
+                      :label="'VIP ' + (i) "
+                      :value="i"
                   ></el-option>
                 </el-select>
                 <div style="padding-left: 10px">
@@ -347,7 +347,7 @@
               </el-form-item>
               <el-form-item>
                 <el-table :data="configurations.signIn.dailyData" style="max-width: 670px; max-height: 430px;overflow-y:auto; border: 5px solid #e0e0e0; border-radius: 5px" >
-                  <el-table-column label="日" width="50px" align="center" prop="day">
+                  <el-table-column label="日" width="60px" align="center" prop="day">
                     <template #default="scope">
                       <div v-if="configurations.signIn.customDay === '1'">
                         <el-input v-model="scope.row.day"/>
@@ -749,7 +749,7 @@ function handleResetData() {
   // };
 
   configurations.value = {
-    vipLevel: 0,
+    vipLevel: 1,
     rewardIcons: {
       web: [],
       mobile: []
@@ -787,10 +787,10 @@ function handleResetData() {
   f.endEffect = null;
   f.isDisplayHome = false;
   f.configString = null;
-  f.jumpType = '1';
+  // f.jumpType = '1';
   f.content = '';
-  f.url = null;
-  f.icon = null;
+  // f.url = null;
+  // f.icon = null;
   dateRange.value = []
 
   cleanImagesByType(['rewardImg', 'statusImg'])
@@ -982,33 +982,35 @@ function populateForm( r ){
   f.endEffect = r.endEffect
   f.isDisplayHome = r.isDisplayHome
   f.configString = r.configString
-  f.jumpType = r.jumpType.toString()
+  // f.jumpType = r.jumpType.toString()
   f.content = r.content
-  f.url = r.url
-  f.icon = r.icon
+  // f.url = r.url
+  // f.icon = r.icon
   f.platforms = r.platforms.split(',');
   dateRange.value = r.scheduleType === 1 ? [ form.value.startEffect, form.value.endEffect ] : []
 }
-function populateBannerConfiguration() {
-  let customizedProperties = JSON.parse(form.value.configString).customBannerConfig;
-  let isCustomized = customizedProperties === null ? false : true;
-  if ( isCustomized ) {
-    createBanner.value.type = '1'
-    createBanner.value.customize.properties = customizedProperties;
-  } else {
-    createBanner.value.type = '2'
-    createBanner.value.preMade.banner = form.value.icon;
-  }
-  getBannerCreationRelatedImages(1);
-}
+// function populateBannerConfiguration() {
+//   let customizedProperties = JSON.parse(form.value.configString).customBannerConfig;
+//   let isCustomized = customizedProperties === null ? false : true;
+//   if ( isCustomized ) {
+//     createBanner.value.type = '1'
+//     createBanner.value.customize.properties = customizedProperties;
+//   } else {
+//     createBanner.value.type = '2'
+//     createBanner.value.preMade.banner = form.value.icon;
+//   }
+//   getBannerCreationRelatedImages(1);
+// }
 function populateBonusTypeConfiguration(){
   let parsedEventConfig = JSON.parse(form.value.configString).eventConfig;
   switch ( form.value.typeId ) {
     case 1: //Sign In
         const conf = configurations.value
         conf.signIn = parsedEventConfig;
-        let listOfDailyData = parsedEventConfig.listOfDailyData;
-        conf.signIn.dailyData = listOfDailyData === undefined ? [] : listOfDailyData[0].config;
+        if ( parsedEventConfig.listOfDailyData.length > 0 ) {
+          let listOfDailyData = parsedEventConfig.listOfDailyData;
+          conf.signIn.dailyData = listOfDailyData === undefined ? [] : listOfDailyData[0].config;
+        }
         break;
       //TODO: Update when added more bonus type
   }
@@ -1025,7 +1027,7 @@ async function handleSubmitForm() {
   const create = createBanner.value;
 
   //Populate other fields in form
-  f.icon = await getCustomizedOrPreMadeIcon();
+  // f.icon = await getCustomizedOrPreMadeIcon();
   f.startEffect = isScheduleFixed ? dateRange.value[0] : f.startEffect;
   f.endEffect   = isScheduleFixed ? dateRange.value[1] : null;
   f.configString = JSON.stringify({
@@ -1058,7 +1060,8 @@ function getEventConfigByTypeId(){
       listOfDailyData.forEach( dailyData => {
         dailyData.config.forEach (data => {
           platforms.forEach( platform => {
-            data.rewardIcon[platform] = getOriginalImageLink(data.rewardIcon[platform]);
+            const img = data.rewardIcon[platform];
+            if ( img !== null ) data.rewardIcon[platform] = getOriginalImageLink(data.rewardIcon[platform]);
           })
         })
       });
@@ -1068,16 +1071,16 @@ function getEventConfigByTypeId(){
     default: return null;
   }
 }
-async function getCustomizedOrPreMadeIcon() {
-  let icon = createBanner.value.preMade.banner;
-  if (createBanner.value.type === '1') {
-    const container = document.getElementById('original');
-    await html2canvas(container).then(function (canvas) {
-      icon =  canvas.toDataURL('image/png');
-    });
-  }
-  return icon;
-}
+// async function getCustomizedOrPreMadeIcon() {
+//   let icon = createBanner.value.preMade.banner;
+//   if (createBanner.value.type === '1') {
+//     const container = document.getElementById('original');
+//     await html2canvas(container).then(function (canvas) {
+//       icon =  canvas.toDataURL('image/png');
+//     });
+//   }
+//   return icon;
+// }
 
 /**  Sign In Related */
 function customDay_populateSignInConfigTable(){
