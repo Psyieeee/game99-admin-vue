@@ -23,6 +23,13 @@ export function deleteMissionRepeat(id){
     })
 }
 
+export function getMissionTrigger() {
+    return request({
+        url: url.game99PlatformAdminWeb + "/missionRepeat/missionTrigger/list",
+        method: 'get'
+    })
+}
+
 export function addMissionRepeat(data){
     return request({
         url:url.game99PlatformAdminWeb+"/missionRepeat/add",

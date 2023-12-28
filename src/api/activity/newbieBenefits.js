@@ -23,6 +23,7 @@ export function getMemberTierList(query) {
     })
 }
 
+
 export function deleteNewbie(mobile) {
     return request({
         url: url.game99PlatformAdminWeb + "/missionNewbie/" + mobile,

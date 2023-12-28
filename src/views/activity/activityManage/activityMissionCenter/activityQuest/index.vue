@@ -41,21 +41,22 @@
         >删除
         </el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-            v-hasPermi="['mission:activity:settings']"
-            icon="gear"
-            plain
-            size="small"
-            type="primary"
-            @click="handleSettings"
-        >设置
-        </el-button>
-      </el-col>
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--            v-hasPermi="['mission:activity:settings']"-->
+<!--            icon="gear"-->
+<!--            plain-->
+<!--            size="small"-->
+<!--            type="primary"-->
+<!--            @click="handleSettings"-->
+<!--        >设置-->
+<!--        </el-button>-->
+<!--      </el-col>-->
       <right-toolbar v-model="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <!--    display data in table -->
+<!--    <el-table-column align="center" label="所需活动级别" min-width="180" prop="requiredActivityLevel"/>-->
     <el-table v-loading="loading" :data="activityMissionLists" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="身份证" min-width="70" prop="id"/>
@@ -65,9 +66,10 @@
           <el-image :src="scope.row.icon" lazy fit="contain" style="width: 60px;"/>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="所需活动级别" min-width="180" prop="requiredActivityLevel"/>
+
+      <el-table-column align="center" label="完成次数" min-width="180" prop="completionCount"/>
       <el-table-column align="center" label="任务重复类型" min-width="180" prop="missionRepeatType"/>
-      <el-table-column align="center" label="奖励类型" min-width="180" prop="rewardType"/>
+<!--      <el-table-column align="center" label="奖励类型" min-width="180" prop="rewardType"/>-->
       <el-table-column align="center" label="奖励金额" min-width="180" prop="reward"/>
       <el-table-column align="center" min-width="150" label="活跃" prop="status">
         <template #default="scope">
@@ -79,6 +81,7 @@
           ></el-switch>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="分类" min-width="180" prop="sort"/>
       <el-table-column align="center" label="操作员" min-width="180" prop="updateBy"/>
       <el-table-column align="center" label="运行时间" min-width="180" prop="updateTime"/>
       <el-table-column align="center" label="说明" min-width="180" prop="description"/>
@@ -129,6 +132,13 @@
               placeholder="请输入所需的活动级别"
           />
           </el-form-item>
+          <el-form-item label="完成次数" prop="completionCount" >
+            <el-input
+              v-model="form.completionCount"
+              clearable
+              placeholder="插入完成计数"
+          />
+          </el-form-item>
           <el-form-item label="任务重复类型" prop="missionRepeatType">
             <el-select v-model="form.missionRepeatType" clearable placeholder="游戏平台">
               <el-option
@@ -139,13 +149,13 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="奖励类型" prop="rewardType" >
-            <el-input
-                v-model="form.rewardType"
-                clearable
-                placeholder="输入奖励类型"
-            />
-          </el-form-item>
+<!--          <el-form-item label="奖励类型" prop="rewardType" >-->
+<!--            <el-input-->
+<!--                v-model="form.rewardType"-->
+<!--                clearable-->
+<!--                placeholder="输入奖励类型"-->
+<!--            />-->
+<!--          </el-form-item>-->
           <el-form-item label="奖励金额" prop="reward" >
             <el-input
                 v-model="form.reward"
@@ -161,6 +171,9 @@
                 :inactive-value="0"
             ></el-switch>
           </template>
+        </el-form-item>
+        <el-form-item label="分类" prop="sort">
+          <el-input type="number" v-model="form.sort" placeholder="请输入排序"/>
         </el-form-item>
           <el-form-item label="说明" prop="description" >
             <el-input v-model="form.description" type="textarea" placeholder="说明" :rows="3" />
@@ -395,7 +408,7 @@ function handleEffectChange(row) {
 
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id);
-  single.value = selection.length != 1;
+  single.value = selection.length !== 1;
   multiple.value = !selection.length;
 }
 
@@ -428,9 +441,11 @@ function reset() {
   form.value = {
     name: null,
     requiredActivityLevel: null,
+    completionCount: null,
     missionRepeatType: null,
     rewardType: null,
-    reward: null
+    reward: null,
+    sort: null
   }
   proxy.resetForm('ref');
 }
@@ -457,10 +472,12 @@ function submitForm() {
         name: form.value.name,
         missionSettingsId: 'ACTIVITY',
         requiredActivityLevel: form.value.requiredActivityLevel,
+        completionCount: form.value.completionCount,
         missionRepeatType: form.value.missionRepeatType,
         rewardType: form.value.rewardType,
         reward: form.value.reward,
         status: 0,
+        sort: form.value.sort,
         description: form.value.description
 
       }
