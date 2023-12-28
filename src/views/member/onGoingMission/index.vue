@@ -23,14 +23,14 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="recordList">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="用户编号" min-width="180" prop="memberId"/>
-      <el-table-column align="center" label="取款账户" min-width="140" prop="missionRepeatType"/>
-      <el-table-column align="center" label="劳动报酬" min-width="140" prop="missionType"/>
-      <el-table-column align="center" label="银行卡充值" min-width="150" prop="reward"/>
-      <el-table-column align="center" label="在线充值" min-width="140" prop="rewardActivity"/>
-      <el-table-column align="center" label="任务奖金" min-width="140" prop="progressCount"/>
-      <el-table-column align="center" label="佣金" min-width="140" prop="completionCount"/>
-      <el-table-column align="center" label="充值奖金" min-width="140" prop="startDatetime"/>
+      <el-table-column align="center" label="成员" min-width="180" prop="memberId"/>
+      <el-table-column align="center" label="任务类型" min-width="140" prop="missionType"/>
+      <!--      <el-table-column align="center" label="取款账户" min-width="140" prop="missionRepeatType"/>-->
+      <!--      <el-table-column align="center" label="银行卡充值" min-width="150" prop="reward"/>-->
+      <el-table-column align="center" label="奖励活动" min-width="140" prop="rewardActivity"/>
+      <el-table-column align="center" label="进度计数器" min-width="140" prop="progressCounter"/>
+      <el-table-column align="center" label="完成次数" min-width="140" prop="completionCount"/>
+      <el-table-column align="center" label="开始日期 时间" min-width="140" prop="startDatetime"/>
     </el-table>
 
     <pagination
