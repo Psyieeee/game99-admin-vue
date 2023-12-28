@@ -208,7 +208,7 @@
       <el-table-column label="手机" prop="phone"  align="center"  width="120px"/>
       <el-table-column label="会员vip" align="center" prop="vip" width="70px"/>
       <el-table-column label="余额" :show-overflow-tooltip="true" align="center" prop="accountNow" min-width="120"/>
-      <el-table-column label="保险箱余额" :show-overflow-tooltip="true" align="center" prop="interestDeposit"
+      <el-table-column label="电子邮件" :show-overflow-tooltip="true" align="center" prop="email"
                        min-width="120"/>
       <el-table-column label="状态" align="center" min-width="110px">
         <template v-slot="{row}">
