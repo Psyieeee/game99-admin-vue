@@ -50,8 +50,8 @@
       <el-table-column align="center" label="类型" min-width="180" prop="type">
         <template #default="scope">{{types[scope.row.type].label}}</template>
       </el-table-column>
-      <el-table-column align="center" label="奖金" min-width="180" prop="bonus"/>
-      <el-table-column align="center" label="图像" prop="image">
+      <el-table-column align="center" label="比例金额" min-width="180" prop="bonus"/>
+      <el-table-column align="center" label="图片" prop="image">
         <template #default="scope" >
           <a
               v-if="scope.row.image !== ''"
@@ -117,8 +117,8 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="奖金" prop="bonus" >
-              <el-input type="number" v-model="form.bonus" placeholder="奖金"/>
+            <el-form-item label="比例金额" prop="bonus" >
+              <el-input type="number" v-model="form.bonus" placeholder="比例金额"/>
             </el-form-item>
             <el-form-item>
               <el-upload
@@ -200,7 +200,14 @@ const data = reactive({
   /** 表单参数 form parameter*/
   form: {},
 
-  rules: {},
+  rules: {
+    amount: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    type: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ]
+  }
 
 });
 const {queryParams, form, rules} = toRefs(data);

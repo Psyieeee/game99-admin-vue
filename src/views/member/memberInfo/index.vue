@@ -17,7 +17,7 @@
       <el-form-item label="搜索成员" prop="searchValue">
         <el-input
             v-model.trim="queryParams.searchValue"
-            placeholder="会员ID/手机号 , 逗号分隔"
+            placeholder="会员ID/手机号/电子邮件 , 逗号分隔"
             clearable
             type="primary"
             link
@@ -84,7 +84,7 @@
             @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item prop="email" style="width: 110px;" class="email">
+      <el-form-item prop="remark" style="width: 110px;" class="remark">
         <el-input
             v-model="queryParams.remark"
             placeholder="登录备注"

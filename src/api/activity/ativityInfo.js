@@ -47,7 +47,6 @@ export function activityInfoAdd(data){
     })
 }
 
-
 /**
  * 修改活动信息 update activity information
  */
@@ -69,7 +68,6 @@ export function activityInfoDelete(id){
     })
 }
 
-
 /**
  * 修改活动信息激活状态 change status by id and status
  */
@@ -80,63 +78,6 @@ export function activityInfoUpdateStatus(id,status){
     })
 }
 
-export function getAllEventsIcon(data){
-    return request({
-        url:url.game99PlatformAdminWeb+"/activity/activityInfo/getAllEventsIcon",
-        method:'post',
-        data: data
-    })
-}
-
-export function uploadEventsIcon(data){
-    return request({
-        url:url.game99PlatformAdminWeb+"/activity/activityInfo/uploadEventsIcon",
-        method:'post',
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        },
-        data
-    })
-}
-export function removeEventsIcon(imageUrl){
-    return request({
-        url:url.game99PlatformAdminWeb+"/activity/activityInfo/removeEventsIcon",
-        method:'post',
-        data: {
-            url: imageUrl
-        }
-    })
-}
-
-export function getAllEventsBanner(data){
-    return request({
-        url:url.game99PlatformAdminWeb+"/activity/activityInfo/getAllEventsBanner",
-        method:'post',
-        data: data
-    })
-}
-
-export function uploadEventsBanner(data){
-    return request({
-        url:url.game99PlatformAdminWeb+"/activity/activityInfo/uploadEventsBanner",
-        method:'post',
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        },
-        data
-    })
-}
-
-export function removeEventsBanner(imageUrl){
-    return request({
-        url:url.game99PlatformAdminWeb+"/activity/activityInfo/removeEventsBanner",
-        method:'post',
-        data: {
-            url: imageUrl
-        }
-    })
-}
-
 export function getAllRewardIcon(){
     return request({
         url:url.game99PlatformAdminWeb+"/activity/activityInfo/getAllRewardIcon",
@@ -144,9 +85,9 @@ export function getAllRewardIcon(){
     })
 }
 
-export function getUploadedImages(data){
+export function uploadImage(data){
     return request({
-        url:url.game99PlatformAdminWeb+"/activity/activityInfo/getUploadedImages",
+        url:url.game99PlatformAdminWeb+"/activity/activityInfo/uploadImage",
         method:'post',
         headers: {
             'Content-Type': 'multipart/form-data'
@@ -163,9 +104,9 @@ export function listImages(data){
     })
 }
 
-export function removeAndListImages(type,field, imageUrl){
+export function removeImage(type,field, imageUrl){
     return request({
-        url:url.game99PlatformAdminWeb+"/activity/activityInfo/getImagesAfterRemoved",
+        url:url.game99PlatformAdminWeb+"/activity/activityInfo/removeImage",
         method:'post',
         data: {
             url: imageUrl,
@@ -174,19 +115,3 @@ export function removeAndListImages(type,field, imageUrl){
         }
     })
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
