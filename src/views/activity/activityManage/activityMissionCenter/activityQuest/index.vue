@@ -125,13 +125,13 @@
                 placeholder="名称"
             />
           </el-form-item>
-          <el-form-item label="所需的活动水平" prop="requiredActivityLevel" >
-            <el-input
-              v-model="form.requiredActivityLevel"
-              clearable
-              placeholder="请输入所需的活动级别"
-          />
-          </el-form-item>
+<!--          <el-form-item label="所需的活动水平" prop="requiredActivityLevel" >-->
+<!--            <el-input-->
+<!--              v-model="form.requiredActivityLevel"-->
+<!--              clearable-->
+<!--              placeholder="请输入所需的活动级别"-->
+<!--          />-->
+<!--          </el-form-item>-->
           <el-form-item label="完成次数" prop="completionCount" >
             <el-input
               v-model="form.completionCount"
@@ -163,15 +163,15 @@
                 placeholder="输入奖励金额"
             />
           </el-form-item>
-          <el-form-item label="现状" prop="status" style="min-width: 290px">
-          <template #default="scope">
-            <el-switch
-                v-model="form.status"
-                :active-value="1"
-                :inactive-value="0"
-            ></el-switch>
-          </template>
-        </el-form-item>
+<!--          <el-form-item label="现状" prop="status" style="min-width: 290px">-->
+<!--          <template #default="scope">-->
+<!--            <el-switch-->
+<!--                v-model="form.status"-->
+<!--                :active-value="1"-->
+<!--                :inactive-value="0"-->
+<!--            ></el-switch>-->
+<!--          </template>-->
+<!--        </el-form-item>-->
         <el-form-item label="分类" prop="sort">
           <el-input type="number" v-model="form.sort" placeholder="请输入排序"/>
         </el-form-item>
@@ -334,6 +334,29 @@ const data = reactive({
   headers: {
     Authorization: 'Bearer ' + getToken()
   },
+
+  rules: {
+    name:
+        [
+          {required: true, message: '名称为必填项', trigger: 'blur'}
+        ],
+    completionCount:
+        [
+          {required: true, message: '完成次数', trigger: 'blur'}
+        ],
+    missionRepeatType:
+        [
+          {required: true, message: '任务重复类型为必填项', trigger: 'blur'}
+        ],
+    reward:
+        [
+          {required: true, message: '奖励为必填项', trigger: 'blur'}
+        ],
+    sort:
+        [
+          {required: true, message: '排序为必填项', trigger: 'blur'}
+        ]
+  }
 
 });
 const { uploadFileUrl, queryParams, settingsForm, form, rules, headers} = toRefs(data);

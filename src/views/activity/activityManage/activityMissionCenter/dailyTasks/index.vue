@@ -509,6 +509,10 @@ const data = reactive({
     rewardActivity:
         [
           {required: true, message: '不能为空', trigger: 'blur'}
+        ],
+    sort:
+        [
+          {required: true, message: '排序为必填项', trigger: 'blur'}
         ]
   },
 
