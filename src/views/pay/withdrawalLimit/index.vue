@@ -71,7 +71,7 @@
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="500px">
       <el-form :inline="true" ref="queryRef" :model="form" :rules="rules" label-width="150px">
-          <el-form-item label="VIP水平" prop="vipLevel">
+          <el-form-item label="VIP等级" prop="vipLevel">
             <el-select v-model="form.vipLevel" clearable placeholder="Select">
               <el-option
                   v-for="item in vipLevels"
@@ -228,7 +228,7 @@ function handleUpdate(row) {
   });
   console.log(JSON.stringify(form.value) + " @@@@")
   open.value = true
-  title.value = '更新信息'
+  title.value = '修改取款配置'
 }
 
 /**  删除按钮操作 handle delete */

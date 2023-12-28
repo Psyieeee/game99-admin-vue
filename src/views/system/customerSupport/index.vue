@@ -31,9 +31,9 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="tableList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="VIP等级" min-width="180" prop="vipLevel"/>
-      <el-table-column align="center" label="链接" min-width="180" prop="supportLink"/>
-      <el-table-column label="状态" prop="status" align="center" width="180">
+      <el-table-column align="center" label="VIP等级" min-width="60" prop="vipLevel"/>
+      <el-table-column align="center" label="链接" min-width="185" prop="supportLink"/>
+      <el-table-column label="状态" prop="status" align="center" width="100">
         <template #default="scope">
           <el-switch
               v-model="scope.row.status"
@@ -67,10 +67,9 @@
 
     <!-- 添加或修改记录 Add or modify records-->
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
-               width="400px">
-      <el-form :inline="true" ref="queryRef" :model="form" :rules="rules" label-width="100px">
-        <div class="centered-form">
-          <el-form-item label="VIP 水平" prop="vipLevel">
+               width="600px">
+      <el-form ref="queryRef" :model="form" :rules="rules" label-width="100px">
+          <el-form-item label="VIP 等级" prop="vipLevel">
             <el-select v-model="form.vipLevel" clearable placeholder="选择">
               <el-option
                   v-for="item in vipLevels"
@@ -89,7 +88,6 @@
                        :inactive-value=0
             />
           </el-form-item>
-        </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">提交</el-button>
@@ -213,7 +211,7 @@ function handleUpdate(row) {
   });
   console.log(JSON.stringify(form.value) + " @@@@")
   open.value = true
-  title.value = '更新信息'
+  title.value = '更新VIP等级'
 }
 
 /**  删除按钮操作 handle delete */
@@ -255,10 +253,3 @@ function toggleSwitch (row) {
 
 getList()
 </script>
-
-<style>
-.centered-form {
-  margin-left: 50px;
-  max-width: 400px;
-}
-</style>
