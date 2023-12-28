@@ -245,7 +245,7 @@
                 </el-radio-group>
               </el-form-item>
 
-              <el-form-item v-if="configurations.deposit.activityCondition !== '1'" label-width="120" label="Deposit Method" prop="depositMethod">
+              <el-form-item v-if="configurations.deposit.activityCondition !== '1'" label-width="120" label="存款方式" prop="depositMethod">
                 <el-checkbox v-model="selectAllDepositMethod" @change="handleDepositSelectAll" style="padding-right: 10px">Select All</el-checkbox>
                 <el-checkbox-group v-model="configurations.deposit.depositMethod">
                   <el-checkbox v-for="item in depositOptions"
@@ -398,14 +398,14 @@
             <div style="max-width: 1000px">
               <el-form-item label="跳转类型" prop="type">
                 <el-radio-group v-model="form.type">
-                  <el-radio label="0">活动详情</el-radio>
+<!--                  <el-radio label="0">活动详情</el-radio>-->
                   <el-radio label="1">内部浏览器</el-radio>
                   <el-radio label="2">外部浏览器</el-radio>
                 </el-radio-group>
               </el-form-item>
-              <el-form-item label="活动详情" prop="content" v-if="form.type === '0'">
-                <WangEditor v-model="form.content" style="max-width: 680px" image-path="ActivityInfo" />
-              </el-form-item>
+<!--              <el-form-item label="活动详情" prop="content" v-if="form.type === '0'">-->
+<!--                <WangEditor v-model="form.content" style="max-width: 680px" image-path="ActivityInfo" />-->
+<!--              </el-form-item>-->
               <el-form-item label="跳转链接" prop="url" v-if="form.type === '1' || form.type === '2'">
                 <el-input v-model="form.url" placeholder="请输入图标跳转链接 " style="max-width: 680px"/>
               </el-form-item>
@@ -592,25 +592,25 @@ const fontOptions = ref([
 ]);
 const depositOptions = ref([
   {
-    name: 'PIX',
+    name: 'IDR',
     value: 2
   },
-  {
-    name: 'USDT-Trc20',
-    value: 3
-  },
-  {
-    name: 'BRL',
-    value: 4
-  },
-  {
-    name: 'USDC-Trc20',
-    value: 5
-  },
-  {
-    name: 'BTC-Bitcoin',
-    value: 6
-  }
+  // {
+  //   name: 'USDT-Trc20',
+  //   value: 3
+  // },
+  // {
+  //   name: 'BRL',
+  //   value: 4
+  // },
+  // {
+  //   name: 'USDC-Trc20',
+  //   value: 5
+  // },
+  // {
+  //   name: 'BTC-Bitcoin',
+  //   value: 6
+  // }
 ]);
 const depositData = ref([
   {
