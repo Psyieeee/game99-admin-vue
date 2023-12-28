@@ -220,7 +220,7 @@ function submitForm() {
 function handleUpdate(row) {
   reset();
   open.value = true
-  title.value = '更新信息'
+  title.value = '更新'
   getRecord(row.id).then(response => {
     form.value = response.data;
   });
