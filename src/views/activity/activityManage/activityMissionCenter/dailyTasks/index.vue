@@ -202,21 +202,21 @@
 <!--            </el-select>-->
 <!--          </el-form-item>-->
         </div>
-        <el-form-item label="累计补给量" prop="cumulativeRechargeAmount">
-          <el-input type="number" v-model="form.cumulativeRechargeAmount" placeholder="输入累计充值金额"
-                    @change="handleComposeMission"/>
-        </el-form-item>
+<!--        <el-form-item label="累计补给量" prop="cumulativeRechargeAmount">-->
+<!--          <el-input type="number" v-model="form.cumulativeRechargeAmount" placeholder="输入累计充值金额"-->
+<!--                    @change="handleComposeMission"/>-->
+<!--        </el-form-item>-->
         <el-form-item label="奖励金额" prop="reward">
           <el-input type="number" v-model="form.reward" placeholder="请输入奖励金额"
                     @change="handleComposeMission"/>
         </el-form-item>
-        <el-form-item label="完成次数" prop="completionCount">
+        <el-form-item label="充值金额" prop="completionCount">
           <el-input type="number" v-model="form.completionCount" placeholder="请输入奖励金额"/>
         </el-form-item>
-        <el-form-item label="奖励活动" prop="rewardActivity">
+        <el-form-item label="奖励金额" prop="rewardActivity">
           <el-input type="number" v-model="form.rewardActivity" placeholder="请输入奖励活动"/>
         </el-form-item>
-        <el-form-item label="分类" prop="sort">
+        <el-form-item label="开关" prop="sort">
           <el-input type="number" v-model="form.sort" placeholder="请输入排序"/>
         </el-form-item>
 <!--        <el-form-item label="任务简介" prop="missionIntroduction">-->
@@ -234,7 +234,7 @@
         <el-form-item label="说明" prop="description">
           <el-input v-model="form.description" type="textarea" placeholder="说明" :rows="3"/>
         </el-form-item>
-        <el-form-item>
+        <el-form-item label="图片">
           <div class="centered-form">
             <el-upload
                 ref="upload"
