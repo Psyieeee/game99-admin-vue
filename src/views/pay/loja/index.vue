@@ -50,7 +50,7 @@
       <el-table-column align="center" label="类型" min-width="180" prop="type">
         <template #default="scope">{{types[scope.row.type].label}}</template>
       </el-table-column>
-      <el-table-column align="center" label="比例金额" min-width="180" prop="bonus"/>
+      <el-table-column align="center" label="百分比" min-width="180" prop="bonus"/>
       <el-table-column align="center" label="图片" prop="image">
         <template #default="scope" >
           <a
@@ -117,7 +117,7 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="比例金额" prop="bonus" >
+            <el-form-item label="百分比" prop="bonus" >
               <el-input type="number" v-model="form.bonus" placeholder="比例金额"/>
             </el-form-item>
             <el-form-item>
