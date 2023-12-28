@@ -58,7 +58,6 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="missionRepeatLists" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="身份证" min-width="70" prop="id"/>
 <!--      <el-table-column align="center" label="任务货币" min-width="180" prop="taskCurrency"/>-->
       <el-table-column :show-overflow-tooltip="true" align="center" label="网址" min-width="180" prop="icon">
         <template #default="scope">

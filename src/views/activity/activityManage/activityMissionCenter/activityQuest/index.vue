@@ -59,7 +59,6 @@
 <!--    <el-table-column align="center" label="所需活动级别" min-width="180" prop="requiredActivityLevel"/>-->
     <el-table v-loading="loading" :data="activityMissionLists" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="身份证" min-width="70" prop="id"/>
       <el-table-column align="center" label="活动名称" min-width="180" prop="name"/>
       <el-table-column :show-overflow-tooltip="true" align="center" label="网址" min-width="180" prop="icon">
         <template #default="scope">
