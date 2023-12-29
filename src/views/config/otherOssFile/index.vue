@@ -24,29 +24,29 @@
 
     <!--    button on the table for query-->
     <el-row :gutter="10" class="mb8">
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--            v-hasPermi="['config:otherOssFile:add']"-->
-<!--            icon="Plus"-->
-<!--            plain-->
-<!--            size="small"-->
-<!--            type="primary"-->
-<!--            @click="handleAdd"-->
-<!--        >新增-->
-<!--        </el-button>-->
-<!--      </el-col>-->
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--            v-hasPermi="['config:otherOssFile:remove']"-->
-<!--            :disabled="multiple"-->
-<!--            icon="Delete"-->
-<!--            plain-->
-<!--            size="small"-->
-<!--            type="danger"-->
-<!--            @click="handleDelete"-->
-<!--        >删除-->
-<!--        </el-button>-->
-<!--      </el-col>-->
+      <el-col :span="1.5">
+        <el-button
+            v-hasPermi="['config:otherOssFile:add']"
+            icon="Plus"
+            plain
+            size="small"
+            type="primary"
+            @click="handleAdd"
+        >新增
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+            v-hasPermi="['config:otherOssFile:remove']"
+            :disabled="multiple"
+            icon="Delete"
+            plain
+            size="small"
+            type="danger"
+            @click="handleDelete"
+        >删除
+        </el-button>
+      </el-col>
 <!--      <el-col :span="1.5">-->
 <!--        <el-button-->
 <!--            v-hasPermi="['config:otherOssFile:export']"-->
@@ -63,7 +63,7 @@
 
     <!--    display data in table -->
     <el-table v-loading="loading" :data="otherOssFileList" @selection-change="handleSelectionChange">
-<!--      <el-table-column align="center" type="selection" width="55"/>-->
+      <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="艺术家" min-width="120" prop="name"/>
       <el-table-column align="center" label="艺术家" min-width="120" prop="code"/>
       <el-table-column :show-overflow-tooltip="true" align="center" label="网址" min-width="180" prop="url">
@@ -103,14 +103,14 @@
               type="primary"
               @click="handleUpdate(scope.row)">修改
           </el-button>
-<!--          <el-button-->
-<!--              v-hasPermi="['config:otherOssFile:remove']"-->
-<!--              icon="Delete" link-->
-<!--              size="small"-->
-<!--              style="color: #e05e5e"-->
-<!--              type="danger"-->
-<!--              @click="handleDelete(scope.row)">删除-->
-<!--          </el-button>-->
+          <el-button
+              v-hasPermi="['config:otherOssFile:remove']"
+              icon="Delete" link
+              size="small"
+              style="color: #e05e5e"
+              type="danger"
+              @click="handleDelete(scope.row)">删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -130,12 +130,11 @@
       <el-form ref="otherOssFileRef" :model="form" :rules="rules" label-width="120px">
         <div class="el-row">
           <div class="el-col-lg-12">
-            <el-form-item label="代码" prop="name" style="min-width: 290px">
+            <el-form-item label="代码" prop="code" style="min-width: 290px">
               <el-input
                   v-model="form.code"
                   clearable
                   placeholder="请输入歌曲名称"
-                  disabled
               />
             </el-form-item>
             <el-form-item label="名称" prop="name" style="min-width: 290px">
@@ -200,7 +199,9 @@ import {
   otherOssFileListData,
   getOtherOssFileData,
   updateOtherOssFile,
-  changeOtherOssFileStatus
+  changeOtherOssFileStatus,
+  deleteOtherOssFile,
+  addOtherOssFile
 } from "@/api/member/otherOssFile";
 import {reactive, ref, toRefs} from "vue";
 import {url} from "@/utils/url";
@@ -319,6 +320,8 @@ function submitForm() {
     if (valid) {
       const params = {
         name: form.value.name,
+        code: form.value.code,
+        effect: form.value.effect === 1 ? 1 : 0,
         url: null
       }
 
@@ -338,12 +341,12 @@ function submitForm() {
           open.value = false
           getList()
         })
-      // } else {
-      //   addOtherOssFile(params).then(() => {
-      //     proxy.$modal.msgSuccess('新增成功')
-      //     open.value = false
-      //     getList()
-      //   })
+      } else {
+        addOtherOssFile(params).then(() => {
+          proxy.$modal.msgSuccess('新增成功')
+          open.value = false
+          getList()
+        })
       }
     }
   })
@@ -362,17 +365,17 @@ function handleUpdate(row) {
 
 /**  删除按钮操作 handle delete */
 function handleDelete(row) {
-  // const idss = row.id || ids.value
-  // proxy.$confirm('是否确认删除?', '警告', {
-  //   confirmButtonText: '确定',
-  //   cancelButtonText: '取消',
-  //   type: 'warning'
-  // }).then(function () {
-  //   return deleteMusic(idss)
-  // }).then(() => {
-  //   getList()
-  //   proxy.$modal.msgSuccess('删除成功')
-  // })
+  const idss = row.id || ids.value
+  proxy.$confirm('是否确认删除?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(function () {
+    return deleteOtherOssFile(idss)
+  }).then(() => {
+    getList()
+    proxy.$modal.msgSuccess('删除成功')
+  })
 }
 
 /**  导出按钮操作 handle export data as excel query */
@@ -391,7 +394,7 @@ function handleExport() {
 
 function handleEffectChange(row) {
   let text = row.effect === '1' ? '启用' : '停用'
-  proxy.$confirm('确认要' + text + '"' + row.title + '"吗?', '警告', {
+  proxy.$confirm('确认要吗?', '警告', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'

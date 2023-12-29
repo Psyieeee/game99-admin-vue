@@ -44,4 +44,19 @@ export function fileUpload(data) {
     })
 }
 
+export function addOtherOssFile(data){
+    return request({
+        url:url.game99PlatformAdminWeb+"/config/otherOssFile/add",
+        method:'post',
+        data : data
+    })
+}
+
+export function deleteOtherOssFile(mobile){
+    return request({
+        url:url.game99PlatformAdminWeb+"/config/otherOssFile/"+mobile,
+        method:'delete',
+    })
+}
+
 
