@@ -211,10 +211,10 @@
 <!--                    @change="handleComposeMission"/>-->
 <!--        </el-form-item>-->
         <el-form-item label="任务目标量" prop="completionCount">
-          <el-input type="number" v-model="form.completionCount" placeholder="请输入奖励金额"/>
+          <el-input type="number" v-model="form.completionCount" placeholder="请输入任务目标量"/>
         </el-form-item>
         <el-form-item label="活动奖励" prop="rewardActivity">
-          <el-input type="number" v-model="form.rewardActivity" placeholder="请输入奖励活动"/>
+          <el-input type="number" v-model="form.rewardActivity" placeholder="请输入活动奖励"/>
         </el-form-item>
         <el-form-item label="排序" prop="sort">
           <el-input type="number" v-model="form.sort" placeholder="请输入排序"/>
