@@ -59,23 +59,23 @@
     <el-table v-loading="loading" :data="missionRepeatLists" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
 <!--      <el-table-column align="center" label="任务货币" min-width="180" prop="taskCurrency"/>-->
-      <el-table-column :show-overflow-tooltip="true" align="center" label="网址" min-width="180" prop="icon">
+      <el-table-column :show-overflow-tooltip="true" align="center" label="图标" min-width="180" prop="icon">
         <template #default="scope">
           <el-image :src="scope.row.icon" lazy fit="contain" style="width: 60px;"/>
         </template>
       </el-table-column>
       <el-table-column align="center" label="任务分类" min-width="180" prop="taskClassification"/>
       <el-table-column align="center" label="奖励金额" min-width="180" prop="reward"/>
-      <el-table-column align="center" label="完成次数" min-width="180" prop="completionCount"/>
+      <el-table-column align="center" label="目标任务量" min-width="180" prop="completionCount"/>
 <!--      <el-table-column align="center" label="任务目标" min-width="180" prop="missionObjectives"/>-->
-      <el-table-column align="center" label="奖励活动" min-width="180" prop="rewardActivity"/>
+      <el-table-column align="center" label="活动奖励" min-width="180" prop="rewardActivity"/>
 <!--      <el-table-column align="center" label="任务介绍" min-width="180">-->
 <!--        <template #default="scope">-->
 <!--          &lt;!&ndash; Display both ID and Task Currency in the same cell &ndash;&gt;-->
 <!--          累计充值${{ scope.row.cumulativeRechargeAmount }}, 奖励${{ scope.row.reward }}-->
 <!--        </template>-->
 <!--      </el-table-column>-->
-      <el-table-column align="center" min-width="150" label="现状" prop="status">
+      <el-table-column align="center" min-width="150" label="状态" prop="status">
         <template #default="scope">
           <el-switch
               v-model="scope.row.status"
@@ -85,7 +85,7 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="分类" min-width="180" prop="sort"/>
+      <el-table-column align="center" label="排序" min-width="180" prop="sort"/>
       <el-table-column align="center" label="操作员" min-width="180" prop="createdBy"/>
       <el-table-column align="center" label="运行时间" min-width="180" prop="updateTime"/>
       <el-table-column align="center" label="说明" min-width="180" prop="description"/>
@@ -169,7 +169,7 @@
 <!--                :label="dict.label"></el-checkbox-button>-->
 <!--          </el-checkbox-group>-->
 <!--        </el-form-item>-->
-        <div v-if="form.missionObjectives !== '累计充值'">
+<!--        <div v-if="form.missionObjectives !== '累计充值'">-->
 <!--          <el-form-item label="Game Type" prop="gameType" style="min-width: 290px">-->
 <!--            <el-select v-model="form.gameType" @change="handleGameTypeChange">-->
 <!--              <el-option-->
@@ -201,22 +201,22 @@
 <!--              ></el-option>-->
 <!--            </el-select>-->
 <!--          </el-form-item>-->
-        </div>
+<!--        </div>-->
 <!--        <el-form-item label="累计补给量" prop="cumulativeRechargeAmount">-->
 <!--          <el-input type="number" v-model="form.cumulativeRechargeAmount" placeholder="输入累计充值金额"-->
 <!--                    @change="handleComposeMission"/>-->
 <!--        </el-form-item>-->
-        <el-form-item label="奖励金额" prop="reward">
-          <el-input type="number" v-model="form.reward" placeholder="请输入奖励金额"
-                    @change="handleComposeMission"/>
-        </el-form-item>
-        <el-form-item label="充值金额" prop="completionCount">
+<!--        <el-form-item label="奖励金额" prop="reward">-->
+<!--          <el-input type="number" v-model="form.reward" placeholder="请输入奖励金额"-->
+<!--                    @change="handleComposeMission"/>-->
+<!--        </el-form-item>-->
+        <el-form-item label="任务目标量" prop="completionCount">
           <el-input type="number" v-model="form.completionCount" placeholder="请输入奖励金额"/>
         </el-form-item>
-        <el-form-item label="奖励金额" prop="rewardActivity">
+        <el-form-item label="活动奖励" prop="rewardActivity">
           <el-input type="number" v-model="form.rewardActivity" placeholder="请输入奖励活动"/>
         </el-form-item>
-        <el-form-item label="开关" prop="sort">
+        <el-form-item label="排序" prop="sort">
           <el-input type="number" v-model="form.sort" placeholder="请输入排序"/>
         </el-form-item>
 <!--        <el-form-item label="任务简介" prop="missionIntroduction">-->
@@ -632,7 +632,7 @@ function resetQuery() {
 function handleAdd() {
   reset()
   open.value = true
-  title.value = '添加每日任务'
+  title.value = '添加日常积分任务量'
   selectAll.value = false;
   data.rechargeCategory = [];
   handleCheckAllChange();
@@ -767,7 +767,7 @@ function handleUpdate(row) {
     }
     form.value = response.data
     open.value = true
-    title.value = '编辑每日任务'
+    title.value = '编辑日常积分任务量'
     handleCheckedCurrencyChange()
   })
 
@@ -852,11 +852,11 @@ function handleCheckedCurrencyChange() {
 }
 
 function handleComposeMission() {
-  if (!isNullOrEmpty(form.value.cumulativeRechargeAmount) && !isNullOrEmpty(form.value.reward)) {
-    mission.value = "累计充值" + form.value.cumulativeRechargeAmount + "，奖励" + form.value.reward;
-  } else {
-    mission.value = "";
-  }
+  // if (!isNullOrEmpty(form.value.cumulativeRechargeAmount) && !isNullOrEmpty(form.value.reward)) {
+  //   mission.value = "累计充值" + form.value.cumulativeRechargeAmount + "，奖励" + form.value.reward;
+  // } else {
+  //   mission.value = "";
+  // }
 }
 
 function isNullOrEmpty(value) {
