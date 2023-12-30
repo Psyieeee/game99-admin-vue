@@ -148,6 +148,10 @@ const languages = ref([
     label: '英语 - 美国'
   },
   {
+    value: 'cn',
+    label: '简体中文'
+  },
+  {
     value: 'hk',
     label: '中文（香港）'
   },
