@@ -142,7 +142,7 @@ import {
   addActivityTypeData, deleteActivityType,
   updateActivityType, activityTypeUpdateIsUrl
 } from "@/api/activity/activityType";
-import {activityInfoUpdateStatus} from "@/api/activity/ativityInfo";
+import {activityInfoUpdateStatus} from "@/api/activity/activityInfo";
 
 const {proxy} = getCurrentInstance();
 
