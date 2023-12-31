@@ -18,7 +18,7 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="memberWithdrawNoticeList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="最低" min-width="180" prop="minAmount"/>
+      <el-table-column align="center" label="最低提款全额" min-width="180" prop="minAmount"/>
       <el-table-column align="center" label="喇吹彈出" min-width="180" prop="popupDuration"/>
       <el-table-column align="center" label="时间间隔" min-width="180" prop="pollingInterval"/>
       <el-table-column align="center" label="影响" min-width="180" prop="effect">
@@ -67,11 +67,11 @@
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="700px">
       <el-form :inline="true" ref="addMemberWithdrawNotice" :model="form" :rules="rules" label-width="100px">
-            <el-form-item label="最低" prop="minAmount" style="min-width: 290px">
+            <el-form-item label="最低提款全额" prop="minAmount" style="min-width: 290px">
               <el-input
                   v-model="form.minAmount"
                   clearable
-                  placeholder="最低"
+                  placeholder="最低提款全额"
               />
             </el-form-item>
             <el-form-item label="喇吹彈出" prop="popupDuration" style="min-width: 290px">
@@ -111,7 +111,7 @@ import {
 import {reactive, ref, toRefs} from "vue";
 import {url} from "@/utils/url";
 import {getToken} from "@/utils/auth";
-import {activityInfoUpdateStatus} from "@/api/activity/ativityInfo";
+import {activityInfoUpdateStatus} from "@/api/activity/activityInfo";
 
 const router = useRouter();
 const {proxy} = getCurrentInstance();
@@ -188,7 +188,7 @@ function resetQuery() {
 function handleAdd() {
   reset()
   open.value = true
-  title.value = '添加配置'
+  title.value = '最低提款金额通知'
 }
 
 /** submit new data and handle insert data api*/
@@ -212,7 +212,7 @@ function submitForm() {
 function handleUpdate(row) {
   form.value = row
   open.value = true
-  title.value = '编辑配置'
+  title.value = '最低提款金额通知'
 }
 
 /**  删除按钮操作 handle delete */
