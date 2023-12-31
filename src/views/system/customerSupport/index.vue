@@ -211,7 +211,7 @@ function handleUpdate(row) {
   });
   console.log(JSON.stringify(form.value) + " @@@@")
   open.value = true
-  title.value = '更新VIP等级'
+  title.value = '更新VIP客服配置'
 }
 
 /**  删除按钮操作 handle delete */

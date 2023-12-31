@@ -177,7 +177,7 @@
             <template v-slot="{row}" v-if="index===5">
               <el-button
                   @click="unbind(row)"
-                  v-show="row.dv==1"
+                  v-show="row.dv===1"
                   type="primary"
                   link
                   disabled
@@ -188,7 +188,7 @@
               </el-button>
               <el-button
                   @click="unbind(row)"
-                  v-show="row.dv==0"
+                  v-show="row.dv===0"
                   type="primary"
                   link
                   size="small"
@@ -283,7 +283,7 @@
       <!-- 修改vip等级 display vip-->
       <el-dialog
           :close-on-click-modal="false"
-          title="修改vip等级和昵称"
+          title="修改VIP等级"
           v-model="showVip"
           width="400px"
           append-to-body
@@ -569,7 +569,7 @@ function open(hint, type) {
         message: '已取消'
       })
     })
-  } else if (type == 2) {
+  } else if (type === 2) {
     proxy.$modal.prompt(hint, '请输入您的谷歌验证码', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
@@ -589,7 +589,7 @@ function open(hint, type) {
         message: '取消输入'
       })
     })
-  } else if (type == 3) {
+  } else if (type === 3) {
     proxy.$prompt(hint, '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
@@ -609,7 +609,7 @@ function open(hint, type) {
         message: '取消输入'
       })
     })
-  } else if (type == 4) {
+  } else if (type === 4) {
     showVip.value = !showVip.value
   }
 }
@@ -772,7 +772,7 @@ function cardList() {
       total.value = res.count
       loading.value = false
     }
-  }).catch((error) => {
+  }).catch(() => {
     proxy.$modal.msgWarning('获取银行卡列表失败')
     loading.value = false
   })
@@ -790,7 +790,7 @@ function updateMobile() {
       // mobileForm.memberId = memberId.value
       // mobileForm.newMobile = newMobile.value
       // mobileForm.googleAuthCode = googleAuthCode.value;
-      updateMobileData(memberId.value,mobileForm.value.phone, mobileForm.value.newMobile, mobileForm.value.googleAuthCode).then((res) => {
+      updateMobileData(memberId.value,mobileForm.value.phone, mobileForm.value.newMobile, mobileForm.value.googleAuthCode).then(() => {
         proxy.$modal.msgSuccess('手机号修改成功')
         visible.value = false
         proxy.$emit('refMemeberData')
@@ -837,7 +837,7 @@ function updateVip() {
 function updateInviterCode() {
   proxy.$refs['formInviterCode'].validate(valid => {
     if (valid) {
-      updateInvitationCode(memberId.value, form.value.inviterCode, form.value.googleAuthCode).then((res) => {
+      updateInvitationCode(memberId.value, form.value.inviterCode, form.value.googleAuthCode).then(() => {
         proxy.$modal.msgSuccess('邀请码修改成功')
         visible.value = false
         proxy.$emit('refMemeberData')
@@ -854,7 +854,7 @@ function sendMsg() {
     proxy.$emit('refMemeberData')
   }
   }).catch((err) => {
-    proxy.$notify.error(error)
+    proxy.$notify.error(err)
   }).finally(() => {
     loading.value = false
   })
@@ -896,7 +896,7 @@ function changeBank(row) {
 
 /** 计算打码倍数 */
 function codeMoney(betMoney, score) {
-  if (betMoney != "" && betMoney != null) {
+  if (betMoney !== "" && betMoney != null) {
     form.value.beatNum = (betMoney / score).toFixed(2);
   }
 }
