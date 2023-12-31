@@ -65,7 +65,7 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="任务分类" min-width="180" prop="taskClassification"/>
-      <el-table-column align="center" label="奖励金额" min-width="180" prop="reward"/>
+<!--      <el-table-column align="center" label="奖励金额" min-width="180" prop="reward"/>-->
       <el-table-column align="center" label="完成次数" min-width="180" prop="completionCount"/>
 <!--      <el-table-column align="center" label="任务目标" min-width="180" prop="missionObjectives"/>-->
       <el-table-column align="center" label="奖励活动" min-width="180" prop="rewardActivity"/>
