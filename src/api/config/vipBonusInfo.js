@@ -26,6 +26,13 @@ export function vipBonusInfoFindById(id){
     })
 }
 
+export function configVpiDataList(){
+    return request({
+        url:url.game99PlatformAdminWeb+"/config/vipBonusInfo/vip/listAll",
+        method:'get',
+    })
+}
+
 export function vipBonusInfoAdd(data){
     return request({
         url:url.game99PlatformAdminWeb+"/config/vipBonusInfo",

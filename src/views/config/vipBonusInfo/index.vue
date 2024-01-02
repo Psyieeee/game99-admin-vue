@@ -335,10 +335,10 @@
                     @change="handleVipLevelChange"
                 >
                   <el-option
-                      v-for="i in 30"
+                      v-for="i in configVipList"
                       :key="i"
-                      :label="'VIP ' + (i) "
-                      :value="i"
+                      :label="i.level "
+                      :value="i.level"
                   ></el-option>
                 </el-select>
                 <div style="padding-left: 10px">
@@ -556,24 +556,25 @@ import html2canvas from 'html2canvas';
 import {getVipBonusTypeList} from "@/api/config/vipBonusType";
 import WangEditor from "@/components/WangEditor";
 import {
-  vipBonusInfoAdd,
-  vipBonusInfoDelete,
-  vipBonusInfoExport,
-  vipBonusInfoFindById,
-  vipBonusInfoUpdate,
-  vipBonusInfoUpdateStatus,
-  getVipBonusInfoList,
-  getAllVipBonusBanner,
-  getAllVipBonusLogo,
-  removeVipBonusBanner,
-  removeVipBonusLogo,
-  uploadVipBonusBanner,
-  uploadVipBonusLogo, getUploadedImages, removeAndListImages, cleanImagesByType,
+    vipBonusInfoAdd,
+    vipBonusInfoDelete,
+    vipBonusInfoExport,
+    vipBonusInfoFindById,
+    vipBonusInfoUpdate,
+    vipBonusInfoUpdateStatus,
+    getVipBonusInfoList,
+    getAllVipBonusBanner,
+    getAllVipBonusLogo,
+    removeVipBonusBanner,
+    removeVipBonusLogo,
+    uploadVipBonusBanner,
+    uploadVipBonusLogo, getUploadedImages, removeAndListImages, cleanImagesByType, configVpiDataList,
 } from "@/api/config/vipBonusInfo";
 
 const isButtonDisabled    = ref(true); //Used for disabling button
 const vipBonusInfoList = ref([]);
 const vipBonusTypes    = ref([]);
+const configVipList = ref([]);
 const showSearch       = ref(true);
 const multiple = ref(true); //Multiple Row Selection
 const loading  = ref(false);
@@ -962,6 +963,7 @@ async function handleAddBonusActivity(){
   title.value = "添加奖励活动"
   open.value  = true
   populateSignInConfigTable()
+    this.vipBonusInfoList()
 }
 function handleUpdateForm(row) {
   handleResetData()
@@ -1222,6 +1224,16 @@ function initQuery(){
   })
 }
 
+function getVipDataList(){
+    loading.value = true
+    configVpiDataList().then(res=>{
+        configVipList.value = res.data
+        console.log(res.data)
+        loading.value =false
+    })
+}
+
+getVipDataList();
 initQuery();
 </script>
 
