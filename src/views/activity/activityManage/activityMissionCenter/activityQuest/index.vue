@@ -369,11 +369,12 @@ function beforeAvatarUpload(file) {
   const fileExtension = file.name.split('.')[1]
   const isLt2M = file.size / 1024 / 1024 < 100
   if (fileExtension !== 'jpg' &&
-      fileExtension !== 'png' &&
-      fileExtension !== 'bmp') {
-    proxy.$modal.msgError('无效音乐')
+      fileExtension !== 'png') {
+    proxy.$modal.msgError('图片类型错误')
   } else if (!isLt2M) {
     proxy.$modal.msgError('上传模板大小不能超过100MB!')
+  }else{
+      proxy.$modal.msgSuccess('上传成功')
   }
 }
 
