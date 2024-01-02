@@ -90,18 +90,19 @@
       <el-table-column label="开始效果" align="center" prop="startEffect"  min-width="120"/>
       <el-table-column label="结束效果" align="center" prop="endEffect"  min-width="120"/>
       <el-table-column label="创建时间" align="center" prop="createTime"  min-width="120"/>
-      <el-table-column label="主页弹出窗口" align="center" prop="isDisplayHome"  min-width="100"/>
-      <el-table-column label="效果" align="center" prop="effect">
-        <template #default="scope">
-          <el-switch
-              v-model="scope.row.effect"
-              :disabled="isButtonDisabled"
-              :active-value="true"
-              :inactive-value="false"
-              @click="handleEffectChange(scope.row)">
-          </el-switch>
-        </template>
-      </el-table-column>
+<!--  this maybe we need in future-->
+<!--      <el-table-column label="主页弹出窗口" align="center" prop="isDisplayHome"  min-width="100"/>-->
+<!--      <el-table-column label="效果" align="center" prop="effect">-->
+<!--        <template #default="scope">-->
+<!--          <el-switch-->
+<!--              v-model="scope.row.effect"-->
+<!--              :disabled="isButtonDisabled"-->
+<!--              :active-value="true"-->
+<!--              :inactive-value="false"-->
+<!--              @click="handleEffectChange(scope.row)">-->
+<!--          </el-switch>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column label="动作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="120">
         <template #default="scope">
           <el-button
