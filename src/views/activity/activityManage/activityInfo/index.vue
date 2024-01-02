@@ -403,9 +403,9 @@
                   <el-radio label="2">外部浏览器</el-radio>
                 </el-radio-group>
               </el-form-item>
-<!--              <el-form-item label="活动详情" prop="content" v-if="form.type === '0'">-->
-<!--                <WangEditor v-model="form.content" style="max-width: 680px" image-path="ActivityInfo" />-->
-<!--              </el-form-item>-->
+              <el-form-item label="活动详情" prop="content" v-if="form.type === '0'">
+                <WangEditor v-model="form.content" style="max-width: 680px" image-path="ActivityInfo" />
+              </el-form-item>
               <el-form-item label="跳转链接" prop="url" v-if="form.type === '1' || form.type === '2'">
                 <el-input v-model="form.url" placeholder="请输入图标跳转链接 " style="max-width: 680px"/>
               </el-form-item>
