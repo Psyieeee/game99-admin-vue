@@ -230,7 +230,7 @@
 <!--            </div>-->
           </div>
           <div class="el-col el-col-12">
-            <label style="font-size: 25px; text-align: left">{{ vipBonusTypes.find((type) => type.id === form.typeId).name + ' 配置'}}</label>
+            <label style="font-size: 25px; text-align: left">登录配置</label>
             <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
 <!-- Sign in Config -->
             <div v-if="form.typeId === 1">
@@ -711,6 +711,9 @@ function handleEffectChange(row){
 function formatterActivityType(row) {
   for (const a of vipBonusTypes.value) {
     if (a.id === row.typeId) {
+        if( a.name =="Sign in"){
+            a.name = "登录配置"
+        }
       return a.name;
     }
   }
