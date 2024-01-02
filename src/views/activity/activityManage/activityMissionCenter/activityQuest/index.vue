@@ -181,7 +181,6 @@
             <el-upload
                 ref="upload"
                 :action="uploadFileUrl"
-                :auto-upload="false"
                 :before-upload="beforeAvatarUpload"
                 :headers="headers"
                 :limit="1"
@@ -192,9 +191,10 @@
                 :on-preview="handlePreview"
                 :on-remove="handleRemove"
                 :on-success="uploadSuccess"
+                :file-list="fileList"
                 class="upload-demo"
                 drag
-                name="advertisementFile"
+                name="file"
             >
               <div class="el-upload__text">Drop file here or <em>点击上传</em></div>
               <div class="el-upload__tip">
@@ -304,6 +304,7 @@ const single = ref(true);
 const multiple = ref(true);
 const loading = ref(true);
 const formData = new FormData();
+const fileList = ref([])
 const {proxy} = getCurrentInstance();
 
 const data = reactive({
@@ -380,11 +381,8 @@ function handleRemove() {
   proxy.$modal.msgSuccess('移除成功')
 }
 
-function uploadSuccess() {
-  proxy.$modal.msgSuccess('文件上传成功');
-  queryParams.memberId = null
-  queryParams.pageNum = 1
-  getList()
+function uploadSuccess(res) {
+  form.value.icon = res.data
 }
 
 function selectFile( file ) {
@@ -469,6 +467,8 @@ function reset() {
     reward: null,
     sort: null
   }
+
+  fileList.value = []
   proxy.resetForm('ref');
 }
 
@@ -500,7 +500,8 @@ function submitForm() {
         reward: form.value.reward,
         status: 0,
         sort: form.value.sort,
-        description: form.value.description
+        description: form.value.description,
+        icon: form.value.icon
 
       }
       if (form.value.id != null) {
@@ -516,6 +517,8 @@ function submitForm() {
           getList()
         })
       }
+
+
     }
   })
 }

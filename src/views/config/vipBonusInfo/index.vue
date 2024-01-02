@@ -317,7 +317,7 @@
                 </el-radio-group>
               </el-form-item>
               <el-form-item label="周期" prop="cycle">
-                <el-input style="width: 350px" v-model="configurations.signIn.cycle" placeholder="Please enter a number of days" @change="populateSignInConfigTable(configurations.signIn.cycle)"/>
+                <el-input style="width: 350px" disabled v-model="configurations.signIn.cycle" placeholder="7" @change="populateSignInConfigTable(configurations.signIn.cycle)"/>
               </el-form-item>
               <el-form-item label="自定义日" prop="customDay" @change="populateSignInConfigTable(configurations.signIn.cycle)">
                 <el-radio-group v-model="configurations.signIn.customDay" >
@@ -638,7 +638,7 @@ const data      =  reactive({
   dateRange: [],
   form:{},
   createBanner:{},
-  configurations:{}
+  configurations:{  }
 });
 const {queryParams, rules, dateRange, form, createBanner, configurations} = toRefs(data);
 let formData = new FormData();
@@ -960,6 +960,7 @@ async function handleAddBonusActivity(){
   // await getBannerCreationRelatedImages(1);
   title.value = "添加奖励活动"
   open.value  = true
+  populateSignInConfigTable()
 }
 function handleUpdateForm(row) {
   handleResetData()
@@ -1132,7 +1133,8 @@ function updateSignInRewardIcons(param) {
 function populateSignInConfigTable(){
   const rewardIcons = configurations.value.rewardIcons;
   const signIn = configurations.value.signIn;
-  let cycle = signIn.cycle;
+  // let cycle = signIn.cycle;
+  let cycle = 7;
   signIn.dailyData  = [];
 
   for ( let i = 0; i < cycle; i++ ) {

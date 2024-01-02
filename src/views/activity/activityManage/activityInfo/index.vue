@@ -184,8 +184,8 @@
             </el-form-item> <br>
             <el-form-item label="时间表类型" prop="scheduleType">
               <el-radio-group v-model="form.scheduleType">
-                <el-radio label="1">Fixed Time</el-radio>
-                <el-radio label="2">Permanent</el-radio>
+                <el-radio label="1">固定时间</el-radio>
+                <el-radio label="2">永久性</el-radio>
               </el-radio-group>
             </el-form-item>
             <el-form-item v-show="form.scheduleType === '1'" label="有效时间" style="width: 50%;" prop="dateRange" >
@@ -225,9 +225,9 @@
             <div v-if="form.typeId === 19">
               <el-form-item label="重置周期" prop="resetCycle" @change="handleResetCycleChange(configurations.deposit.resetCycle)">
                 <el-radio-group v-model="configurations.deposit.resetCycle">
-                  <el-radio label="1">Single</el-radio>
-                  <el-radio label="2">Daily</el-radio>
-                  <el-radio label="3">Weekly</el-radio>
+                  <el-radio label="1">单人</el-radio>
+                  <el-radio label="2">每日</el-radio>
+                  <el-radio label="3">每周</el-radio>
                 </el-radio-group>
               </el-form-item>
               <el-form-item v-if="configurations.deposit.resetCycle !== '1'" label="Limited Recharge" label-width="160">
@@ -240,13 +240,13 @@
               <el-form-item label="活动条件" prop="activityCondition">
                 <el-radio-group v-model="configurations.deposit.activityCondition">
                   <el-radio v-if="configurations.deposit.resetCycle === '1'" label="1">First Deposit</el-radio>
-                  <el-radio label="2">Total Deposit</el-radio>
-                  <el-radio label="3">Single Recharge</el-radio>
+                  <el-radio label="2">存款总额</el-radio>
+                  <el-radio label="3">单次充电</el-radio>
                 </el-radio-group>
               </el-form-item>
 
               <el-form-item v-if="configurations.deposit.activityCondition !== '1'" label-width="120" label="存款方式" prop="depositMethod">
-                <el-checkbox v-model="selectAllDepositMethod" @change="handleDepositSelectAll" style="padding-right: 10px">Select All</el-checkbox>
+                <el-checkbox v-model="selectAllDepositMethod" @change="handleDepositSelectAll" style="padding-right: 10px">全部选择</el-checkbox>
                 <el-checkbox-group v-model="configurations.deposit.depositMethod">
                   <el-checkbox v-for="item in depositOptions"
                                :label="item.value"
@@ -260,9 +260,9 @@
 
               <el-form-item label="奖励方法" prop="bonusMethod">
                 <el-radio-group v-model="configurations.deposit.bonusMethod" @change="handleBonusMethodChange()">
-                  <el-radio label="1">Fixed Amount</el-radio>
-                  <el-radio label="2">Random Amount</el-radio>
-                  <el-radio label="3">Ratio Amount</el-radio>
+                  <el-radio label="1">固定金额</el-radio>
+                  <el-radio label="2">随机金额</el-radio>
+                  <el-radio label="3">比率 金额</el-radio>
                 </el-radio-group>
               </el-form-item>
               <el-form-item>
@@ -299,8 +299,8 @@
                   </el-table-column>
                   <el-table-column label="运行" width="140" align="center" >
                     <template #default="scope">
-                      <el-button @click="addDepositConfig" style="width: 40px">Add</el-button>
-                      <el-button :disabled="depositData.length === 1" @click="removeDepositConfig( scope.$index )" style="width: 60px">Remove</el-button>
+                      <el-button @click="addDepositConfig" style="width: 40px">添加</el-button>
+                      <el-button :disabled="depositData.length === 1" @click="removeDepositConfig( scope.$index )" style="width: 60px">移除</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -413,13 +413,13 @@
           </div>
           <div class="el-col el-col-12">
             <div>
-              <label style="font-size: 25px; text-align: left">Create Banner</label>
+              <label style="font-size: 25px; text-align: left">创建横幅</label>
               <el-radio-group style="float: right;" v-model="createBanner.type" @change="changeBannerCreationType(createBanner.type)">
-                <el-radio style="width: 120px" label="1" border>Customize</el-radio>
-                <el-radio style="width: 120px" label="2" border>Pre-Made</el-radio>
+                <el-radio style="width: 120px" label="1" border>定制</el-radio>
+                <el-radio style="width: 120px" label="2" border>预制</el-radio>
               </el-radio-group><hr style="margin-top: 20px; margin-bottom: 20px">
             </div>
-            <label style="font-size: 20px">Preview</label>
+            <label style="font-size: 20px">预览</label>
 
             <div v-if="createBanner.type === '1'">
               <div class="preview" style="position: relative" id="original">
@@ -440,12 +440,12 @@
                 </div>
               </div><hr style="margin-top: 10px">
               <div class="form-group">
-                <label for="background">Background Color:</label>
+                <label for="background">背景颜色:</label>
                 <input style="margin-left: 10px; width: 100px; border: 2px solid #000000"
                        v-model="createBanner.customize.properties.background" type="color" id="background"/>
               </div>
               <div class="form-group">
-                <label>Select Icon:</label><hr>
+                <label>选择图标:</label><hr>
                 <div style="display: grid; grid-template-columns: repeat(10, 1fr)">
                   <div v-for="(icon, index) in createBanner.customize.iconCollection"
                        :key="index"
@@ -458,24 +458,24 @@
                   </div>
                 </div>
                 <div class="pagination" style="margin-top: 10px">
-                  <button @click="prevPage('createBannerIcon')">Previous</button>
-                  <button style="margin-left: 10px" @click="nextPage('createBannerIcon')">Next</button>
+                  <button @click="prevPage('createBannerIcon')">上一页</button>
+                  <button style="margin-left: 10px" @click="nextPage('createBannerIcon')">下一页</button>
                   <span> Page:  {{ createBanner.customize.pagination.param.pageNum  }} / {{createBanner.customize.pagination.pageTotal}}</span>
                   <input type="file" ref="fileInput" multiple style="display: none" @change="onFileInputChange()" />
-                  <button style="float: right; margin-right: 10px" class="upload-button" @click="handleUploadImage('createBannerIcon',null)">Add</button>
+                  <button style="float: right; margin-right: 10px" class="upload-button" @click="handleUploadImage('createBannerIcon',null)">添加</button>
                 </div>
               </div>
               <hr>
               <div class="form-group">
-                <p>Event Description:</p>
-                <label for="font">Font: </label>
+                <p>活动说明:</p>
+                <label for="font">字体: </label>
                 <el-select style="width: 200px" v-model="createBanner.customize.properties.textStyle.font">
                   <el-option v-for="font in fontOptions" :key="font" :label="font" :value="font"></el-option>
                 </el-select>
-                <label for="text" style="margin-left: 20px">Font Color:</label>
+                <label for="text" style="margin-left: 20px">字体颜色:</label>
                 <input style="margin-left: 10px; width: 100px; border: 2px solid #000000" v-model="createBanner.customize.properties.textStyle.color" type="color" id="text"/>
                 <div style="margin-top: 10px">
-                  <label for="text">Text Size: </label>
+                  <label for="text">文字大小:</label>
                   <el-slider
                       v-model="createBanner.customize.properties.textStyle.size"
                       :min="8"
@@ -496,7 +496,7 @@
               </div><hr style="margin-top: 20px; margin-bottom: 20px" >
 
               <div class="form-group">
-                <label style="margin-bottom: 20px">Select Banner:</label>
+                <label style="margin-bottom: 20px">选择横幅:</label>
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 10px; border: 5px solid #e0e0e0; border-radius: 5px">
                   <div v-for="(banner, index) in createBanner.preMade.bannerCollection"
                        :key="index"
@@ -510,11 +510,11 @@
                   </div>
                 </div>
                 <div class="pagination" style="margin-top: 10px">
-                  <button @click="prevPage('preMadeBanner')">Previous</button>
-                  <button style="margin-left: 10px" @click="nextPage('preMadeBanner')">Next</button>
+                  <button @click="prevPage('preMadeBanner')">上一页</button>
+                  <button style="margin-left: 10px" @click="nextPage('preMadeBanner')">下一页</button>
                   <span> Page:  {{ createBanner.preMade.pagination.param.pageNum  }} / {{ createBanner.preMade.pagination.pageTotal }}</span>
                   <input type="file" ref="fileInput" multiple style="display: none" @change="onFileInputChange()" />
-                  <button style="float: right; margin-right: 10px" class="upload-button" @click="handleUploadImage('preMadeBanner',null)">Add</button>
+                  <button style="float: right; margin-right: 10px" class="upload-button" @click="handleUploadImage('preMadeBanner',null)">添加</button>
                 </div>
               </div><hr>
             </div>
@@ -547,7 +547,7 @@ import {
   getAllRewardIcon,
   uploadImage,
   listImages, removeImage
-} from "@/api/activity/ativityInfo";
+} from "@/api/activity/activityInfo";
 
 const {proxy} = getCurrentInstance();
 /** 活动信息表格数据 */
@@ -1059,7 +1059,7 @@ function resetCreateBannerConfig(){
       properties: {
         background: '#030303',
         icon: null,
-        text: 'PUT TEXT HERE',
+        text: '在此处输入文字',
         textStyle: {
           font: "Arial, san-serif",
           size: 30,
@@ -1101,6 +1101,7 @@ function getList(){
 }
 function activityTypeList(){
   getActivityTypeAllList().then((res)=>{
+    console.log( res );
     activityTypes.value = res;
   })
 }
@@ -1140,17 +1141,17 @@ function resetQuery(){
 }
 /**  0停用1启用 */
 function handleEffectChange(row){
-  let text = row.status === '1' ? '启用' : '停用'
+  let text = row.effect ? '启用' : '停用'
   proxy.$modal.confirm('确认要"' + text + '""' + row.title + '"吗?', '警告', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
   }).then(function () {
-    return activityInfoUpdateStatus(row.id, row.effect)
+    return activityInfoUpdateStatus( row.id, row.effect )
   }).then(() => {
     proxy.$modal.msgSuccess(text + '成功')
   }).catch(function () {
-    row.status = row.status === '0' ? '1' : '0'
+    row.effect = !row.effect
   })
 }
 

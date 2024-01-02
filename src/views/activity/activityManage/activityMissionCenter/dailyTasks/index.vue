@@ -65,7 +65,7 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="任务分类" min-width="180" prop="taskClassification"/>
-      <el-table-column align="center" label="奖励金额" min-width="180" prop="reward"/>
+<!--      <el-table-column align="center" label="奖励金额" min-width="180" prop="reward"/>-->
       <el-table-column align="center" label="目标任务量" min-width="180" prop="completionCount"/>
 <!--      <el-table-column align="center" label="任务目标" min-width="180" prop="missionObjectives"/>-->
       <el-table-column align="center" label="活动奖励" min-width="180" prop="rewardActivity"/>
@@ -169,7 +169,7 @@
 <!--                :label="dict.label"></el-checkbox-button>-->
 <!--          </el-checkbox-group>-->
 <!--        </el-form-item>-->
-<!--        <div v-if="form.missionObjectives !== '累计充值'">-->
+        <div v-if="form.missionObjectives !== '累计充值'">
 <!--          <el-form-item label="Game Type" prop="gameType" style="min-width: 290px">-->
 <!--            <el-select v-model="form.gameType" @change="handleGameTypeChange">-->
 <!--              <el-option-->
@@ -201,7 +201,7 @@
 <!--              ></el-option>-->
 <!--            </el-select>-->
 <!--          </el-form-item>-->
-<!--        </div>-->
+        </div>
 <!--        <el-form-item label="累计补给量" prop="cumulativeRechargeAmount">-->
 <!--          <el-input type="number" v-model="form.cumulativeRechargeAmount" placeholder="输入累计充值金额"-->
 <!--                    @change="handleComposeMission"/>-->
@@ -210,7 +210,7 @@
 <!--          <el-input type="number" v-model="form.reward" placeholder="请输入奖励金额"-->
 <!--                    @change="handleComposeMission"/>-->
 <!--        </el-form-item>-->
-        <el-form-item label="任务目标量" prop="completionCount">
+        <el-form-item label="任务分任务目标量" prop="completionCount">
           <el-input type="number" v-model="form.completionCount" placeholder="请输入任务目标量"/>
         </el-form-item>
         <el-form-item label="活动奖励" prop="rewardActivity">
@@ -632,7 +632,7 @@ function resetQuery() {
 function handleAdd() {
   reset()
   open.value = true
-  title.value = '添加日常积分任务量'
+  title.value = '添加每日任务'
   selectAll.value = false;
   data.rechargeCategory = [];
   handleCheckAllChange();
@@ -852,11 +852,11 @@ function handleCheckedCurrencyChange() {
 }
 
 function handleComposeMission() {
-  // if (!isNullOrEmpty(form.value.cumulativeRechargeAmount) && !isNullOrEmpty(form.value.reward)) {
-  //   mission.value = "累计充值" + form.value.cumulativeRechargeAmount + "，奖励" + form.value.reward;
-  // } else {
-  //   mission.value = "";
-  // }
+  if (!isNullOrEmpty(form.value.cumulativeRechargeAmount) && !isNullOrEmpty(form.value.reward)) {
+    mission.value = "累计充值" + form.value.cumulativeRechargeAmount + "，奖励" + form.value.reward;
+  } else {
+    mission.value = "";
+  }
 }
 
 function isNullOrEmpty(value) {

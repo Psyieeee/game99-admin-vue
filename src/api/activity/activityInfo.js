@@ -71,9 +71,9 @@ export function activityInfoDelete(id){
 /**
  * 修改活动信息激活状态 change status by id and status
  */
-export function activityInfoUpdateStatus(id,status){
+export function activityInfoUpdateStatus(id,effect){
     return request({
-        url:url.game99PlatformAdminWeb+"/activity/activityInfo/changeStatus/"+id+"/"+ status,
+        url:url.game99PlatformAdminWeb+"/activity/activityInfo/changeStatus/"+id+"/"+ effect,
         method:'put',
     })
 }

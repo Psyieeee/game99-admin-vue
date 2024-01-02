@@ -1,7 +1,6 @@
 import { defineConfig, loadEnv } from 'vite'
 import path from 'path'
 import createVitePlugins from './vite/plugins'
-import pluginRewriteAll from 'vite-plugin-rewrite-all';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode, command }) => {
