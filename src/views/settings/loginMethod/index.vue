@@ -32,7 +32,6 @@
     <el-table v-loading="loading" :data="recordList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="名字" min-width="180" prop="name"/>
-      <el-table-column align="center" label="代码" min-width="180" prop="code"/>
       <el-table-column label="地位" prop="status" align="center" width="180">
         <template #default="scope">
           <el-switch
@@ -71,9 +70,6 @@
       <el-form ref="queryForm" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="名字" prop="name">
           <el-input v-model="form.name" placeholder="名字"/>
-        </el-form-item>
-        <el-form-item label="代码" prop="code" >
-          <el-input v-model="form.code" placeholder="代码"/>
         </el-form-item>
         <el-form-item label="地位" prop="status">
           <el-switch v-model="form.status"
@@ -119,9 +115,6 @@ const data = reactive({
   rules: {
     name: [
       {required: true, message: '无效的值', trigger: 'blur'}
-    ],
-    code: [
-      {required: true, message: '无效的值', trigger: 'blur'}
     ]
   },
 
@@ -146,7 +139,6 @@ function getList() {
 function reset() {
   form.value = {
     name: null,
-    code: null,
     status: 1
   }
   proxy.resetForm('queryForm');
