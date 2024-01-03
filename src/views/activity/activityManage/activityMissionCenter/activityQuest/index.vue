@@ -67,7 +67,9 @@
       </el-table-column>
 
       <el-table-column align="center" label="完成次数" min-width="180" prop="completionCount"/>
-      <el-table-column align="center" label="任务重复类型" min-width="180" prop="missionRepeatType"/>
+      <el-table-column align="center" label="任务重复类型" min-width="180" prop="missionRepeatType">
+
+      </el-table-column>
 <!--      <el-table-column align="center" label="奖励类型" min-width="180" prop="rewardType"/>-->
       <el-table-column align="center" label="奖励金额" min-width="180" prop="reward"/>
       <el-table-column align="center" min-width="150" label="活跃" prop="status">
@@ -142,9 +144,9 @@
             <el-select v-model="form.missionRepeatType" clearable placeholder="游戏平台">
               <el-option
                   v-for="dict in missionRepeatTypeList"
-                  :key="dict"
-                  :label="dict"
-                  :value="dict"
+                  :key="dict.name"
+                  :label="dict.translatedName"
+                  :value="dict.name"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -171,8 +173,8 @@
 <!--            ></el-switch>-->
 <!--          </template>-->
 <!--        </el-form-item>-->
-        <el-form-item label="分类" prop="sort">
-          <el-input type="number" v-model="form.sort" placeholder="请输入排序"/>
+        <el-form-item label="排序" prop="sort">
+          <el-input-number type="number" v-model="form.sort" placeholder="请输入排序"/>
         </el-form-item>
           <el-form-item label="说明" prop="description" >
             <el-input v-model="form.description" type="textarea" placeholder="说明" :rows="3" />
@@ -238,7 +240,7 @@
           </el-col>
           <el-col :span="24">
             <el-form-item label="审计乘数" prop="auditMultiplier" style="min-width: 290px">
-              <el-input
+              <el-input-number
                   v-model="settingsForm.auditMultiplier"
                   clearable
                   placeholder="输入审计乘数"

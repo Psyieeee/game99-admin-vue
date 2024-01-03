@@ -64,7 +64,7 @@
           <el-image :src="scope.row.icon" lazy fit="contain" style="width: 60px;"/>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="任务分类" min-width="180" prop="taskClassification"/>
+      <el-table-column align="center" label="任务分类" min-width="180" :prop="taskClassification.translatedName"/>
 <!--      <el-table-column align="center" label="奖励金额" min-width="180" prop="reward"/>-->
       <el-table-column align="center" label="目标任务量" min-width="180" prop="completionCount"/>
 <!--      <el-table-column align="center" label="任务目标" min-width="180" prop="missionObjectives"/>-->
@@ -144,9 +144,9 @@
           <el-select v-model="form.taskClassification" placeholder="任务分类" clearable>
             <el-option
                 v-for="dict in taskClassificationList"
-                :key="dict"
-                :label="dict"
-                :value="dict"
+                :key="dict.name"
+                :label="dict.translatedName"
+                :value="dict.name"
             />
           </el-select>
         </el-form-item>
@@ -169,7 +169,7 @@
 <!--                :label="dict.label"></el-checkbox-button>-->
 <!--          </el-checkbox-group>-->
 <!--        </el-form-item>-->
-        <div v-if="form.missionObjectives !== '累计充值'">
+<!--        <div v-if="form.missionObjectives !== '累计充值'">-->
 <!--          <el-form-item label="Game Type" prop="gameType" style="min-width: 290px">-->
 <!--            <el-select v-model="form.gameType" @change="handleGameTypeChange">-->
 <!--              <el-option-->
@@ -201,7 +201,7 @@
 <!--              ></el-option>-->
 <!--            </el-select>-->
 <!--          </el-form-item>-->
-        </div>
+<!--        </div>-->
 <!--        <el-form-item label="累计补给量" prop="cumulativeRechargeAmount">-->
 <!--          <el-input type="number" v-model="form.cumulativeRechargeAmount" placeholder="输入累计充值金额"-->
 <!--                    @change="handleComposeMission"/>-->
@@ -210,14 +210,14 @@
 <!--          <el-input type="number" v-model="form.reward" placeholder="请输入奖励金额"-->
 <!--                    @change="handleComposeMission"/>-->
 <!--        </el-form-item>-->
-        <el-form-item label="任务分任务目标量" prop="completionCount">
-          <el-input type="number" v-model="form.completionCount" placeholder="请输入任务目标量"/>
+        <el-form-item label="积分" prop="completionCount">
+          <el-input-number type="number" v-model="form.completionCount" placeholder="请输入任务目标量"/>
         </el-form-item>
         <el-form-item label="活动奖励" prop="rewardActivity">
-          <el-input type="number" v-model="form.rewardActivity" placeholder="请输入活动奖励"/>
+          <el-input-number type="number" v-model="form.rewardActivity" placeholder="请输入活动奖励"/>
         </el-form-item>
         <el-form-item label="排序" prop="sort">
-          <el-input type="number" v-model="form.sort" placeholder="请输入排序"/>
+          <el-input-number type="number" v-model="form.sort" placeholder="请输入排序"/>
         </el-form-item>
 <!--        <el-form-item label="任务简介" prop="missionIntroduction">-->
 <!--          <el-input v-model="mission" placeholder="输入累计充值金额" disabled/>-->
@@ -343,7 +343,7 @@
           </el-col>
           <el-col>
             <el-form-item label="多重审计">
-              <el-input
+              <el-input-number
                   class="w-50 m-2"
                   v-model="settingsForm.auditMultiplier"
                   prop="auditMultiplier"
