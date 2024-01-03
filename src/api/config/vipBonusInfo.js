@@ -162,6 +162,19 @@ export function cleanImagesByType(types){
     })
 }
 
+export function saveAndRetrieveImages(imageUrlList, type, platform, field){
+    return request({
+        url:url.game99PlatformAdminWeb+"/config/vipBonusInfo/saveAndRetrieveImages",
+        method:'post',
+        data: {
+            imageUrlList: imageUrlList,
+            type: type,
+            platform: platform,
+            field: field
+        }
+    })
+}
+
 
 
 
