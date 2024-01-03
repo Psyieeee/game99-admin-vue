@@ -152,7 +152,7 @@
         <div class="el-row">
 <!-- Configurations -->
 <!--          <div style="min-width: 40%"> -->
-          <div class="el-col el-col-11" style="padding-right: 50px">
+          <div class="el-col el-col-10" style="padding-right: 50px">
             <label style="font-size: 25px; text-align: left">基本配置</label>
             <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
             <el-form-item label="奖金类型" prop="typeId">
@@ -187,7 +187,7 @@
                                 clearable
                                 format="YYYY-MM-DD"
                                 value-format="YYYY-MM-DD HH:mm:ss"
-                                @change="calculateNumberOfDays"/>
+                />
             </el-form-item>
             <el-form-item v-show="form.scheduleType === '2'" label="开始日期" prop="startDate">
               <el-date-picker type="date"
@@ -229,8 +229,8 @@
 <!--              </el-form-item>-->
 <!--            </div>-->
           </div>
-          <div class="el-col el-col-12">
-            <label style="font-size: 25px; text-align: left">{{ vipBonusTypes.find((type) => type.id === form.typeId).name + ' 配置'}}</label>
+          <div class="el-col el-col-14">
+            <label style="font-size: 25px; text-align: left">登录配置</label>
             <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
 <!-- Sign in Config -->
             <div v-if="form.typeId === 1">
@@ -318,14 +318,14 @@
                 </el-radio-group>
               </el-form-item>
               <el-form-item label="周期" prop="cycle">
-                <el-input style="width: 350px" disabled v-model="configurations.signIn.cycle" placeholder="7" @change="populateSignInConfigTable(configurations.signIn.cycle)"/>
+                <el-input style="width: 350px" disabled v-model="configurations.signIn.cycle" @change="populateSignInConfigTable(configurations.signIn.cycle)"/>
               </el-form-item>
-              <el-form-item label="自定义日" prop="customDay" @change="populateSignInConfigTable(configurations.signIn.cycle)">
-                <el-radio-group v-model="configurations.signIn.customDay" >
-                  <el-radio label="1">启用</el-radio>
-                  <el-radio label="2">禁用</el-radio>
-                </el-radio-group>
-              </el-form-item>
+<!--              <el-form-item label="自定义日" prop="customDay" @change="populateSignInConfigTable(configurations.signIn.cycle)">-->
+<!--                <el-radio-group v-model="configurations.signIn.customDay" >-->
+<!--                  <el-radio label="1">启用</el-radio>-->
+<!--                  <el-radio label="2">禁用</el-radio>-->
+<!--                </el-radio-group>-->
+<!--              </el-form-item>-->
               <el-form-item label="VIP 级别">
                 <el-select
                     v-model="configurations.vipLevel"
@@ -347,7 +347,7 @@
                 </div>
               </el-form-item>
               <el-form-item>
-                <el-table :data="configurations.signIn.dailyData" style="max-width: 670px; max-height: 430px;overflow-y:auto; border: 5px solid #e0e0e0; border-radius: 5px" >
+                <el-table :data="configurations.signIn.dailyData" style="max-width: 750px; max-height: 430px;overflow-y:auto; border: 5px solid #e0e0e0; border-radius: 5px" >
                   <el-table-column label="日" width="60px" align="center" prop="day">
                     <template #default="scope">
                       <div v-if="configurations.signIn.customDay === '1'">
@@ -377,7 +377,7 @@
                       </el-select>
                     </template>
                   </el-table-column>
-                  <el-table-column label="金额" width="70px" align="center">
+                  <el-table-column label="金额" width="140px" align="center">
                     <template #default="scope">
                       <template v-if="scope.row.rewardType === '1'">
                         <el-input v-model="scope.row.rewardAmount.max"/>
@@ -556,25 +556,32 @@ import html2canvas from 'html2canvas';
 import {getVipBonusTypeList} from "@/api/config/vipBonusType";
 import WangEditor from "@/components/WangEditor";
 import {
-    vipBonusInfoAdd,
-    vipBonusInfoDelete,
-    vipBonusInfoExport,
-    vipBonusInfoFindById,
-    vipBonusInfoUpdate,
-    vipBonusInfoUpdateStatus,
-    getVipBonusInfoList,
-    getAllVipBonusBanner,
-    getAllVipBonusLogo,
-    removeVipBonusBanner,
-    removeVipBonusLogo,
-    uploadVipBonusBanner,
-    uploadVipBonusLogo, getUploadedImages, removeAndListImages, cleanImagesByType, configVpiDataList,
+  vipBonusInfoAdd,
+  vipBonusInfoDelete,
+  vipBonusInfoExport,
+  vipBonusInfoFindById,
+  vipBonusInfoUpdate,
+  vipBonusInfoUpdateStatus,
+  getVipBonusInfoList,
+  getAllVipBonusBanner,
+  getAllVipBonusLogo,
+  removeVipBonusBanner,
+  removeVipBonusLogo,
+  uploadVipBonusBanner,
+  uploadVipBonusLogo,
+  getUploadedImages,
+  removeAndListImages,
+  cleanImagesByType,
+  configVpiDataList,
+  saveAndRetrieveImages,
 } from "@/api/config/vipBonusInfo";
 
-const isButtonDisabled    = ref(true); //Used for disabling button
+const activityUploadIconParam = ref({type: '',platform: '', field: ''})
+const isButtonDisabled = ref(true); //Used for disabling button
 const vipBonusInfoList = ref([]);
 const vipBonusTypes    = ref([]);
-const configVipList = ref([]);
+const configVipList    = ref([]);
+const rewardStatus     = ref( ['claimable', 'claimed', 'notClaimable', 'notClaimed'])
 const showSearch       = ref(true);
 const multiple = ref(true); //Multiple Row Selection
 const loading  = ref(false);
@@ -584,8 +591,6 @@ const total    = ref(0); //Total rows
 const open     = ref(false); //Opening form
 const ids      = ref([]); //Selected ids of table rows
 const fileInput = ref(null);
-const activityUploadIconParam = ref({type: '',platform: '', field: ''})
-const rewardStatus = ref( ['claimable', 'claimed', 'notClaimable', 'notClaimed'])
 
 /** Create Banner Related */
 const treasureIcons = ref([
@@ -593,28 +598,28 @@ const treasureIcons = ref([
   'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdbx2.png',
   'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdbx3.png',
 ]);
-const fontOptions   = ref([
-  "Arial, sans-serif",
-  "Helvetica, sans-serif",
-  "Georgia, serif",
-  "Times New Roman, serif",
-  "Courier New, monospace",
-  "Verdana, sans-serif",
-  "Trebuchet MS, sans-serif",
-  "Arial Black, sans-serif",
-  "Impact, sans-serif",
-  "Comic Sans MS, cursive",
-  "Palatino, serif",
-  "Garamond, serif",
-  "Book Antiqua, serif",
-  "Lucida Sans Unicode, sans-serif",
-  "Lucida Console, monospace",
-  "Tahoma, sans-serif",
-  "Geneva, sans-serif",
-  "Courier, monospace",
-  "MS Sans Serif, sans-serif",
-  "MS Serif, serif",
-]);
+// const fontOptions   = ref([
+//   "Arial, sans-serif",
+//   "Helvetica, sans-serif",
+//   "Georgia, serif",
+//   "Times New Roman, serif",
+//   "Courier New, monospace",
+//   "Verdana, sans-serif",
+//   "Trebuchet MS, sans-serif",
+//   "Arial Black, sans-serif",
+//   "Impact, sans-serif",
+//   "Comic Sans MS, cursive",
+//   "Palatino, serif",
+//   "Garamond, serif",
+//   "Book Antiqua, serif",
+//   "Lucida Sans Unicode, sans-serif",
+//   "Lucida Console, monospace",
+//   "Tahoma, sans-serif",
+//   "Geneva, sans-serif",
+//   "Courier, monospace",
+//   "MS Sans Serif, sans-serif",
+//   "MS Serif, serif",
+// ]);
 
 /** Others */
 const {proxy}   = getCurrentInstance();
@@ -635,6 +640,9 @@ const data      =  reactive({
     ],
     typeId: [
       {required: true, message: "活动类型不能为空", trigger: "blur"}
+    ],
+    dateRange: [
+      { validator: (rule, value, callback) => validateDateRange(rule, value, callback, dateRange.value), trigger: "blur" }
     ]
   },
   dateRange: [],
@@ -711,6 +719,9 @@ function handleEffectChange(row){
 function formatterActivityType(row) {
   for (const a of vipBonusTypes.value) {
     if (a.id === row.typeId) {
+        if( a.name =="Sign in"){
+            a.name = "登录配置"
+        }
       return a.name;
     }
   }
@@ -758,7 +769,7 @@ function handleResetData() {
     },
     signIn: {
       collectMethod: '1',
-      cycle: null,
+      cycle: 7,
       customDay: '2',
       dailyData: [],
       listOfDailyData: [],
@@ -815,65 +826,65 @@ function handleChangePlatform(option) {
 }
 
 /**  Handle Images */
-function handleUploadImage(event) {
-  if ( event.currentTarget.files[0] === undefined ) return;
-  formData.set( "file", event.currentTarget.files[0])
-  let uploadFunction = createBanner.value.type === '1' ? uploadVipBonusLogo( formData )
-      : uploadVipBonusBanner( formData );
-
-  uploadFunction.then( () => {
-    getBannerCreationRelatedImages(1);
-  }).then(() => {
-    ElMessage.success('Success')
-  })
-}
-function handleRemoveImage(){
-  event.preventDefault();
-  const type = createBanner.value.type;
-  const logo = createBanner.value.customize.properties.icon;
-  const banner = createBanner.value.preMade.banner;
-  if ( (type === '1' && logo === undefined) || (type === '2' && banner === undefined) ) return;
-
-  if (confirm("Are you sure you want to remove the image?")){
-    let removeFunction = type === '1' ? removeVipBonusLogo(logo)
-        : removeVipBonusBanner(banner);
-
-    setTimeout( () => {
-      removeFunction.then( () => {
-        getBannerCreationRelatedImages(1);
-      }).then( () => {
-        ElMessage.success('Success')
-      })
-    },1000);
-  }
-}
-function getBannerCreationRelatedImages (pageNum) {
-  const _this      = createBanner.value;
-  const pagination = _this.pagination;
-  const customize  = _this.customize;
-  const preMade    = _this.preMade;
-  const param      = pagination.param;
-
-  param.pageNum = pageNum;
-  if ( createBanner.value.type === '1' ) {
-    param.pageSize = 10;
-    getAllVipBonusLogo(param).then( res => {
-      res.rows = res.rows.map(img => prependActivityInfoImageBaseURI(img))
-      customize.iconCollection  = res.rows;
-      let icon = customize.properties.icon;
-      customize.properties.icon = icon === null ? res.rows[0]: icon;
-      pagination.pageTotal = Math.max(1,Math.ceil(res.total / param.pageSize))
-    })
-  } else {
-    param.pageSize = 6;
-    getAllVipBonusBanner(param).then( res => {
-      preMade.bannerCollection = res.rows;
-      let banner = preMade.banner;
-      preMade.banner = banner === null ? res.rows[0] : banner;
-      pagination.pageTotal = Math.max(1,Math.ceil(res.total / param.pageSize));
-    })
-  }
-}
+// function handleUploadImage(event) {
+//   if ( event.currentTarget.files[0] === undefined ) return;
+//   formData.set( "file", event.currentTarget.files[0])
+//   let uploadFunction = createBanner.value.type === '1' ? uploadVipBonusLogo( formData )
+//       : uploadVipBonusBanner( formData );
+//
+//   uploadFunction.then( () => {
+//     getBannerCreationRelatedImages(1);
+//   }).then(() => {
+//     ElMessage.success('Success')
+//   })
+// }
+// function handleRemoveImage(){
+//   event.preventDefault();
+//   const type = createBanner.value.type;
+//   const logo = createBanner.value.customize.properties.icon;
+//   const banner = createBanner.value.preMade.banner;
+//   if ( (type === '1' && logo === undefined) || (type === '2' && banner === undefined) ) return;
+//
+//   if (confirm("Are you sure you want to remove the image?")){
+//     let removeFunction = type === '1' ? removeVipBonusLogo(logo)
+//         : removeVipBonusBanner(banner);
+//
+//     setTimeout( () => {
+//       removeFunction.then( () => {
+//         getBannerCreationRelatedImages(1);
+//       }).then( () => {
+//         ElMessage.success('Success')
+//       })
+//     },1000);
+//   }
+// }
+// function getBannerCreationRelatedImages (pageNum) {
+//   const _this      = createBanner.value;
+//   const pagination = _this.pagination;
+//   const customize  = _this.customize;
+//   const preMade    = _this.preMade;
+//   const param      = pagination.param;
+//
+//   param.pageNum = pageNum;
+//   if ( createBanner.value.type === '1' ) {
+//     param.pageSize = 10;
+//     getAllVipBonusLogo(param).then( res => {
+//       res.rows = res.rows.map(img => prependActivityInfoImageBaseURI(img))
+//       customize.iconCollection  = res.rows;
+//       let icon = customize.properties.icon;
+//       customize.properties.icon = icon === null ? res.rows[0]: icon;
+//       pagination.pageTotal = Math.max(1,Math.ceil(res.total / param.pageSize))
+//     })
+//   } else {
+//     param.pageSize = 6;
+//     getAllVipBonusBanner(param).then( res => {
+//       preMade.bannerCollection = res.rows;
+//       let banner = preMade.banner;
+//       preMade.banner = banner === null ? res.rows[0] : banner;
+//       pagination.pageTotal = Math.max(1,Math.ceil(res.total / param.pageSize));
+//     })
+//   }
+// }
 function prependActivityInfoImageBaseURI(img) {
   return url.baseUrl + url.game99PlatformAdminWeb + "/config/vipBonusInfo/image?url=" + img;
 }
@@ -882,20 +893,20 @@ function getOriginalImageLink(img){
   const match = img.match(urlRegex);
   return match ? match[1] : img;
 }
-function handleImagePagination(isNext){
-  event.preventDefault();
-  const pageTotal = createBanner.value.pagination.pageTotal;
-  let   pageNum    = createBanner.value.pagination.param.pageNum;
-
-  if ( isNext && pageNum < pageTotal ) pageNum++;
-  else if ( !isNext && pageNum > 1 ) pageNum--;
-  else return;
-  createBanner.value.isActionFinished = true;
-  setTimeout(() => {
-    getBannerCreationRelatedImages(pageNum);
-    createBanner.value.isActionFinished = false;
-  },500)
-}
+// function handleImagePagination(isNext){
+//   event.preventDefault();
+//   const pageTotal = createBanner.value.pagination.pageTotal;
+//   let   pageNum    = createBanner.value.pagination.param.pageNum;
+//
+//   if ( isNext && pageNum < pageTotal ) pageNum++;
+//   else if ( !isNext && pageNum > 1 ) pageNum--;
+//   else return;
+//   createBanner.value.isActionFinished = true;
+//   setTimeout(() => {
+//     getBannerCreationRelatedImages(pageNum);
+//     createBanner.value.isActionFinished = false;
+//   },500)
+// }
 function handleUploadIcon (type, platform, field){
   activityUploadIconParam.value = {type: type, platform: platform, field: field};
   fileInput.value.click();
@@ -955,6 +966,22 @@ function onFileInputChange() {
     else updateSignInRewardIcons(param);
   });
 }
+function validateDateRange(rule, value, callback, dateRange) {
+  if (dateRange && dateRange.length === 2) {
+    const start = new Date(dateRange[0]);
+    const end = new Date(dateRange[1]);
+    const timeDifference = end - start;
+    const dayCount = Math.ceil(timeDifference / (1000 * 60 * 60 * 24)) + 1;
+
+    if (dayCount === 7) {
+      callback(); // Validation successful
+    } else {
+      callback(new Error("日期范围必须是 7 天"));
+    }
+  } else {
+    callback(new Error("日期范围格式不正确"));
+  }
+}
 
 /**  Handle Add/Update Bonus Activity */
 async function handleAddBonusActivity(){
@@ -963,7 +990,6 @@ async function handleAddBonusActivity(){
   title.value = "添加奖励活动"
   open.value  = true
   populateSignInConfigTable()
-    this.vipBonusInfoList()
 }
 function handleUpdateForm(row) {
   handleResetData()
@@ -1005,7 +1031,7 @@ function populateForm( r ){
 //   }
 //   getBannerCreationRelatedImages(1);
 // }
-function populateBonusTypeConfiguration(){
+function populateBonusTypeConfiguration() {
   let parsedEventConfig = JSON.parse(form.value.configString).eventConfig;
   switch ( form.value.typeId ) {
     case 1: //Sign In
@@ -1014,10 +1040,22 @@ function populateBonusTypeConfiguration(){
         if ( parsedEventConfig.listOfDailyData.length > 0 ) {
           let listOfDailyData = parsedEventConfig.listOfDailyData;
           conf.signIn.dailyData = listOfDailyData === undefined ? [] : listOfDailyData[0].config;
+
+          //Populate Reward Icons
+          const webIcons = conf.signIn.dailyData.map( data => data.rewardIcon.web);
+          const mobileIcons = conf.signIn.dailyData.map( data => data.rewardIcon.mobile);
+          populateRewardIcon(webIcons,'web')
+          populateRewardIcon(mobileIcons,'mobile')
         }
         break;
       //TODO: Update when added more bonus type
   }
+}
+function populateRewardIcon(icons,platform){
+  if ( icons.length < 1 ) return ;
+  saveAndRetrieveImages( icons,'rewardImg',platform,null).then( res => {
+    configurations.value.rewardIcons[platform] = res.data;
+  })
 }
 
 /**  Handle Submit Form */
@@ -1087,29 +1125,29 @@ function getEventConfigByTypeId(){
 // }
 
 /**  Sign In Related */
-function customDay_populateSignInConfigTable(){
-  const signIn = configurations.value.signIn;
-  let firstConfig = signIn.listOfDailyData[0].config
-  if ( firstConfig === undefined ) return;
-
-  signIn.dailyData = []
-  for ( let i = 0; i < firstConfig.length; i++ ) {
-    let row = firstConfig[i];
-    signIn.dailyData .push(
-        {
-          day: row.day,
-          rewardType: row.rewardType,
-          rewardAmount: {
-            min: null,
-            max: null
-          },
-          topUpRequirement: null,
-          codingRequirement: null,
-          rewardIcon: row.rewardIcon
-        }
-    )
-  }
-}
+// function customDay_populateSignInConfigTable(){
+//   const signIn = configurations.value.signIn;
+//   let firstConfig = signIn.listOfDailyData[0].config
+//   if ( firstConfig === undefined ) return;
+//
+//   signIn.dailyData = []
+//   for ( let i = 0; i < firstConfig.length; i++ ) {
+//     let row = firstConfig[i];
+//     signIn.dailyData .push(
+//         {
+//           day: row.day,
+//           rewardType: row.rewardType,
+//           rewardAmount: {
+//             min: null,
+//             max: null
+//           },
+//           topUpRequirement: null,
+//           codingRequirement: null,
+//           rewardIcon: row.rewardIcon
+//         }
+//     )
+//   }
+// }
 function updateSignInRewardIcons(param) {
   const icons = configurations.value.rewardIcons[param.platform];
   const signIn = configurations.value.signIn;
@@ -1136,8 +1174,7 @@ function updateSignInRewardIcons(param) {
 function populateSignInConfigTable(){
   const rewardIcons = configurations.value.rewardIcons;
   const signIn = configurations.value.signIn;
-  // let cycle = signIn.cycle;
-  let cycle = 7;
+  let cycle = signIn.cycle;
   signIn.dailyData  = [];
 
   for ( let i = 0; i < cycle; i++ ) {
@@ -1162,31 +1199,34 @@ function populateSignInConfigTable(){
     )
   }
 }
-function calculateNumberOfDays() {
-  if ( form.value.scheduleType === '1' ) {
-    const start = new Date(dateRange.value[0]);
-    const end   = new Date(dateRange.value[1]);
-    const timeDifference = end - start;
-    const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
-    configurations.value.signIn.cycle = daysDifference + 1;
-    populateSignInConfigTable()
-  }
-}
+// function calculateNumberOfDays() {
+//   if ( form.value.scheduleType === '1' && dateRange.value !== null) {
+//     const start = new Date(dateRange.value[0]);
+//     const end   = new Date(dateRange.value[1]);
+//     const timeDifference = end - start;
+//     const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+//     configurations.value.signIn.cycle = daysDifference + 1;
+//     populateSignInConfigTable()
+//   }
+// }
 function handleVipLevelChange(){
   const config = configurations.value;
+  const signIn = config.signIn;
   switch ( form.value.typeId ) {
     case 1: {
-      let signIn      = config.signIn;
-      let tableConfig = signIn.listOfDailyData[config.vipLevel];
+      const levelThatHasData = signIn.listOfDailyData.map( data => data.level);
+      const indexOfCurrentLevel = levelThatHasData.indexOf(config.vipLevel);
 
-      if ( tableConfig !== undefined ) {
+      if ( indexOfCurrentLevel >= 0 ) {
+        const tableConfig = signIn.listOfDailyData[indexOfCurrentLevel];
         config.signIn.dailyData = tableConfig.config
         break;
       }
+      populateSignInConfigTable()
 
-      if ( signIn.customDay === '1' ) customDay_populateSignInConfigTable()
-      else populateSignInConfigTable()
-      break;
+      // if ( signIn.customDay === '1' ) customDay_populateSignInConfigTable()
+      // else populateSignInConfigTable()
+      // break;
     }
   }
 }
@@ -1196,13 +1236,16 @@ function handleRewardChangeType(scope){
   scope.row.rewardIcon.mobile = scope.row.rewardType === '1' ? rewardIcons.mobile[0] : treasureIcons.value[0];
 }
 function saveSignInConfig(){
-  const signIn = configurations.value.signIn;
-  const indexOfExistingData = signIn.listOfDailyData.findIndex(data => data.level === configurations.value.vipLevel);
-  const hasData = indexOfExistingData !== -1;
+  const conf = configurations.value;
+  const vipLevel = conf.vipLevel;
+  const signIn = conf.signIn;
+  const levelsThatHasData = signIn.listOfDailyData.map( data => data.level );
+  const hasData = levelsThatHasData.includes(vipLevel);
 
   if ( hasData ) {
     //Update
-    signIn.listOfDailyData[indexOfExistingData].config = signIn.dailyData;
+    const index = levelsThatHasData.indexOf(vipLevel);
+    signIn.listOfDailyData[index].config = signIn.dailyData;
   } else {
     //Insert
     signIn.listOfDailyData.push({
@@ -1225,12 +1268,11 @@ function initQuery(){
 }
 
 function getVipDataList(){
-    loading.value = true
-    configVpiDataList().then(res=>{
-        configVipList.value = res.data
-        console.log(res.data)
-        loading.value =false
-    })
+  loading.value = true
+  configVpiDataList().then(res=>{
+      configVipList.value = res.data
+      loading.value =false
+  })
 }
 
 getVipDataList();

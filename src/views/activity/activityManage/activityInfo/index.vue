@@ -87,15 +87,25 @@
     <el-table v-loading="loading" :data="activityInfoList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="标题" align="center" prop="title" min-width="180"/>
-        <el-table-column label="图标" align="center" prop="icon">
-          <template #default="scope">
-            <el-image
-                style="height: 50px;"
-                :src="scope.row.icon"
-                fit="contain">
-            </el-image>
-          </template>
-        </el-table-column>
+      <el-table-column label="图标" align="center" prop="icon">
+        <template #default="scope">
+          <el-image
+              style="height: 50px;"
+              :src="scope.row.icon"
+              fit="contain">
+          </el-image>
+        </template>
+      </el-table-column>
+      <el-table-column label="活动横幅" align="center" prop="eventBanner">
+        <template #default="scope">
+          <el-image
+              v-if="scope.row.eventBanner != null"
+              style="height: 50px;"
+              :src="scope.row.eventBanner"
+              fit="contain">
+          </el-image>
+        </template>
+      </el-table-column>
       <el-table-column label="活动详情" align="center" prop="content"  min-width="160">
         <template v-slot="{row}">
           <div v-html="row.content" style="max-height: 80px"></div>
@@ -398,27 +408,34 @@
             <div style="max-width: 1000px">
               <el-form-item label="跳转类型" prop="type">
                 <el-radio-group v-model="form.type">
-<!--                  <el-radio label="0">活动详情</el-radio>-->
+                  <el-radio label="0">活动详情</el-radio>
                   <el-radio label="1">内部浏览器</el-radio>
                   <el-radio label="2">外部浏览器</el-radio>
                 </el-radio-group>
               </el-form-item>
-<!--              <el-form-item label="活动详情" prop="content" v-if="form.type === '0'">-->
-<!--                <WangEditor v-model="form.content" style="max-width: 680px" image-path="ActivityInfo" />-->
-<!--              </el-form-item>-->
+              <el-form-item label="活动详情" prop="content" v-if="form.type === '0'">
+                <WangEditor v-model="form.content" style="max-width: 680px" image-path="ActivityInfo" />
+              </el-form-item>
               <el-form-item label="跳转链接" prop="url" v-if="form.type === '1' || form.type === '2'">
                 <el-input v-model="form.url" placeholder="请输入图标跳转链接 " style="max-width: 680px"/>
               </el-form-item>
             </div>
           </div>
           <div class="el-col el-col-12">
+
+
+            <label style="font-size: 25px; text-align: left">创建横幅</label>
+            <hr>
+            <imageUpload v-model="form.eventBanner" path="eventBanner"/><br>
+
             <div>
-              <label style="font-size: 25px; text-align: left">创建横幅</label>
+              <label style="font-size: 25px; text-align: left">创建滑块</label>
               <el-radio-group style="float: right;" v-model="createBanner.type" @change="changeBannerCreationType(createBanner.type)">
                 <el-radio style="width: 120px" label="1" border>定制</el-radio>
                 <el-radio style="width: 120px" label="2" border>预制</el-radio>
               </el-radio-group><hr style="margin-top: 20px; margin-bottom: 20px">
             </div>
+
             <label style="font-size: 20px">预览</label>
 
             <div v-if="createBanner.type === '1'">
@@ -438,7 +455,8 @@
                   `"
                   >{{createBanner.customize.properties.text}}</pre>
                 </div>
-              </div><hr style="margin-top: 10px">
+              </div>
+              <hr style="margin-top: 10px">
               <div class="form-group">
                 <label for="background">背景颜色:</label>
                 <input style="margin-left: 10px; width: 100px; border: 2px solid #000000"
@@ -468,7 +486,7 @@
               <hr>
               <div class="form-group">
                 <p>活动说明:</p>
-                <label for="font">字体: </label>
+                <label for="font">字体:</label>
                 <el-select style="width: 200px" v-model="createBanner.customize.properties.textStyle.font">
                   <el-option v-for="font in fontOptions" :key="font" :label="font" :value="font"></el-option>
                 </el-select>
@@ -548,6 +566,7 @@ import {
   uploadImage,
   listImages, removeImage
 } from "@/api/activity/activityInfo";
+import ImageUpload from "@/components/ImageUpload/index.vue";
 
 const {proxy} = getCurrentInstance();
 /** 活动信息表格数据 */
@@ -1048,6 +1067,7 @@ function resetForm(){
   f.content = '';
   f.url = '';
   f.icon = null;
+  f.eventBanner = null
   f.sort = null;
   f.creationType = '1';
 }
