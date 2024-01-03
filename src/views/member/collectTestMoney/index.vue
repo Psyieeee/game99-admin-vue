@@ -9,7 +9,7 @@
             @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="回调日期" prop="updateTime">
+      <el-form-item label="日期" prop="updateTime">
         <el-date-picker type="datetimerange"
                         v-model="updateTime"
                         format="YYYY-MM-DD HH:mm:ss"
