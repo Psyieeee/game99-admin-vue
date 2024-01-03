@@ -194,6 +194,7 @@
                 :on-remove="handleRemove"
                 :on-success="uploadSuccess"
                 :file-list="fileList"
+
                 class="upload-demo"
                 drag
                 name="file"
@@ -269,7 +270,7 @@
   </div>
 </template>
 
-<script name="weeklyTasks" setup>
+<script name="activityTasks" setup>
 
 import {
   activityMissionList,
@@ -371,6 +372,8 @@ function beforeAvatarUpload(file) {
   const fileExtension = file.name.split('.')[1]
   const isLt2M = file.size / 1024 / 1024 < 100
   if (fileExtension !== 'jpg' &&
+      fileExtension !== 'jpeg' &&
+      fileExtension !== 'bmp' &&
       fileExtension !== 'png') {
     proxy.$modal.msgError('图片类型错误')
   } else if (!isLt2M) {
@@ -386,6 +389,8 @@ function handleRemove() {
 
 function uploadSuccess(res) {
   form.value.icon = res.data
+  console.log("res.data " + res.data)
+  console.log("form.value.icon " + form.value.icon)
 }
 
 function selectFile( file ) {
@@ -394,11 +399,11 @@ function selectFile( file ) {
 }
 
 function uploadFalse() {
-  proxy.$modal.msgError(' 上传音乐文件失败')
+  proxy.$modal.msgError(' 上传文件失败')
 }
 
 function uploadExceed() {
-  proxy.$modal.msgError('只能选择一个音乐文件，如果要更改，请退出并重新选择。')
+  proxy.$modal.msgError('只能选择一个文件，如果要更改，请退出并重新选择')
 }
 
 function handlePreview(file) {
@@ -472,8 +477,16 @@ function reset() {
   }
 
   fileList.value = []
+  // clearUpload();
   proxy.resetForm('ref');
 }
+
+function clearUpload(){
+  upload.value = [];
+  formData.delete("file")
+  formData.delete("name")
+}
+
 
 /** 重置按钮操作 handle reset query*/
 function resetQuery() {
@@ -520,8 +533,6 @@ function submitForm() {
           getList()
         })
       }
-
-
     }
   })
 }

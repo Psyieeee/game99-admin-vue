@@ -243,9 +243,10 @@
                 :on-preview="handlePreview"
                 :on-remove="handleRemove"
                 :on-success="uploadSuccess"
+                :file-list="fileList"
                 class="upload-demo"
                 drag
-                name="advertisementFile"
+                name="file"
             >
               <div class="el-upload__text">Drop file here or <em>点击上传</em></div>
               <div class="el-upload__tip">
@@ -493,6 +494,7 @@ const settingsId = ref('THREE_DAY');
 const eventCollection = ref([]);
 const checkedEventCollection = ref([]);
 const collectionRestriction = ref([]);
+const fileList = ref([])
 const checkedCollectionRestriction = ref([]);
 const formData = new FormData();
 
@@ -640,6 +642,8 @@ function reset() {
     missionIntroduction: null,
     status: null
   }
+  fileList.value = []
+  proxy.resetForm('ref');
   proxy.resetForm('missionRepeatRef');
 }
 

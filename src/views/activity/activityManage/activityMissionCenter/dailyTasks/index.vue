@@ -64,7 +64,7 @@
           <el-image :src="scope.row.icon" lazy fit="contain" style="width: 60px;"/>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="任务分类" min-width="180" :prop="taskClassification.translatedName"/>
+      <el-table-column align="center" label="任务分类" min-width="180" prop="taskClassification"/>
 <!--      <el-table-column align="center" label="奖励金额" min-width="180" prop="reward"/>-->
       <el-table-column align="center" label="目标任务量" min-width="180" prop="completionCount"/>
 <!--      <el-table-column align="center" label="任务目标" min-width="180" prop="missionObjectives"/>-->
@@ -250,6 +250,7 @@
                 :on-preview="handlePreview"
                 :on-remove="handleRemove"
                 :on-success="uploadSuccess"
+                :file-list="fileList"
 
                 class="upload-demo"
                 drag
@@ -461,6 +462,7 @@ const checkedEventCollection = ref([]);
 const collectionRestriction = ref([]);
 const checkedCollectionRestriction = ref([]);
 const formData = new FormData();
+const fileList = ref([])
 const data = reactive({
   /** 查询参数 query params*/
   auditRestrictedTabs: [],
@@ -619,6 +621,9 @@ function reset() {
   }
   // proxy.$refs.upload.clearFiles();
   proxy.resetForm('missionRepeatRef');
+  fileList.value = []
+  // clearUpload();
+  proxy.resetForm('ref');
 }
 
 /** 重置按钮操作 handle reset query*/
@@ -726,11 +731,11 @@ function handleRemove() {
   proxy.$modal.msgSuccess('移除成功')
 }
 
-function uploadSuccess() {
-  proxy.$modal.msgSuccess('文件上传成功');
-  queryParams.memberId = null
-  queryParams.pageNum = 1
-  getList()
+function uploadSuccess(res) {
+  form.value.icon = res.data
+  // queryParams.memberI
+  // queryParams.pageNum = 1d = null
+  // getList()
 }
 
 function selectFile(file) {
@@ -739,11 +744,11 @@ function selectFile(file) {
 }
 
 function uploadFalse() {
-  proxy.$modal.msgError(' 上传音乐文件失败')
+  proxy.$modal.msgError(' 上传文件失败')
 }
 
 function uploadExceed() {
-  proxy.$modal.msgError('只能选择一个音乐文件，如果要更改，请退出并重新选择。')
+  proxy.$modal.msgError('只能选择一个文件，如果要更改，请退出并重新选择')
 }
 
 function handlePreview(file) {
@@ -768,7 +773,7 @@ function handleUpdate(row) {
     form.value = response.data
     open.value = true
     title.value = '编辑日常积分任务量'
-    handleCheckedCurrencyChange()
+    // handleCheckedCurrencyChange()
   })
 
 }
