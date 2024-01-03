@@ -239,7 +239,6 @@
             <el-upload
                 ref="upload"
                 :action="uploadFileUrl"
-                :auto-upload="false"
                 :before-upload="beforeAvatarUpload"
                 :headers="headers"
                 :limit="1"
@@ -664,6 +663,7 @@ function submitForm() {
         rewardActivity: form.value.rewardActivity,
         status: form.value.status,
         sort: form.value.sort,
+        icon: form.value.icon
       }
       if (form.value.missionObjectives === '累计充值') {
         params = {
@@ -687,6 +687,7 @@ function submitForm() {
           status: form.value.status,
           description: form.value.description,
           sort: form.value.sort,
+          icon: form.value.icon
         }
       }
       //url validator
@@ -733,6 +734,8 @@ function handleRemove() {
 
 function uploadSuccess(res) {
   form.value.icon = res.data
+  console.log("res.data " + res.data)
+  console.log("form.value.icon " + form.value.icon)
   // queryParams.memberI
   // queryParams.pageNum = 1d = null
   // getList()

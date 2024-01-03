@@ -518,7 +518,6 @@ function submitForm() {
         sort: form.value.sort,
         description: form.value.description,
         icon: form.value.icon
-
       }
       if (form.value.id != null) {
         updateActivityMission(form.value).then(() => {
