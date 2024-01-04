@@ -125,6 +125,16 @@
           </el-switch>
         </template>
       </el-table-column>
+      <el-table-column label="跳转状态" align="center" prop="jumpStatus">
+        <template #default="scope">
+          <el-switch
+              v-model="scope.row.jumpStatus"
+              :active-value="true"
+              :inactive-value="false"
+              @click="handleJumpStatusChange(scope.row)">
+          </el-switch>
+        </template>
+      </el-table-column>
       <el-table-column label="排序" align="center" prop="sort"  min-width="160"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="120">
         <template #default="scope">
@@ -420,6 +430,30 @@
                 <el-input v-model="form.url" placeholder="请输入图标跳转链接 " style="max-width: 680px"/>
               </el-form-item>
             </div>
+
+            <el-form-item label="跳转状态">
+              <el-switch
+                  v-model="form.jumpStatus"
+                  :active-value="true"
+                  :inactive-value="false">
+              </el-switch>
+            </el-form-item>
+
+            <el-form-item label="内部跳转类型">
+              <el-select
+                  filterable
+                  v-model="form.internalJumpType"
+                  placeholder="请选择内部跳转类型"
+                  clearable
+                  style="width: 240px">
+                <el-option
+                    v-for="internalJumpType in internalJumpTypes"
+                    :key="internalJumpType"
+                    :label="internalJumpType"
+                    :value="internalJumpType"/>
+              </el-select>
+            </el-form-item>
+
           </div>
           <div class="el-col el-col-12">
 
@@ -688,6 +722,7 @@ const fileInput = ref(null);
 const activityUploadIconParam = ref({type: '', field: ''})
 const eventIds = ref([19,20]);
 
+const internalJumpTypes = [ "VIP", "DAILY_BONUS", "FUND" ]
 
 const {queryParams,form,rules, configurations, createBanner} = toRefs(data);
 const {activityInfo_status} = proxy.useDict("activityInfo_status");
@@ -943,6 +978,8 @@ function populateForm(rspData){
   f.url = rspData.url;
   f.icon = rspData.icon;
   f.sort = rspData.sort;
+  f.jumpStatus = rspData.jumpStatus
+  f.internalJumpType = rspData.internalJumpType
 }
 async function populateBannerConfiguration(){
   const configString = form.value.configString;
@@ -1070,6 +1107,8 @@ function resetForm(){
   f.eventBanner = null
   f.sort = null;
   f.creationType = '1';
+  f.jumpStatus = false
+  f.internalJumpType = null
 }
 function resetCreateBannerConfig(){
   createBanner.value = {
@@ -1172,6 +1211,21 @@ function handleEffectChange(row){
     proxy.$modal.msgSuccess(text + '成功')
   }).catch(function () {
     row.effect = !row.effect
+  })
+}
+
+function handleJumpStatusChange(row){
+  let text = row.jumpStatus ? '启用' : '停用'
+  proxy.$modal.confirm('确认要"' + text + '""' + row.title + '"吗?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(function () {
+    return activityInfoUpdateStatus( row.id, row.effect )
+  }).then(() => {
+    proxy.$modal.msgSuccess(text + '成功')
+  }).catch(function () {
+    row.jumpStatus = !row.jumpStatus
   })
 }
 

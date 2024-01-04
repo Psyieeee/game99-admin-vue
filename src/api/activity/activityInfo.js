@@ -78,6 +78,13 @@ export function activityInfoUpdateStatus(id,effect){
     })
 }
 
+export function activityInfoUpdateJumpStatus(id,effect){
+    return request({
+        url:url.game99PlatformAdminWeb+"/activity/activityInfo/changeJumpStatus/"+id+"/"+ effect,
+        method:'put',
+    })
+}
+
 export function getAllRewardIcon(){
     return request({
         url:url.game99PlatformAdminWeb+"/activity/activityInfo/getAllRewardIcon",
