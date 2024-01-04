@@ -342,7 +342,7 @@
                   ></el-option>
                 </el-select>
                 <div style="padding-left: 10px">
-                  <el-button type="primary" size="small" @click="saveSignInConfig">节省</el-button>
+                  <el-button type="primary" size="small" @click="saveSignInConfig">确认</el-button>
                   <el-button icon="Refresh" size="small" @click="resetSignInConfig">重置</el-button>
                 </div>
               </el-form-item>
