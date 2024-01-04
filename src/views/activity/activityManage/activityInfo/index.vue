@@ -1212,6 +1212,7 @@ function handleEffectChange(row){
     return activityInfoUpdateStatus( row.id, row.effect )
   }).then(() => {
     proxy.$modal.msgSuccess(text + '成功')
+    getList()
   }).catch(function () {
     row.effect = !row.effect
   })
