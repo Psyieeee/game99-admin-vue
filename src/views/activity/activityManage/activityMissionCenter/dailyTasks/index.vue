@@ -247,7 +247,6 @@
                 :on-error="uploadFalse"
                 :on-exceed="uploadExceed"
                 :on-preview="handlePreview"
-                :on-remove="handleRemove"
                 :on-success="uploadSuccess"
                 :file-list="fileList"
 
@@ -739,6 +738,7 @@ function beforeAvatarUpload(file) {
       fileExtension !== 'png' &&
       fileExtension !== 'bmp') {
     proxy.$modal.msgError('图片类型错误')
+    return false;
   } else if (!isLt2M) {
     proxy.$modal.msgError('上传模板大小不能超过100MB!')
   } else {
