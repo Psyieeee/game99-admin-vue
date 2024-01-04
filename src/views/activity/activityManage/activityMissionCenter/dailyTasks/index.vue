@@ -697,6 +697,7 @@ function submitForm() {
       const params = {
         name: form.value.name,
         id: form.value.id,
+        taskClassification: form.value.taskClassification,
         missionRepeatType: 'DAILY',
         missionSettingsId: 'DAILY',
         reward: form.value.reward,
