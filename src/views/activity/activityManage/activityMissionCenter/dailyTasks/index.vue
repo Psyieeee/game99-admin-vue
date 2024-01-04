@@ -41,40 +41,40 @@
         >删除
         </el-button>
       </el-col>
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--            v-hasPermi="['mission:repeat:settings']"-->
-<!--            icon="Edit"-->
-<!--            plain-->
-<!--            size="small"-->
-<!--            type="primary"-->
-<!--            @click="handleSettings"-->
-<!--        >日常任务设置-->
-<!--        </el-button>-->
-<!--      </el-col>-->
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--            v-hasPermi="['mission:repeat:settings']"-->
+      <!--            icon="Edit"-->
+      <!--            plain-->
+      <!--            size="small"-->
+      <!--            type="primary"-->
+      <!--            @click="handleSettings"-->
+      <!--        >日常任务设置-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
       <right-toolbar v-model="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <!--    display data in table -->
     <el-table v-loading="loading" :data="missionRepeatLists" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-<!--      <el-table-column align="center" label="任务货币" min-width="180" prop="taskCurrency"/>-->
+      <!--      <el-table-column align="center" label="任务货币" min-width="180" prop="taskCurrency"/>-->
       <el-table-column :show-overflow-tooltip="true" align="center" label="图标" min-width="180" prop="icon">
         <template #default="scope">
           <el-image :src="scope.row.icon" lazy fit="contain" style="width: 60px;"/>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="任务分类" min-width="180" :prop="taskClassification.translatedName"/>
-<!--      <el-table-column align="center" label="奖励金额" min-width="180" prop="reward"/>-->
+      <el-table-column align="center" label="任务分类" min-width="180" prop="taskClassificationTranslated"/>
+      <!--      <el-table-column align="center" label="奖励金额" min-width="180" prop="reward"/>-->
       <el-table-column align="center" label="目标任务量" min-width="180" prop="completionCount"/>
-<!--      <el-table-column align="center" label="任务目标" min-width="180" prop="missionObjectives"/>-->
+      <!--      <el-table-column align="center" label="任务目标" min-width="180" prop="missionObjectives"/>-->
       <el-table-column align="center" label="活动奖励" min-width="180" prop="rewardActivity"/>
-<!--      <el-table-column align="center" label="任务介绍" min-width="180">-->
-<!--        <template #default="scope">-->
-<!--          &lt;!&ndash; Display both ID and Task Currency in the same cell &ndash;&gt;-->
-<!--          累计充值${{ scope.row.cumulativeRechargeAmount }}, 奖励${{ scope.row.reward }}-->
-<!--        </template>-->
-<!--      </el-table-column>-->
+      <!--      <el-table-column align="center" label="任务介绍" min-width="180">-->
+      <!--        <template #default="scope">-->
+      <!--          &lt;!&ndash; Display both ID and Task Currency in the same cell &ndash;&gt;-->
+      <!--          累计充值${{ scope.row.cumulativeRechargeAmount }}, 奖励${{ scope.row.reward }}-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
       <el-table-column align="center" min-width="150" label="状态" prop="status">
         <template #default="scope">
           <el-switch
@@ -86,9 +86,9 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="排序" min-width="180" prop="sort"/>
+      <el-table-column align="center" label="说明" min-width="180" prop="description"/>
       <el-table-column align="center" label="操作员" min-width="180" prop="createdBy"/>
       <el-table-column align="center" label="运行时间" min-width="180" prop="updateTime"/>
-      <el-table-column align="center" label="说明" min-width="180" prop="description"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
@@ -123,23 +123,23 @@
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="600px">
       <el-form ref="missionRepeatRef" :model="form" :rules="rules" label-width="150px">
-<!--        <el-form-item label="货币" prop="currency" style=" min-width: 290px">-->
-<!--          <el-checkbox-->
-<!--              v-model="selectAll"-->
-<!--              @change="handleCheckAllChange"-->
-<!--          >全部检查-->
-<!--          </el-checkbox>-->
-<!--        </el-form-item>-->
-<!--        <el-form-item prop="currency" style="min-width: 290px">-->
-<!--          <el-checkbox-group-->
-<!--              v-model="checkedCurrency"-->
-<!--              @change="handleCheckedCurrencyChange">-->
-<!--            <el-checkbox v-for="item in activity_mission_currency"-->
-<!--                         :key="item.value"-->
-<!--                         :label="item.label">{{ item.label }}-->
-<!--            </el-checkbox>-->
-<!--          </el-checkbox-group>-->
-<!--        </el-form-item>-->
+        <!--        <el-form-item label="货币" prop="currency" style=" min-width: 290px">-->
+        <!--          <el-checkbox-->
+        <!--              v-model="selectAll"-->
+        <!--              @change="handleCheckAllChange"-->
+        <!--          >全部检查-->
+        <!--          </el-checkbox>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item prop="currency" style="min-width: 290px">-->
+        <!--          <el-checkbox-group-->
+        <!--              v-model="checkedCurrency"-->
+        <!--              @change="handleCheckedCurrencyChange">-->
+        <!--            <el-checkbox v-for="item in activity_mission_currency"-->
+        <!--                         :key="item.value"-->
+        <!--                         :label="item.label">{{ item.label }}-->
+        <!--            </el-checkbox>-->
+        <!--          </el-checkbox-group>-->
+        <!--        </el-form-item>-->
         <el-form-item label="任务分类" prop="taskClassification" style="min-width: 290px">
           <el-select v-model="form.taskClassification" placeholder="任务分类" clearable>
             <el-option
@@ -150,66 +150,66 @@
             />
           </el-select>
         </el-form-item>
-<!--        <el-form-item label="任务目标" prop="missionObjectives" style="min-width: 290px">-->
-<!--          <el-select v-model="form.missionObjectives">-->
-<!--            <el-option-->
-<!--                v-for="dict in activity_mission_objectives"-->
-<!--                :key="dict.value"-->
-<!--                :label="dict.label"-->
-<!--                :value="dict.value"-->
-<!--            />-->
-<!--          </el-select>-->
-<!--        </el-form-item>-->
-<!--        <el-form-item v-if="form.missionObjectives === '累计充值'" label="充值类别"-->
-<!--                      prop="accumulatedRechargeSource" style="min-width: 290px">-->
-<!--          <el-checkbox-group v-model="data.rechargeCategory">-->
-<!--            <el-checkbox-button-->
-<!--                v-for="dict in pay_online_recharge_category"-->
-<!--                :key="dict.value"-->
-<!--                :label="dict.label"></el-checkbox-button>-->
-<!--          </el-checkbox-group>-->
-<!--        </el-form-item>-->
-<!--        <div v-if="form.missionObjectives !== '累计充值'">-->
-<!--          <el-form-item label="Game Type" prop="gameType" style="min-width: 290px">-->
-<!--            <el-select v-model="form.gameType" @change="handleGameTypeChange">-->
-<!--              <el-option-->
-<!--                  v-for="dict in gameTypeList"-->
-<!--                  :key="dict.id"-->
-<!--                  :label="dict.name"-->
-<!--                  :value="dict.id"-->
-<!--              ></el-option>-->
-<!--            </el-select>-->
-<!--          </el-form-item>-->
-<!--          <el-form-item-->
-<!--              label="Platform Type" prop="platformType" style="min-width: 290px">-->
-<!--            <el-select v-model="form.platformType" @change="handleGamePlatformChange">-->
-<!--              <el-option-->
-<!--                  v-for="dict in platformTypeList"-->
-<!--                  :key="dict.id"-->
-<!--                  :label="dict.name"-->
-<!--                  :value="dict.id"-->
-<!--              ></el-option>-->
-<!--            </el-select>-->
-<!--          </el-form-item>-->
-<!--          <el-form-item label="Game" prop="gameName" style="min-width: 290px">-->
-<!--            <el-select v-model="form.gameName">-->
-<!--              <el-option-->
-<!--                  v-for="dict in gameList"-->
-<!--                  :key="dict.id"-->
-<!--                  :label="dict.name"-->
-<!--                  :value="dict.id"-->
-<!--              ></el-option>-->
-<!--            </el-select>-->
-<!--          </el-form-item>-->
-<!--        </div>-->
-<!--        <el-form-item label="累计补给量" prop="cumulativeRechargeAmount">-->
-<!--          <el-input type="number" v-model="form.cumulativeRechargeAmount" placeholder="输入累计充值金额"-->
-<!--                    @change="handleComposeMission"/>-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="奖励金额" prop="reward">-->
-<!--          <el-input type="number" v-model="form.reward" placeholder="请输入奖励金额"-->
-<!--                    @change="handleComposeMission"/>-->
-<!--        </el-form-item>-->
+        <!--        <el-form-item label="任务目标" prop="missionObjectives" style="min-width: 290px">-->
+        <!--          <el-select v-model="form.missionObjectives">-->
+        <!--            <el-option-->
+        <!--                v-for="dict in activity_mission_objectives"-->
+        <!--                :key="dict.value"-->
+        <!--                :label="dict.label"-->
+        <!--                :value="dict.value"-->
+        <!--            />-->
+        <!--          </el-select>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item v-if="form.missionObjectives === '累计充值'" label="充值类别"-->
+        <!--                      prop="accumulatedRechargeSource" style="min-width: 290px">-->
+        <!--          <el-checkbox-group v-model="data.rechargeCategory">-->
+        <!--            <el-checkbox-button-->
+        <!--                v-for="dict in pay_online_recharge_category"-->
+        <!--                :key="dict.value"-->
+        <!--                :label="dict.label"></el-checkbox-button>-->
+        <!--          </el-checkbox-group>-->
+        <!--        </el-form-item>-->
+        <!--        <div v-if="form.missionObjectives !== '累计充值'">-->
+        <!--          <el-form-item label="Game Type" prop="gameType" style="min-width: 290px">-->
+        <!--            <el-select v-model="form.gameType" @change="handleGameTypeChange">-->
+        <!--              <el-option-->
+        <!--                  v-for="dict in gameTypeList"-->
+        <!--                  :key="dict.id"-->
+        <!--                  :label="dict.name"-->
+        <!--                  :value="dict.id"-->
+        <!--              ></el-option>-->
+        <!--            </el-select>-->
+        <!--          </el-form-item>-->
+        <!--          <el-form-item-->
+        <!--              label="Platform Type" prop="platformType" style="min-width: 290px">-->
+        <!--            <el-select v-model="form.platformType" @change="handleGamePlatformChange">-->
+        <!--              <el-option-->
+        <!--                  v-for="dict in platformTypeList"-->
+        <!--                  :key="dict.id"-->
+        <!--                  :label="dict.name"-->
+        <!--                  :value="dict.id"-->
+        <!--              ></el-option>-->
+        <!--            </el-select>-->
+        <!--          </el-form-item>-->
+        <!--          <el-form-item label="Game" prop="gameName" style="min-width: 290px">-->
+        <!--            <el-select v-model="form.gameName">-->
+        <!--              <el-option-->
+        <!--                  v-for="dict in gameList"-->
+        <!--                  :key="dict.id"-->
+        <!--                  :label="dict.name"-->
+        <!--                  :value="dict.id"-->
+        <!--              ></el-option>-->
+        <!--            </el-select>-->
+        <!--          </el-form-item>-->
+        <!--        </div>-->
+        <!--        <el-form-item label="累计补给量" prop="cumulativeRechargeAmount">-->
+        <!--          <el-input type="number" v-model="form.cumulativeRechargeAmount" placeholder="输入累计充值金额"-->
+        <!--                    @change="handleComposeMission"/>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="奖励金额" prop="reward">-->
+        <!--          <el-input type="number" v-model="form.reward" placeholder="请输入奖励金额"-->
+        <!--                    @change="handleComposeMission"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="积分" prop="completionCount">
           <el-input-number type="number" v-model="form.completionCount" placeholder="请输入任务目标量"/>
         </el-form-item>
@@ -219,27 +219,27 @@
         <el-form-item label="排序" prop="sort">
           <el-input-number type="number" v-model="form.sort" placeholder="请输入排序"/>
         </el-form-item>
-<!--        <el-form-item label="任务简介" prop="missionIntroduction">-->
-<!--          <el-input v-model="mission" placeholder="输入累计充值金额" disabled/>-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="活跃" prop="status" style="min-width: 290px">-->
-<!--          <template #default="scope">-->
-<!--            <el-switch-->
-<!--                v-model="form.status"-->
-<!--                :active-value="1"-->
-<!--                :inactive-value="0"-->
-<!--            ></el-switch>-->
-<!--          </template>-->
-<!--        </el-form-item>-->
+        <!--        <el-form-item label="任务简介" prop="missionIntroduction">-->
+        <!--          <el-input v-model="mission" placeholder="输入累计充值金额" disabled/>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="活跃" prop="status" style="min-width: 290px">-->
+        <!--          <template #default="scope">-->
+        <!--            <el-switch-->
+        <!--                v-model="form.status"-->
+        <!--                :active-value="1"-->
+        <!--                :inactive-value="0"-->
+        <!--            ></el-switch>-->
+        <!--          </template>-->
+        <!--        </el-form-item>-->
         <el-form-item label="说明" prop="description">
           <el-input v-model="form.description" type="textarea" placeholder="说明" :rows="3"/>
         </el-form-item>
         <el-form-item label="图片">
+<!--          :action="uploadFileUrl"-->
           <div class="centered-form">
             <el-upload
                 ref="upload"
-                :action="uploadFileUrl"
-                :auto-upload="false"
+
                 :before-upload="beforeAvatarUpload"
                 :headers="headers"
                 :limit="1"
@@ -248,12 +248,13 @@
                 :on-error="uploadFalse"
                 :on-exceed="uploadExceed"
                 :on-preview="handlePreview"
-                :on-remove="handleRemove"
                 :on-success="uploadSuccess"
+                :file-list="fileList"
+                :auto-upload="false"
 
                 class="upload-demo"
                 drag
-                name="advertisementFile"
+                name="file"
             >
               <div class="el-upload__text">Drop file here or <em>点击上传</em></div>
               <div class="el-upload__tip">
@@ -400,7 +401,6 @@ import {
   gameInfoList,
   getSettings,
   updateSettings,
-  fileUpload,
   getMissionTrigger
 } from "@/api/activity/missionRepeat";
 
@@ -412,6 +412,7 @@ import {
   getMemberTierList
 } from "@/api/activity/newbieBenefits";
 import {url} from "@/utils/url";
+import {fileUpload} from "@/api/activity/activityQuest";
 
 const router = useRouter();
 const {proxy} = getCurrentInstance();
@@ -461,6 +462,7 @@ const checkedEventCollection = ref([]);
 const collectionRestriction = ref([]);
 const checkedCollectionRestriction = ref([]);
 const formData = new FormData();
+const fileList = ref([])
 const data = reactive({
   /** 查询参数 query params*/
   auditRestrictedTabs: [],
@@ -537,7 +539,7 @@ function handleMemberTierList() {
   })
 }
 
-function getMissionTriggerList(){
+function getMissionTriggerList() {
   getMissionTrigger().then(res => {
     taskClassificationList.value = res.data
   })
@@ -615,10 +617,11 @@ function reset() {
     reward: null,
     missionIntroduction: null,
     status: null,
-    sort: null
+    sort: null,
+    // icon: null
   }
-  // proxy.$refs.upload.clearFiles();
   proxy.resetForm('missionRepeatRef');
+  clearUpload();
 }
 
 /** 重置按钮操作 handle reset query*/
@@ -642,55 +645,87 @@ function handleAdd() {
 function submitForm() {
   proxy.$refs['missionRepeatRef'].validate(async valid => {
     if (valid) {
-      let params = {
+      // let params = {
+      //   id: form.value.id,
+      //   missionRepeatType: 'DAILY',
+      //   missionSettingsId: 'DAILY',
+      //   taskCurrency: checkedCurrency.value.map((item) => item).join(','),
+      //   taskClassification: form.value.taskClassification,
+      //   reward: form.value.reward,
+      //   completionCount: form.value.completionCount,
+      //   cumulativeRechargeAmount: form.value.cumulativeRechargeAmount,
+      //   missionObjectives: form.value.missionObjectives,
+      //   accumulatedRechargeSource: null,
+      //   platformId: form.value.platformType,
+      //   gameTypeId: form.value.gameType,
+      //   gameId: form.value.gameType,
+      //   rewardActivity: form.value.rewardActivity,
+      //   status: form.value.status,
+      //   sort: form.value.sort,
+      //   icon: form.value.icon
+      // }
+      // if (form.value.missionObjectives === '累计充值') {
+      //   params = {
+      //     accumulatedRechargeSource: data.rechargeCategory.map((item) => item).join(','),
+      //     platformId: null,
+      //     gameTypeId: null,
+      //     gameId: null,
+      //
+      //     // id: checkedCurrency.value.id,
+      //     id: form.value.id,
+      //     missionRepeatType: 'DAILY',
+      //     missionSettingsId: 'DAILY',
+      //     // taskCurrency : checkedCurrency.value.toString(),
+      //     taskCurrency: checkedCurrency.value.map((item) => item).join(','),
+      //     taskClassification: form.value.taskClassification,
+      //     reward: form.value.reward,
+      //     completionCount: form.value.completionCount,
+      //     missionObjectives: form.value.missionObjectives,
+      //     cumulativeRechargeAmount: form.value.cumulativeRechargeAmount,
+      //     rewardActivity: form.value.rewardActivity,
+      //     status: form.value.status,
+      //     description: form.value.description,
+      //     sort: form.value.sort,
+      //     icon: form.value.icon
+      //   }
+      // }
+      //url validator
+      // if (formData.get("file") != null) {
+      //   await fileUpload(formData).then(res => params.icon = res.data);
+      // }
+
+      const params = {
+        name: form.value.name,
         id: form.value.id,
+        taskClassification: form.value.taskClassification,
         missionRepeatType: 'DAILY',
         missionSettingsId: 'DAILY',
-        taskCurrency: checkedCurrency.value.map((item) => item).join(','),
-        taskClassification: form.value.taskClassification,
         reward: form.value.reward,
         completionCount: form.value.completionCount,
-        cumulativeRechargeAmount: form.value.cumulativeRechargeAmount,
         missionObjectives: form.value.missionObjectives,
-        accumulatedRechargeSource: null,
-        platformId: form.value.platformType,
-        gameTypeId: form.value.gameType,
-        gameId: form.value.gameType,
+        cumulativeRechargeAmount: form.value.cumulativeRechargeAmount,
         rewardActivity: form.value.rewardActivity,
-        status: form.value.status,
+        status: 0,
         sort: form.value.sort,
+        description: form.value.description,
+        icon: form.value.icon !== null ? form.value.icon : null
       }
-      if (form.value.missionObjectives === '累计充值') {
-        params = {
-          accumulatedRechargeSource: data.rechargeCategory.map((item) => item).join(','),
-          platformId: null,
-          gameTypeId: null,
-          gameId: null,
 
-          // id: checkedCurrency.value.id,
-          id: form.value.id,
-          missionRepeatType: 'DAILY',
-          missionSettingsId: 'DAILY',
-          // taskCurrency : checkedCurrency.value.toString(),
-          taskCurrency: checkedCurrency.value.map((item) => item).join(','),
-          taskClassification: form.value.taskClassification,
-          reward: form.value.reward,
-          completionCount: form.value.completionCount,
-          missionObjectives: form.value.missionObjectives,
-          cumulativeRechargeAmount: form.value.cumulativeRechargeAmount,
-          rewardActivity: form.value.rewardActivity,
-          status: form.value.status,
-          description: form.value.description,
-          sort: form.value.sort,
-        }
-      }
-      //url validator
       if (formData.get("file") != null) {
-        await fileUpload(formData).then(res => params.icon = res.data);
+        await fileUpload(formData).then(res => {
+          console.log("res.data  " + res.data)
+          if (form.value.id != null) {
+            form.value.icon = res.data
+
+          } else {
+            params.icon = res.data
+          }
+        });
       }
 
       if (form.value.id != null) {
-        updateMissionRepeat(params).then(() => {
+        console.log("form " , form.value)
+        updateMissionRepeat(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
@@ -713,24 +748,37 @@ function uploadAdvertisementUrl() {
 function beforeAvatarUpload(file) {
   const fileExtension = file.name.split('.')[1]
   const isLt2M = file.size / 1024 / 1024 < 100
-  if (fileExtension !== 'jpg' &&
+  if (fileExtension !== 'jpeg' &&
+      fileExtension !== 'jpg' &&
       fileExtension !== 'png' &&
       fileExtension !== 'bmp') {
-    proxy.$modal.msgError('无效音乐')
+    proxy.$modal.msgError('图片类型错误')
+    return false;
   } else if (!isLt2M) {
     proxy.$modal.msgError('上传模板大小不能超过100MB!')
+    return false;
+  } else {
+    proxy.$modal.msgSuccess('上传成功')
   }
 }
 
 function handleRemove() {
+  form.value.icon = null;
+  clearUpload()
   proxy.$modal.msgSuccess('移除成功')
 }
 
-function uploadSuccess() {
-  proxy.$modal.msgSuccess('文件上传成功');
-  queryParams.memberId = null
-  queryParams.pageNum = 1
-  getList()
+function clearUpload() {
+  fileList.value = []
+  formData.delete("file")
+  formData.delete("name")
+}
+
+function uploadSuccess(res) {
+  form.value.icon = res.data
+  // queryParams.memberI
+  // queryParams.pageNum = 1d = null
+  // getList()
 }
 
 function selectFile(file) {
@@ -739,11 +787,11 @@ function selectFile(file) {
 }
 
 function uploadFalse() {
-  proxy.$modal.msgError(' 上传音乐文件失败')
+  proxy.$modal.msgError(' 上传文件失败')
 }
 
 function uploadExceed() {
-  proxy.$modal.msgError('只能选择一个音乐文件，如果要更改，请退出并重新选择。')
+  proxy.$modal.msgError('只能选择一个文件，如果要更改，请退出并重新选择')
 }
 
 function handlePreview(file) {
@@ -759,16 +807,17 @@ function handleUpdate(row) {
   reset()
   const id = row.id || this.ids
   getMissionRepeatList(id).then(response => {
-    if (response.data.accumulatedRechargeSource != null) {
-      data.rechargeCategory = response.data.accumulatedRechargeSource.split(',')
-    }
-    if (response.data.taskCurrency != null) {
-      checkedCurrency.value = response.data.taskCurrency.split(',')
-    }
+    // if (response.data.accumulatedRechargeSource != null) {
+    //   data.rechargeCategory = response.data.accumulatedRechargeSource.split(',')
+    // }
+    // if (response.data.taskCurrency != null) {
+    //   checkedCurrency.value = response.data.taskCurrency.split(',')
+    // }
     form.value = response.data
     open.value = true
     title.value = '编辑日常积分任务量'
-    handleCheckedCurrencyChange()
+    form.value.icon = null;
+    // handleCheckedCurrencyChange()
   })
 
 }
@@ -919,7 +968,6 @@ getList();
 
 <style>
 .centered-form {
-  //margin-left: 50px;
-  max-width: 200px;
+//margin-left: 50px; max-width: 200px;
 }
 </style>

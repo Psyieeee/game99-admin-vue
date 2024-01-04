@@ -2,14 +2,25 @@
   <div class="app-container">
     <el-form label="活动任务" v-show="showSearch" ref="queryForm" :inline="true" :model="queryParams"
              label-width="98px">
-      <el-form-item prop="现状" style="min-width: 50px">
+      <el-form-item prop="活动名称" style="min-width: 50px">
         <el-input
             v-model="queryParams.name"
             clearable
-            placeholder="现状"
+            placeholder="活动名称"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item prop="现状" style="min-width: 50px">
+        <el-select v-model="queryParams.missionRepeatType" clearable placeholder="任务重复类型">
+          <el-option
+              v-for="dict in missionRepeatTypeList"
+              :key="dict.name"
+              :label="dict.translatedName"
+              :value="dict.name"
+          ></el-option>
+        </el-select>
+      </el-form-item>
+
       <el-form-item>
         <el-button icon="Search" size="small" type="primary" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" size="small" @click="resetQuery">重置</el-button>
@@ -41,22 +52,22 @@
         >删除
         </el-button>
       </el-col>
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--            v-hasPermi="['mission:activity:settings']"-->
-<!--            icon="gear"-->
-<!--            plain-->
-<!--            size="small"-->
-<!--            type="primary"-->
-<!--            @click="handleSettings"-->
-<!--        >设置-->
-<!--        </el-button>-->
-<!--      </el-col>-->
+<!--            <el-col :span="1.5">-->
+<!--              <el-button-->
+<!--                  v-hasPermi="['mission:activity:settings']"-->
+<!--                  icon="gear"-->
+<!--                  plain-->
+<!--                  size="small"-->
+<!--                  type="primary"-->
+<!--                  @click="handleSettings"-->
+<!--              >设置-->
+<!--              </el-button>-->
+<!--            </el-col>-->
       <right-toolbar v-model="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <!--    display data in table -->
-<!--    <el-table-column align="center" label="所需活动级别" min-width="180" prop="requiredActivityLevel"/>-->
+    <!--    <el-table-column align="center" label="所需活动级别" min-width="180" prop="requiredActivityLevel"/>-->
     <el-table v-loading="loading" :data="activityMissionLists" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="活动名称" min-width="180" prop="name"/>
@@ -66,11 +77,13 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="完成次数" min-width="180" prop="completionCount"/>
-      <el-table-column align="center" label="任务重复类型" min-width="180" prop="missionRepeatType">
-
+      <el-table-column align="center" label="登录领取积分" min-width="180" prop="completionCount"/>
+      <el-table-column align="center" label="任务重复类型" min-width="180" prop="missionRepeatTypeTranslated">
+<!--        <template #default="scope">-->
+<!--          {{scope.row.missionRepeatType.value}}-->
+<!--        </template>-->
       </el-table-column>
-<!--      <el-table-column align="center" label="奖励类型" min-width="180" prop="rewardType"/>-->
+      <!--      <el-table-column align="center" label="奖励类型" min-width="180" prop="rewardType"/>-->
       <el-table-column align="center" label="奖励金额" min-width="180" prop="reward"/>
       <el-table-column align="center" min-width="150" label="活跃" prop="status">
         <template #default="scope">
@@ -82,10 +95,10 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="分类" min-width="180" prop="sort"/>
+      <el-table-column align="center" label="排序" min-width="180" prop="sort"/>
+      <el-table-column align="center" label="说明" min-width="180" prop="description"/>
       <el-table-column align="center" label="操作员" min-width="180" prop="updateBy"/>
       <el-table-column align="center" label="运行时间" min-width="180" prop="updateTime"/>
-      <el-table-column align="center" label="说明" min-width="180" prop="description"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
@@ -119,70 +132,71 @@
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="600px">
       <el-form ref="ref" :model="form" :rules="rules" label-width="200px">
-          <el-form-item label="名称" prop="name" >
-            <el-input
-                v-model="form.name"
-                clearable
-                placeholder="名称"
-            />
-          </el-form-item>
-<!--          <el-form-item label="所需的活动水平" prop="requiredActivityLevel" >-->
-<!--            <el-input-->
-<!--              v-model="form.requiredActivityLevel"-->
-<!--              clearable-->
-<!--              placeholder="请输入所需的活动级别"-->
-<!--          />-->
-<!--          </el-form-item>-->
-          <el-form-item label="完成次数" prop="completionCount" >
-            <el-input
+        <el-form-item label="名称" prop="name">
+          <el-input
+              v-model="form.name"
+              clearable
+              placeholder="名称"
+          />
+        </el-form-item>
+        <!--          <el-form-item label="所需的活动水平" prop="requiredActivityLevel" >-->
+        <!--            <el-input-->
+        <!--              v-model="form.requiredActivityLevel"-->
+        <!--              clearable-->
+        <!--              placeholder="请输入所需的活动级别"-->
+        <!--          />-->
+        <!--          </el-form-item>-->
+        <el-form-item label="登录领取积分" prop="completionCount">
+          <el-input-number
               v-model="form.completionCount"
               clearable
               placeholder="插入完成计数"
           />
-          </el-form-item>
-          <el-form-item label="任务重复类型" prop="missionRepeatType">
-            <el-select v-model="form.missionRepeatType" clearable placeholder="游戏平台">
-              <el-option
-                  v-for="dict in missionRepeatTypeList"
-                  :key="dict.name"
-                  :label="dict.translatedName"
-                  :value="dict.name"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-<!--          <el-form-item label="奖励类型" prop="rewardType" >-->
-<!--            <el-input-->
-<!--                v-model="form.rewardType"-->
-<!--                clearable-->
-<!--                placeholder="输入奖励类型"-->
-<!--            />-->
-<!--          </el-form-item>-->
-          <el-form-item label="奖励金额" prop="reward" >
-            <el-input
-                v-model="form.reward"
-                clearable
-                placeholder="输入奖励金额"
-            />
-          </el-form-item>
-<!--          <el-form-item label="现状" prop="status" style="min-width: 290px">-->
-<!--          <template #default="scope">-->
-<!--            <el-switch-->
-<!--                v-model="form.status"-->
-<!--                :active-value="1"-->
-<!--                :inactive-value="0"-->
-<!--            ></el-switch>-->
-<!--          </template>-->
-<!--        </el-form-item>-->
+        </el-form-item>
+        <el-form-item label="任务重复类型" prop="missionRepeatType">
+          <el-select v-model="form.missionRepeatType" clearable placeholder="游戏平台">
+            <el-option
+                v-for="dict in missionRepeatTypeList"
+                :key="dict.name"
+                :label="dict.translatedName"
+                :value="dict.name"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <!--          <el-form-item label="奖励类型" prop="rewardType" >-->
+        <!--            <el-input-->
+        <!--                v-model="form.rewardType"-->
+        <!--                clearable-->
+        <!--                placeholder="输入奖励类型"-->
+        <!--            />-->
+        <!--          </el-form-item>-->
+        <el-form-item label="奖励金额" prop="reward">
+          <el-input-number
+              v-model="form.reward"
+              clearable
+              placeholder="输入奖励金额"
+          />
+        </el-form-item>
+        <!--          <el-form-item label="现状" prop="status" style="min-width: 290px">-->
+        <!--          <template #default="scope">-->
+        <!--            <el-switch-->
+        <!--                v-model="form.status"-->
+        <!--                :active-value="1"-->
+        <!--                :inactive-value="0"-->
+        <!--            ></el-switch>-->
+        <!--          </template>-->
+        <!--        </el-form-item>-->
         <el-form-item label="排序" prop="sort">
           <el-input-number type="number" v-model="form.sort" placeholder="请输入排序"/>
         </el-form-item>
-          <el-form-item label="说明" prop="description" >
-            <el-input v-model="form.description" type="textarea" placeholder="说明" :rows="3" />
-          </el-form-item>
-          <el-form-item>
+        <el-form-item label="说明" prop="description">
+          <el-input v-model="form.description" type="textarea" placeholder="说明" :rows="3"/>
+        </el-form-item>
+        <el-form-item label="图片">
+          <div class="centered-form">
+            <!--                :action="uploadFileUrl"-->
             <el-upload
                 ref="upload"
-                :action="uploadFileUrl"
                 :before-upload="beforeAvatarUpload"
                 :headers="headers"
                 :limit="1"
@@ -194,6 +208,8 @@
                 :on-remove="handleRemove"
                 :on-success="uploadSuccess"
                 :file-list="fileList"
+                :auto-upload="false"
+
                 class="upload-demo"
                 drag
                 name="file"
@@ -203,7 +219,8 @@
                 最大文件大小为 100 MB
               </div>
             </el-upload>
-          </el-form-item>
+          </div>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -213,52 +230,51 @@
 
 
     <el-dialog v-model="settingsOpen" :close-on-click-modal="false" title="汪跃度设署" append-to-body
-               style="padding-bottom: 20px"
-               width="400px">
+               style="padding-bottom: 20px" width="400px" v-loading="uploadLoading">
       <el-form :inline="true" ref="settingsRef" :model="settingsForm" :rules="rules" label-width="150px">
-          <el-col :span="24">
-            <el-form-item label="环形路" prop="reset"
-                          style="min-width: 290px">
-              <template #default="scope">
-                <el-select v-model="settingsForm.reset" placeholder="请选择您所在的区域">
-                  <el-option label="Mission Cycle (每日周期（重置为 0:00）" :value="0" />
-                  <el-option label="Weekly Cycle (每周循环（周一0:00重置)" :value="1" />
-                </el-select>
-              </template>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="重复开胸周期时间" prop="repeatOpenSwitch" style="min-width: 290px">
-              <template #default="scope">
-                <el-switch
-                    v-model="settingsForm.repeatOpenSwitch"
-                    :active-value="1"
-                    :inactive-value="0"
-                ></el-switch>
-              </template>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="审计乘数" prop="auditMultiplier" style="min-width: 290px">
-              <el-input-number
-                  v-model="settingsForm.auditMultiplier"
-                  clearable
-                  placeholder="输入审计乘数"
-                  type="number"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="审计限制平台" prop="auditRestrictedPlatformsSwitch" style="min-width: 290px">
-              <template #default="scope">
-                <el-switch
-                    v-model="settingsForm.auditRestrictedPlatformsSwitch"
-                    :active-value="1"
-                    :inactive-value="0"
-                ></el-switch>
-              </template>
-            </el-form-item>
-          </el-col>
+        <el-col :span="24">
+          <el-form-item label="环形路" prop="reset"
+                        style="min-width: 290px">
+            <template #default="scope">
+              <el-select v-model="settingsForm.reset" placeholder="请选择您所在的区域">
+                <el-option label="Mission Cycle (每日周期（重置为 0:00）" :value="0"/>
+                <el-option label="Weekly Cycle (每周循环（周一0:00重置)" :value="1"/>
+              </el-select>
+            </template>
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="重复开胸周期时间" prop="repeatOpenSwitch" style="min-width: 290px">
+            <template #default="scope">
+              <el-switch
+                  v-model="settingsForm.repeatOpenSwitch"
+                  :active-value="1"
+                  :inactive-value="0"
+              ></el-switch>
+            </template>
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="审计乘数" prop="auditMultiplier" style="min-width: 290px">
+            <el-input-number
+                v-model="settingsForm.auditMultiplier"
+                clearable
+                placeholder="输入审计乘数"
+                type="number"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="审计限制平台" prop="auditRestrictedPlatformsSwitch" style="min-width: 290px">
+            <template #default="scope">
+              <el-switch
+                  v-model="settingsForm.auditRestrictedPlatformsSwitch"
+                  :active-value="1"
+                  :inactive-value="0"
+              ></el-switch>
+            </template>
+          </el-form-item>
+        </el-col>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitSettingsForm">确 定</el-button>
@@ -269,7 +285,7 @@
   </div>
 </template>
 
-<script name="weeklyTasks" setup>
+<script name="activityTasks" setup>
 
 import {
   activityMissionList,
@@ -287,6 +303,7 @@ import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {getToken} from "@/utils/auth";
 import {useRouter} from "vue-router";
 import {url} from "@/utils/url";
+import {fileUpload} from "@/api/activity/activityQuest";
 
 const router = useRouter();
 
@@ -305,6 +322,7 @@ const showSearch = ref(true);
 const single = ref(true);
 const multiple = ref(true);
 const loading = ref(true);
+const uploadLoading = ref(true);
 const formData = new FormData();
 const fileList = ref([])
 const {proxy} = getCurrentInstance();
@@ -361,7 +379,7 @@ const data = reactive({
   }
 
 });
-const { uploadFileUrl, queryParams, settingsForm, form, rules, headers} = toRefs(data);
+const {uploadFileUrl, queryParams, settingsForm, form, rules, headers} = toRefs(data);
 
 function uploadAdvertisementUrl() {
   return url.baseUrl + url.game99PlatformAdminWeb + "/activity/mission/uploadFile";
@@ -371,16 +389,22 @@ function beforeAvatarUpload(file) {
   const fileExtension = file.name.split('.')[1]
   const isLt2M = file.size / 1024 / 1024 < 100
   if (fileExtension !== 'jpg' &&
+      fileExtension !== 'jpeg' &&
+      fileExtension !== 'bmp' &&
       fileExtension !== 'png') {
     proxy.$modal.msgError('图片类型错误')
+    return false;
   } else if (!isLt2M) {
     proxy.$modal.msgError('上传模板大小不能超过100MB!')
-  }else{
-      proxy.$modal.msgSuccess('上传成功')
+    return false;
+  } else {
+    proxy.$modal.msgSuccess('上传成功')
   }
 }
 
 function handleRemove() {
+  form.value.icon = null;
+  clearUpload()
   proxy.$modal.msgSuccess('移除成功')
 }
 
@@ -388,17 +412,17 @@ function uploadSuccess(res) {
   form.value.icon = res.data
 }
 
-function selectFile( file ) {
+function selectFile(file) {
   formData.append("file", file.raw)
   formData.append("name", file.name)
 }
 
 function uploadFalse() {
-  proxy.$modal.msgError(' 上传音乐文件失败')
+  proxy.$modal.msgError(' 上传文件失败')
 }
 
 function uploadExceed() {
-  proxy.$modal.msgError('只能选择一个音乐文件，如果要更改，请退出并重新选择。')
+  proxy.$modal.msgError('只能选择一个文件，如果要更改，请退出并重新选择')
 }
 
 function handlePreview(file) {
@@ -426,6 +450,7 @@ function handleEffectChange(row) {
     getList()
   }).catch(function () {
     row.effect = row.effect === '0' ? '1' : '0'
+    getList()
   })
 }
 
@@ -444,18 +469,17 @@ function handleQuery() {
 function getList() {
   loading.value = true;
   activityMissionList(queryParams.value).then(response => {
-    console.log( JSON.stringify( response.data ) + " @@@")
+    // console.log(JSON.stringify(response.data) + " @@@")
     activityMissionLists.value = response.data;
     total.value = response.total;
     loading.value = false;
   });
 }
 
-function getRepeatTypeList(){
+function getRepeatTypeList() {
   getMissionRepeatTypeList().then(response => {
     loading.value = false;
     missionRepeatTypeList.value = response.data;
-    console.log("missionRepeatTypeList " , missionRepeatTypeList)
   });
 }
 
@@ -471,9 +495,16 @@ function reset() {
     sort: null
   }
 
-  fileList.value = []
+  clearUpload();
   proxy.resetForm('ref');
 }
+
+function clearUpload() {
+  fileList.value = []
+  formData.delete("file")
+  formData.delete("name")
+}
+
 
 /** 重置按钮操作 handle reset query*/
 function resetQuery() {
@@ -493,6 +524,10 @@ function handleAdd() {
 function submitForm() {
   proxy.$refs['ref'].validate(async valid => {
     if (valid) {
+
+      // if (formData.get("file") != null) {
+      //   await fileUpload(formData).then(res => params.icon = res.data);
+      // }
       const params = {
         name: form.value.name,
         missionSettingsId: 'ACTIVITY',
@@ -504,9 +539,20 @@ function submitForm() {
         status: 0,
         sort: form.value.sort,
         description: form.value.description,
-        icon: form.value.icon
-
+        // icon: form.value.icon !== null ? form.value.icon : null
       }
+
+      if (formData.get("file") != null) {
+        await fileUpload(formData).then(res => {
+          console.log("res.data  " + res.data)
+          if (form.value.id != null) {
+            form.value.icon = res.data
+          } else {
+            params.icon = res.data
+          }
+        });
+      }
+
       if (form.value.id != null) {
         updateActivityMission(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
@@ -520,8 +566,6 @@ function submitForm() {
           getList()
         })
       }
-
-
     }
   })
 }
@@ -529,7 +573,6 @@ function submitForm() {
 function submitSettingsForm() {
   proxy.$refs['settingsRef'].validate(async valid => {
     if (valid) {
-      console.log( settingsForm.value )
       const params = {
         id: "ACTIVITY",
         reset: settingsForm.value.reset,
@@ -555,6 +598,7 @@ function handleUpdate(row) {
     form.value = response.data
     open.value = true
     title.value = '修改活动任务'
+    form.value.icon = null;
   })
 }
 
@@ -579,7 +623,6 @@ function handleSettings() {
     settingsOpen.value = true;
   })
 }
-
 
 getList();
 getRepeatTypeList();
