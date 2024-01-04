@@ -135,7 +135,8 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="排序" align="center" prop="sort"  min-width="160"/>
+      <el-table-column label="内部跳转类型" align="center" prop="internalJumpType"  min-width="50"/>
+      <el-table-column label="排序" align="center" prop="sort"  min-width="50"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="120">
         <template #default="scope">
           <el-button
@@ -601,7 +602,7 @@ import {
   getActivityInfoList,
   getAllRewardIcon,
   uploadImage,
-  listImages, removeImage
+  listImages, removeImage, activityInfoUpdateJumpStatus
 } from "@/api/activity/activityInfo";
 import ImageUpload from "@/components/ImageUpload/index.vue";
 
@@ -1163,7 +1164,6 @@ function getList(){
 }
 function activityTypeList(){
   getActivityTypeAllList().then((res)=>{
-    console.log( res );
     activityTypes.value = res;
   })
 }
@@ -1224,7 +1224,7 @@ function handleJumpStatusChange(row){
     cancelButtonText: '取消',
     type: 'warning'
   }).then(function () {
-    return activityInfoUpdateStatus( row.id, row.effect )
+    return activityInfoUpdateJumpStatus( row.id, row.jumpStatus )
   }).then(() => {
     proxy.$modal.msgSuccess(text + '成功')
   }).catch(function () {
