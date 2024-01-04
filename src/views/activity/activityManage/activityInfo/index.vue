@@ -424,12 +424,12 @@
           <div class="el-col el-col-12">
 
 
-            <label style="font-size: 25px; text-align: left">创建横幅</label>
+            <label style="font-size: 25px; text-align: left">首页轮播图</label>
             <hr>
             <imageUpload v-model="form.eventBanner" path="eventBanner"/><br>
 
             <div>
-              <label style="font-size: 25px; text-align: left">创建滑块</label>
+              <label style="font-size: 25px; text-align: left">活动首页图</label>
               <el-radio-group style="float: right;" v-model="createBanner.type" @change="changeBannerCreationType(createBanner.type)">
                 <el-radio style="width: 120px" label="1" border>定制</el-radio>
                 <el-radio style="width: 120px" label="2" border>预制</el-radio>
