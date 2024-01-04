@@ -194,9 +194,9 @@
         </el-form-item>
         <el-form-item label="图片">
           <div class="centered-form">
+            <!--                :action="uploadFileUrl"-->
             <el-upload
                 ref="upload"
-                :action="uploadFileUrl"
                 :before-upload="beforeAvatarUpload"
                 :headers="headers"
                 :limit="1"
@@ -208,6 +208,7 @@
                 :on-remove="handleRemove"
                 :on-success="uploadSuccess"
                 :file-list="fileList"
+                :auto-upload="false"
 
                 class="upload-demo"
                 drag
@@ -229,8 +230,7 @@
 
 
     <el-dialog v-model="settingsOpen" :close-on-click-modal="false" title="汪跃度设署" append-to-body
-               style="padding-bottom: 20px"
-               width="400px">
+               style="padding-bottom: 20px" width="400px" v-loading="uploadLoading">
       <el-form :inline="true" ref="settingsRef" :model="settingsForm" :rules="rules" label-width="150px">
         <el-col :span="24">
           <el-form-item label="环形路" prop="reset"
@@ -303,6 +303,7 @@ import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {getToken} from "@/utils/auth";
 import {useRouter} from "vue-router";
 import {url} from "@/utils/url";
+import {fileUpload} from "@/api/activity/activityQuest";
 
 const router = useRouter();
 
@@ -321,6 +322,7 @@ const showSearch = ref(true);
 const single = ref(true);
 const multiple = ref(true);
 const loading = ref(true);
+const uploadLoading = ref(true);
 const formData = new FormData();
 const fileList = ref([])
 const {proxy} = getCurrentInstance();
@@ -391,21 +393,23 @@ function beforeAvatarUpload(file) {
       fileExtension !== 'bmp' &&
       fileExtension !== 'png') {
     proxy.$modal.msgError('图片类型错误')
+    return false;
   } else if (!isLt2M) {
     proxy.$modal.msgError('上传模板大小不能超过100MB!')
+    return false;
   } else {
     proxy.$modal.msgSuccess('上传成功')
   }
 }
 
 function handleRemove() {
+  form.value.icon = null;
+  clearUpload()
   proxy.$modal.msgSuccess('移除成功')
 }
 
 function uploadSuccess(res) {
   form.value.icon = res.data
-  console.log("res.data " + res.data)
-  console.log("form.value.icon " + form.value.icon)
 }
 
 function selectFile(file) {
@@ -465,7 +469,7 @@ function handleQuery() {
 function getList() {
   loading.value = true;
   activityMissionList(queryParams.value).then(response => {
-    console.log(JSON.stringify(response.data) + " @@@")
+    // console.log(JSON.stringify(response.data) + " @@@")
     activityMissionLists.value = response.data;
     total.value = response.total;
     loading.value = false;
@@ -476,7 +480,6 @@ function getRepeatTypeList() {
   getMissionRepeatTypeList().then(response => {
     loading.value = false;
     missionRepeatTypeList.value = response.data;
-    console.log("missionRepeatTypeList ", missionRepeatTypeList)
   });
 }
 
@@ -492,13 +495,12 @@ function reset() {
     sort: null
   }
 
-  fileList.value = []
-  // clearUpload();
+  clearUpload();
   proxy.resetForm('ref');
 }
 
 function clearUpload() {
-  upload.value = [];
+  fileList.value = []
   formData.delete("file")
   formData.delete("name")
 }
@@ -522,6 +524,10 @@ function handleAdd() {
 function submitForm() {
   proxy.$refs['ref'].validate(async valid => {
     if (valid) {
+
+      // if (formData.get("file") != null) {
+      //   await fileUpload(formData).then(res => params.icon = res.data);
+      // }
       const params = {
         name: form.value.name,
         missionSettingsId: 'ACTIVITY',
@@ -533,8 +539,20 @@ function submitForm() {
         status: 0,
         sort: form.value.sort,
         description: form.value.description,
-        icon: form.value.icon !== null ? form.value.icon : null
+        // icon: form.value.icon !== null ? form.value.icon : null
       }
+
+      if (formData.get("file") != null) {
+        await fileUpload(formData).then(res => {
+          console.log("res.data  " + res.data)
+          if (form.value.id != null) {
+            form.value.icon = res.data
+          } else {
+            params.icon = res.data
+          }
+        });
+      }
+
       if (form.value.id != null) {
         updateActivityMission(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
@@ -555,7 +573,6 @@ function submitForm() {
 function submitSettingsForm() {
   proxy.$refs['settingsRef'].validate(async valid => {
     if (valid) {
-      console.log(settingsForm.value)
       const params = {
         id: "ACTIVITY",
         reset: settingsForm.value.reset,
@@ -583,7 +600,6 @@ function handleUpdate(row) {
     title.value = '修改活动任务'
     form.value.icon = null;
   })
-
 }
 
 /**  删除按钮操作 handle delete */
@@ -607,7 +623,6 @@ function handleSettings() {
     settingsOpen.value = true;
   })
 }
-
 
 getList();
 getRepeatTypeList();

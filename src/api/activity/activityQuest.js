@@ -60,3 +60,14 @@ export function updateQuestActivitySettings( data ){
         data : data
     })
 }
+
+export function fileUpload(data) {
+    return request({
+        url: url.game99PlatformAdminWeb + '/activity/mission/uploadFile',
+        method: 'post',
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        },
+        data
+    })
+}

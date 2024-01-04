@@ -235,10 +235,11 @@
           <el-input v-model="form.description" type="textarea" placeholder="说明" :rows="3"/>
         </el-form-item>
         <el-form-item label="图片">
+<!--          :action="uploadFileUrl"-->
           <div class="centered-form">
             <el-upload
                 ref="upload"
-                :action="uploadFileUrl"
+
                 :before-upload="beforeAvatarUpload"
                 :headers="headers"
                 :limit="1"
@@ -249,6 +250,7 @@
                 :on-preview="handlePreview"
                 :on-success="uploadSuccess"
                 :file-list="fileList"
+                :auto-upload="false"
 
                 class="upload-demo"
                 drag
@@ -410,6 +412,7 @@ import {
   getMemberTierList
 } from "@/api/activity/newbieBenefits";
 import {url} from "@/utils/url";
+import {fileUpload} from "@/api/activity/activityQuest";
 
 const router = useRouter();
 const {proxy} = getCurrentInstance();
@@ -615,12 +618,10 @@ function reset() {
     missionIntroduction: null,
     status: null,
     sort: null,
-    icon: null
+    // icon: null
   }
-  // proxy.$refs.upload.clearFiles();
   proxy.resetForm('missionRepeatRef');
-  fileList.value = []
-  // clearUpload();
+  clearUpload();
 }
 
 /** 重置按钮操作 handle reset query*/
@@ -693,11 +694,10 @@ function submitForm() {
       //   await fileUpload(formData).then(res => params.icon = res.data);
       // }
 
-      console.log("form.value.icon " + form.value.icon);
-
       const params = {
         name: form.value.name,
         id: form.value.id,
+        taskClassification: form.value.taskClassification,
         missionRepeatType: 'DAILY',
         missionSettingsId: 'DAILY',
         reward: form.value.reward,
@@ -711,8 +711,21 @@ function submitForm() {
         icon: form.value.icon !== null ? form.value.icon : null
       }
 
+      if (formData.get("file") != null) {
+        await fileUpload(formData).then(res => {
+          console.log("res.data  " + res.data)
+          if (form.value.id != null) {
+            form.value.icon = res.data
+
+          } else {
+            params.icon = res.data
+          }
+        });
+      }
+
       if (form.value.id != null) {
-        updateMissionRepeat(params).then(() => {
+        console.log("form " , form.value)
+        updateMissionRepeat(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
@@ -743,19 +756,26 @@ function beforeAvatarUpload(file) {
     return false;
   } else if (!isLt2M) {
     proxy.$modal.msgError('上传模板大小不能超过100MB!')
+    return false;
   } else {
     proxy.$modal.msgSuccess('上传成功')
   }
 }
 
 function handleRemove() {
+  form.value.icon = null;
+  clearUpload()
   proxy.$modal.msgSuccess('移除成功')
+}
+
+function clearUpload() {
+  fileList.value = []
+  formData.delete("file")
+  formData.delete("name")
 }
 
 function uploadSuccess(res) {
   form.value.icon = res.data
-  console.log("res.data " + res.data)
-  console.log("form.value.icon " + form.value.icon)
   // queryParams.memberI
   // queryParams.pageNum = 1d = null
   // getList()
