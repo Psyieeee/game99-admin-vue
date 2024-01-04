@@ -85,7 +85,7 @@
       </el-table-column>
       <!--      <el-table-column align="center" label="奖励类型" min-width="180" prop="rewardType"/>-->
       <el-table-column align="center" label="奖励金额" min-width="180" prop="reward"/>
-      <el-table-column align="center" min-width="150" label="活跃" prop="status">
+      <el-table-column align="center" min-width="150" label="状态" prop="status">
         <template #default="scope">
           <el-switch
               v-model="scope.row.status"
