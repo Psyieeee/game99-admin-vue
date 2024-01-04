@@ -2,14 +2,25 @@
   <div class="app-container">
     <el-form label="活动任务" v-show="showSearch" ref="queryForm" :inline="true" :model="queryParams"
              label-width="98px">
-      <el-form-item prop="现状" style="min-width: 50px">
+      <el-form-item prop="活动名称" style="min-width: 50px">
         <el-input
             v-model="queryParams.name"
             clearable
-            placeholder="现状"
+            placeholder="活动名称"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item prop="现状" style="min-width: 50px">
+        <el-select v-model="queryParams.missionRepeatType" clearable placeholder="任务重复类型">
+          <el-option
+              v-for="dict in missionRepeatTypeList"
+              :key="dict.name"
+              :label="dict.translatedName"
+              :value="dict.name"
+          ></el-option>
+        </el-select>
+      </el-form-item>
+
       <el-form-item>
         <el-button icon="Search" size="small" type="primary" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" size="small" @click="resetQuery">重置</el-button>
@@ -41,17 +52,17 @@
         >删除
         </el-button>
       </el-col>
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--            v-hasPermi="['mission:activity:settings']"-->
-      <!--            icon="gear"-->
-      <!--            plain-->
-      <!--            size="small"-->
-      <!--            type="primary"-->
-      <!--            @click="handleSettings"-->
-      <!--        >设置-->
-      <!--        </el-button>-->
-      <!--      </el-col>-->
+<!--            <el-col :span="1.5">-->
+<!--              <el-button-->
+<!--                  v-hasPermi="['mission:activity:settings']"-->
+<!--                  icon="gear"-->
+<!--                  plain-->
+<!--                  size="small"-->
+<!--                  type="primary"-->
+<!--                  @click="handleSettings"-->
+<!--              >设置-->
+<!--              </el-button>-->
+<!--            </el-col>-->
       <right-toolbar v-model="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -66,9 +77,11 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="完成次数" min-width="180" prop="completionCount"/>
-      <el-table-column align="center" label="任务重复类型" min-width="180" prop="missionRepeatType">
-
+      <el-table-column align="center" label="登录领取积分" min-width="180" prop="completionCount"/>
+      <el-table-column align="center" label="任务重复类型" min-width="180" prop="missionRepeatTypeTranslated">
+<!--        <template #default="scope">-->
+<!--          {{scope.row.missionRepeatType.value}}-->
+<!--        </template>-->
       </el-table-column>
       <!--      <el-table-column align="center" label="奖励类型" min-width="180" prop="rewardType"/>-->
       <el-table-column align="center" label="奖励金额" min-width="180" prop="reward"/>
@@ -82,10 +95,10 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="分类" min-width="180" prop="sort"/>
+      <el-table-column align="center" label="排序" min-width="180" prop="sort"/>
+      <el-table-column align="center" label="说明" min-width="180" prop="description"/>
       <el-table-column align="center" label="操作员" min-width="180" prop="updateBy"/>
       <el-table-column align="center" label="运行时间" min-width="180" prop="updateTime"/>
-      <el-table-column align="center" label="说明" min-width="180" prop="description"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
@@ -133,8 +146,8 @@
         <!--              placeholder="请输入所需的活动级别"-->
         <!--          />-->
         <!--          </el-form-item>-->
-        <el-form-item label="完成次数" prop="completionCount">
-          <el-input
+        <el-form-item label="登录领取积分" prop="completionCount">
+          <el-input-number
               v-model="form.completionCount"
               clearable
               placeholder="插入完成计数"
@@ -158,7 +171,7 @@
         <!--            />-->
         <!--          </el-form-item>-->
         <el-form-item label="奖励金额" prop="reward">
-          <el-input
+          <el-input-number
               v-model="form.reward"
               clearable
               placeholder="输入奖励金额"
@@ -433,6 +446,7 @@ function handleEffectChange(row) {
     getList()
   }).catch(function () {
     row.effect = row.effect === '0' ? '1' : '0'
+    getList()
   })
 }
 
@@ -519,7 +533,7 @@ function submitForm() {
         status: 0,
         sort: form.value.sort,
         description: form.value.description,
-        icon: form.value.icon
+        icon: form.value.icon !== null ? form.value.icon : null
       }
       if (form.value.id != null) {
         updateActivityMission(form.value).then(() => {
@@ -567,7 +581,9 @@ function handleUpdate(row) {
     form.value = response.data
     open.value = true
     title.value = '修改活动任务'
+    form.value.icon = null;
   })
+
 }
 
 /**  删除按钮操作 handle delete */

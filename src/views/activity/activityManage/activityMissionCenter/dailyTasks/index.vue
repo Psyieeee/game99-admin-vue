@@ -64,7 +64,7 @@
           <el-image :src="scope.row.icon" lazy fit="contain" style="width: 60px;"/>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="任务分类" min-width="180" prop="taskClassification"/>
+      <el-table-column align="center" label="任务分类" min-width="180" prop="taskClassificationTranslated"/>
       <!--      <el-table-column align="center" label="奖励金额" min-width="180" prop="reward"/>-->
       <el-table-column align="center" label="目标任务量" min-width="180" prop="completionCount"/>
       <!--      <el-table-column align="center" label="任务目标" min-width="180" prop="missionObjectives"/>-->
@@ -86,9 +86,9 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="排序" min-width="180" prop="sort"/>
+      <el-table-column align="center" label="说明" min-width="180" prop="description"/>
       <el-table-column align="center" label="操作员" min-width="180" prop="createdBy"/>
       <el-table-column align="center" label="运行时间" min-width="180" prop="updateTime"/>
-      <el-table-column align="center" label="说明" min-width="180" prop="description"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
@@ -247,7 +247,6 @@
                 :on-error="uploadFalse"
                 :on-exceed="uploadExceed"
                 :on-preview="handlePreview"
-                :on-remove="handleRemove"
                 :on-success="uploadSuccess"
                 :file-list="fileList"
 
@@ -615,13 +614,13 @@ function reset() {
     reward: null,
     missionIntroduction: null,
     status: null,
-    sort: null
+    sort: null,
+    icon: null
   }
   // proxy.$refs.upload.clearFiles();
   proxy.resetForm('missionRepeatRef');
   fileList.value = []
   // clearUpload();
-  proxy.resetForm('ref');
 }
 
 /** 重置按钮操作 handle reset query*/
@@ -694,6 +693,8 @@ function submitForm() {
       //   await fileUpload(formData).then(res => params.icon = res.data);
       // }
 
+      console.log("form.value.icon " + form.value.icon);
+
       const params = {
         name: form.value.name,
         id: form.value.id,
@@ -707,7 +708,7 @@ function submitForm() {
         status: 0,
         sort: form.value.sort,
         description: form.value.description,
-        icon: form.value.icon
+        icon: form.value.icon !== null ? form.value.icon : null
       }
 
       if (form.value.id != null) {
@@ -739,6 +740,7 @@ function beforeAvatarUpload(file) {
       fileExtension !== 'png' &&
       fileExtension !== 'bmp') {
     proxy.$modal.msgError('图片类型错误')
+    return false;
   } else if (!isLt2M) {
     proxy.$modal.msgError('上传模板大小不能超过100MB!')
   } else {
@@ -785,15 +787,16 @@ function handleUpdate(row) {
   reset()
   const id = row.id || this.ids
   getMissionRepeatList(id).then(response => {
-    if (response.data.accumulatedRechargeSource != null) {
-      data.rechargeCategory = response.data.accumulatedRechargeSource.split(',')
-    }
-    if (response.data.taskCurrency != null) {
-      checkedCurrency.value = response.data.taskCurrency.split(',')
-    }
+    // if (response.data.accumulatedRechargeSource != null) {
+    //   data.rechargeCategory = response.data.accumulatedRechargeSource.split(',')
+    // }
+    // if (response.data.taskCurrency != null) {
+    //   checkedCurrency.value = response.data.taskCurrency.split(',')
+    // }
     form.value = response.data
     open.value = true
     title.value = '编辑日常积分任务量'
+    form.value.icon = null;
     // handleCheckedCurrencyChange()
   })
 
