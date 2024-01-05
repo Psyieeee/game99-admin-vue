@@ -1,9 +1,9 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" >
-      <el-form-item label="用户编号" prop="userId">
+      <el-form-item label="用户编号" prop="memberId">
         <el-input
-            v-model="queryParams.userId"
+            v-model="queryParams.memberId"
             placeholder="用户编号"
             clearable
             @keyup.enter="handleQuery"
