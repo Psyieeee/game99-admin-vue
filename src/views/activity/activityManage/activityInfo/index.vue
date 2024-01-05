@@ -131,7 +131,8 @@
               v-model="scope.row.jumpStatus"
               :active-value="true"
               :inactive-value="false"
-              @click="handleJumpStatusChange(scope.row)">
+              :disabled="scope.row.effect"
+              @change="handleJumpStatusChange(scope.row)">
           </el-switch>
         </template>
       </el-table-column>
@@ -1208,11 +1209,11 @@ function handleEffectChange(row){
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
-  }).then(function () {
-    return activityInfoUpdateStatus( row.id, row.effect )
+  }).then ( () => {
+    activityInfoUpdateStatus( row.id, row.effect )
+    row.jumpStatus = !row.jumpStatus
   }).then(() => {
     proxy.$modal.msgSuccess(text + '成功')
-    getList()
   }).catch(function () {
     row.effect = !row.effect
   })
