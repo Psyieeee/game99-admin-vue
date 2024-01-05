@@ -1209,7 +1209,7 @@ function handleEffectChange(row){
     type: 'warning'
   }).then ( () => {
     activityInfoUpdateStatus( row.id, row.effect )
-    row.jumpStatus = !row.jumpStatus
+    row.jumpStatus = !row.effect
   }).then(() => {
     proxy.$modal.msgSuccess(text + '成功')
   }).catch(function () {
