@@ -131,7 +131,6 @@
               v-model="scope.row.jumpStatus"
               :active-value="true"
               :inactive-value="false"
-              :disabled="scope.row.effect"
               @change="handleJumpStatusChange(scope.row)">
           </el-switch>
         </template>
@@ -444,12 +443,10 @@
               </el-switch>
             </el-form-item>
 
-            <el-form-item label="内部跳转类型">
+            <el-form-item v-if="form.jumpStatus" label="内部跳转类型">
               <el-select
                   filterable
                   v-model="form.internalJumpType"
-                  placeholder="请选择内部跳转类型"
-                  clearable
                   style="width: 240px">
                 <el-option
                     v-for="internalJumpType in internalJumpTypes"
@@ -1113,7 +1110,7 @@ function resetForm(){
   f.sort = null;
   f.creationType = '1';
   f.jumpStatus = false
-  f.internalJumpType = null
+  f.internalJumpType = internalJumpTypes[0];
 }
 function resetCreateBannerConfig(){
   createBanner.value = {
@@ -1220,6 +1217,8 @@ function handleEffectChange(row){
 }
 
 function handleJumpStatusChange(row){
+  if ( row.jumpStatus === false ) return
+
   let text = row.jumpStatus ? '启用' : '停用'
   proxy.$modal.confirm('确认要"' + text + '""' + row.title + '"吗?', '警告', {
     confirmButtonText: '确定',
