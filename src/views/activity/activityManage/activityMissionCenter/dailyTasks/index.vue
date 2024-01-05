@@ -210,7 +210,7 @@
         <!--          <el-input type="number" v-model="form.reward" placeholder="请输入奖励金额"-->
         <!--                    @change="handleComposeMission"/>-->
         <!--        </el-form-item>-->
-        <el-form-item label="积分" prop="completionCount">
+        <el-form-item label="登录固定次数" prop="completionCount">
           <el-input-number type="number" v-model="form.completionCount" placeholder="请输入任务目标量"/>
         </el-form-item>
         <el-form-item label="活动奖励" prop="rewardActivity">

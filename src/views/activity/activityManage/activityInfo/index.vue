@@ -87,7 +87,7 @@
     <el-table v-loading="loading" :data="activityInfoList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="标题" align="center" prop="title" min-width="180"/>
-      <el-table-column label="图标" align="center" prop="icon">
+      <el-table-column label="活动图 " align="center" prop="icon">
         <template #default="scope">
           <el-image
               style="height: 50px;"
@@ -96,7 +96,7 @@
           </el-image>
         </template>
       </el-table-column>
-      <el-table-column label="活动横幅" align="center" prop="eventBanner">
+      <el-table-column label="轮播图" align="center" prop="eventBanner">
         <template #default="scope">
           <el-image
               v-if="scope.row.eventBanner != null"
