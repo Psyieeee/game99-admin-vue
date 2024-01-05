@@ -333,10 +333,10 @@ function submitForm() {
 /** 删除按钮操作 delete button action*/
 function handleDelete(row) {
   const ossId = row.id || ids.value
-  for (const item of ossList) {
+  for (const item of ossList.value) {
     for (const id of ossId) {
-      if (id === item.id.value && item.effect.value) {
-        proxy.$modal.msgWarning('编号' + id + '已激活，请勿删除')
+      if (id === item.id && item.effect) {
+        proxy.$modal.msgWarning(item.name + ' 已激活，请勿删除')
         return
       }
     }
