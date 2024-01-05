@@ -265,7 +265,7 @@ function reset() {
     appAccess: null,
     region: null,
     signature: null,
-    template: null,
+    template: '',
     smsSdkAppid: null,
     identify: null,
     effect: false,
