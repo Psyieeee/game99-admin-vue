@@ -29,25 +29,8 @@
         <div class="font">{{ dataInfo.登录时间 }}</div>
         <div class="font">{{ dataInfo.会员VIP }}</div>
 
-        <div style="display: flex;justify-content: flex-start;">
-          <div class="mount" style="width: 60%">
             <div class="font">{{ dataInfo.会员注单 }}</div>
-          </div>
-          <div class="mount" style="width: 40%">
-            <el-button type="primary"
-                       plain
-                       @click="showForm( dataInfo['会员编号'] )"
-                       v-hasPermi="['member:memberInfo:editCode']"
-                       style="height: 40px" >
-                修改
-                </el-button>
-            <el-dialog :close-on-click-modal="false" v-model="showUpdateForm" width="250px" append-to-body>
-              <el-input placeholder="请输入会员打码" v-model="inputValue"></el-input>
-              <el-button @click="showUpdateForm = false" style="margin-top: 10px;margin-left: 70px">取 消</el-button>
-              <el-button type="primary" @click="updateCodeTotal()" style="margin-top: 10px;">确 定</el-button>
-            </el-dialog>
-          </div>
-        </div>
+
         <div class="font" @click="showAddress" style="background-color: #cccc77;">{{ address }}</div>
       </div>
     </div>
@@ -107,7 +90,6 @@ import {
   getHistoryRecharges,
   getMemberInfo,
   getMemberLoginAddress,
-  updateMemberCodeTotal,
   updateRemarks
 } from "@/api/member/memberInfo";
 import { ElMessage } from "element-plus";
@@ -122,8 +104,6 @@ const totalRechargeOriginal = ref('');
 const totalRecharge = ref('');
 const open = ref(false);
 const dataInfo = {};
-const showUpdateForm = ref( false );
-const inputValue = ref('');
 const queryParams = {
   id: null,
   codeTotal: '',
@@ -165,23 +145,6 @@ function validateTextLength(value) {
   } else {
     return value.length * 0.5
   }
-}
-
-function showForm( memberCode ) {
-  console.log( memberCode )
-  queryParams.id = memberCode;
-  showUpdateForm.value = true;
-}
-
-function updateCodeTotal() {
-  queryParams.codeTotal = inputValue.value;
-  updateMemberCodeTotal( queryParams );
-  showUpdateForm.value = false;
-  // refreshDialog();
-  ElMessage({
-    message: '更新成功',
-    type: 'success'
-  })
 }
 
 function updateRemark(email, id) {
