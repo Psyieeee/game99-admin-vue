@@ -29,7 +29,7 @@
       <el-table-column align="center" label="银行卡充值" min-width="150" prop="bankCardRecharge"/>
       <el-table-column align="center" label="在线充值" min-width="140" prop="onlineCharge"/>
       <el-table-column align="center" label="任务奖金" min-width="140" prop="missionBonus"/>
-      <el-table-column align="center" label="佣金" min-width="140" prop="commission"/>
+<!--      <el-table-column align="center" label="佣金" min-width="140" prop="commission"/>-->
       <el-table-column align="center" label="充值奖金" min-width="140" prop="rechargeBonus"/>
       <el-table-column align="center" label="洗码" min-width="140" prop="codeWash"/>
       <el-table-column align="center" label="目前有效打码" min-width="140" prop="codeNow"/>
