@@ -438,6 +438,7 @@
 
             <el-form-item label="跳转状态">
               <el-switch
+                  :disabled="form.effect"
                   v-model="form.jumpStatus"
                   :active-value="true"
                   :inactive-value="false">
@@ -970,6 +971,7 @@ function populateForm(rspData){
   selectDate.value = rspData.scheduleType === 1 ? [rspData.startEffect, rspData.endEffect] : [];
   const f = form.value;
   f.id = rspData.id;
+  f.effect = rspData.effect;
   f.typeId = rspData.typeId;
   f.title = rspData.title;
   f.scheduleType = rspData.scheduleType.toString();
