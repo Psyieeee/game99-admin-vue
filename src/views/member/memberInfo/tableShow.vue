@@ -30,10 +30,10 @@
         <div class="font">{{ dataInfo.会员VIP }}</div>
 
         <div style="display: flex;justify-content: flex-start;">
-          <div class="mount" style="width: 60%">
-            <div class="font">{{ dataInfo.会员注单 }}</div>
+          <div class="mount" style="width: 60%; border: none">
+            <div class="font" style="border: none">{{ dataInfo.会员注单 }}</div>
           </div>
-          <div class="mount" style="width: 40%">
+          <div class="mount" style="width: 40%; border: none">
             <el-button type="primary"
                        plain
                        @click="showForm( dataInfo['会员编号'] )"
@@ -319,5 +319,12 @@ div {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+}
+
+.tmp {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  border: none;
 }
 </style>
