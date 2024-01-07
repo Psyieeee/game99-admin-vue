@@ -1230,6 +1230,7 @@ function handleJumpStatusChange(row){
   }).then(function () {
     return activityInfoUpdateJumpStatus( row.id, row.jumpStatus )
   }).then(() => {
+      getList();
     proxy.$modal.msgSuccess(text + '成功')
   }).catch(function () {
     row.jumpStatus = !row.jumpStatus
