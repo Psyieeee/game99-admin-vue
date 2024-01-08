@@ -558,7 +558,7 @@ function handleSelectedAudit() {
 
 function handleEffectChange(row) {
   let text = row.tipBubbleSwitch === '1' ? '启用' : '停用'
-  proxy.$confirm('确认要' + text + '"' + row.taskClassification + '"吗?', '警告', {
+  proxy.$confirm('确认要' + text + '吗?', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消'
   }).then(function () {
@@ -825,7 +825,7 @@ function handleUpdate(row) {
 /**  删除按钮操作 handle delete */
 function handleDelete(row) {
   const idss = row.id || ids.value
-  proxy.$confirm('是否确认删除?', '警告', {
+  proxy.$confirm('是否确认删除?', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'

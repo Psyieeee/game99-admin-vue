@@ -131,7 +131,6 @@
               v-model="scope.row.jumpStatus"
               :active-value="true"
               :inactive-value="false"
-              :disabled="scope.row.effect"
               @change="handleJumpStatusChange(scope.row)">
           </el-switch>
         </template>
@@ -450,6 +449,7 @@
 
             <el-form-item label="跳转状态">
               <el-switch
+                  :disabled="form.effect"
                   v-model="form.jumpStatus"
                   :active-value="true"
                   :inactive-value="false">
@@ -1003,6 +1003,7 @@ function populateForm(rspData){
   selectDate.value = rspData.scheduleType === 1 ? [rspData.startEffect, rspData.endEffect] : [];
   const f = form.value;
   f.id = rspData.id;
+  f.effect = rspData.effect;
   f.typeId = rspData.typeId;
   f.title = rspData.title;
   f.scheduleType = rspData.scheduleType.toString();
@@ -1263,7 +1264,8 @@ function handleJumpStatusChange(row){
     cancelButtonText: '取消',
     type: 'warning'
   }).then(function () {
-    return activityInfoUpdateJumpStatus( row.id, row.jumpStatus )
+      activityInfoUpdateJumpStatus( row.id, row.jumpStatus )
+      row.effect = !row.jumpStatus
   }).then(() => {
     proxy.$modal.msgSuccess(text + '成功')
   }).catch(function () {

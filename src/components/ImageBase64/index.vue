@@ -19,17 +19,6 @@
         <plus/>
       </el-icon>
     </el-upload>
-    <!-- 上传提示 -->
-    <div class="el-upload__tip" v-if="showTip">
-      请选择
-      <template v-if="fileSize">
-        大小不超过 <b style="color: #f56c6c">{{ fileSize }}kb</b>
-      </template>
-      <template v-if="fileType">
-        格式为 <b style="color: #f56c6c">{{ fileType.join("/") }}</b>
-      </template>
-      的图片
-    </div>
   </div>
 </template>
 
@@ -96,13 +85,6 @@ function handleBeforeUpload(file) {
         `文件格式不正确, 请选择${props.fileType.join("/")}图片格式文件!`
     );
     return false;
-  }
-  if (props.fileSize) {
-    const isLt = file.size / 1024 < props.fileSize;
-    if (!isLt) {
-      proxy.$modal.msgError(`上传头像图片大小不能超过 ${props.fileSize} kb!`);
-      return false;
-    }
   }
   number.value++;
 }
