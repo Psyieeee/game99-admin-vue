@@ -240,18 +240,26 @@
                        v-if="scope.row.status === 6">{{ scope.row.withdrawId }}</a>
                 </template>
             </el-table-column>
-            <el-table-column label="提现金额" min-width="100" align="center" prop="withdrawMoney">
+            <el-table-column label="提现请求" min-width="100" align="center" prop="withdrawMoney">
                 <template v-slot="{row}">
                     <a style="color: #00afff" @click="copyColumn(row.withdrawMoney)">{{ row.withdrawMoney }}</a>
+                </template>
+            </el-table-column>
+            <el-table-column label="取款成功" min-width="100" align="center" prop="withdrawMoneySuccess">
+                <template v-slot="{row}">
+                    <a style="color: #00afff" @click="copyColumn(row.withdrawMoneySuccess)">{{ row.withdrawMoneySuccess }}</a>
+                </template>
+            </el-table-column>
+            <el-table-column label="提现费用" min-width="100" align="center" prop="withdrawFeeAmount">
+                <template v-slot="{row}">
+                    <a style="color: #00afff" @click="copyColumn(row.withdrawFeeAmount)">{{ row.withdrawFeeAmount }}</a>
                 </template>
             </el-table-column>
             <el-table-column label="入款姓名" min-width="120" align="center" prop="rechargeUserName"/>
             <el-table-column label="公司入款成功次数" min-width="130" align="center" prop="bankRechargeNum"/>
             <el-table-column min-width="100" align="center" prop="rechargeWithdrawRate" label="入款出款比">
                 <template v-slot="{row}">
-                    <span style="color: #FF5722" v-if="row.rechargeWithdrawRate > 10">{{
-                        row.rechargeWithdrawRate
-                        }}</span>
+                    <span style="color: #FF5722" v-if="row.rechargeWithdrawRate > 10">{{row.rechargeWithdrawRate }}</span>
                     <span v-else>{{ row.rechargeWithdrawRate }}</span>
                 </template>
             </el-table-column>
