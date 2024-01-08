@@ -141,6 +141,14 @@ export function updateMobileData(memberId,phone,newMobile,googleAuthCode) {
     })
 }
 
+export function updateEmailData(memberId,newEmail,googleAuthCode) {
+    return request({
+        url: url.game99PlatformAdminWeb + '/member/memberInfo/updateEmail/' + memberId,
+        method: 'post',
+        data: {newEmail,googleAuthCode}
+    })
+}
+
 
  /**  查询银行卡列表接口 Query bank card list interface */
 export function cardListData({memberId, pageNum, pageSize}) {

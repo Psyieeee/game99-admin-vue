@@ -131,7 +131,6 @@
               v-model="scope.row.jumpStatus"
               :active-value="true"
               :inactive-value="false"
-              :disabled="scope.row.effect"
               @change="handleJumpStatusChange(scope.row)">
           </el-switch>
         </template>
@@ -1228,7 +1227,8 @@ function handleJumpStatusChange(row){
     cancelButtonText: '取消',
     type: 'warning'
   }).then(function () {
-    return activityInfoUpdateJumpStatus( row.id, row.jumpStatus )
+      activityInfoUpdateJumpStatus( row.id, row.jumpStatus )
+      row.effect = !row.jumpStatus
   }).then(() => {
     proxy.$modal.msgSuccess(text + '成功')
   }).catch(function () {
