@@ -188,7 +188,6 @@
               </el-button>
               <el-button
                   @click="unbind(row)"
-                  v-show="row.dv===0"
                   type="primary"
                   link
                   size="small"
