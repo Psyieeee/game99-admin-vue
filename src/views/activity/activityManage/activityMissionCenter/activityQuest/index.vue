@@ -435,7 +435,8 @@ function handlePreview(file) {
 
 function handleEffectChange(row) {
   let text = row.status === '1' ? '启用' : '停用'
-  proxy.$confirm('确认要' + text + '"' + row.title + '"吗?', '警告', {
+  // proxy.$confirm('确认要' + text + '"' + row.title + '"吗?', '警告', {
+  proxy.$confirm('确认要' + text + '吗?', '警告', {
     confirmButtonText: '确定',
     cancelButtonText: '取消'
   }).then(function () {
@@ -544,7 +545,7 @@ function submitForm() {
 
       if (formData.get("file") != null) {
         await fileUpload(formData).then(res => {
-          console.log("res.data  " + res.data)
+          // console.log("res.data  " + res.data)
           if (form.value.id != null) {
             form.value.icon = res.data
           } else {

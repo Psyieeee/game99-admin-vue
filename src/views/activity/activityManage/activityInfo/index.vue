@@ -136,6 +136,18 @@
         </template>
       </el-table-column>
       <el-table-column label="内部跳转类型" align="center" prop="internalJumpType"  min-width="50"/>
+      <el-table-column label="事件跳转状态" align="center" prop="eventJumpStatus">
+        <template #default="scope">
+          <el-switch
+              v-model="scope.row.eventJumpStatus"
+              :active-value="true"
+              :inactive-value="false"
+              :disabled="scope.row.effect"
+              @change="handleEventJumpStatusChange(scope.row)">
+          </el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column label="活动跳跃类型" align="center" prop="eventJumpType"  min-width="50"/>
       <el-table-column label="排序" align="center" prop="sort"  min-width="50"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="120">
         <template #default="scope">
@@ -450,10 +462,31 @@
                   v-model="form.internalJumpType"
                   style="width: 240px">
                 <el-option
-                    v-for="internalJumpType in internalJumpTypes"
-                    :key="internalJumpType"
-                    :label="internalJumpType"
-                    :value="internalJumpType"/>
+                    v-for="jumpType in jumpTypes"
+                    :key="jumpType"
+                    :label="jumpType"
+                    :value="jumpType"/>
+              </el-select>
+            </el-form-item>
+
+            <el-form-item label="事件跳转状态">
+              <el-switch
+                  v-model="form.eventJumpStatus"
+                  :active-value="true"
+                  :inactive-value="false">
+              </el-switch>
+            </el-form-item>
+
+            <el-form-item v-if="form.eventJumpStatus" label="活动跳跃类型">
+              <el-select
+                  filterable
+                  v-model="form.eventJumpType"
+                  style="width: 240px">
+                <el-option
+                    v-for="jumpType in jumpTypes"
+                    :key="jumpType"
+                    :label="jumpType"
+                    :value="jumpType"/>
               </el-select>
             </el-form-item>
 
@@ -601,7 +634,7 @@ import {
   getActivityInfoList,
   getAllRewardIcon,
   uploadImage,
-  listImages, removeImage, activityInfoUpdateJumpStatus
+  listImages, removeImage, activityInfoUpdateJumpStatus, activityInfoUpdateEventJumpStatus
 } from "@/api/activity/activityInfo";
 import ImageUpload from "@/components/ImageUpload/index.vue";
 
@@ -725,7 +758,7 @@ const fileInput = ref(null);
 const activityUploadIconParam = ref({type: '', field: ''})
 const eventIds = ref([19,20]);
 
-const internalJumpTypes = [ "VIP", "DAILY_BONUS", "FUND" ]
+const jumpTypes = [ "VIP", "DAILY_BONUS", "FUND" ]
 
 const {queryParams,form,rules, configurations, createBanner} = toRefs(data);
 const {activityInfo_status} = proxy.useDict("activityInfo_status");
@@ -984,6 +1017,8 @@ function populateForm(rspData){
   f.sort = rspData.sort;
   f.jumpStatus = rspData.jumpStatus
   f.internalJumpType = rspData.internalJumpType
+  f.eventJumpStatus = rspData.eventJumpStatus
+  f.eventJumpType = rspData.eventJumpType
 }
 async function populateBannerConfiguration(){
   const configString = form.value.configString;
@@ -1112,7 +1147,9 @@ function resetForm(){
   f.sort = null;
   f.creationType = '1';
   f.jumpStatus = false
-  f.internalJumpType = internalJumpTypes[0];
+  f.internalJumpType = jumpTypes[0];
+  f.eventJumpStatus = false
+  f.eventJumpType = jumpTypes[0];
 }
 function resetCreateBannerConfig(){
   createBanner.value = {
@@ -1233,6 +1270,23 @@ function handleJumpStatusChange(row){
     proxy.$modal.msgSuccess(text + '成功')
   }).catch(function () {
     row.jumpStatus = !row.jumpStatus
+  })
+}
+
+function handleEventJumpStatusChange(row){
+  if ( row.effect && row.eventJumpStatus === false ) return
+
+  let text = row.eventJumpStatus ? '启用' : '停用'
+  proxy.$modal.confirm('确认要"' + text + '""' + row.title + '"吗?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(function () {
+    return activityInfoUpdateEventJumpStatus( row.id, row.eventJumpStatus )
+  }).then(() => {
+    proxy.$modal.msgSuccess(text + '成功')
+  }).catch(function () {
+    row.eventJumpStatus = !row.eventJumpStatus
   })
 }
 
