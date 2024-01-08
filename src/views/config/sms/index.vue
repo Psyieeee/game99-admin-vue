@@ -161,7 +161,7 @@
         <el-form-item label="签名" prop="signature" v-if="form.provider == 4">
           <el-input v-model="form.signature" placeholder="请输入签名" />
         </el-form-item>
-        <el-form-item label="模板" prop="template" v-if="form.provider == 5">
+        <el-form-item label="模板" prop="template" v-if="form.provider == 5 || form.provider == 0">
           <el-input v-model="form.template" placeholder="请输入模板"/>
         </el-form-item>
         <el-form-item label="地区" prop="region" v-if="form.provider == 3">
@@ -169,9 +169,6 @@
         </el-form-item>
         <el-form-item label="smsSdkAppid" prop="smsSdkAppid" v-if="form.provider == 0 && form.provider !=3">
           <el-input v-model="form.smsSdkAppid" placeholder="请输入smsSdkAppid"/>
-        </el-form-item>
-        <el-form-item label="templateId" prop="templateId" v-if="form.provider == 0">
-          <el-input v-model="form.templateId" placeholder="请输入templateId"/>
         </el-form-item>
 <!--        <el-form-item label="请求域名" prop="endpoint" v-if="form.provider == 3">-->
 <!--          <el-input v-model="form.endpoint" placeholder="请输入请求域名"/>-->
