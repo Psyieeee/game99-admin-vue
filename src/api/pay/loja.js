@@ -49,3 +49,10 @@ export function fileUpload(data) {
         data
     })
 }
+
+export function changeLojaStatus(id, status) {
+    return request({
+        url: url.game99PayAdminWeb + '/lojaAdmin/changeStatus/'+ id + "/" + status,
+        method: 'put',
+    })
+}
