@@ -394,11 +394,11 @@
                 <el-form-item label="会员ID" prop="withdrawId">
                     <el-input v-model="form.withdrawId" readonly/>
                 </el-form-item>
-                <el-form-item label="真实姓名" prop="bankUserName">
-                    <el-input v-model="form.bankUserName" readonly/>
+                <el-form-item label="真实姓名" prop="realName">
+                    <el-input v-model="form.realName" readonly/>
                 </el-form-item>
-                <el-form-item label="银行账号" prop="bankAccount">
-                    <el-input v-model="form.bankAccount" readonly/>
+                <el-form-item label="银行账号" prop="cardAccount">
+                    <el-input v-model="form.cardAccount" readonly/>
                 </el-form-item>
                 <el-form-item label="申请出款" prop="withdrawMoney">
                     <el-input v-model="form.withdrawMoney" readonly/>
