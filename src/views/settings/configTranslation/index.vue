@@ -220,6 +220,11 @@ function getList() {
 
 // 表单重置
 function reset() {
+  form.value = {
+    name: null,
+    language: null,
+    value: null
+  }
   proxy.resetForm('queryForm');
 }
 
