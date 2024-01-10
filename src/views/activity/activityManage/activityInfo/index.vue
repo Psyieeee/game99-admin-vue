@@ -142,7 +142,6 @@
               v-model="scope.row.eventJumpStatus"
               :active-value="true"
               :inactive-value="false"
-              :disabled="scope.row.jumpStatus"
               @change="handleEventJumpStatusChange(scope.row)">
           </el-switch>
         </template>
