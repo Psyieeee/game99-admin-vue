@@ -125,7 +125,7 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="跳转状态" align="center" prop="jumpStatus">
+      <el-table-column label="跳转状态" align="center" prop="jumpStatus"  min-width="100">
         <template #default="scope">
           <el-switch
               v-model="scope.row.jumpStatus"
@@ -136,13 +136,13 @@
         </template>
       </el-table-column>
       <el-table-column label="内部跳转类型" align="center" prop="internalJumpType"  min-width="50"/>
-      <el-table-column label="事件跳转状态" align="center" prop="eventJumpStatus">
+      <el-table-column label="事件跳转状态" align="center" prop="eventJumpStatus"  min-width="100">
         <template #default="scope">
           <el-switch
               v-model="scope.row.eventJumpStatus"
               :active-value="true"
               :inactive-value="false"
-              :disabled="scope.row.effect"
+              :disabled="scope.row.jumpStatus"
               @change="handleEventJumpStatusChange(scope.row)">
           </el-switch>
         </template>
