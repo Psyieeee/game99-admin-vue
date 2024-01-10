@@ -158,7 +158,7 @@
         <el-form-item label="appAccess" prop="appAccess">
           <el-input v-model="form.appAccess" placeholder="请输入appAccess"/>
         </el-form-item>
-        <el-form-item label="签名" prop="signature" v-if="form.provider == 4">
+        <el-form-item label="签名" prop="signature" v-if="form.provider == 4 || form.provider == 0">
           <el-input v-model="form.signature" placeholder="请输入签名" />
         </el-form-item>
         <el-form-item label="模板" prop="template" v-if="form.provider == 5 || form.provider == 0">
