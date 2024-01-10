@@ -1274,7 +1274,6 @@ function handleJumpStatusChange(row){
 }
 
 function handleEventJumpStatusChange(row){
-  if ( row.effect && row.eventJumpStatus === false ) return
 
   let text = row.eventJumpStatus ? '启用' : '停用'
   proxy.$modal.confirm('确认要"' + text + '""' + row.title + '"吗?', '警告', {
