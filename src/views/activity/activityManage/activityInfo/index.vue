@@ -135,8 +135,8 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="内部跳转类型" align="center" prop="internalJumpType"  min-width="50"/>
-      <el-table-column label="事件跳转状态" align="center" prop="eventJumpStatus"  min-width="100">
+      <el-table-column label="内部跳转类型" align="center" prop="internalJumpType"  min-width="120"/>
+      <el-table-column label="事件跳转状态" align="center" prop="eventJumpStatus"  min-width="120">
         <template #default="scope">
           <el-switch
               v-model="scope.row.eventJumpStatus"
@@ -147,7 +147,7 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="活动跳跃类型" align="center" prop="eventJumpType"  min-width="50"/>
+      <el-table-column label="活动跳跃类型" align="center" prop="eventJumpType"  min-width="120"/>
       <el-table-column label="排序" align="center" prop="sort"  min-width="50"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="120">
         <template #default="scope">
@@ -1247,7 +1247,7 @@ function handleEffectChange(row){
     type: 'warning'
   }).then ( () => {
     activityInfoUpdateStatus( row.id, row.effect )
-    row.jumpStatus = !row.effect
+    row.eventJumpStatus = row.effect
   }).then(() => {
     proxy.$modal.msgSuccess(text + '成功')
   }).catch(function () {
@@ -1256,8 +1256,6 @@ function handleEffectChange(row){
 }
 
 function handleJumpStatusChange(row){
-  // if ( row.effect && row.jumpStatus === false ) return
-
   let text = row.jumpStatus ? '启用' : '停用'
   proxy.$modal.confirm('确认要"' + text + '""' + row.title + '"吗?', '警告', {
     confirmButtonText: '确定',
@@ -1265,7 +1263,6 @@ function handleJumpStatusChange(row){
     type: 'warning'
   }).then(function () {
       activityInfoUpdateJumpStatus( row.id, row.jumpStatus )
-      row.effect = !row.jumpStatus
   }).then(() => {
     proxy.$modal.msgSuccess(text + '成功')
   }).catch(function () {
@@ -1274,7 +1271,6 @@ function handleJumpStatusChange(row){
 }
 
 function handleEventJumpStatusChange(row){
-
   let text = row.eventJumpStatus ? '启用' : '停用'
   proxy.$modal.confirm('确认要"' + text + '""' + row.title + '"吗?', '警告', {
     confirmButtonText: '确定',
