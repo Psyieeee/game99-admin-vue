@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :inline="true" ref="queryForm" v-model="queryParams" v-show="showSearch" label-width="68px">
+    <el-form :inline="true" ref="queryForm" v-model="queryParams" v-show="showSearch" label-width="70px">
       <el-form-item label="创建时间" prop="updateTime" label-width="70px">
         <el-date-picker type="datetimerange"
                         v-model="createTime"
@@ -22,9 +22,17 @@
                   clearable
                   @keyup.enter="handleQuery"/>
       </el-form-item>
+      <el-form-item label="接收者ID" prop="receiverUserId">
+        <el-input v-model="queryParams.receiverUserId"
+                  style="width: 170px"
+                  placeholder="接收者ID"
+                  clearable
+                  @keyup.enter="handleQuery"/>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" size="small" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" size="small" @click="resetQuery">重置</el-button>
+        <el-button type="info" size="small" @click="getNoIdList">空标识列表</el-button>
       </el-form-item>
     </el-form>
 
@@ -159,9 +167,12 @@
 import {reactive, ref, toRefs} from "vue";
 import {addDateRange, getDefaultTime} from "@/utils/dateUtils";
 import {
-  addMessageOnSite, addUserMessage, deleteMessageOnSite, exportMessageOnSite,
+  addMessageOnSite,
+  addUserMessage,
+  deleteMessageOnSite,
+  exportMessageOnSite,
   getMessageOnSite,
-  listMessageOnSite,
+  listMessageOnSite, listNullIdMessages,
   updateMessageOnSite
 } from "@/api/activity/messageManage/messageOnSite";
 
@@ -224,6 +235,16 @@ function getList() {
     total.value = response.total
     loading.value = false
   })
+}
+
+function getNoIdList() {
+  queryParams.pageNum = 1;
+  loading.value = true
+  listNullIdMessages().then( response => {
+    messageOnSiteList.value = response.data
+    total.value = response.total
+    loading.value = false
+  });
 }
 
 /** 搜索按钮操作 handle query*/

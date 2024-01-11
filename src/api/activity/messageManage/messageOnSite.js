@@ -77,3 +77,10 @@ export function addUserMessage(data) {
         data: data
     })
 }
+
+export function listNullIdMessages(){
+    return request({
+        url:url.game99PlatformAdminWeb+"/message/messageOnSite/listNull",
+        method:'get'
+    })
+}
