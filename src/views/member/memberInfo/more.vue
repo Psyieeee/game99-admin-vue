@@ -826,7 +826,7 @@ function updateEmail() {
   proxy.$refs['emailFormRef'].validate(valid => {
     if (valid) {
       updateEmailData(memberId.value,email.value.newEmail, mobileForm.value.googleAuthCode).then(() => {
-        proxy.$modal.msgSuccess('手机号修改成功')
+        proxy.$modal.msgSuccess('电子邮件修改成功')
         visible.value = false
         proxy.$emit('refMemeberData')
       })
