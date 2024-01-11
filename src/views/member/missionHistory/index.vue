@@ -1,11 +1,10 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" >
-      <el-form-item label="用户编号" prop="userId">
+      <el-form-item label="用户编号" prop="memberId">
         <el-input
             v-model="queryParams.memberId"
             placeholder="用户编号"
-            clearable
             @keyup.enter="handleQuery"
         />
       </el-form-item>
@@ -60,6 +59,7 @@ const showSearch = ref(true);
 const data = reactive({
   /** 查询参数 query params*/
   queryParams: {
+    memberId: '',
     pageNum: 1,
     pageSize: 20
   }
@@ -83,6 +83,7 @@ function handleQuery() {
 }
 
 function resetQuery() {
+  console.log("queryRef " )
   proxy.resetForm('queryRef')
   handleQuery()
   loading.value = false
