@@ -432,10 +432,11 @@
 <!-- Jump Type -->
             <div style="max-width: 1000px">
               <el-form-item label="跳转类型" prop="type">
-                <el-radio-group v-model="form.type">
+                <el-radio-group v-model="form.type" @change="handleTypeChange()">
                   <el-radio label="0">活动详情</el-radio>
                   <el-radio label="1">内部浏览器</el-radio>
                   <el-radio label="2">外部浏览器</el-radio>
+                  <el-radio label="3">事件跳转状态</el-radio>
                 </el-radio-group>
               </el-form-item>
               <el-form-item label="活动详情" prop="content" v-if="form.type === '0'">
@@ -468,15 +469,15 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item label="事件跳转状态">
-              <el-switch
-                  v-model="form.eventJumpStatus"
-                  :active-value="true"
-                  :inactive-value="false">
-              </el-switch>
-            </el-form-item>
+<!--            <el-form-item label="事件跳转状态">-->
+<!--              <el-switch-->
+<!--                  v-model="form.eventJumpStatus"-->
+<!--                  :active-value="true"-->
+<!--                  :inactive-value="false">-->
+<!--              </el-switch>-->
+<!--            </el-form-item>-->
 
-            <el-form-item v-if="form.eventJumpStatus" label="活动跳跃类型">
+            <el-form-item v-if="form.type == 3" label="活动跳跃类型">
               <el-select
                   filterable
                   v-model="form.eventJumpType"
@@ -1216,6 +1217,8 @@ function formatterType(row) {
     return '内部浏览器'
   } else if( row.type == 2 ) {
     return '外部浏览器'
+  } else if( row.type == 3 ){
+    return '事件跳转状态'
   } else {
     return ''
   }
@@ -1282,6 +1285,10 @@ function handleEventJumpStatusChange(row){
   }).catch(function () {
     row.eventJumpStatus = !row.eventJumpStatus
   })
+}
+
+function handleTypeChange() {
+  form.value.eventJumpStatus = form.value.type == 3
 }
 
 getList()
