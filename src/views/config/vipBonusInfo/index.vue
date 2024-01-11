@@ -242,7 +242,7 @@
                 <div class="upload-image-container">
                   <div v-for="(icon, index) in configurations.rewardIcons.web" :key="index" class="image-preview-container">
                     <img :src="icon" alt="Reward Icon Preview" class="image-preview">
-                    <div class="reward-close-button" @click="removeImage('web','rewardImg','web', icon)">x</div>
+                    <div class="reward-close-button" @click="removeImageAndList('web','rewardImg','web', icon)">x</div>
                   </div>
                 </div>
               </el-form-item>
@@ -253,7 +253,7 @@
                 <div class="upload-image-container">
                   <div v-for="(icon, index) in configurations.rewardIcons.mobile" :key="index" class="image-preview-container">
                     <img :src="icon" alt="Reward Icon Preview" class="image-preview">
-                    <div class="reward-close-button" @click="removeImage('mobile','rewardImg','mobile', icon)">x</div>
+                    <div class="reward-close-button" @click="removeImageAndList('mobile','rewardImg','mobile', icon)">x</div>
                   </div>
                 </div>
               </el-form-item>
@@ -264,22 +264,22 @@
                 <div class="image-container">
                   <div class="image-wrapper">
                     <el-image class="status-image-preview" :src="configurations.signIn.statusIcon.web.claimable"/>
-                    <div v-if="configurations.signIn.statusIcon.web.claimable !== null" class="status-close-button" @click="removeImage('web','statusImg','claimable',configurations.signIn.statusIcon.web.claimable)">x</div>
+                    <div v-if="configurations.signIn.statusIcon.web.claimable !== null" class="status-close-button" @click="removeImageAndList('web','statusImg','claimable',configurations.signIn.statusIcon.web.claimable)">x</div>
                     <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','claimable')">可索赔</div>
                   </div>
                   <div class="image-wrapper">
                     <el-image class="status-image-preview" :src="configurations.signIn.statusIcon.web.claimed"/>
-                    <div v-if="configurations.signIn.statusIcon.web.claimed !== null" class="status-close-button" @click="removeImage('web','statusImg','claimed',configurations.signIn.statusIcon.web.claimed)">x</div>
+                    <div v-if="configurations.signIn.statusIcon.web.claimed !== null" class="status-close-button" @click="removeImageAndList('web','statusImg','claimed',configurations.signIn.statusIcon.web.claimed)">x</div>
                     <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','claimed')">已申请</div>
                   </div>
                   <div class="image-wrapper">
                     <el-image class="status-image-preview" :src="configurations.signIn.statusIcon.web.notClaimable"/>
-                    <div v-if="configurations.signIn.statusIcon.web.notClaimable !== null" class="status-close-button" @click="removeImage('web','statusImg','notClaimable',configurations.signIn.statusIcon.web.notClaimable)">x</div>
+                    <div v-if="configurations.signIn.statusIcon.web.notClaimable !== null" class="status-close-button" @click="removeImageAndList('web','statusImg','notClaimable',configurations.signIn.statusIcon.web.notClaimable)">x</div>
                     <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','notClaimable')">不可索赔</div>
                   </div>
                   <div class="image-wrapper">
                     <el-image class="status-image-preview" :src="configurations.signIn.statusIcon.web.notClaimed"/>
-                    <div v-if="configurations.signIn.statusIcon.web.notClaimed !== null" class="status-close-button" @click="removeImage('web','statusImg','notClaimed',configurations.signIn.statusIcon.web.notClaimed)">x</div>
+                    <div v-if="configurations.signIn.statusIcon.web.notClaimed !== null" class="status-close-button" @click="removeImageAndList('web','statusImg','notClaimed',configurations.signIn.statusIcon.web.notClaimed)">x</div>
                     <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','notClaimed')">未申请</div>
                   </div>
                 </div>
@@ -289,22 +289,22 @@
                 <div class="image-container">
                   <div class="image-wrapper">
                     <el-image class="status-image-preview" :src="configurations.signIn.statusIcon.mobile.claimable"/>
-                    <div v-if="configurations.signIn.statusIcon.mobile.claimable !== null" class="status-close-button"  @click="removeImage('mobile','statusImg','claimable',configurations.signIn.statusIcon.mobile.claimable)">x</div>
+                    <div v-if="configurations.signIn.statusIcon.mobile.claimable !== null" class="status-close-button"  @click="removeImageAndList('mobile','statusImg','claimable',configurations.signIn.statusIcon.mobile.claimable)">x</div>
                     <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','claimable')">可索赔</div>
                   </div>
                   <div class="image-wrapper">
                     <el-image class="status-image-preview" :src="configurations.signIn.statusIcon.mobile.claimed"/>
-                    <div v-if="configurations.signIn.statusIcon.mobile.claimed !== null" class="status-close-button" @click="removeImage('mobile','statusImg','claimed',configurations.signIn.statusIcon.mobile.claimed)">x</div>
+                    <div v-if="configurations.signIn.statusIcon.mobile.claimed !== null" class="status-close-button" @click="removeImageAndList('mobile','statusImg','claimed',configurations.signIn.statusIcon.mobile.claimed)">x</div>
                     <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','claimed')">已申请</div>
                   </div>
                   <div class="image-wrapper">
                     <el-image class="status-image-preview" :src="configurations.signIn.statusIcon.mobile.notClaimable"/>
-                    <div v-if="configurations.signIn.statusIcon.mobile.notClaimable !== null" class="status-close-button" @click="removeImage('mobile','statusImg','notClaimable',configurations.signIn.statusIcon.mobile.notClaimable)">x</div>
+                    <div v-if="configurations.signIn.statusIcon.mobile.notClaimable !== null" class="status-close-button" @click="removeImageAndList('mobile','statusImg','notClaimable',configurations.signIn.statusIcon.mobile.notClaimable)">x</div>
                     <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','notClaimable')">不可索赔</div>
                   </div>
                   <div class="image-wrapper">
                     <el-image class="status-image-preview" :src="configurations.signIn.statusIcon.mobile.notClaimed"/>
-                    <div v-if="configurations.signIn.statusIcon.mobile.notClaimed !== null" class="status-close-button" @click="removeImage('mobile','statusImg','notClaimed',configurations.signIn.statusIcon.mobile.notClaimed)">x</div>
+                    <div v-if="configurations.signIn.statusIcon.mobile.notClaimed !== null" class="status-close-button" @click="removeImageAndList('mobile','statusImg','notClaimed',configurations.signIn.statusIcon.mobile.notClaimed)">x</div>
                     <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','notClaimed')">未申请</div>
                   </div>
                 </div>
@@ -563,20 +563,11 @@ import {
   vipBonusInfoUpdate,
   vipBonusInfoUpdateStatus,
   getVipBonusInfoList,
-  getAllVipBonusBanner,
-  getAllVipBonusLogo,
-  removeVipBonusBanner,
-  removeVipBonusLogo,
-  uploadVipBonusBanner,
-  uploadVipBonusLogo,
-  getUploadedImages,
-  removeAndListImages,
-  cleanImagesByType,
   configVpiDataList,
-  saveAndRetrieveImages,
+  uploadImages, listImages, removeImages, deleteImagesByType, saveImageUrl,
 } from "@/api/config/vipBonusInfo";
 
-const activityUploadIconParam = ref({type: '',platform: '', field: ''})
+const uploadImageParam = ref({type: '',platform: '', field: ''})
 const isButtonDisabled = ref(true); //Used for disabling button
 const vipBonusInfoList = ref([]);
 const vipBonusTypes    = ref([]);
@@ -806,7 +797,7 @@ function handleResetData() {
   // f.icon = null;
   dateRange.value = []
 
-  cleanImagesByType(['rewardImg', 'statusImg'])
+  deleteImagesByType(['rewardImg', 'statusImg'])
 }
 function handleChangePlatform(option) {
   //This Logic is based on beforeChanges
@@ -908,63 +899,62 @@ function getOriginalImageLink(img){
 //   },500)
 // }
 function handleUploadIcon (type, platform, field){
-  activityUploadIconParam.value = {type: type, platform: platform, field: field};
+  uploadImageParam.value = {type: type, platform: platform, field: field};
   fileInput.value.click();
 }
-async function removeImage(platform, type, field, imageUrl) {
-  let updatedImages;
-  await removeAndListImages(type, platform, field, getOriginalImageLink(imageUrl)).then(  res => {
-    res.data = res.data.map(img => prependActivityInfoImageBaseURI(img));
-    updatedImages = res.data;
-  }).then(()=>{
-    switch ( type ) {
-      case 'rewardImg': {
-        configurations.value.rewardIcons[platform] = updatedImages;
-        updateSignInRewardIcons({type: type, platform: platform, field: field});
-        break;
-      }
-      case 'statusImg': {
-        configurations.value.signIn.statusIcon[platform][field] = null;
-        break;
-      }
-      //TODO: Add more field in the future
-    }
-  });
-}
-function onFileInputChange() {
-  const conf = configurations.value;
-  const signIn = conf.signIn;
+
+async function onFileInputChange() {
   const newFileInput = fileInput.value;
   const files = Array.from(newFileInput.files);
   const formData = new FormData();
-  const param = activityUploadIconParam.value;
+  const param = uploadImageParam.value;
 
-  files.forEach( file => {
-    formData.append('files', file);
-  })
+  files.forEach( file => formData.append('files', file));
   formData.append('type', param.type)
   formData.append('platform', param.platform)
   formData.append('field', param.field)
 
-  getUploadedImages(formData).then(res => {
-    res.data = res.data.map(img => prependActivityInfoImageBaseURI(img));
-    const result = Array.isArray(res.data) ? res.data : [res.data];
-    switch (param.type){
+  const promises = [
+    await uploadImages(formData),
+    await listUpdatedImages(param)
+  ];
+
+  switch ( form.value.typeId ) {
+    case 1: {promises.push( title.value === '添加奖励活动' ? populateSignInConfigTable() : updateSignInRewardIcons(param));}
+      //TODO: Future vip bonus activity
+  }
+
+  await Promise.all(promises);
+  newFileInput.value = null;
+  uploadImageParam.value = null;
+}
+
+function removeImageAndList(platform, type, field, imageUrl) {
+  const param = { type: type, platform: platform, field: field };
+  removeImages(type, platform, field, getOriginalImageLink(imageUrl))
+      .then(() => listUpdatedImages(param))
+      .then(() => {if(type === 'rewardImg') updateSignInRewardIcons(param)});
+}
+
+async function listUpdatedImages(param) {
+  try {
+    const conf = configurations.value;
+    const signIn = conf.signIn;
+    const res = await listImages(param);
+    const updatedImages = await Promise.all(res.rows.map(async img => prependActivityInfoImageBaseURI(img)));
+    switch (param.type) {
       case 'rewardImg': {
-        conf.rewardIcons[param.field] = result;
+        conf.rewardIcons[param.platform] = updatedImages;
         break;
       }
       case 'statusImg': {
-        signIn.statusIcon[param.platform][param.field] = result[0];
+        signIn.statusIcon[param.platform][param.field] = updatedImages[0];
         break;
       }
     }
-  }).then( ()=> {
-    newFileInput.value = null;
-    activityUploadIconParam.value = null;
-    if ( title.value === '添加奖励活动') populateSignInConfigTable();
-    else updateSignInRewardIcons(param);
-  });
+  } catch (error) {
+    console.error("Error in listUpdatedImages:", error);
+  }
 }
 function validateDateRange(rule, value, callback, dateRange) {
   if (dateRange && dateRange.length === 2) {
@@ -991,16 +981,20 @@ async function handleAddBonusActivity(){
   open.value  = true
   populateSignInConfigTable()
 }
-function handleUpdateForm(row) {
-  handleResetData()
-  vipBonusInfoFindById(row.id).then( async res => {
-    await populateForm(res.data)
+async function handleUpdateForm(row) {
+  try {
+    await handleResetData()
+    const response = await vipBonusInfoFindById(row.id);
+    await populateForm(response.data);
     // await populateBannerConfiguration()
     await populateBonusTypeConfiguration();
-  }).then( () => {
+
     title.value = "更新奖励活动"
     open.value = true;
-  })
+  } catch (error) {
+    console.error("Error in handleUpdateForm:", error);
+    return;
+  }
 }
 function populateForm( r ){
   const f = form.value;
@@ -1031,31 +1025,40 @@ function populateForm( r ){
 //   }
 //   getBannerCreationRelatedImages(1);
 // }
-function populateBonusTypeConfiguration() {
-  let parsedEventConfig = JSON.parse(form.value.configString).eventConfig;
-  switch ( form.value.typeId ) {
-    case 1: //Sign In
-        const conf = configurations.value
-        conf.signIn = parsedEventConfig;
-        if ( parsedEventConfig.listOfDailyData.length > 0 ) {
-          let listOfDailyData = parsedEventConfig.listOfDailyData;
-          conf.signIn.dailyData = listOfDailyData === undefined ? [] : listOfDailyData[0].config;
+async function populateBonusTypeConfiguration() {
+  const parsedEventConfig = JSON.parse(form.value.configString).eventConfig;
+  const conf = configurations.value
 
-          //Populate Reward Icons
-          const webIcons = conf.signIn.dailyData.map( data => data.rewardIcon.web);
-          const mobileIcons = conf.signIn.dailyData.map( data => data.rewardIcon.mobile);
-          populateRewardIcon(webIcons,'web')
-          populateRewardIcon(mobileIcons,'mobile')
-        }
-        break;
-      //TODO: Update when added more bonus type
+  switch (form.value.typeId) {
+    case 1: //Sign In
+      conf.signIn = parsedEventConfig;
+      await populateRewardIcons()
+      break;
   }
 }
-function populateRewardIcon(icons,platform){
-  if ( icons.length < 1 ) return ;
-  saveAndRetrieveImages( icons,'rewardImg',platform,null).then( res => {
-    configurations.value.rewardIcons[platform] = res.data;
-  })
+async function populateRewardIcons(){
+  const listOfDailyData = configurations.value.signIn.listOfDailyData;
+  const rewardImgUrlList =
+      listOfDailyData.length < 0
+          ? null
+          : listOfDailyData[0].config.length < 0
+              ? null
+              : listOfDailyData[0].config.map((data) => data.rewardIcon);
+  if ( rewardImgUrlList === null ) return;
+
+  const promises = [];
+  for (const platform1 of platforms.value.filter(platform => platform !== 'all')) {
+    const param   = { type: 'rewardImg', platform: platform1, field: null };
+    const imgUrls = (rewardImgUrlList.map( imgUrls => imgUrls[platform1])).filter(imgUrl => typeof imgUrl === 'string');
+    if (imgUrls.length > 0) {
+      const promise = (async () => {
+        await saveImageUrl(imgUrls, param);
+        await listUpdatedImages(param);
+      })();
+      promises.push(promise);
+    }
+  }
+  await Promise.all(promises);
 }
 
 /**  Handle Submit Form */
@@ -1155,21 +1158,15 @@ function updateSignInRewardIcons(param) {
 
   if (icons.length <= 0) return;
 
-  if ( dataList.length <= 0 ) {
-    signIn.dailyData.forEach( (data,i) => {
-      data.rewardIcon[param.platform] = icons[i];
+  dataList.forEach(data => {
+    data.config.forEach((res, index) => {
+      res.rewardIcon[param.platform] = icons[index] || null;
     });
-  } else {
-    dataList.forEach((dataPerVip) => {
-      dataPerVip = Array.isArray(dataPerVip) ? dataPerVip : [dataPerVip];
-      dataPerVip.forEach( data => {
-        data.config.forEach( (config,i) => {
-          config.rewardIcon[param.platform] = i >= icons.length ? null : icons[i];
-        })
-      })
-    });
-  }
+  });
+
+  signIn.dailyData.forEach((data, i) => data.rewardIcon[param.platform] = icons[i] || null);
 }
+
 
 function populateSignInConfigTable(){
   const rewardIcons = configurations.value.rewardIcons;
