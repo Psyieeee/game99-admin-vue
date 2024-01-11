@@ -1093,10 +1093,11 @@ function getEventConfigByTypeId(){
   const config = configurations.value;
   const statusIcon = config.signIn.statusIcon;
   const listOfDailyData = config.signIn.listOfDailyData;
+  const f = form.value;
 
-  switch ( form.value.typeId ) {
+  switch ( f.typeId ) {
     case 1: {
-      const platforms = form.value.platforms.filter( platform => platform !== 'all');
+      const platforms = [...f.platforms].filter( pf => pf !== 'all');
       rewardStatus.value.forEach( status => {
         platforms.forEach( platform => {
           const img = statusIcon[platform][status];

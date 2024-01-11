@@ -5,7 +5,6 @@
         <el-input
             v-model="queryParams.memberId"
             placeholder="用户编号"
-            clearable
             @keyup.enter="handleQuery"
         />
       </el-form-item>
