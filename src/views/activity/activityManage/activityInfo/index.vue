@@ -125,7 +125,7 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="跳转状态" align="center" prop="jumpStatus">
+      <el-table-column label="跳转状态" align="center" prop="jumpStatus"  min-width="100">
         <template #default="scope">
           <el-switch
               v-model="scope.row.jumpStatus"
@@ -135,19 +135,19 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="内部跳转类型" align="center" prop="internalJumpType"  min-width="50"/>
-      <el-table-column label="事件跳转状态" align="center" prop="eventJumpStatus">
+      <el-table-column label="内部跳转类型" align="center" prop="internalJumpType"  min-width="120"/>
+      <el-table-column label="事件跳转状态" align="center" prop="eventJumpStatus"  min-width="120">
         <template #default="scope">
           <el-switch
               v-model="scope.row.eventJumpStatus"
               :active-value="true"
               :inactive-value="false"
-              :disabled="scope.row.effect"
+              :disabled="true"
               @change="handleEventJumpStatusChange(scope.row)">
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="活动跳跃类型" align="center" prop="eventJumpType"  min-width="50"/>
+      <el-table-column label="活动跳跃类型" align="center" prop="eventJumpType"  min-width="120"/>
       <el-table-column label="排序" align="center" prop="sort"  min-width="50"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="120">
         <template #default="scope">
@@ -433,10 +433,11 @@
 <!-- Jump Type -->
             <div style="max-width: 1000px">
               <el-form-item label="跳转类型" prop="type">
-                <el-radio-group v-model="form.type">
+                <el-radio-group v-model="form.type" @change="handleTypeChange()">
                   <el-radio label="0">活动详情</el-radio>
                   <el-radio label="1">内部浏览器</el-radio>
                   <el-radio label="2">外部浏览器</el-radio>
+                  <el-radio label="3">事件跳转状态</el-radio>
                 </el-radio-group>
               </el-form-item>
               <el-form-item label="活动详情" prop="content" v-if="form.type === '0'">
@@ -469,15 +470,15 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item label="事件跳转状态">
-              <el-switch
-                  v-model="form.eventJumpStatus"
-                  :active-value="true"
-                  :inactive-value="false">
-              </el-switch>
-            </el-form-item>
+<!--            <el-form-item label="事件跳转状态">-->
+<!--              <el-switch-->
+<!--                  v-model="form.eventJumpStatus"-->
+<!--                  :active-value="true"-->
+<!--                  :inactive-value="false">-->
+<!--              </el-switch>-->
+<!--            </el-form-item>-->
 
-            <el-form-item v-if="form.eventJumpStatus" label="活动跳跃类型">
+            <el-form-item v-if="form.type == 3" label="活动跳跃类型">
               <el-select
                   filterable
                   v-model="form.eventJumpType"
@@ -758,7 +759,7 @@ const fileInput = ref(null);
 const activityUploadIconParam = ref({type: '', field: ''})
 const eventIds = ref([19,20]);
 
-const jumpTypes = [ "VIP", "DAILY_BONUS", "FUND" ]
+const jumpTypes = [ "VIP", "DAILY_BONUS", "FUND" ,"RECHARGE"]
 
 const {queryParams,form,rules, configurations, createBanner} = toRefs(data);
 const {activityInfo_status} = proxy.useDict("activityInfo_status");
@@ -1217,6 +1218,8 @@ function formatterType(row) {
     return '内部浏览器'
   } else if( row.type == 2 ) {
     return '外部浏览器'
+  } else if( row.type == 3 ){
+    return '事件跳转状态'
   } else {
     return ''
   }
@@ -1247,7 +1250,7 @@ function handleEffectChange(row){
     type: 'warning'
   }).then ( () => {
     activityInfoUpdateStatus( row.id, row.effect )
-    row.jumpStatus = !row.effect
+    row.eventJumpStatus = row.effect
   }).then(() => {
     proxy.$modal.msgSuccess(text + '成功')
   }).catch(function () {
@@ -1256,8 +1259,6 @@ function handleEffectChange(row){
 }
 
 function handleJumpStatusChange(row){
-  if ( row.effect && row.jumpStatus === false ) return
-
   let text = row.jumpStatus ? '启用' : '停用'
   proxy.$modal.confirm('确认要"' + text + '""' + row.title + '"吗?', '警告', {
     confirmButtonText: '确定',
@@ -1265,7 +1266,6 @@ function handleJumpStatusChange(row){
     type: 'warning'
   }).then(function () {
       activityInfoUpdateJumpStatus( row.id, row.jumpStatus )
-      row.effect = !row.jumpStatus
   }).then(() => {
     proxy.$modal.msgSuccess(text + '成功')
   }).catch(function () {
@@ -1274,8 +1274,6 @@ function handleJumpStatusChange(row){
 }
 
 function handleEventJumpStatusChange(row){
-  if ( row.effect && row.eventJumpStatus === false ) return
-
   let text = row.eventJumpStatus ? '启用' : '停用'
   proxy.$modal.confirm('确认要"' + text + '""' + row.title + '"吗?', '警告', {
     confirmButtonText: '确定',
@@ -1288,6 +1286,10 @@ function handleEventJumpStatusChange(row){
   }).catch(function () {
     row.eventJumpStatus = !row.eventJumpStatus
   })
+}
+
+function handleTypeChange() {
+  form.value.eventJumpStatus = form.value.type == 3
 }
 
 getList()
