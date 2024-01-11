@@ -72,7 +72,9 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="configBankList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="银行名称" align="center" prop="bankName" min-width="120"/>
+      <el-table-column label="银行名称" align="center" prop="bankAccount" min-width="120"
+                       :formatter="getBankName"/>
+<!--      <el-table-column label="银行名称" align="center" prop="bankName" min-width="120"/>-->
       <el-table-column label="银行账号" align="center" prop="bankAccount" min-width="180"/>
       <el-table-column label="排序" align="center" prop="sort"/>
 <!--      <el-table-column label="开户地" :show-overflow-tooltip="true" min-width="180" align="center" prop="bankAddress"/>-->
@@ -511,6 +513,10 @@ function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
+}
+
+function getBankName( row ) {
+  return bankListOptions.value.find(bank => bank.id === row.bankId).bankName;
 }
 
 bankList()
