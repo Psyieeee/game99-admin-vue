@@ -318,9 +318,9 @@
                 </el-radio-group>
               </el-form-item>
               <el-form-item label="周期" prop="cycle">
-                <el-input style="width: 350px" disabled v-model="configurations.signIn.cycle" @change="populateSignInConfigTable(configurations.signIn.cycle)"/>
+                <el-input style="width: 350px" disabled v-model="configurations.signIn.cycle" @change="populateConfigTableByTypeId()"/>
               </el-form-item>
-<!--              <el-form-item label="自定义日" prop="customDay" @change="populateSignInConfigTable(configurations.signIn.cycle)">-->
+<!--              <el-form-item label="自定义日" prop="customDay" @change="populateConfigTableByTypeId(configurations.signIn.cycle)">-->
 <!--                <el-radio-group v-model="configurations.signIn.customDay" >-->
 <!--                  <el-radio label="1">启用</el-radio>-->
 <!--                  <el-radio label="2">禁用</el-radio>-->
@@ -347,15 +347,16 @@
                 </div>
               </el-form-item>
               <el-form-item>
-                <el-table :data="configurations.signIn.dailyData" style="max-width: 750px; max-height: 430px;overflow-y:auto; border: 5px solid #e0e0e0; border-radius: 5px" >
+                <el-table :data="configurations.signIn.dailyData" style="max-width: 620px; max-height: 430px;overflow-y:auto; border: 5px solid #e0e0e0; border-radius: 5px" >
                   <el-table-column label="日" width="60px" align="center" prop="day">
                     <template #default="scope">
-                      <div v-if="configurations.signIn.customDay === '1'">
-                        <el-input v-model="scope.row.day"/>
-                      </div>
-                      <div v-else>
-                        {{ scope.row.day }}
-                      </div>
+<!--                      <div v-if="configurations.signIn.customDay === '1'">-->
+<!--                        <el-input v-model="scope.row.day"/>-->
+<!--                      </div>-->
+<!--                      <div v-else>-->
+<!--                        {{ scope.row.day }}-->
+<!--                      </div>-->
+                      {{ scope.row.day }}
                     </template>
                   </el-table-column>
                   <el-table-column label="奖励类型" width="105px" align="center"  prop="rewardType">
@@ -370,10 +371,10 @@
                             label="固定式"
                             value="1"
                         ></el-option>
-                        <el-option
-                            label="随机"
-                            value="2"
-                        ></el-option>
+<!--                        <el-option-->
+<!--                            label="随机"-->
+<!--                            value="2"-->
+<!--                        ></el-option>-->
                       </el-select>
                     </template>
                   </el-table-column>
@@ -389,16 +390,16 @@
                       </template>
                     </template>
                   </el-table-column>
-                  <el-table-column label="所需存款" width="70px" align="center"  prop="topUpRequirement">
-                    <template #default="scope">
-                      <el-input v-model="scope.row.topUpRequirement"/>
-                    </template>
-                  </el-table-column>
-                  <el-table-column label="所需投注" width="70px" align="center"  prop="codingRequirement">
-                    <template #default="scope">
-                      <el-input v-model="scope.row.codingRequirement"/>
-                    </template>
-                  </el-table-column>
+<!--                  <el-table-column label="所需存款" width="70px" align="center"  prop="topUpRequirement">-->
+<!--                    <template #default="scope">-->
+<!--                      <el-input v-model="scope.row.topUpRequirement"/>-->
+<!--                    </template>-->
+<!--                  </el-table-column>-->
+<!--                  <el-table-column label="所需投注" width="70px" align="center"  prop="codingRequirement">-->
+<!--                    <template #default="scope">-->
+<!--                      <el-input v-model="scope.row.codingRequirement"/>-->
+<!--                    </template>-->
+<!--                  </el-table-column>-->
                   <el-table-column label="Web 奖励图标" align="center" width="135px">
                     <template #default="scope">
                       <el-select
@@ -761,7 +762,7 @@ function handleResetData() {
     signIn: {
       collectMethod: '1',
       cycle: 7,
-      customDay: '2',
+      // customDay: '2',
       dailyData: [],
       listOfDailyData: [],
       statusIcon: {
@@ -920,7 +921,7 @@ async function onFileInputChange() {
   ];
 
   switch ( form.value.typeId ) {
-    case 1: {promises.push( title.value === '添加奖励活动' ? populateSignInConfigTable() : updateSignInRewardIcons(param));}
+    case 1: {promises.push( title.value === '添加奖励活动' ? populateConfigTableByTypeId() : updateSignInRewardIcons(param));}
       //TODO: Future vip bonus activity
   }
 
@@ -975,11 +976,11 @@ function validateDateRange(rule, value, callback, dateRange) {
 
 /**  Handle Add/Update Bonus Activity */
 async function handleAddBonusActivity(){
-  await handleResetData()
+  await handleResetData();
+  await populateConfigTableByTypeId();
   // await getBannerCreationRelatedImages(1);
   title.value = "添加奖励活动"
   open.value  = true
-  populateSignInConfigTable()
 }
 async function handleUpdateForm(row) {
   try {
@@ -1092,6 +1093,7 @@ function getEventConfigByTypeId(){
   const config = configurations.value;
   const statusIcon = config.signIn.statusIcon;
   const listOfDailyData = config.signIn.listOfDailyData;
+
   switch ( form.value.typeId ) {
     case 1: {
       const platforms = form.value.platforms.filter( platform => platform !== 'all');
@@ -1110,6 +1112,7 @@ function getEventConfigByTypeId(){
           })
         })
       });
+
       return config.signIn;
     }
       //TODO: Update this when added more vip bonus activity
@@ -1152,8 +1155,8 @@ function getEventConfigByTypeId(){
 //   }
 // }
 function updateSignInRewardIcons(param) {
-  const icons = configurations.value.rewardIcons[param.platform];
-  const signIn = configurations.value.signIn;
+  const icons    = configurations.value.rewardIcons[param.platform];
+  const signIn   = configurations.value.signIn;
   const dataList = signIn.listOfDailyData;
 
   if (icons.length <= 0) return;
@@ -1167,34 +1170,41 @@ function updateSignInRewardIcons(param) {
   signIn.dailyData.forEach((data, i) => data.rewardIcon[param.platform] = icons[i] || null);
 }
 
-
-function populateSignInConfigTable(){
+function populateConfigTableByTypeId(){
   const rewardIcons = configurations.value.rewardIcons;
-  const signIn = configurations.value.signIn;
-  let cycle = signIn.cycle;
-  signIn.dailyData  = [];
 
-  for ( let i = 0; i < cycle; i++ ) {
-    const webImg = rewardIcons.web[i];
-    const mobileImg = rewardIcons.mobile[i];
+  switch ( form.value.typeId ) {
+    case 1: {
+      const signIn = configurations.value.signIn;
+      const cycle  = signIn.cycle;
+      signIn.dailyData  = [];
 
-    signIn.dailyData .push(
-        {
-          day: i+1,
-          rewardType: '1',
-          rewardAmount: {
-            min: null,
-            max: null
-          },
-          topUpRequirement: null,
-          codingRequirement: null,
-          rewardIcon: {
-            web: webImg === undefined ? null : getOriginalImageLink(webImg),
-            mobile: mobileImg === undefined ? null : getOriginalImageLink(mobileImg)
-          }
-        }
-    )
+      for ( let i = 0; i < cycle; i++ ) {
+        const webImg    = rewardIcons.web[i];
+        const mobileImg = rewardIcons.mobile[i];
+
+        signIn.dailyData .push(
+            {
+              day: i+1,
+              rewardType: '1',
+              rewardAmount: {
+                min: null,
+                max: null
+              },
+              topUpRequirement: null,
+              codingRequirement: null,
+              rewardIcon: {
+                web: webImg === undefined ? null : getOriginalImageLink(webImg),
+                mobile: mobileImg === undefined ? null : getOriginalImageLink(mobileImg)
+              }
+            }
+        )
+      }
+    }
+    //TODO: Update when added more vip activity
   }
+
+
 }
 // function calculateNumberOfDays() {
 //   if ( form.value.scheduleType === '1' && dateRange.value !== null) {
@@ -1203,7 +1213,7 @@ function populateSignInConfigTable(){
 //     const timeDifference = end - start;
 //     const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
 //     configurations.value.signIn.cycle = daysDifference + 1;
-//     populateSignInConfigTable()
+//     populateConfigTableByTypeId()
 //   }
 // }
 function handleVipLevelChange(){
@@ -1211,7 +1221,7 @@ function handleVipLevelChange(){
   const signIn = config.signIn;
   switch ( form.value.typeId ) {
     case 1: {
-      const levelThatHasData = signIn.listOfDailyData.map( data => data.level);
+      const levelThatHasData    = signIn.listOfDailyData.map( data => data.level);
       const indexOfCurrentLevel = levelThatHasData.indexOf(config.vipLevel);
 
       if ( indexOfCurrentLevel >= 0 ) {
@@ -1219,26 +1229,26 @@ function handleVipLevelChange(){
         config.signIn.dailyData = tableConfig.config
         break;
       }
-      populateSignInConfigTable()
+      populateConfigTableByTypeId()
 
       // if ( signIn.customDay === '1' ) customDay_populateSignInConfigTable()
-      // else populateSignInConfigTable()
+      // else populateConfigTableByTypeId()
       // break;
     }
   }
 }
 function handleRewardChangeType(scope){
+  const row = scope.row;
   const rewardIcons = configurations.value.rewardIcons
-  scope.row.rewardIcon.web = scope.row.rewardType === '1' ? rewardIcons.web[0] : treasureIcons.value[0];
-  scope.row.rewardIcon.mobile = scope.row.rewardType === '1' ? rewardIcons.mobile[0] : treasureIcons.value[0];
+  row.rewardIcon.web    = row.rewardType === '1' ? rewardIcons.web[0]    : treasureIcons.value[0];
+  row.rewardIcon.mobile = row.rewardType === '1' ? rewardIcons.mobile[0] : treasureIcons.value[0];
 }
 function saveSignInConfig(){
-  const conf = configurations.value;
-  const vipLevel = conf.vipLevel;
-  const signIn = conf.signIn;
+  const signIn   = configurations.value.signIn;
+  const vipLevel = configurations.value.vipLevel;
   const levelsThatHasData = signIn.listOfDailyData.map( data => data.level );
-  const hasData = levelsThatHasData.includes(vipLevel);
 
+  const hasData = levelsThatHasData.includes(vipLevel);
   if ( hasData ) {
     //Update
     const index = levelsThatHasData.indexOf(vipLevel);
@@ -1255,7 +1265,7 @@ function saveSignInConfig(){
 function resetSignInConfig(){
   configurations.value.signIn.listOfDailyData = []
   configurations.value.vipLevel = 0;
-  populateSignInConfigTable()
+  populateConfigTableByTypeId()
 }
 function initQuery(){
   listVipBonusActivities()

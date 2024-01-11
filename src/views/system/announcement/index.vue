@@ -31,16 +31,6 @@
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column label="标题" prop="title" align="center"/>
       <el-table-column label="内容" prop="content" align="center"/>
-      <el-table-column label="弹框开关" prop="homePrompt" align="center" width="80">
-        <template #default="scope">
-          <el-switch
-              v-model="scope.row.homePrompt"
-              :active-value=1
-              :inactive-value=0
-              @click="toggleSwitch('homePrompt', scope.row)">
-          </el-switch>
-        </template>
-      </el-table-column>
       <el-table-column label="状态" prop="status" align="center" width="80">
         <template #default="scope">
           <el-switch
@@ -48,6 +38,18 @@
               :active-value=1
               :inactive-value=0
               @click="toggleSwitch('status', scope.row)">
+          </el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column label="弹框开关" prop="homePrompt" align="center" width="80">
+        <template #default="scope">
+          <el-switch
+              v-model="scope.row.homePrompt"
+              :active-value=1
+              :inactive-value=0
+              :disabled="!scope.row.status"
+              @click="!scope.row.status ? null : toggleSwitch('homePrompt', scope.row)">
+          >
           </el-switch>
         </template>
       </el-table-column>
@@ -84,19 +86,20 @@
           <el-form-item label="内容" prop="content">
             <el-input v-model="form.content" placeholder="内容" type="textarea"/>
           </el-form-item>
-          <el-form-item label="弹框开关" prop="homePrompt">
-            <el-switch v-model="form.homePrompt"
-                       :active-value=1
-                       :inactive-value=0
-            />
-          </el-form-item>
           <el-form-item label="状态" prop="status">
             <el-switch v-model="form.status"
                        :active-value=1
                        :inactive-value=0
+                       @click="toggleStatusForm(form)"
             />
           </el-form-item>
-
+          <el-form-item label="弹框开关" prop="homePrompt">
+            <el-switch v-model="form.homePrompt"
+                       :active-value=1
+                       :inactive-value=0
+                       :disabled="!form.status"
+            />
+          </el-form-item>
         </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -273,6 +276,11 @@ function toggleSwitch(label, row) {
   })
 }
 
+function toggleStatusForm (form) {
+  if(form.status === 0){
+    form.homePrompt = 0;
+  }
+}
 
 getList()
 </script>

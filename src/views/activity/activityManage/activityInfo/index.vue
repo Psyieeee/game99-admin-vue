@@ -450,6 +450,19 @@
               </el-form-item>
             </div>
 
+            <el-form-item v-if="form.type == 3" label="活动跳跃类型">
+              <el-select
+                  filterable
+                  v-model="form.eventJumpType"
+                  style="width: 240px">
+                <el-option
+                    v-for="jumpType in jumpTypes"
+                    :key="jumpType"
+                    :label="jumpType"
+                    :value="jumpType"/>
+              </el-select>
+            </el-form-item>
+
             <el-form-item label="跳转状态">
               <el-switch
                   :disabled="form.effect"
@@ -479,20 +492,6 @@
 <!--                  :inactive-value="false">-->
 <!--              </el-switch>-->
 <!--            </el-form-item>-->
-
-            <el-form-item v-if="form.type == 3" label="活动跳跃类型">
-              <el-select
-                  filterable
-                  v-model="form.eventJumpType"
-                  style="width: 240px">
-                <el-option
-                    v-for="jumpType in jumpTypes"
-                    :key="jumpType"
-                    :label="jumpType"
-                    :value="jumpType"/>
-              </el-select>
-            </el-form-item>
-
           </div>
           <div class="el-col el-col-12">
 
