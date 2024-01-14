@@ -955,18 +955,13 @@ function maskedEmailRow(row) {
   return maskValue(row.email);
 }
 
-function maskValue( input ) {
-  if (input == null || input.length <= 2) {
-    return input;
+function maskValue( email ) {
+  if (email == null || email.length <= 2) {
+    return email;
   }
-  let mask = input.length > 10 ? 5 : 3;
-  if (input.length / 2 <= mask) {
-    mask = input.length / 4;
-  }
-  const first = input.substring(0, mask);
-  const last = input.substring(input.length - mask);
-  const asterisks = "*".repeat(input.length - (mask * 2));
-  return first + asterisks + last;
+  const parts = email.split('@');
+  const maskedLocalPart = parts[0].substring(0, Math.max(0, parts[0].length - 4)) + '****';
+  return  maskedLocalPart + '@' + parts[1];
 }
 
 /** Personal report end here 个人报告到此结束*/
