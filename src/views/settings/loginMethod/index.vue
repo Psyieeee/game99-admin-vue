@@ -86,7 +86,7 @@
         <el-form-item label="装置" prop="dev">
           <el-select v-model="form.dev" placeholder="选择设备">
             <el-option label="网站" :value=0></el-option>
-            <el-option label="可移动的" :value=1></el-option>
+            <el-option label="手机登录" :value=1></el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -240,7 +240,7 @@ function formatterDev(row) {
     case 0 :
       return "网站";
     case 1 :
-      return "可移动的";
+      return "手机登录";
     default  :
       return "";
   }
