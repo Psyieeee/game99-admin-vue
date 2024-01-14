@@ -31,7 +31,7 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="recordList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="名字" min-width="180" prop="name"/>
+      <el-table-column align="center" label="名字" min-width="180" prop="name" :formatter="formatterLoginMethod"/>
       <el-table-column label="地位" prop="status" align="center" width="180">
         <template #default="scope">
           <el-switch
@@ -42,6 +42,7 @@
           </el-switch>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="装置" min-width="180" prop="dev" :formatter="formatterDev"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
@@ -66,16 +67,27 @@
 
     <!-- 添加或修改公司入款银行列表对话框 Add or modify company deposit bank list dialog-->
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
-               width="600px">
+               width="600px" :rules="rules">
       <el-form ref="queryForm" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="名字" prop="name">
-          <el-input v-model="form.name" placeholder="名字"/>
+          <el-select v-model="form.name" placeholder="名字">
+            <el-option label="登录设备" value="loginDevice"></el-option>
+            <el-option label="登录电子邮件" value="loginEmail"></el-option>
+            <el-option label="谷歌" value="google"></el-option>
+            <el-option label="可移动的" value="mobile"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="地位" prop="status">
           <el-switch v-model="form.status"
                      :active-value=1
                      :inactive-value=0
           />
+        </el-form-item>
+        <el-form-item label="装置" prop="dev">
+          <el-select v-model="form.dev" placeholder="选择设备">
+            <el-option label="网站" :value=0></el-option>
+            <el-option label="可移动的" :value=1></el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -97,6 +109,7 @@ import {
   changeStatus
 } from "@/api/settings/loginMethod";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
+
 const {proxy} = getCurrentInstance();
 
 const recordList = ref([]);
@@ -115,6 +128,9 @@ const data = reactive({
   rules: {
     name: [
       {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    dev: [
+      {required: true, message: '无效的设备', trigger: 'blur'}
     ]
   },
 
@@ -197,7 +213,7 @@ function handleDelete(row) {
 }
 
 
-function toggleSwitch (row) {
+function toggleSwitch(row) {
   const text = row.status === 1 ? '启用' : '停用'
   proxy.$confirm('确认要' + text + '"?', '警告', {
     confirmButtonText: '确定',
@@ -217,6 +233,32 @@ function toggleSwitch (row) {
     loading.value = false
     row.status = row.status === 0 ? 1 : 0
   })
+}
+
+function formatterDev(row) {
+  switch (row.dev) {
+    case 0 :
+      return "网站";
+    case 1 :
+      return "可移动的";
+    default  :
+      return "";
+  }
+}
+
+function formatterLoginMethod(row) {
+  switch (row.name) {
+    case "loginDevice" :
+      return "登录设备";
+    case "loginEmail" :
+      return "登录电子邮件";
+    case "google" :
+      return "谷歌";
+    case "mobile" :
+      return "可移动的";
+    default  :
+      return "";
+  }
 }
 
 getList()
