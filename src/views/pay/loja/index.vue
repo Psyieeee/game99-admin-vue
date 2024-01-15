@@ -302,13 +302,13 @@ function submitForm() {
 }
 
 function handleEffectChange(row) {
-  let text = row.tipBubbleSwitch === '1' ? '启用' : '停用'
+  let text = row.status === '1' ? '启用' : '停用'
   proxy.$confirm('确认要' + text + '吗?', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消'
   }).then(function () {
-    const status = changeLojaStatus(row.id, row.status);
     loading.value = true
+    const status = changeLojaStatus(row.id, row.status);
     if (status) {
       loading.value = false
       return status
