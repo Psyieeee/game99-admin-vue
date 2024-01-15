@@ -126,16 +126,16 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="是否可以自由玩耍" align="center" prop="freeToPlay" min-width="100">
-        <template #default="scope">
-          <el-switch
-              v-model="scope.row.freeToPlay"
-              :active-value="true"
-              :inactive-value="false"
-              @change="handleFreeToPlayChange(scope.row)"
-          ></el-switch>
-        </template>
-      </el-table-column>
+<!--      <el-table-column label="是否可以自由玩耍" align="center" prop="freeToPlay" min-width="100">-->
+<!--        <template #default="scope">-->
+<!--          <el-switch-->
+<!--              v-model="scope.row.freeToPlay"-->
+<!--              :active-value="true"-->
+<!--              :inactive-value="false"-->
+<!--              @change="handleFreeToPlayChange(scope.row)"-->
+<!--          ></el-switch>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column label="是否热门" align="center" prop="recommend" min-width="100">
         <template #default="scope">
           <el-switch
