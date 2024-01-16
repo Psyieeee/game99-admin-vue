@@ -760,7 +760,7 @@ const fileInput = ref(null);
 const activityUploadIconParam = ref({type: '', field: ''})
 const eventIds = ref([19,20]);
 
-const jumpTypes = [ "VIP", "DAILY_BONUS", "FUND" ,"RECHARGE"]
+const jumpTypes = [ "VIP", "DAILY_BONUS", "FUND" ,"RECHARGE","BINDPHONE"]
 
 const {queryParams,form,rules, configurations, createBanner} = toRefs(data);
 const {activityInfo_status} = proxy.useDict("activityInfo_status");
