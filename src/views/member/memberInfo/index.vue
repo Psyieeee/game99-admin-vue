@@ -809,7 +809,7 @@ function handleSelectionChange(selection) {
 
 /** 更多按钮操作 handle more*/
 function handleMore(row) {
-  proxy.$refs["memberMore"].show(row.id, row.vip, row.nickName, row.phone)
+  proxy.$refs["memberMore"].show(row.id, row.vip, row.nickName, row.phone, row.email)
 }
 
 /** Safe deposit box balance transfer out */

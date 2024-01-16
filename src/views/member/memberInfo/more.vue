@@ -260,6 +260,10 @@
         <!--重置电子邮件 update email-->
       <el-row v-if="index===21">
         <el-form ref="emailFormRef" label-width="110px" :model="email">
+          <el-form-item label="旧电子邮件id" prop="email">
+            <el-input v-model="email.email" class="mr10" disabled
+                      style="float: left;width:500px" required/>
+          </el-form-item>
           <el-form-item label="重置电子邮件" prop="newEmail">
             <el-input v-model="email.newEmail" placeholder="请输入旧重置电子邮件" class="mr10"
                       style="float: left;width:500px" required/>
@@ -501,6 +505,7 @@ function show(memberId_, vip_, nickName_, phone_,email_) {
   visible.value = true
   memberId.value = memberId_
   mobileForm.value.phone = phone_
+  console.log("email_  " + email_)
   email.value.email = email_
   vip.value = vip_
   oldVip.value = vip_
