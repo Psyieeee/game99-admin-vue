@@ -165,7 +165,7 @@
           <el-input v-model="form.linecode" placeholder="请输入站点标识"/>
         </el-form-item>
         <el-form-item label="排序号" prop="sort">
-          <el-input v-model="form.sort" placeholder="请输入排序号"/>
+          <el-input-number v-model="form.sort" placeholder="请输入排序号"/>
         </el-form-item>
 <!--        <el-form-item label="洗码比例" prop="rateClean">-->
 <!--          <el-input type="number" class="no-number" v-model="form.rateClean" placeholder="请输入洗码比例"/>-->
