@@ -30,7 +30,7 @@
     <el-table v-loading="loading" :data="tableList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column label="标题" prop="title" align="center"/>
-      <el-table-column label="内容" prop="content" align="center"/>
+      <el-table-column label="内容" prop="content" align="center" width="950"/>
       <el-table-column label="状态" prop="status" align="center" width="80">
         <template #default="scope">
           <el-switch
@@ -53,7 +53,7 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
+      <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="100">
         <template #default="scope">
           <el-button
               v-hasPermi="['announcement:content:edit']"
