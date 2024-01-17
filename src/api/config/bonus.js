@@ -36,7 +36,7 @@ export function addConfigBonus(data) {
 }
 
 // 修改【请填写功能名称】
-export function updateConfigBonusApi(data) {
+export function updateConfigBonus(data) {
     return request({
         url: url.game99PlatformAdminWeb + '/config/bonus',
         method: 'put',
@@ -45,11 +45,10 @@ export function updateConfigBonusApi(data) {
 }
 
 // 修改状态
-export function changeStatus(data) {
+export function changeStatus(id, status) {
     return request({
-        url: url.game99PlatformAdminWeb + '/config/bonus/changeStatus',
-        method: 'put',
-        data: data
+        url: url.game99PlatformAdminWeb + '/config/bonus/changeStatus/' + id + "/" + status,
+        method: 'put'
     })
 }
 

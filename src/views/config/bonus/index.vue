@@ -1,26 +1,26 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="名称" prop="minAmount">
-        <el-input-number
-            v-model="queryParams.minAmount"
-            placeholder="请输入名称"
-            clearable
-            :step="100"
-            size="small"
-            @keyup.enter="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="名称" prop="maxAmount">
-        <el-input-number
-            v-model="queryParams.maxAmount"
-            placeholder="请输入名称"
-            clearable
-            :step="100"
-            size="small"
-            @keyup.enter="handleQuery"
-        />
-      </el-form-item>
+<!--      <el-form-item label="名称" prop="minAmount">-->
+<!--        <el-input-number-->
+<!--            v-model="queryParams.minAmount"-->
+<!--            placeholder="请输入名称"-->
+<!--            clearable-->
+<!--            :step="100"-->
+<!--            size="small"-->
+<!--            @keyup.enter="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="名称" prop="maxAmount">-->
+<!--        <el-input-number-->
+<!--            v-model="queryParams.maxAmount"-->
+<!--            placeholder="请输入名称"-->
+<!--            clearable-->
+<!--            :step="100"-->
+<!--            size="small"-->
+<!--            @keyup.enter="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" icon="Search" size="small" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" size="small" @click="resetQuery">重置</el-button>
@@ -78,21 +78,32 @@
               v-model="scope.row.status"
               :active-value=1
               :inactive-value=0
-              @change="handleEffectChange(scope.row)"
+              @change="handleEffect(scope.row)"
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
+
+      <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" width="120">
         <template #default="scope">
           <el-button
+              v-hasPermi="['config:bonus:edit']"
+              icon="Edit"
+              link
               size="small"
               type="primary"
+              @click="handleUpdate(scope.row)"
+          >修改
+          </el-button>
+          <el-button
+              v-hasPermi="['config:bonus:remove']"
+              fixed="right"
+              icon="Delete"
               link
-              style="color: #5FB878"
-              v-show="!scope.row.effect"
-              @click="handleEffect(scope.row)"
-              v-hasPermi="['config:bonus:effect']"
-          >激活
+              size="small"
+              style="color: #FF5722"
+              type="danger"
+              @click="handleDelete(scope.row)"
+          >删除
           </el-button>
         </template>
       </el-table-column>
@@ -110,16 +121,16 @@
     <el-dialog :title="title" v-model="open" width="700px" append-to-body>
       <el-form ref="bonusRef" :model="form" :rules="rules" label-width="120px" style="padding-bottom: 50px">
         <el-form-item label="最小金额" prop="minAmount">
-          <el-input-number :step="100" v-model="form.minAmount" placeholder="请输入最低金额"/>
+          <el-input-number max="1000000" :step="100" v-model="form.minAmount" placeholder="请输入最低金额"/>
         </el-form-item>
         <el-form-item label="最大金额" prop="maxAmount">
-          <el-input-number :step="100" v-model="form.maxAmount" placeholder="请输入最大金额"/>
+          <el-input-number max="1000000" :step="100" v-model="form.maxAmount" placeholder="请输入最大金额"/>
         </el-form-item>
         <el-form-item label="奖金" prop="bonus">
-          <el-input-number :step="1" v-model="form.bonus" placeholder="请输入奖金"/>
+          <el-input-number max="1000000" :step="1" v-model="form.bonus" placeholder="请输入奖金"/>
         </el-form-item>
         <el-form-item label="乘数" prop="multiplier">
-          <el-input-number :step="100" v-model="form.multiplier" placeholder="请输入乘数"/>
+          <el-input-number max="1000000" :step="100" v-model="form.multiplier" placeholder="请输入乘数"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer" style="float: right;margin-top: -20px">
@@ -172,7 +183,7 @@ const data = reactive({
     pageSize: 15,
     minAmount: null,
     maxAmount: null,
-    orderByColumn: 'is_effect',
+    orderByColumn: 'status',
     isAsc: 'desc'
   },
 
@@ -300,28 +311,18 @@ function submitForm() {
 
 /** 删除按钮操作 delete button action*/
 function handleDelete(row) {
-  const bonusId = row.id || ids.value
-  for (const item of bonusList.value) {
-    for (const id of bonusId) {
-      if (id === item.id && item.effect) {
-        proxy.$modal.msgWarning(item.name + ' 已激活，请勿删除')
-        return
-      }
-    }
-  }
-  proxy.$modal.confirm('是否确认删除了奖励配置"' + bonusId + '"的数据项?', '警告', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
+  const id = row.id || ids.value;
+  proxy.$modal.confirm('您是否确认删除这些数据?', "警告", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning"
   }).then(function () {
-    return delConfigBonus(bonusId)
+    return delConfigBonus(id);
   }).then(() => {
-    getList()
-    proxy.$modal.msgSuccess('删除成功')
-  }).catch(() => {
+    getList();
+    proxy.$modal.msgSuccess("删除成功");
   })
 }
-
 
 function handleEffect(row) {
   proxy.$modal.confirm('确定要激活bonus文件存储服务配置编号为"' + row.id + '"的状态吗?', '警告', {
@@ -329,7 +330,7 @@ function handleEffect(row) {
     cancelButtonText: '取消',
     type: 'warning'
   }).then(function () {
-    return effectbonus(row.id)
+    return changeStatus(row.id, row.status)
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess('修改状态成功')
