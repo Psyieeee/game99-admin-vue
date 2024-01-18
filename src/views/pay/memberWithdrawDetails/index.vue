@@ -434,15 +434,15 @@
                         v-has-permi="['pay:memberWithdrawDetail:artificial']"
                 >出 款
                 </el-button>
-                <el-button
-                        type="warning"
-                        link
-                        size="small"
-                        @click="handleAbnormalWithdrawal"
-                        v-show="form.status !== 7 && form.status !== 8"
-                        v-has-permi="['pay:memberWithdrawDetail:abnormalWithdrawal']"
-                >出款异常
-                </el-button>
+<!--                <el-button-->
+<!--                        type="warning"-->
+<!--                        link-->
+<!--                        size="small"-->
+<!--                        @click="handleAbnormalWithdrawal"-->
+<!--                        v-show="form.status !== 7 && form.status !== 8"-->
+<!--                        v-has-permi="['pay:memberWithdrawDetail:abnormalWithdrawal']"-->
+<!--                >出款异常-->
+<!--                </el-button>-->
                 <el-button
                         type="danger"
                         link
