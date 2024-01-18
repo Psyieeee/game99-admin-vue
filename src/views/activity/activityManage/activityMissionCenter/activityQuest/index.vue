@@ -85,7 +85,7 @@
       </el-table-column>
       <!--      <el-table-column align="center" label="奖励类型" min-width="180" prop="rewardType"/>-->
       <el-table-column align="center" label="奖励金额" min-width="180" prop="reward"/>
-      <el-table-column align="center" label="奖励类型" min-width="180" prop="rewardType"/>
+      <el-table-column align="center" label="奖励类型" min-width="180" prop="missionRewardTypeTranslated"/>
       <el-table-column align="center" label="乘法器" min-width="180" prop="multiplier"/>
       <el-table-column align="center" min-width="150" label="状态" prop="status">
         <template #default="scope">
@@ -184,7 +184,7 @@
             <el-option
                 v-for="dict in rewardTypeList"
                 :key="dict.name"
-                :label="dict.missionRewardTypeTranslated"
+                :label="dict.translatedName"
                 :value="dict.name"
             />
           </el-select>
@@ -194,7 +194,8 @@
           <el-input-number
               precision="2"
               step="0.5"
-              value-on-clear="0"
+              value-on-clear=0
+
               v-model="form.multiplier"
               clearable
               placeholder="输入乘数"
@@ -571,7 +572,8 @@ function submitForm() {
         completionCount: form.value.completionCount,
         missionRepeatType: form.value.missionRepeatType,
         rewardType: form.value.rewardType,
-        multiplier: form.value.rewardType === 'ACCOUNT' && form.value.multiplier !== null ? form.value.multiplier : 0,
+        // multiplier: form.value.rewardType === 'ACCOUNT' && form.value.multiplier !== null ? form.value.multiplier : 0,
+        multiplier: getMultiplier(),
         reward: form.value.reward,
         status: 0,
         sort: form.value.sort,
@@ -591,9 +593,7 @@ function submitForm() {
       }
 
       if (form.value.id != null) {
-
-        form.value.multiplier = form.value.rewardType === 'ACCOUNT' && form.value.multiplier !== null ? form.value.multiplier : 0;
-
+        form.value.multiplier = getMultiplier();
         updateActivityMission(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
@@ -608,6 +608,13 @@ function submitForm() {
       }
     }
   })
+}
+
+function getMultiplier(){
+  return  form.value.rewardType === 'ACCOUNT'
+  && form.value.multiplier !== undefined
+      ? form.value.multiplier
+      : 0;
 }
 
 function submitSettingsForm() {

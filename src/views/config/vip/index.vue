@@ -22,6 +22,8 @@
        <el-table-column label="月俸禄" prop="monthBonus" align="center"/>
        <el-table-column label="需求打码" prop="bcode" align="center"/>
        <el-table-column label="救援奖金率" prop="rescueBonusRate" align="center"/>
+       <el-table-column label="奖励类型" prop="missionRewardTypeTranslated"/>
+       <el-table-column label="乘法器" prop="multiplier"/>
        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="120">
          <template #default="scope">
            <el-button
@@ -52,7 +54,7 @@
          @pagination="getList"/>
 
      <!-- 添加或修改【请填写功能名称】对话框 -->
-     <el-dialog :close-on-click-modal="false" :title="title" v-model="open" width="500px" style="height: 440px" append-to-body>
+     <el-dialog :close-on-click-modal="false" :title="title" v-model="open" width="500px" style="height: 500px" append-to-body>
        <el-form ref="configVipRef" :model="form" :rules="rules" label-width="90px">
          <el-form-item label="vip等级" prop="level">
            <el-input v-model="form.level" placeholder="请输入vip等级" type="number"
@@ -73,6 +75,27 @@
          <el-form-item label="救援奖金率" prop="rescueBonusRate">
            <el-input v-model="form.rescueBonusRate" placeholder="请输入救援奖金率" type="number" />
          </el-form-item>
+         <el-form-item label="bbb任务分类" prop="rewardType" style="min-width: 290px">
+           <el-select v-model="form.rewardType" placeholder="任务分类" clearable>
+             <el-option
+                 v-for="dict in rewardTypeList"
+                 :key="dict.name"
+                 :label="dict.translatedName"
+                 :value="dict.name"
+             />
+           </el-select>
+         </el-form-item>
+         <el-form-item label="乘法器" prop="multiplier" v-if="form.rewardType === 'ACCOUNT'" >
+           <el-input-number
+               precision="2"
+               step="0.5"
+               value-on-clear=0
+
+               v-model="form.multiplier"
+               clearable
+               placeholder="输入乘数"
+           />
+         </el-form-item>
        </el-form>
        <div slot="footer" class="dialog-footer">
          <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -81,7 +104,7 @@
      </el-dialog>
 
 <!--update vip form-->
-     <el-dialog :close-on-click-modal="false" :title="title" v-model="openEdit" width="500px" style="height: 440px" append-to-body>
+     <el-dialog :close-on-click-modal="false" :title="title" v-model="openEdit" width="500px" style="height: 550px" append-to-body>
        <el-form ref="configVipUpdateRef" :model="form" :rules="rules" label-width="90px">
          <el-form-item label="vip等级" prop="level">
            <el-input v-model="form.level" placeholder="请输入vip等级" type="number"
@@ -102,6 +125,27 @@
          <el-form-item label="救援奖金率" prop="rescueBonusRate">
            <el-input v-model="form.rescueBonusRate" placeholder="请输入救援奖金率" type="number" />
          </el-form-item>
+         <el-form-item label="任务分类" prop="rewardType" style="min-width: 290px">
+           <el-select v-model="form.rewardType" placeholder="任务分类" clearable>
+             <el-option
+                 v-for="dict in rewardTypeList"
+                 :key="dict.name"
+                 :label="dict.translatedName"
+                 :value="dict.name"
+             />
+           </el-select>
+         </el-form-item>
+         <el-form-item label="乘法器" prop="multiplier" v-if="form.rewardType === 'ACCOUNT'" >
+           <el-input-number
+               precision="2"
+               step="0.5"
+               value-on-clear=0
+
+               v-model="form.multiplier"
+               clearable
+               placeholder="输入乘数"
+           />
+         </el-form-item>
        </el-form>
        <div slot="footer" class="dialog-footer">
          <el-button type="primary" @click="submitFormEdit">确 定</el-button>
@@ -120,14 +164,16 @@ import {
   configVipDataById,
   configVipDelete,
   configVipEdit,
-  configVpiDataList
+  configVpiDataList,
 } from "@/api/config/vpi";
+import {getMissionRewardTypeList} from "@/api/activity/activityMission";
 
 const {proxy} = getCurrentInstance();
 const configVipList = ref([]);
 const ids = ref([]);
 const total = ref(0);
 const title = ref();
+const rewardTypeList = ref([]);
 
 /** 非单个禁用 */
 const single = ref(true)
@@ -157,6 +203,10 @@ const data = reactive({
     level: [
       {required: true, message: "vip等级不能为空只能是数字", trigger: "number"},
     ],
+    rewardType:
+        [
+          {required: true, message: '奖励类型为必填项', trigger: 'blur'}
+        ],
   }
 });
 const {queryParams,form,rules} = toRefs(data);
@@ -184,6 +234,8 @@ function reset() {
     client: null,
     bcode: null,
     rescueBonusRate: null,
+    rewardType: null,
+    multiplier: 0,
   };
   proxy.resetForm("configVipRef");
 }
@@ -197,6 +249,8 @@ function resetUpdateForm() {
     monthBonus: null,
     channel: null,
     client: null,
+    rewardType: null,
+    multiplier: 0,
     bcode: null,
     rescueBonusRate: null,
   };
@@ -225,6 +279,7 @@ function handleUpdate(row){
 function submitForm(){
   proxy.$refs['configVipRef'].validate(validation=>{
     if(validation){
+      form.value.multiplier = getMultiplier();
         addConfigVipData(form.value).then(() =>{
           proxy.$modal.msgSuccess("新增成功")
           open.value = false
@@ -238,6 +293,11 @@ function submitForm(){
 function submitFormEdit(){
   proxy.$refs['configVipUpdateRef'].validate(validation=>{
     if(validation){
+
+      form.value.multiplier = getMultiplier();
+
+      console.log("form.value.multiplier " + form.value.multiplier)
+
     configVipEdit(form.value).then(()  => {
       proxy.$modal.msgSuccess("修改成功")
       openEdit.value = false
@@ -247,7 +307,14 @@ function submitFormEdit(){
   })
 }
 
-/** 删除按钮操作 handle delete data*/
+function getMultiplier() {
+  return form.value.rewardType === 'ACCOUNT'
+  && form.value.multiplier !== undefined
+      ? form.value.multiplier
+      : 0;
+}
+
+      /** 删除按钮操作 handle delete data*/
 function handleDelete(row){
   const id = row.level || ids.value;
   proxy.$modal.confirm('是否确认删除vip"' + id + '"的数据项?', "警告", {
@@ -263,7 +330,13 @@ function handleDelete(row){
   })
 }
 
+function getRewardTypeList() {
+  getMissionRewardTypeList().then(res => {
+    rewardTypeList.value = res.data
+  })
+}
 
+getRewardTypeList();
 getList()
 </script>
 
