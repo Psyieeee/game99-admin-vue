@@ -23,9 +23,13 @@
     <el-table v-loading="loading" :data="recordList">
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="成员" min-width="180" prop="memberId"/>
-      <el-table-column align="center" label="任务类型" min-width="140" prop="missionType"/>
+      <el-table-column align="center" label="任务类型" min-width="140" prop="missionType">
+      <template #default="scope">{{translate(scope.row.missionType)}}</template>
+      </el-table-column>
       <!--      <el-table-column align="center" label="取款账户" min-width="140" prop="missionRepeatType"/>-->
-      <el-table-column align="center" label="地位" min-width="150" prop="status"/>
+      <el-table-column align="center" label="地位" min-width="150" prop="status">
+      <template #default="scope">{{translate(scope.row.status)}}</template>
+      </el-table-column>
 <!--      <el-table-column align="center" label="银行卡充值" min-width="150" prop="reward"/>-->
       <el-table-column align="center" label="奖励" min-width="140" prop="reward"/>
       <el-table-column align="center" label="进度计数器" min-width="140" prop="progressCounter"/>
@@ -87,6 +91,33 @@ function resetQuery() {
   proxy.resetForm('queryRef')
   handleQuery()
   loading.value = false
+}
+
+function translate(source) {
+  switch (source) {
+    //Mission Type
+    case "ACTIVITY" :
+      return "活动";
+    case "REPEAT" :
+      return "重复";
+    case "NEWBIE" :
+      return "新手";
+    //Mission Status
+    case "CLAIMED" :
+      return "声称";
+    case "ON_GOING" :
+      return "进行中";
+    case "FINISHED" :
+      return "完成的";
+    case "FAILED" :
+      return "失败的";
+    case "CLAIM_FAILED" :
+      return "索赔失败";
+    case "NOT_CLAIMABLE" :
+      return "不可索赔";
+    default  :
+      return "";
+  }
 }
 
 getList()
