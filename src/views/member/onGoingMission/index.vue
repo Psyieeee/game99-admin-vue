@@ -23,7 +23,9 @@
     <el-table v-loading="loading" :data="recordList">
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="成员" min-width="180" prop="memberId"/>
-      <el-table-column align="center" label="任务类型" min-width="140" prop="missionType"/>
+      <el-table-column align="center" label="任务类型" min-width="140" prop="missionType">
+      <template #default="scope">{{translate(scope.row.missionType)}}</template>
+      </el-table-column>
       <!--      <el-table-column align="center" label="取款账户" min-width="140" prop="missionRepeatType"/>-->
       <!--      <el-table-column align="center" label="银行卡充值" min-width="150" prop="reward"/>-->
       <el-table-column align="center" label="奖励活动" min-width="140" prop="rewardActivity"/>
@@ -64,6 +66,18 @@ const data = reactive({
 
 });
 const {queryParams} = toRefs(data);
+
+function translate(source) {
+  switch (source) {
+      //Mission Type
+    case "ACTIVITY" :
+      return "活动";
+    case "REPEAT" :
+      return "重复";
+    case "NEWBIE" :
+      return "新手";
+  }
+}
 
 /** fetch all data from back-end as getList */
 function getList() {
