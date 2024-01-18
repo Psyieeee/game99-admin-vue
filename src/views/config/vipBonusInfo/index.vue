@@ -86,6 +86,8 @@
 <!--        </template>-->
 <!--      </el-table-column>-->
 <!--      <el-table-column label="跳转链接" align="center" prop="url"  min-width="100"/>-->
+      <el-table-column label="基金目的地" align="center" prop="fundDestination"  min-width="100"/>
+      <el-table-column label="乘数" align="center" prop="multiplier"  min-width="100"/>
       <el-table-column label="日程类型" align="center" prop="scheduleType"  min-width="100"/>
       <el-table-column label="开始效果" align="center" prop="startEffect"  min-width="120"/>
       <el-table-column label="结束效果" align="center" prop="endEffect"  min-width="120"/>
