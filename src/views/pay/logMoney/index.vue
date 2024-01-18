@@ -35,14 +35,7 @@
         />
       </el-form-item>
       <el-form-item prop="mark">
-        <el-select v-model="queryParams.mark" placeholder="请选择入款备注" clearable>
-          <el-option
-              v-for="dict in log_money_mark"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-          />
-        </el-select>
+        <el-input v-model="queryParams.mark" placeholder="请选择入款备注" clearable/>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" size="small" @click="handleQuery">搜索</el-button>
@@ -133,7 +126,7 @@ const data = reactive({
     userName: null,
     types: [],
     createTime: null,
-    mark: null,
+    remarkValue: null,
     orderByColumn: 'create_time',
     isAsc: 'desc',
   },
