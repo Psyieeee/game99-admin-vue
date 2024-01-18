@@ -85,6 +85,8 @@
       </el-table-column>
       <!--      <el-table-column align="center" label="奖励类型" min-width="180" prop="rewardType"/>-->
       <el-table-column align="center" label="奖励金额" min-width="180" prop="reward"/>
+      <el-table-column align="center" label="奖励类型" min-width="180" prop="rewardType"/>
+      <el-table-column align="center" label="乘法器" min-width="180" prop="multiplier"/>
       <el-table-column align="center" min-width="150" label="状态" prop="status">
         <template #default="scope">
           <el-switch
@@ -177,6 +179,27 @@
               placeholder="输入奖励金额"
           />
         </el-form-item>
+        <el-form-item label="任务分类" prop="rewardType" style="min-width: 290px">
+          <el-select v-model="form.rewardType" placeholder="任务分类" clearable>
+            <el-option
+                v-for="dict in rewardTypeList"
+                :key="dict.name"
+                :label="dict.missionRewardTypeTranslated"
+                :value="dict.name"
+            />
+          </el-select>
+        </el-form-item>
+<!--        :v-if="form.value.rewardType === 'ACCOUNT'"-->
+        <el-form-item label="乘法器" prop="multiplier" v-if="form.rewardType === 'ACCOUNT'" >
+          <el-input-number
+              precision="2"
+              step="0.5"
+              value-on-clear="0"
+              v-model="form.multiplier"
+              clearable
+              placeholder="输入乘数"
+          />
+        </el-form-item>
         <!--          <el-form-item label="现状" prop="status" style="min-width: 290px">-->
         <!--          <template #default="scope">-->
         <!--            <el-switch-->
@@ -227,7 +250,6 @@
         <el-button @click="open=false">取 消</el-button>
       </div>
     </el-dialog>
-
 
     <el-dialog v-model="settingsOpen" :close-on-click-modal="false" title="汪跃度设署" append-to-body
                style="padding-bottom: 20px" width="400px" v-loading="uploadLoading">
@@ -296,7 +318,7 @@ import {
   updateActivityMission,
   changeMissionActivityStatus,
   getMissionActivitySettings,
-  updateMissionActivitySettings
+  updateMissionActivitySettings, getMissionRewardTypeList
 } from "@/api/activity/activityMission";
 
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
@@ -304,6 +326,7 @@ import {getToken} from "@/utils/auth";
 import {useRouter} from "vue-router";
 import {url} from "@/utils/url";
 import {fileUpload} from "@/api/activity/activityQuest";
+import {getMissionTrigger} from "@/api/activity/missionRepeat";
 
 const router = useRouter();
 
@@ -325,6 +348,7 @@ const loading = ref(true);
 const uploadLoading = ref(true);
 const formData = new FormData();
 const fileList = ref([])
+const rewardTypeList = ref([]);
 const {proxy} = getCurrentInstance();
 
 const data = reactive({
@@ -371,6 +395,10 @@ const data = reactive({
     reward:
         [
           {required: true, message: '奖励为必填项', trigger: 'blur'}
+        ],
+    rewardType:
+        [
+          {required: true, message: '奖励类型为必填项', trigger: 'blur'}
         ],
     sort:
         [
@@ -484,6 +512,12 @@ function getRepeatTypeList() {
   });
 }
 
+function getRewardTypeList() {
+  getMissionRewardTypeList().then(res => {
+    rewardTypeList.value = res.data
+  })
+}
+
 // 表单重置
 function reset() {
   form.value = {
@@ -492,6 +526,7 @@ function reset() {
     completionCount: null,
     missionRepeatType: null,
     rewardType: null,
+    multiplier: 0,
     reward: null,
     sort: null
   }
@@ -536,6 +571,7 @@ function submitForm() {
         completionCount: form.value.completionCount,
         missionRepeatType: form.value.missionRepeatType,
         rewardType: form.value.rewardType,
+        multiplier: form.value.rewardType === 'ACCOUNT' && form.value.multiplier !== null ? form.value.multiplier : 0,
         reward: form.value.reward,
         status: 0,
         sort: form.value.sort,
@@ -555,6 +591,9 @@ function submitForm() {
       }
 
       if (form.value.id != null) {
+
+        form.value.multiplier = form.value.rewardType === 'ACCOUNT' && form.value.multiplier !== null ? form.value.multiplier : 0;
+
         updateActivityMission(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
@@ -627,6 +666,7 @@ function handleSettings() {
 
 getList();
 getRepeatTypeList();
+getRewardTypeList();
 
 </script>
 
