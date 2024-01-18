@@ -210,6 +210,15 @@
                 <el-checkbox v-for="(option, index) in platforms" :key="index" :label="option" @change="handleChangePlatform(option)">{{ option }}</el-checkbox>
               </el-checkbox-group>
             </el-form-item>
+            <el-form-item label="基金目的地" prop="fundDestination">
+              <el-radio-group v-model="form.fundDestination" @change="handleFundDestinationChange()">
+                <el-radio label="1">奖金</el-radio>
+                <el-radio label="2">账户</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item v-if="form.fundDestination === '2'" label="乘数" prop="multiplier" @change="form.multiplier = parseFloat(form.multiplier).toFixed(2)">
+              <el-input style="width: 60px"  v-model="form.multiplier"/>
+            </el-form-item>
 <!-- Other Config -->
 <!--            <label style="font-size: 25px;padding-top: 10px; text-align: left">其他配置</label>-->
 <!--            <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">-->
@@ -635,6 +644,9 @@ const data      =  reactive({
     ],
     dateRange: [
       { validator: (rule, value, callback) => validateDateRange(rule, value, callback, dateRange.value), trigger: "blur" }
+    ],
+    multiplier: [
+      { validator: (rule, value, callback) => validateMultiplier(rule, value, callback), trigger: "blur" }
     ]
   },
   dateRange: [],
@@ -797,6 +809,8 @@ function handleResetData() {
   // f.url = null;
   // f.icon = null;
   dateRange.value = []
+  f.fundDestination = '1';
+  f.multiplier = null;
 
   deleteImagesByType(['rewardImg', 'statusImg'])
 }
@@ -974,6 +988,15 @@ function validateDateRange(rule, value, callback, dateRange) {
   }
 }
 
+function validateMultiplier(rule, value, callback) {
+  const f = form.value;
+  if ( f.fundDestination === '2' && /^[1-9][0-9]*(\.[0-9]+)?$/.test(f.multiplier) ) callback();
+  else {
+    f.multiplier = parseFloat('1').toFixed(2);
+    callback(new Error("如果资金的目的地是账户，则必须填写有效的数字或大于等于 1.00 的浮点数"));
+  }
+}
+
 /**  Handle Add/Update Bonus Activity */
 async function handleAddBonusActivity(){
   await handleResetData();
@@ -1012,6 +1035,8 @@ function populateForm( r ){
   // f.url = r.url
   // f.icon = r.icon
   f.platforms = r.platforms.split(',');
+  f.fundDestination = r.fundDestination.toString();
+  f.multiplier = f.fundDestination === '2' ? parseFloat(r.multiplier).toFixed(2) : r.multiplier;
   dateRange.value = r.scheduleType === 1 ? [ form.value.startEffect, form.value.endEffect ] : []
 }
 // function populateBannerConfiguration() {
@@ -1081,6 +1106,7 @@ async function handleSubmitForm() {
     customBannerConfig: create.type === '1' ? create.customize.properties : null
   });
   f.platforms = f.platforms.join(',');
+  f.multiplier = f.fundDestination === '1' ? null : f.multiplier;
 
   let actionMethod = f.id === null ? vipBonusInfoAdd(f) : vipBonusInfoUpdate(f);
   actionMethod.then(() => {
@@ -1217,6 +1243,11 @@ function populateConfigTableByTypeId(){
 //     populateConfigTableByTypeId()
 //   }
 // }
+function handleFundDestinationChange() {
+  const f = form.value;
+  f.multiplier = f.multiplier === null ? parseFloat('1').toFixed(2) : f.multiplier;
+}
+
 function handleVipLevelChange(){
   const config = configurations.value;
   const signIn = config.signIn;
