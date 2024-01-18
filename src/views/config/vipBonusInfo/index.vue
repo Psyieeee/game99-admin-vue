@@ -147,10 +147,9 @@
           padding-bottom: 20px
         "
         append--body
-        @closed="handleClosedForm"
         :close-on-click-modal="false"
     >
-      <el-form ref="vipBonusForm" :model="form" :rules="rules" label-width="120">
+      <el-form ref="vipBonusForm" v-loading="loading" :model="form" :rules="rules" label-width="120">
         <div class="el-row">
 <!-- Configurations -->
 <!--          <div style="min-width: 40%"> -->
@@ -669,18 +668,22 @@ function handleResetQuery(){
   proxy.resetForm("queryForm");
   handleSearchQuery();
 }
-function handleDeleteTableData(row){
+async function handleDeleteTableData(row) {
   const id = row.id || ids.value;
-  proxy.$modal.confirm('是否确认删除"' + row.title + '"?', "警告", {
+
+  await proxy.$modal.confirm('是否确认删除"' + row.title + '"?', "警告", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning"
-  }).then(function () {
-    return vipBonusInfoDelete(id);
-  }).then(() => {
-    listVipBonusActivities();
-    proxy.$modal.msgSuccess("删除成功");
-  })
+  });
+
+  const promises = [
+    vipBonusInfoDelete(id),
+    listVipBonusActivities()
+  ];
+
+  await Promise.all(promises);
+  proxy.$modal.msgSuccess("删除成功");
 }
 function handleExportData(){
   proxy.$modal.confirm('确认处理Excel并下载，数据量大的时候会延迟，请耐心等待...', '警告', {
@@ -700,11 +703,13 @@ function handleMultipleSelection(selection) {
   multiple.value = !selection.length
 }
 function listVipBonusActivities(){
+  loading.value = true;
   getVipBonusInfoList(queryParams.value).then((res)=>{
     vipBonusInfoList.value = res.data
     total.value = res.total
   }).then( () => {
     isButtonDisabled.value = false
+    loading.value = false;
   })
 }
 function handleEffectChange(row){
@@ -931,6 +936,7 @@ async function onFileInputChange() {
   formData.append('platform', param.platform)
   formData.append('field', param.field)
 
+  loading.value = true;
   const promises = [
     await uploadImages(formData),
     await listUpdatedImages(param)
@@ -942,15 +948,18 @@ async function onFileInputChange() {
   }
 
   await Promise.all(promises);
+  loading.value = false;
   newFileInput.value = null;
   uploadImageParam.value = null;
 }
 
 function removeImageAndList(platform, type, field, imageUrl) {
   const param = { type: type, platform: platform, field: field };
+  loading.value = true;
   removeImages(type, platform, field, getOriginalImageLink(imageUrl))
       .then(() => listUpdatedImages(param))
-      .then(() => {if(type === 'rewardImg') updateSignInRewardIcons(param)});
+      .then(() => {if(type === 'rewardImg') updateSignInRewardIcons(param)})
+      .then(() => loading.value = false);
 }
 
 async function listUpdatedImages(param) {
@@ -961,11 +970,13 @@ async function listUpdatedImages(param) {
     const updatedImages = await Promise.all(res.rows.map(async img => prependActivityInfoImageBaseURI(img)));
     switch (param.type) {
       case 'rewardImg': {
+        console.log(updatedImages)
         conf.rewardIcons[param.platform] = updatedImages;
         break;
       }
       case 'statusImg': {
-        signIn.statusIcon[param.platform][param.field] = updatedImages[0];
+        const image = updatedImages[0];
+        signIn.statusIcon[param.platform][param.field] = image === undefined ? null : image;
         break;
       }
     }
@@ -1009,6 +1020,7 @@ async function handleAddBonusActivity(){
 }
 async function handleUpdateForm(row) {
   try {
+    loading.value = true;
     await handleResetData()
     const response = await vipBonusInfoFindById(row.id);
     await populateForm(response.data);
@@ -1017,6 +1029,7 @@ async function handleUpdateForm(row) {
 
     title.value = "更新奖励活动"
     open.value = true;
+    loading.value = false;
   } catch (error) {
     console.error("Error in handleUpdateForm:", error);
     return;
@@ -1112,9 +1125,12 @@ async function handleSubmitForm() {
 
   let actionMethod = f.id === null ? vipBonusInfoAdd(f) : vipBonusInfoUpdate(f);
   actionMethod.then(() => {
-    proxy.$modal.msgSuccess("修改成功");
     open.value = false;
   })
+  const promises = [listVipBonusActivities()];
+  await Promise.all(promises);
+  proxy.$modal.msgSuccess("修改成功");
+
 }
 function getEventConfigByTypeId(){
   // TypeId = Vip Bonus Activity Type
@@ -1188,7 +1204,7 @@ function updateSignInRewardIcons(param) {
   const signIn   = configurations.value.signIn;
   const dataList = signIn.listOfDailyData;
 
-  if (icons.length <= 0) return;
+  if (icons.length < 0) return;
 
   dataList.forEach(data => {
     data.config.forEach((res, index) => {
