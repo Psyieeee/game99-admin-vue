@@ -71,10 +71,10 @@
       <el-form ref="queryForm" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="名字" prop="name">
           <el-select v-model="form.name" placeholder="名字">
-            <el-option label="登录设备" value="loginDevice"></el-option>
-            <el-option label="登录电子邮件" value="loginEmail"></el-option>
+            <el-option label="手机号" value="loginDevice"></el-option>
+            <el-option label="电子邮件" value="loginEmail"></el-option>
             <el-option label="谷歌" value="google"></el-option>
-            <el-option label="可移动的" value="mobile"></el-option>
+            <el-option label="游客" value="mobile"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="地位" prop="status">
@@ -249,13 +249,13 @@ function formatterDev(row) {
 function formatterLoginMethod(row) {
   switch (row.name) {
     case "loginDevice" :
-      return "登录设备";
+      return "手机号";
     case "loginEmail" :
-      return "登录电子邮件";
+      return "电子邮件";
     case "google" :
       return "谷歌";
     case "mobile" :
-      return "可移动的";
+      return "游客";
     default  :
       return "";
   }
