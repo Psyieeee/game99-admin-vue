@@ -54,11 +54,11 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="recordList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="钱" width="180" prop="money" />
+      <el-table-column align="center" label="赠送金额" width="180" prop="money" />
       <el-table-column align="center" label="类型" min-width="180" prop="type">
         <template #default="scope">{{types.find((e) => e.value === scope.row.type).label}}</template>
       </el-table-column>
-      <el-table-column align="center" label="乘数" width="180" prop="multiplier" />
+      <el-table-column align="center" label="倍数" width="180" prop="multiplier" />
       <el-table-column align="center" label="描述" width="180" prop="description" />
       <el-table-column align="center" label="地位" width="180" prop="status">
         <template #default="scope">

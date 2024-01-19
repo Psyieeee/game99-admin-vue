@@ -190,7 +190,7 @@
           </el-select>
         </el-form-item>
 <!--        :v-if="form.value.rewardType === 'ACCOUNT'"-->
-        <el-form-item label="乘法器" prop="multiplier" v-if="form.rewardType === 'ACCOUNT'" >
+        <el-form-item label="倍数" prop="multiplier" v-if="form.rewardType === 'ACCOUNT'" >
           <el-input-number
               precision="2"
               step="0.5"

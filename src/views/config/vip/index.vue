@@ -23,7 +23,7 @@
        <el-table-column label="需求打码" prop="bcode" align="center"/>
        <el-table-column label="救援奖金率" prop="rescueBonusRate" align="center"/>
        <el-table-column label="奖励类型" prop="missionRewardTypeTranslated"/>
-       <el-table-column label="乘法器" prop="multiplier"/>
+       <el-table-column label="倍数" prop="multiplier"/>
        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="120">
          <template #default="scope">
            <el-button
@@ -135,7 +135,7 @@
              />
            </el-select>
          </el-form-item>
-         <el-form-item label="乘法器" prop="multiplier" v-if="form.rewardType === 'ACCOUNT'" >
+         <el-form-item label="倍数" prop="multiplier" v-if="form.rewardType === 'ACCOUNT'" >
            <el-input-number
                precision="2"
                step="0.5"
