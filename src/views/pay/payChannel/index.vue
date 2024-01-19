@@ -214,6 +214,18 @@
                     </el-col>
                 </el-form-item>
 
+              <el-form-item label="开放层级" prop="customMoneyMin">
+                <el-col :span="11">
+                  <el-input type="number" class="no-number" v-model.trim="form.customMoneyMax"
+                            placeholder="请输入最小开放层级"/>
+                </el-col>
+                <el-col :span="2" class="text-center">-</el-col>
+                <el-col :span="11">
+                  <el-input type="number" class="no-number" v-model.trim="form.customMoneyMin"
+                            placeholder="请输入最大开放层级"/>
+                </el-col>
+              </el-form-item>
+
                 <el-form-item label="快捷金额" prop="quickAmount">
                     <el-input v-model.trim="form.quickAmount" type="textarea"
                               onkeyup="this.value=this.value.replace(/[^\d\,]/g,'')"
@@ -376,6 +388,8 @@ function reset() {
         typeId: null,
         openLevelMin: null,
         openLevelMax: null,
+        customMoneyMin:null,
+        customMoneyMax:null,
         discountBill: null,
         quickAmount: null,
         rate: null,
