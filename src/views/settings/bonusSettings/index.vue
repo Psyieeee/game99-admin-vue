@@ -58,6 +58,7 @@
       <el-table-column align="center" label="类型" min-width="180" prop="type">
         <template #default="scope">{{types.find((e) => e.value === scope.row.type).label}}</template>
       </el-table-column>
+      <el-table-column align="center" label="基金目的地" width="180" prop="destination" :formatter="formatterDestination"/>
       <el-table-column align="center" label="倍数" width="180" prop="multiplier" />
       <el-table-column align="center" label="描述" width="180" prop="description" />
       <el-table-column align="center" label="地位" width="180" prop="status">
@@ -109,8 +110,14 @@
             />
           </el-select>
         </el-form-item>
+        <el-form-item label="性别">
+          <el-radio-group v-model="form.destination" @change="handleDestinationChange()">
+            <el-radio label="ACCOUNT">账户</el-radio>
+            <el-radio label="BONUS">奖金</el-radio>
+          </el-radio-group>
+        </el-form-item>
         <el-form-item label="乘数" prop="multiplier">
-          <el-input type="number" v-model="form.multiplier" placeholder="乘数"/>
+          <el-input type="number" v-model="form.multiplier" placeholder="乘数" :disabled="form.destination==='BONUS'"/>
         </el-form-item>
         <el-form-item label="描述" prop="description">
           <el-input v-model="form.description" placeholder="描述" type="textarea"/>
@@ -167,6 +174,9 @@ const data = reactive({
     ],
     multiplier: [
       {required: true, message: '无效的设备', trigger: 'blur'}
+    ],
+    destination: [
+      {required: true, message: '无效的设备', trigger: 'blur'}
     ]
   },
 
@@ -197,7 +207,9 @@ function getList() {
 // 表单重置
 function reset() {
   form.value = {
-    status: 1
+    status: 1,
+    multiplier: 0,
+    destination: 'ACCOUNT'
   }
   proxy.resetForm('queryForm');
 }
@@ -281,6 +293,21 @@ function resetQuery() {
   proxy.resetForm('queryRef')
   getList()
   loading.value = false
+}
+
+function formatterDestination(row) {
+  switch (row.destination) {
+    case "ACCOUNT" :
+      return "账户";
+    case "BONUS" :
+      return "奖金";
+  }
+}
+
+function handleDestinationChange(){
+  if ( form.value.destination === 'BONUS') {
+    form.value.multiplier = 0;
+  }
 }
 
 getList()
