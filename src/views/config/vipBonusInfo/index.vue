@@ -1,15 +1,16 @@
 <template>
   <div class="app-container">
-    <el-form :disabled="isButtonDisabled" :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item prop="标题" class="input-wd20">
         <el-input
             v-model="queryParams.title"
+            :disabled="loading"
             placeholder="输入标题"
             clearable
             @keyup.enter="handleSearchQuery"/>
       </el-form-item>
       <el-form-item prop="效果">
-        <el-select v-model="queryParams.effect" placeholder="效果" clearable>
+        <el-select :disabled="loading" v-model="queryParams.effect" placeholder="效果" clearable>
           <el-option label="Disabled" value="0"></el-option>
           <el-option label="Enabled" value="1"></el-option>
         </el-select>
@@ -17,6 +18,7 @@
       <el-form-item label="奖励类型" prop="typeId" label-width="100px">
         <el-select
             filterable
+            :disabled="loading"
             v-model="queryParams.typeId"
             placeholder="选择奖金类型"
             clearable
@@ -29,8 +31,8 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="Search" size="small" @click="handleSearchQuery">搜索</el-button>
-        <el-button icon="Refresh" size="small" @click="handleResetQuery">重置</el-button>
+        <el-button :disabled="loading" type="primary" icon="Search" size="small" @click="handleSearchQuery">搜索</el-button>
+        <el-button :disabled="loading" icon="Refresh" size="small" @click="handleResetQuery">重置</el-button>
       </el-form-item>
     </el-form>
 
@@ -40,7 +42,7 @@
             plain
             icon="Plus"
             size="small"
-            :disabled="isButtonDisabled"
+            :disabled="loading"
             @click="handleAddBonusActivity"
             v-hasPermi="['config:vipBonusInfo:add']">添加
         </el-button>
@@ -49,7 +51,7 @@
             plain
             icon="Delete"
             size="small"
-            :disabled="multiple"
+            :disabled="multiple || loading"
             @click="handleDeleteTableData"
             v-hasPermi="['config:vipBonusInfo:remove']">删除
         </el-button>
@@ -58,7 +60,7 @@
             plain
             icon="Download"
             size="small"
-            :disabled="isButtonDisabled"
+            :disabled="loading"
             @click="handleExportData"
             v-hasPermi="['config:vipBonusInfo:export']">导出
         </el-button>
@@ -71,21 +73,21 @@
       <el-table-column label="标题" align="center" prop="title" min-width="180"/>
       <el-table-column label="奖励类型" align="center" prop="typeId" :formatter="formatterActivityType"  min-width="100"/>
       <el-table-column label="支持的平台" align="center" prop="platforms" min-width="120"/>
-<!--      <el-table-column label="Icon" align="center" prop="icon">-->
-<!--          <template #default="scope">-->
-<!--            <el-image-->
-<!--                style="height: 50px;"-->
-<!--                :src="scope.row.icon"-->
-<!--                fit="contain">-->
-<!--            </el-image>-->
-<!--          </template>-->
-<!--        </el-table-column>-->
-<!--      <el-table-column label="内容" align="center" prop="content"  min-width="100">-->
-<!--        <template v-slot="{row}">-->
-<!--          <div v-html="row.content" style="max-height: 80px"></div>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-<!--      <el-table-column label="跳转链接" align="center" prop="url"  min-width="100"/>-->
+<!--      <el-table-column label="Icon" align="center" prop="icon">
+          <template #default="scope">
+            <el-image
+                style="height: 50px;"
+                :src="scope.row.icon"
+                fit="contain">
+            </el-image>
+          </template>
+        </el-table-column>
+      <el-table-column label="内容" align="center" prop="content"  min-width="100">
+        <template v-slot="{row}">
+          <div v-html="row.content" style="max-height: 80px"></div>
+        </template>
+      </el-table-column>
+      <el-table-column label="跳转链接" align="center" prop="url"  min-width="100"/>-->
       <el-table-column label="基金目的地" align="center" prop="fundDestination"  min-width="100"/>
       <el-table-column label="乘数" align="center" prop="multiplier"  min-width="100"/>
       <el-table-column label="日程类型" align="center" prop="scheduleType"  min-width="100"/>
@@ -108,7 +110,7 @@
       <el-table-column label="动作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="120">
         <template #default="scope">
           <el-button
-              :disabled="isButtonDisabled"
+              :disabled="loading"
               size="small"
               type="primary"
               link
@@ -117,7 +119,7 @@
               v-hasPermi="['config:vipBonusInfo:edit']">编辑
           </el-button>
           <el-button
-              :disabled="isButtonDisabled"
+              :disabled="loading"
               size="small"
               type="danger"
               link
@@ -180,7 +182,7 @@
                 <el-radio label="2">永久性</el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form-item v-if="form.scheduleType === '1'" label="有效时间" style="width: 50%;" prop="dateRange" >
+            <el-form-item v-show="form.scheduleType === '1'" label="有效时间" style="width: 50%;" prop="dateRange" >
                 <el-date-picker type="daterange"
                                 v-model="dateRange"
                                 start-placeholder="开始时间"
@@ -191,7 +193,7 @@
                                 value-format="YYYY-MM-DD HH:mm:ss"
                 />
             </el-form-item>
-            <el-form-item v-if="form.scheduleType === '2'" label="开始日期" prop="startDate">
+            <el-form-item v-show="form.scheduleType === '2'" label="开始日期" prop="startDate">
               <el-date-picker type="date"
                               v-model="form.startEffect"
                               placeholder="开始时间"
@@ -638,12 +640,6 @@ const data      =  reactive({
     title: [
       {required: true, message: "标题不能为空", trigger: "blur"}
     ],
-    icon: [
-      {required: true, message: "图标不能不上传", trigger: "blur"}
-    ],
-    typeId: [
-      {required: true, message: "活动类型不能为空", trigger: "blur"}
-    ],
     dateRange: [
       { validator: (rule, value, callback) => validateDateRange(rule, value, callback, dateRange.value), trigger: "blur" }
     ],
@@ -739,38 +735,29 @@ function formatterActivityType(row) {
 /** Handle Form */
 function handleClosedForm() {
   listVipBonusActivities();
-  loading.value = false;
 }
-function handleResetData() {
-  // createBanner.value = {
-  //   type: '1',
-  //   isActionFinished: false,
-  //   customize: {
-  //     iconCollection: null,
-  //     properties: {
-  //       background: '#030303',
-  //       icon: null,
-  //       text: 'PUT TEXT HERE',
-  //       textStyle: {
-  //         font: "Arial, sans-serif",
-  //         size: 30,
-  //         color: '#ffffff'
-  //       }
-  //     }
-  //   },
-  //   preMade: {
-  //     bannerCollection: null,
-  //     banner: null,
-  //   },
-  //   pagination: {
-  //     param: {
-  //       pageNum: 1,
-  //       pageSize: 10
-  //     },
-  //     pageTotal: 1
-  //   }
-  // };
 
+function resetForm(){
+  dateRange.value = []
+  const f = form.value;
+  f.id = null;
+  f.typeId = vipBonusTypes.value[0].id;
+  f.title = null;
+  f.scheduleType = '1';
+  f.startEffect = null;
+  f.platforms = ['mobile']
+  f.endEffect = null;
+  f.isDisplayHome = false;
+  f.configString = null;
+  f.content = '';
+  f.fundDestination = '1';
+  f.multiplier = null;
+  // f.jumpType = '1';
+  // f.url = null;
+  // f.icon = null;
+}
+
+function resetEventConfig(){
   configurations.value = {
     vipLevel: 1,
     rewardIcons: {
@@ -799,26 +786,43 @@ function handleResetData() {
       }
     }
   };
+}
 
-  const f = form.value;
-  f.id = null;
-  f.typeId = 1;
-  f.title = null;
-  f.scheduleType = '1';
-  f.startEffect = null;
-  f.platforms = ['mobile']
-  f.endEffect = null;
-  f.isDisplayHome = false;
-  f.configString = null;
-  // f.jumpType = '1';
-  f.content = '';
-  // f.url = null;
-  // f.icon = null;
-  dateRange.value = []
-  f.fundDestination = '1';
-  f.multiplier = null;
-
-  deleteImagesByType(['rewardImg', 'statusImg'])
+// function resetCreateBannerConfig(){
+//   createBanner.value = {
+//     type: '1',
+//     isActionFinished: false,
+//     customize: {
+//       iconCollection: null,
+//       properties: {
+//         background: '#030303',
+//         icon: null,
+//         text: 'PUT TEXT HERE',
+//         textStyle: {
+//           font: "Arial, sans-serif",
+//           size: 30,
+//           color: '#ffffff'
+//         }
+//       }
+//     },
+//     preMade: {
+//       bannerCollection: null,
+//       banner: null,
+//     },
+//     pagination: {
+//       param: {
+//         pageNum: 1,
+//         pageSize: 10
+//       },
+//       pageTotal: 1
+//     }
+//   };
+// }
+async function handleResetData() {
+  // await resetCreateBannerConfig();
+  await resetEventConfig();
+  await resetForm()
+  await deleteImagesByType(['rewardImg', 'statusImg'])
 }
 function handleChangePlatform(option) {
   //This Logic is based on beforeChanges
@@ -984,7 +988,7 @@ async function listUpdatedImages(param) {
   }
 }
 function validateDateRange(rule, value, callback, dateRange) {
-  if ( form.value.scheduleType === '2' ) return;
+  if ( form.value.scheduleType === '2') callback();
 
   if (dateRange && dateRange.length === 2) {
     const start = new Date(dateRange[0]);
@@ -1019,23 +1023,18 @@ async function handleAddBonusActivity(){
   title.value = "添加奖励活动"
   open.value  = true
 }
-async function handleUpdateForm(row) {
-  try {
-    loading.value = true;
-    await handleResetData()
-    const response = await vipBonusInfoFindById(row.id);
-    await populateForm(response.data);
+function handleUpdateForm(row) {
+  handleResetData()
+  vipBonusInfoFindById(row.id).then( async res => {
+    await populateForm(res.data);
     // await populateBannerConfiguration()
     await populateBonusTypeConfiguration();
-
+  }).then( () => {
     title.value = "更新奖励活动"
     open.value = true;
-    loading.value = false;
-  } catch (error) {
-    console.error("Error in handleUpdateForm:", error);
-    return;
-  }
+  })
 }
+
 function populateForm( r ){
   const f = form.value;
   f.id = r.id
@@ -1104,29 +1103,27 @@ async function populateRewardIcons(){
 
 /**  Handle Submit Form */
 async function handleSubmitForm() {
-  await proxy.$refs["vipBonusForm"].validate( valid => {
-    if (valid) {
-      const f = form.value;
-      const isScheduleFixed = f.scheduleType === '1';
-      const create = createBanner.value;
+  await proxy.$refs["vipBonusForm"].validate();
 
-      //Populate other fields in form
-      // f.icon = await getCustomizedOrPreMadeIcon();
-      f.startEffect = isScheduleFixed ? dateRange.value[0] : f.startEffect;
-      f.endEffect   = isScheduleFixed ? dateRange.value[1] : null;
-      f.configString = JSON.stringify({
-        eventConfig: getEventConfigByTypeId(),
-        customBannerConfig: create.type === '1' ? create.customize.properties : null
-      });
-      f.platforms = f.platforms.join(',');
-      f.multiplier = f.fundDestination === '1' ? null : f.multiplier;
+  const f = form.value;
+  const isScheduleFixed = f.scheduleType === '1';
+  const create = createBanner.value;
 
-      let actionMethod = f.id === null ? vipBonusInfoAdd(f) : vipBonusInfoUpdate(f);
-      actionMethod.then(() => {
-        open.value = false;
-        proxy.$modal.msgSuccess("修改成功");
-      })
-    }
+  //Populate other fields in form
+  // f.icon = await getCustomizedOrPreMadeIcon();
+  f.startEffect = isScheduleFixed ? dateRange.value[0] : f.startEffect;
+  f.endEffect   = isScheduleFixed ? dateRange.value[1] : null;
+  f.configString = JSON.stringify({
+    eventConfig: getEventConfigByTypeId(),
+    customBannerConfig: create.type === '1' ? create.customize.properties : null
+  });
+  f.platforms = f.platforms.join(',');
+  f.multiplier = f.fundDestination === '1' ? null : f.multiplier;
+
+  let actionMethod = f.id === null ? vipBonusInfoAdd(f) : vipBonusInfoUpdate(f);
+  actionMethod.then(() => {
+    proxy.$modal.msgSuccess("修改成功");
+    open.value = false;
   });
 }
 function getEventConfigByTypeId(){
