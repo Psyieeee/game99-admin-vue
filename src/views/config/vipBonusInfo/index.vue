@@ -216,7 +216,7 @@
             </el-form-item>
             <el-form-item label="基金目的地" prop="fundDestination">
               <el-radio-group v-model="form.fundDestination" @change="handleFundDestinationChange()">
-                <el-radio label="1">奖金</el-radio>
+                <el-radio label="1">积分</el-radio>
                 <el-radio label="2">账户</el-radio>
               </el-radio-group>
             </el-form-item>
