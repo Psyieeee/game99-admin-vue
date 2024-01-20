@@ -214,15 +214,15 @@
                     </el-col>
                 </el-form-item>
 
-              <el-form-item label="开放层级" prop="customMoneyMin">
+              <el-form-item label="自定义金额" prop="customMoneyMin">
                 <el-col :span="11">
-                  <el-input type="number" class="no-number" v-model.trim="form.customMoneyMax"
-                            placeholder="请输入最小开放层级"/>
+                  <el-input type="number" class="no-number" v-model.trim="form.customMoneyMin"
+                            placeholder="请输入最小金额"/>
                 </el-col>
                 <el-col :span="2" class="text-center">-</el-col>
                 <el-col :span="11">
-                  <el-input type="number" class="no-number" v-model.trim="form.customMoneyMin"
-                            placeholder="请输入最大开放层级"/>
+                  <el-input type="number" class="no-number" v-model.trim="form.customMoneyMax"
+                            placeholder="请输入最最大金额"/>
                 </el-col>
               </el-form-item>
 
