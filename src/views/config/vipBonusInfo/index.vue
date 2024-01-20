@@ -147,6 +147,7 @@
           padding-bottom: 20px
         "
         append--body
+        @closed="handleClosedForm()"
         :close-on-click-modal="false"
     >
       <el-form ref="vipBonusForm" v-loading="loading" :model="form" :rules="rules" label-width="120">
@@ -179,7 +180,7 @@
                 <el-radio label="2">永久性</el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form-item v-show="form.scheduleType === '1'" label="有效时间" style="width: 50%;" prop="dateRange" >
+            <el-form-item v-if="form.scheduleType === '1'" label="有效时间" style="width: 50%;" prop="dateRange" >
                 <el-date-picker type="daterange"
                                 v-model="dateRange"
                                 start-placeholder="开始时间"
@@ -190,7 +191,7 @@
                                 value-format="YYYY-MM-DD HH:mm:ss"
                 />
             </el-form-item>
-            <el-form-item v-show="form.scheduleType === '2'" label="开始日期" prop="startDate">
+            <el-form-item v-if="form.scheduleType === '2'" label="开始日期" prop="startDate">
               <el-date-picker type="date"
                               v-model="form.startEffect"
                               placeholder="开始时间"
@@ -217,7 +218,7 @@
                 <el-radio label="2">账户</el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form-item v-if="form.fundDestination === '2'" label="乘数" prop="multiplier" @change="form.multiplier = parseFloat(form.multiplier).toFixed(2)">
+            <el-form-item v-if="form.fundDestination === '2'" label="乘数" prop="multiplier">
               <el-input style="width: 60px"  v-model="form.multiplier"/>
             </el-form-item>
 <!-- Other Config -->
@@ -675,15 +676,12 @@ async function handleDeleteTableData(row) {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning"
+  }).then(()=>{
+    vipBonusInfoDelete(id).then(async ()=>{
+      await proxy.$modal.msgSuccess("删除成功")
+      await listVipBonusActivities()
+    })
   });
-
-  const promises = [
-    vipBonusInfoDelete(id),
-    listVipBonusActivities()
-  ];
-
-  await Promise.all(promises);
-  proxy.$modal.msgSuccess("删除成功");
 }
 function handleExportData(){
   proxy.$modal.confirm('确认处理Excel并下载，数据量大的时候会延迟，请耐心等待...', '警告', {
@@ -740,7 +738,8 @@ function formatterActivityType(row) {
 }
 /** Handle Form */
 function handleClosedForm() {
-  listVipBonusActivities()
+  listVipBonusActivities();
+  loading.value = false;
 }
 function handleResetData() {
   // createBanner.value = {
@@ -985,6 +984,8 @@ async function listUpdatedImages(param) {
   }
 }
 function validateDateRange(rule, value, callback, dateRange) {
+  if ( form.value.scheduleType === '2' ) return;
+
   if (dateRange && dateRange.length === 2) {
     const start = new Date(dateRange[0]);
     const end = new Date(dateRange[1]);
@@ -1003,10 +1004,10 @@ function validateDateRange(rule, value, callback, dateRange) {
 
 function validateMultiplier(rule, value, callback) {
   const f = form.value;
-  if ( f.fundDestination === '2' && /^[1-9][0-9]*(\.[0-9]+)?$/.test(f.multiplier) ) callback();
+  if ( f.fundDestination === '2' && /^[1-9][0-9]*$/.test(f.multiplier) ) callback();
   else {
-    f.multiplier = parseFloat('1').toFixed(2);
-    callback(new Error("如果资金的目的地是账户，则必须填写有效的数字或大于等于 1.00 的浮点数"));
+    f.multiplier = 1;
+    callback(new Error("如果资金目的地是账户，则必须输入大于或等于 1 的有效数字"));
   }
 }
 
@@ -1051,7 +1052,7 @@ function populateForm( r ){
   // f.icon = r.icon
   f.platforms = r.platforms.split(',');
   f.fundDestination = r.fundDestination.toString();
-  f.multiplier = f.fundDestination === '2' ? parseFloat(r.multiplier).toFixed(2) : r.multiplier;
+  f.multiplier = f.fundDestination === '2' ? r.multiplier : 1;
   dateRange.value = r.scheduleType === 1 ? [ form.value.startEffect, form.value.endEffect ] : []
 }
 // function populateBannerConfiguration() {
@@ -1079,8 +1080,7 @@ async function populateBonusTypeConfiguration() {
 }
 async function populateRewardIcons(){
   const listOfDailyData = configurations.value.signIn.listOfDailyData;
-  const rewardImgUrlList =
-      listOfDailyData.length < 0
+  const rewardImgUrlList = listOfDailyData.length < 1
           ? null
           : listOfDailyData[0].config.length < 0
               ? null
@@ -1104,33 +1104,30 @@ async function populateRewardIcons(){
 
 /**  Handle Submit Form */
 async function handleSubmitForm() {
-  proxy.$refs["vipBonusForm"].validate(async valid => {
-    if (!valid) return
+  await proxy.$refs["vipBonusForm"].validate( valid => {
+    if (valid) {
+      const f = form.value;
+      const isScheduleFixed = f.scheduleType === '1';
+      const create = createBanner.value;
+
+      //Populate other fields in form
+      // f.icon = await getCustomizedOrPreMadeIcon();
+      f.startEffect = isScheduleFixed ? dateRange.value[0] : f.startEffect;
+      f.endEffect   = isScheduleFixed ? dateRange.value[1] : null;
+      f.configString = JSON.stringify({
+        eventConfig: getEventConfigByTypeId(),
+        customBannerConfig: create.type === '1' ? create.customize.properties : null
+      });
+      f.platforms = f.platforms.join(',');
+      f.multiplier = f.fundDestination === '1' ? null : f.multiplier;
+
+      let actionMethod = f.id === null ? vipBonusInfoAdd(f) : vipBonusInfoUpdate(f);
+      actionMethod.then(() => {
+        open.value = false;
+        proxy.$modal.msgSuccess("修改成功");
+      })
+    }
   });
-
-  const f = form.value;
-  const isScheduleFixed = f.scheduleType === '1';
-  const create = createBanner.value;
-
-  //Populate other fields in form
-  // f.icon = await getCustomizedOrPreMadeIcon();
-  f.startEffect = isScheduleFixed ? dateRange.value[0] : f.startEffect;
-  f.endEffect   = isScheduleFixed ? dateRange.value[1] : null;
-  f.configString = JSON.stringify({
-    eventConfig: getEventConfigByTypeId(),
-    customBannerConfig: create.type === '1' ? create.customize.properties : null
-  });
-  f.platforms = f.platforms.join(',');
-  f.multiplier = f.fundDestination === '1' ? null : f.multiplier;
-
-  let actionMethod = f.id === null ? vipBonusInfoAdd(f) : vipBonusInfoUpdate(f);
-  actionMethod.then(() => {
-    open.value = false;
-  })
-  const promises = [listVipBonusActivities()];
-  await Promise.all(promises);
-  proxy.$modal.msgSuccess("修改成功");
-
 }
 function getEventConfigByTypeId(){
   // TypeId = Vip Bonus Activity Type
@@ -1263,7 +1260,7 @@ function populateConfigTableByTypeId(){
 // }
 function handleFundDestinationChange() {
   const f = form.value;
-  f.multiplier = f.multiplier === null ? parseFloat('1').toFixed(2) : f.multiplier;
+  f.multiplier = f.multiplier === null ? 1 : f.multiplier;
 }
 
 function handleVipLevelChange(){
