@@ -1151,7 +1151,7 @@ function getEventConfigByTypeId(){
           })
         })
       });
-
+      config.signIn.dailyData = listOfDailyData[0].config
       return config.signIn;
     }
       //TODO: Update this when added more vip bonus activity
