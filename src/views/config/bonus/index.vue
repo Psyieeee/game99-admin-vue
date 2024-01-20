@@ -70,7 +70,7 @@
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="最小金额" align="center"    prop="minAmount"/>
       <el-table-column label="最大金额" align="center"    prop="maxAmount"/>
-      <el-table-column label="奖金" align="center" prop="bonus"/>
+      <el-table-column label="积分" align="center" prop="bonus"/>
       <el-table-column label="乘数" align="center" prop="multiplier"/>
       <el-table-column align="center" label="状态"     prop="status">
         <template #default="scope">
@@ -126,7 +126,7 @@
         <el-form-item label="最大金额" prop="maxAmount">
           <el-input-number max="1000000" :step="100" v-model="form.maxAmount" placeholder="请输入最大金额"/>
         </el-form-item>
-        <el-form-item label="奖金" prop="bonus">
+        <el-form-item label="积分" prop="bonus">
           <el-input-number max="1000000" :step="1" v-model="form.bonus" placeholder="请输入奖金"/>
         </el-form-item>
         <el-form-item label="乘数" prop="multiplier">

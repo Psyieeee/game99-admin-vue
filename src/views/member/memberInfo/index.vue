@@ -208,7 +208,7 @@
       <el-table-column label="手机" prop="phone" align="center" width="120px"/>
       <el-table-column label="会员vip" align="center" prop="vip" width="70px"/>
       <el-table-column label="余额" :show-overflow-tooltip="true" align="center" prop="accountNow" min-width="120"/>
-      <el-table-column label="积分" :show-overflow-tooltip="true" align="center" prop="bonusMoney" min-width="120"/>
+      <el-table-column label="账户余额" :show-overflow-tooltip="true" align="center" prop="bonusMoney" min-width="120"/>
       <el-table-column label="促销数量" :show-overflow-tooltip="true" align="center" prop="promotionAmount" min-width="120"/>
       <el-table-column label="收回账户" :show-overflow-tooltip="true" align="center" prop="withdrawAccount" min-width="120"/>
       <el-table-column label="电子邮件" :show-overflow-tooltip="true" align="center" prop="email"

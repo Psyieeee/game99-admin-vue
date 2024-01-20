@@ -113,7 +113,7 @@
         <el-form-item label="性别">
           <el-radio-group v-model="form.destination" @change="handleDestinationChange()">
             <el-radio label="ACCOUNT">账户</el-radio>
-            <el-radio label="BONUS">奖金</el-radio>
+            <el-radio label="BONUS">积分</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="乘数" prop="multiplier">
@@ -300,7 +300,7 @@ function formatterDestination(row) {
     case "ACCOUNT" :
       return "账户";
     case "BONUS" :
-      return "奖金";
+      return "积分";
   }
 }
 
