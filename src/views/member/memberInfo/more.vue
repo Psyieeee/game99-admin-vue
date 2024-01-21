@@ -22,6 +22,9 @@
         <button type="button" class="el-button el-button--primary el-button--small is-plain"
                 @click="change(11,'重置手机号')">
           <span>重置手机号</span></button>
+          <button type="button" class="el-button el-button--primary el-button--small is-plain"
+                  @click="change(21,'重置电子邮件')">
+              <span>重置电子邮件</span></button>
 <!--        <button type="button" class="el-button el-button&#45;&#45;primary el-button&#45;&#45;small is-plain"-->
 <!--                @click="change(13,'重置邀请码')">-->
 <!--          <span>重置邀请码</span></button>-->
@@ -188,7 +191,6 @@
               </el-button>
               <el-button
                   @click="unbind(row)"
-                  v-show="row.dv===0"
                   type="primary"
                   link
                   size="small"
@@ -248,6 +250,23 @@
           </el-form-item>
           <el-form-item label="新手机号" prop="newMobile">
             <el-input v-model="mobileForm.newMobile" placeholder="请输入新手机号"/>
+          </el-form-item>
+          <el-form-item label="google验证码" prop="googleAuthCode">
+            <el-input v-model="mobileForm.googleAuthCode" placeholder="请输入google验证码"/>
+          </el-form-item>
+        </el-form>
+      </el-row>
+
+        <!--重置电子邮件 update email-->
+      <el-row v-if="index===21">
+        <el-form ref="emailFormRef" label-width="110px" :model="email">
+          <el-form-item label="旧电子邮件id" prop="email">
+            <el-input v-model="email.email" class="mr10" disabled
+                      style="float: left;width:500px" required/>
+          </el-form-item>
+          <el-form-item label="重置电子邮件" prop="newEmail">
+            <el-input v-model="email.newEmail" placeholder="请输入旧重置电子邮件" class="mr10"
+                      style="float: left;width:500px" required/>
           </el-form-item>
           <el-form-item label="google验证码" prop="googleAuthCode">
             <el-input v-model="mobileForm.googleAuthCode" placeholder="请输入google验证码"/>
@@ -315,6 +334,11 @@
             v-show="index ===11">
           确 定
         </el-button>
+          <el-button
+             type="primary" @click="updateEmail()"
+              v-show="index===21">
+              确 定
+          </el-button>
 
         <el-button
             type="primary"
@@ -350,21 +374,21 @@
 import {reactive, ref, toRefs} from "vue";
 import {gameBalance, gameEsc} from "@/api/game/base";
 import {
-  addScore,
-  cardListData,
-  changeBankData,
-  fullMobileData,
-  getMemberInfo,
-  memberBcodeRepair,
-  memberResetPassword,
-  resetBoxPasswd,
-  resetPassword,
-  resetWithdrawal,
-  sendMsgs,
-  unbindCard,
-  updateInvitationCode,
-  updateMobileData,
-  updateVipData
+    addScore,
+    cardListData,
+    changeBankData,
+    fullMobileData,
+    getMemberInfo,
+    memberBcodeRepair,
+    memberResetPassword,
+    resetBoxPasswd,
+    resetPassword,
+    resetWithdrawal,
+    sendMsgs,
+    unbindCard, updateEmailData,
+    updateInvitationCode,
+    updateMobileData,
+    updateVipData
 } from "@/api/member/memberInfo";
 import {memberWithdrawDetailReportById, memberWithdrawDetailReportList} from "@/api/pay/memberWithdrawDetail";
 import {validMobile, validNumber} from "@/utils/validate";
@@ -402,6 +426,9 @@ const data = reactive({
   mobileForm: {
     phone: ''
   },
+  email:{
+      email:''
+  }  ,
   form: {
     beatNum: 0,
     googleAuthCode: null,
@@ -469,15 +496,17 @@ const data = reactive({
 });
 
 const {
-  mobileForm, form, rules, moneydesOptions, queryParams, mobileRules, inviterCodeRules
+  mobileForm,email, form, rules, moneydesOptions, queryParams, mobileRules, inviterCodeRules
 } = toRefs(data);
 
 const {member_msg} = proxy.useDict("member_msg")
 
-function show(memberId_, vip_, nickName_, phone_) {
+function show(memberId_, vip_, nickName_, phone_,email_) {
   visible.value = true
   memberId.value = memberId_
   mobileForm.value.phone = phone_
+  console.log("email_  " + email_)
+  email.value.email = email_
   vip.value = vip_
   oldVip.value = vip_
   nickName.value = nickName_
@@ -798,6 +827,18 @@ function updateMobile() {
     }
   })
 }
+function updateEmail() {
+  proxy.$refs['emailFormRef'].validate(valid => {
+    if (valid) {
+      updateEmailData(memberId.value,email.value.newEmail, mobileForm.value.googleAuthCode).then(() => {
+        proxy.$modal.msgSuccess('电子邮件修改成功')
+        visible.value = false
+        proxy.$emit('refMemeberData')
+      })
+    }
+  })
+}
+
 
 /** get full number */
 function fullMobile() {

@@ -71,6 +71,7 @@
           <dict-tag :options="pay_type" :value="scope.row.type"/>
         </template>
       </el-table-column>
+      <el-table-column label="红利利率" align="center" prop="rate"/>
       <el-table-column label="是否推荐" align="center" prop="recommend">
         <template #default="scope">
           <el-switch
@@ -157,6 +158,9 @@
             <el-checkbox label="1">ios</el-checkbox>
             <el-checkbox label="2">安卓</el-checkbox>
           </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="红利利率" prop="rate">
+          <el-input v-model="form.rate" placeholder="请输入红利利率"/>
         </el-form-item>
 
         <el-form-item label="存入类型" prop="type">
@@ -264,6 +268,7 @@ const data = reactive({
     status: null,
     isOnline: null,
     type: null,
+    rate:null,
     deviceType: null,
     createBy: null,
     updateBy: null,
@@ -280,6 +285,9 @@ const data = reactive({
     ],
     code: [
       {required: true, message: '编码不能为空', trigger: 'blur'}
+    ],
+    rate:[
+      {required: true, message: '不能为空', trigger: 'blur'}
     ],
     indexes: [
       {required: true, message: '排序不能为空', trigger: 'blur'}
@@ -313,6 +321,7 @@ function reset() {
     status: 0,
     isOnline: null,
     type: null,
+    rate:null,
     createBy: null,
     createTime: null,
     updateBy: null,

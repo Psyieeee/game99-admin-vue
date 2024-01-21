@@ -153,16 +153,16 @@
         >导出
         </el-button>
       </el-col>
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--            type="primary"-->
-<!--            plain-->
-<!--            icon="Plus"-->
-<!--            size="small"-->
-<!--            @click="openIpBlackList()"-->
-<!--        >查看封停ip-->
-<!--        </el-button>-->
-<!--      </el-col>-->
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--            type="primary"-->
+      <!--            plain-->
+      <!--            icon="Plus"-->
+      <!--            size="small"-->
+      <!--            @click="openIpBlackList()"-->
+      <!--        >查看封停ip-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
 
       <!--      adding new button ip click get pop up-->
       <el-col :span="1.5">
@@ -205,12 +205,15 @@
         </template>
       </el-table-column>
       <el-table-column label="绑卡姓名" :show-overflow-tooltip="true" align="center" prop="cardRealName" width="140"/>
-      <el-table-column label="手机" prop="phone"  align="center"  width="120px"/>
+      <el-table-column label="手机" prop="phone" align="center" width="120px"/>
       <el-table-column label="会员vip" align="center" prop="vip" width="70px"/>
       <el-table-column label="余额" :show-overflow-tooltip="true" align="center" prop="accountNow" min-width="120"/>
-      <el-table-column label="奖金" :show-overflow-tooltip="true" align="center" prop="bonusMoney" min-width="120"/>
+      <el-table-column label="账户余额" :show-overflow-tooltip="true" align="center" prop="bonusMoney" min-width="120"/>
+      <el-table-column label="促销数量" :show-overflow-tooltip="true" align="center" prop="promotionAmount" min-width="120"/>
+      <el-table-column label="收回账户" :show-overflow-tooltip="true" align="center" prop="withdrawAccount" min-width="120"/>
       <el-table-column label="电子邮件" :show-overflow-tooltip="true" align="center" prop="email"
-                       min-width="120"/>
+                       min-width="120"
+                       :formatter="maskedEmailRow"/>
       <el-table-column label="状态" align="center" min-width="110px">
         <template v-slot="{row}">
           <el-select v-model="row.status" placeholder="请选择状态" size="small"
@@ -225,16 +228,16 @@
         </template>
       </el-table-column>
 
-<!--        <el-table-column label="出款状态" align="center" prop="withdrawStatus" width="140">-->
-<!--            <template #default="scope">-->
-<!--                <el-switch-->
-<!--                        v-model="scope.row.withdrawStatus"-->
-<!--                        :active-value="true"-->
-<!--                        :inactive-value="false"-->
-<!--                        @click="withdrawStatusChange(scope.row)">-->
-<!--                </el-switch>-->
-<!--            </template>-->
-<!--        </el-table-column>-->
+      <!--        <el-table-column label="出款状态" align="center" prop="withdrawStatus" width="140">-->
+      <!--            <template #default="scope">-->
+      <!--                <el-switch-->
+      <!--                        v-model="scope.row.withdrawStatus"-->
+      <!--                        :active-value="true"-->
+      <!--                        :inactive-value="false"-->
+      <!--                        @click="withdrawStatusChange(scope.row)">-->
+      <!--                </el-switch>-->
+      <!--            </template>-->
+      <!--        </el-table-column>-->
 
 
       <el-table-column label="注册时间" align="center" prop="registerTime" width="160"/>
@@ -268,12 +271,12 @@
               @click="handleMore(scope.row)"
           >更多
           </el-button>
-<!--          <el-button-->
-<!--              type="warning"-->
-<!--              plain-->
-<!--              @click="boxDish(scope.row)"-->
-<!--          >保险箱余额提出-->
-<!--          </el-button>-->
+          <!--          <el-button-->
+          <!--              type="warning"-->
+          <!--              plain-->
+          <!--              @click="boxDish(scope.row)"-->
+          <!--          >保险箱余额提出-->
+          <!--          </el-button>-->
         </template>
       </el-table-column>
     </el-table>
@@ -398,9 +401,9 @@
       <el-row :gutter="10" class="mb8" style="margin-left: 85%;margin-top: 35px">
         <!--        handling onclick deactivate user status-->
         <el-col :span="8">
-<!--          <el-button type="primary" plain style="height: auto" @click="ipBlockHandler" :disabled='!isActive'>-->
-<!--            封禁-->
-<!--          </el-button>-->
+          <!--          <el-button type="primary" plain style="height: auto" @click="ipBlockHandler" :disabled='!isActive'>-->
+          <!--            封禁-->
+          <!--          </el-button>-->
         </el-col>
         <!--click on clock member searched panel  -->
         <el-col :span="1.5">
@@ -437,7 +440,7 @@
       </div>
     </el-dialog>
     <MobileLimit ref="mobileLimit"/>
-    <personal-record-table ref="personalRecord" />
+    <personal-record-table ref="personalRecord"/>
     <more ref="memberMore"/>
   </div>
 </template>
@@ -446,8 +449,8 @@
 
 import {useDict} from "@/utils/dict";
 import {
-    listMemberInfo, changeStatusBan, ipBan, addMemberInfo,
-    listCountApi, requestBoxDish, getMemberInfo, exportMemberInfo, changeWithdrawStatus
+  listMemberInfo, changeStatusBan, ipBan, addMemberInfo,
+  listCountApi, requestBoxDish, getMemberInfo, exportMemberInfo, changeWithdrawStatus
 } from "@/api/member/memberInfo";
 import More from './more'
 import MobileLimit from "@/views/member/memberInfo/mobileLimit";
@@ -456,7 +459,11 @@ import PersonalRecordTable from './personalRecordTable'
 const router = useRouter();
 const {proxy} = getCurrentInstance();
 
-const {member_type, member_device_type, muteRemarkOptions} = useDict("member_type", "member_device_type", "muteRemarkOptions");
+const {
+  member_type,
+  member_device_type,
+  muteRemarkOptions
+} = useDict("member_type", "member_device_type", "muteRemarkOptions");
 
 
 const statusOptions = ref([]);
@@ -469,11 +476,11 @@ const typeList = ref([]);
 const totalLoading = ref(false);
 /** 遮罩层 loading */
 const loading = ref(false);
- /** 非单个禁用 */
+/** 非单个禁用 */
 const single = ref(true);
- /** 非多个禁用 */
+/** 非多个禁用 */
 const multiple = ref(true);
- /** 显示搜索条件 */
+/** 显示搜索条件 */
 const showSearch = ref(true);
 const muteRemark = ref(false);
 const muteRemarkTitle = ref('');
@@ -481,7 +488,7 @@ const memberByIpAddressListOpen = ref(false);
 const paginationShow = ref(false);
 const isActive = ref(false);
 
- /** 是否显示弹出层 */
+/** 是否显示弹出层 */
 const open = ref(false);
 const display = ref(false);
 const openExcel = ref(false);
@@ -505,7 +512,6 @@ const loginIp = ref('');
 /** 弹出层标题 */
 const title = ref('');
 const total = ref(0);
-
 
 
 const data = reactive({
@@ -533,7 +539,7 @@ const data = reactive({
     inviterCode: '',
     channelcode: '',
     downLoadDate: [],
-      withdrawStatus: null,
+    withdrawStatus: null,
     selectDate: [proxy.parseTime(proxy.getTodayStartTime()), proxy.parseTime(proxy.getTodayEndTime())],
     orderByColumn: 'register_time',
     isAsc: 'desc',
@@ -557,7 +563,7 @@ const data = reactive({
     pageNum: 1,
     pageSize: 20,
     email: '',
-    searchValue: '',  /** 会员Id,账号,手机号 */
+    searchValue: '', /** 会员Id,账号,手机号 */
     status: '',
     loginIp: '',
     userName: '',
@@ -695,7 +701,7 @@ function memberListAccordingToIp() {
   title.value = '查看会员'
 }
 
-function mobileLimitFun(){
+function mobileLimitFun() {
   proxy.$refs["mobileLimit"].show()
 }
 
@@ -805,7 +811,7 @@ function handleSelectionChange(selection) {
 
 /** 更多按钮操作 handle more*/
 function handleMore(row) {
-  proxy.$refs["memberMore"].show(row.id, row.vip, row.nickName, row.phone)
+  proxy.$refs["memberMore"].show(row.id, row.vip, row.nickName, row.phone, row.email)
 }
 
 /** Safe deposit box balance transfer out */
@@ -927,24 +933,37 @@ function copy(data) {
 function personalReport(getMemberId) {
   getMemberInfo(getMemberId).then(res => {
     title.value = res.data.nickName + " - 个人报表";
-    proxy.$refs["personalRecord"].show(getMemberId,title.value);
+    proxy.$refs["personalRecord"].show(getMemberId, title.value);
   })
 }
 
-function withdrawStatusChange(row){
-    console.log(row)
-    let text = row.withdrawStatus === '1' ? '启用' : '停用'
-    proxy.$modal.confirm('确认要"' + text + '""' + row.nickName + '"吗?', '警告', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-    }).then(function () {
-        return changeWithdrawStatus(row.id, row.withdrawStatus)
-    }).then(() => {
-        proxy.$modal.msgSuccess(text + '成功')
-    }).catch(function () {
-        row.withdrawStatus = row.withdrawStatus === '0' ? '1' : '0'
-    })
+function withdrawStatusChange(row) {
+  console.log(row)
+  let text = row.withdrawStatus === '1' ? '启用' : '停用'
+  proxy.$modal.confirm('确认要"' + text + '""' + row.nickName + '"吗?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(function () {
+    return changeWithdrawStatus(row.id, row.withdrawStatus)
+  }).then(() => {
+    proxy.$modal.msgSuccess(text + '成功')
+  }).catch(function () {
+    row.withdrawStatus = row.withdrawStatus === '0' ? '1' : '0'
+  })
+}
+
+function maskedEmailRow(row) {
+  return maskValue(row.email);
+}
+
+function maskValue( email ) {
+  if (email == null || email.length <= 2) {
+    return email;
+  }
+  const parts = email.split('@');
+  const maskedLocalPart = parts[0].substring(0, Math.max(0, parts[0].length - 4)) + '****';
+  return  maskedLocalPart + '@' + parts[1];
 }
 
 /** Personal report end here 个人报告到此结束*/

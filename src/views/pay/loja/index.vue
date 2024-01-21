@@ -69,6 +69,16 @@
           </a>
         </template>
       </el-table-column>
+      <el-table-column align="center" min-width="150" label="状态" prop="status">
+        <template #default="scope">
+          <el-switch
+              v-model="scope.row.status"
+              :active-value=1
+              :inactive-value=0
+              @change="handleEffectChange(scope.row)"
+          ></el-switch>
+        </template>
+      </el-table-column>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
@@ -162,7 +172,8 @@ import {
   addLoja,
   updateLoja,
   getLoja,
-  fileUpload
+  fileUpload,
+  changeLojaStatus
 } from "@/api/pay/loja";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 const {proxy} = getCurrentInstance();
@@ -176,6 +187,7 @@ const open = ref(false);
 const upload = ref([]);
 const formData = new FormData();
 const showSearch = ref(true);
+const stats = ref(false);
 const total = ref(0);
 const types = ref([
     {
@@ -286,6 +298,26 @@ function submitForm() {
         })
       }
     }
+  })
+}
+
+function handleEffectChange(row) {
+  let text = row.status === '1' ? '启用' : '停用'
+  proxy.$confirm('确认要' + text + '吗?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消'
+  }).then(function () {
+    loading.value = true
+    const status = changeLojaStatus(row.id, row.status);
+    if (status) {
+      loading.value = false
+      return status
+    }
+  }).then(() => {
+    proxy.$modal.msgSuccess(text + '成功')
+    getList()
+  }).catch(function () {
+    row.status = row.status === '0' ? '1' : '0'
   })
 }
 

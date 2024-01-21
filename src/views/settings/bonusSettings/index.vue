@@ -1,10 +1,33 @@
 <template>
   <div class="app-container">
+    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" >
+      <el-form-item label="语言" prop="type">
+        <el-select v-model="queryParams.type" placeholder="语言" clearable>
+          <el-option
+              v-for="type in types"
+              :key="type.value"
+              :label="type.label"
+              :value="type.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="地位" prop="status">
+        <el-select v-model="queryParams.status" placeholder="语言" clearable>
+          <el-option label="不活跃的" :value=0></el-option>
+          <el-option label="积极的" :value=1></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="Search" @click="getList">搜索</el-button>
+        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+      </el-form-item>
+    </el-form>
+
     <!--    button on the table for query-->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['settings:loginMethod:add']"
+            v-hasPermi="['settings:bonus:add']"
             icon="Plus"
             plain
             size="small"
@@ -15,7 +38,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['settings:loginMethod:delete']"
+            v-hasPermi="['settings:bonus:delete']"
             :disabled="multiple"
             icon="Delete"
             plain
@@ -25,14 +48,20 @@
         >删除
         </el-button>
       </el-col>
-      <right-toolbar @queryTable="getList"></right-toolbar>
+      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <!--    display data in table -->
     <el-table v-loading="loading" :data="recordList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="名字" min-width="180" prop="name" :formatter="formatterLoginMethod"/>
-      <el-table-column label="地位" prop="status" align="center" width="180">
+      <el-table-column align="center" label="赠送金额" width="180" prop="money" />
+      <el-table-column align="center" label="类型" min-width="180" prop="type">
+        <template #default="scope">{{types.find((e) => e.value === scope.row.type).label}}</template>
+      </el-table-column>
+      <el-table-column align="center" label="基金目的地" width="180" prop="destination" :formatter="formatterDestination"/>
+      <el-table-column align="center" label="倍数" width="180" prop="multiplier" />
+      <el-table-column align="center" label="描述" width="180" prop="description" />
+      <el-table-column align="center" label="地位" width="180" prop="status">
         <template #default="scope">
           <el-switch
               v-model="scope.row.status"
@@ -42,18 +71,17 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="装置" min-width="180" prop="dev" :formatter="formatterDev"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
-              v-hasPermi="['settings:loginMethod:edit']"
+              v-hasPermi="['settings:bonus:edit']"
               icon="Edit" link
               size="small"
               type="primary"
               @click="handleUpdate(scope.row)">修改
           </el-button>
           <el-button
-              v-hasPermi="['settings:loginMethod:delete']"
+              v-hasPermi="['settings:bonus:delete']"
               icon="Delete" link
               size="small"
               style="color: #e05e5e"
@@ -69,25 +97,36 @@
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="600px" :rules="rules">
       <el-form ref="queryForm" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="名字" prop="name">
-          <el-select v-model="form.name" placeholder="名字">
-            <el-option label="手机号" value="loginDevice"></el-option>
-            <el-option label="电子邮件" value="loginEmail"></el-option>
-            <el-option label="谷歌" value="google"></el-option>
-            <el-option label="游客" value="mobile"></el-option>
+        <el-form-item label="钱" prop="money">
+          <el-input type="number" v-model="form.money" placeholder="钱"/>
+        </el-form-item>
+        <el-form-item label="类型" prop="type">
+          <el-select v-model="form.type" clearable placeholder="类型">
+            <el-option
+                v-for="type in types"
+                :key="type.value"
+                :label="type.label"
+                :value="type.value"
+            />
           </el-select>
+        </el-form-item>
+        <el-form-item label="性别">
+          <el-radio-group v-model="form.destination" @change="handleDestinationChange()">
+            <el-radio label="ACCOUNT">账户</el-radio>
+            <el-radio label="BONUS">积分</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="乘数" prop="multiplier">
+          <el-input type="number" v-model="form.multiplier" placeholder="乘数" :disabled="form.destination==='BONUS'"/>
+        </el-form-item>
+        <el-form-item label="描述" prop="description">
+          <el-input v-model="form.description" placeholder="描述" type="textarea"/>
         </el-form-item>
         <el-form-item label="地位" prop="status">
           <el-switch v-model="form.status"
                      :active-value=1
                      :inactive-value=0
           />
-        </el-form-item>
-        <el-form-item label="装置" prop="dev">
-          <el-select v-model="form.dev" placeholder="选择设备">
-            <el-option label="网站" :value=0></el-option>
-            <el-option label="手机登录" :value=1></el-option>
-          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -107,7 +146,7 @@ import {
   updateRecord,
   getRecord,
   changeStatus
-} from "@/api/settings/loginMethod";
+} from "@/api/settings/bonusSettings.js";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 
 const {proxy} = getCurrentInstance();
@@ -118,6 +157,7 @@ const title = ref('');
 const loading = ref(true);
 const multiple = ref(true);
 const open = ref(false);
+const showSearch = ref(true);
 const data = reactive({
   /** 查询参数 query params*/
   queryParams: {},
@@ -126,16 +166,29 @@ const data = reactive({
   form: {},
 
   rules: {
-    name: [
+    type: [
       {required: true, message: '无效的值', trigger: 'blur'}
     ],
-    dev: [
+    money: [
+      {required: true, message: '无效的设备', trigger: 'blur'}
+    ],
+    multiplier: [
+      {required: true, message: '无效的设备', trigger: 'blur'}
+    ],
+    destination: [
       {required: true, message: '无效的设备', trigger: 'blur'}
     ]
   },
 
 });
 const {queryParams, form, rules} = toRefs(data);
+
+const types = ref([
+  {
+    value: 'BIND_PHONE',
+    label: '绑定手机'
+  }
+])
 
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id);
@@ -154,8 +207,9 @@ function getList() {
 // 表单重置
 function reset() {
   form.value = {
-    name: null,
-    status: 1
+    status: 1,
+    multiplier: 0,
+    destination: 'ACCOUNT'
   }
   proxy.resetForm('queryForm');
 }
@@ -164,7 +218,7 @@ function reset() {
 function handleAdd() {
   reset()
   open.value = true
-  title.value = '添加记录'
+  title.value = '新的奖金设置'
 }
 
 /** submit new data and handle insert data api*/
@@ -194,7 +248,7 @@ function handleUpdate(row) {
     form.value = response.data;
   });
   open.value = true
-  title.value = '更新记录'
+  title.value = '更新奖金设置'
 }
 
 /**  删除按钮操作 handle delete */
@@ -235,29 +289,24 @@ function toggleSwitch(row) {
   })
 }
 
-function formatterDev(row) {
-  switch (row.dev) {
-    case 0 :
-      return "网站";
-    case 1 :
-      return "手机登录";
-    default  :
-      return "";
+function resetQuery() {
+  proxy.resetForm('queryRef')
+  getList()
+  loading.value = false
+}
+
+function formatterDestination(row) {
+  switch (row.destination) {
+    case "ACCOUNT" :
+      return "账户";
+    case "BONUS" :
+      return "积分";
   }
 }
 
-function formatterLoginMethod(row) {
-  switch (row.name) {
-    case "loginDevice" :
-      return "手机号";
-    case "loginEmail" :
-      return "电子邮件";
-    case "google" :
-      return "谷歌";
-    case "mobile" :
-      return "游客";
-    default  :
-      return "";
+function handleDestinationChange(){
+  if ( form.value.destination === 'BONUS') {
+    form.value.multiplier = 0;
   }
 }
 

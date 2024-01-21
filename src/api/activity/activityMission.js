@@ -15,6 +15,12 @@ export function getMissionRepeatTypeList(){
         method:'get'
     })
 }
+export function getMissionRewardTypeList(){
+    return request({
+        url:url.game99PlatformAdminWeb+"/activity/mission/missionRewardTypeList",
+        method:'get'
+    })
+}
 
 export function getActivityMissionList(id){
     return request({

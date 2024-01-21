@@ -26,13 +26,6 @@ export function vipBonusInfoFindById(id){
     })
 }
 
-export function configVpiDataList(){
-    return request({
-        url:url.game99PlatformAdminWeb+"/config/vipBonusInfo/vip/listAll",
-        method:'get',
-    })
-}
-
 export function vipBonusInfoAdd(data){
     return request({
         url:url.game99PlatformAdminWeb+"/config/vipBonusInfo",
@@ -63,85 +56,34 @@ export function vipBonusInfoUpdateStatus(id, status){
     })
 }
 
-export function getAllVipBonusLogo(data){
+export function configVpiDataList(){
     return request({
-        url:url.game99PlatformAdminWeb+"/config/vipBonusInfo/getAllVipBonusLogo",
+        url:url.game99PlatformAdminWeb+"/config/vipBonusInfo/vip/listAll",
+        method:'get',
+    })
+}
+
+export function uploadImages(data){
+    return request({
+        url:url.game99PlatformAdminWeb+"/config/vipBonusInfo/uploadImages",
+        method:'post',
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        },
+        data
+    })
+}
+export function listImages(data){
+    return request({
+        url:url.game99PlatformAdminWeb+"/config/vipBonusInfo/listImages",
         method:'post',
         data: data
     })
 }
 
-export function uploadVipBonusLogo(data){
+export function removeImages(type,platform,field, imageUrl){
     return request({
-        url:url.game99PlatformAdminWeb+"/config/vipBonusInfo/uploadVipBonusLogo",
-        method:'post',
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        },
-        data
-    })
-}
-export function removeVipBonusLogo(imageUrl){
-    return request({
-        url:url.game99PlatformAdminWeb+"/config/vipBonusInfo/removeVipBonusLogo",
-        method:'post',
-        data: {
-            url: imageUrl
-        }
-    })
-}
-
-export function getAllVipBonusBanner(data){
-    return request({
-        url:url.game99PlatformAdminWeb+"/config/vipBonusInfo/getAllVipBonusBanner",
-        method:'post',
-        data: data
-    })
-}
-
-export function uploadVipBonusBanner(data){
-    return request({
-        url:url.game99PlatformAdminWeb+"/config/vipBonusInfo/uploadVipBonusBanner",
-        method:'post',
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        },
-        data
-    })
-}
-
-export function removeVipBonusBanner(imageUrl){
-    return request({
-        url:url.game99PlatformAdminWeb+"/config/vipBonusInfo/removeVipBonusBanner",
-        method:'post',
-        data: {
-            url: imageUrl
-        }
-    })
-}
-
-//TODO: Modify back-end logic, make this filterable by typeId
-export function getRewardIcons(){
-    return request({
-        url:url.game99PlatformAdminWeb+"/config/vipBonusInfo/getAllRewardIcon",
-        method:'post',
-    })
-}
-
-export function getUploadedImages(data){
-    return request({
-        url:url.game99PlatformAdminWeb+"/config/vipBonusInfo/getUploadedImages",
-        method:'post',
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        },
-        data
-    })
-}
-
-export function removeAndListImages(type,platform,field, imageUrl){
-    return request({
-        url:url.game99PlatformAdminWeb+"/config/vipBonusInfo/getImagesAfterRemoved",
+        url:url.game99PlatformAdminWeb+"/config/vipBonusInfo/removeImages",
         method:'post',
         data: {
             url: imageUrl,
@@ -152,12 +94,23 @@ export function removeAndListImages(type,platform,field, imageUrl){
     })
 }
 
-export function cleanImagesByType(types){
+export function deleteImagesByType(types){
     return request({
-        url:url.game99PlatformAdminWeb+"/config/vipBonusInfo/cleanImagesByType",
+        url:url.game99PlatformAdminWeb+"/config/vipBonusInfo/deleteImagesByType",
         method:'post',
         data: {
             types: types
+        }
+    })
+}
+
+export function saveImageUrl(imageUrlList, param){
+    return request({
+        url:url.game99PlatformAdminWeb+"/config/vipBonusInfo/saveImageUrl",
+        method:'post',
+        data: {
+            imageUrlList: imageUrlList,
+            param: param
         }
     })
 }

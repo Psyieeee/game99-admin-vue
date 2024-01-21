@@ -79,6 +79,7 @@
           <el-image :src="scope.row.bankIcon" lazy fit="contain" style="width: 60px;"/>
         </template>
       </el-table-column>
+      <el-table-column label="类型" align="center" prop="type"/>
       <el-table-column label="激活状态" align="center" prop="effect">
         <template #default="scope">
           <el-switch
@@ -90,6 +91,7 @@
         </template>
       </el-table-column>
       <el-table-column label="排序" align="center" prop="sort"/>
+
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width"  fixed="right" min-width="150">
         <template #default="scope">
           <el-button
@@ -136,6 +138,16 @@
         </el-form-item>
         <el-form-item label="排序" prop="sort">
           <el-input v-model="form.sort" placeholder="请输入排序" type="number"/>
+        </el-form-item>
+        <el-form-item label="类型" prop="type">
+          <el-select
+              filterable
+              v-model="form.type"
+              style="width: 240px">
+            <el-option
+                v-for="configBankListType in configBankListTypes"
+                :value="configBankListType"/>
+          </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -193,6 +205,8 @@ const data = reactive({
   }
 });
 
+const configBankListTypes = ["BANK", "WALLET"];
+
 const {queryParams, form, rules} = toRefs(data);
 
 /** 查询银行字典列表列表 */
@@ -219,7 +233,8 @@ function reset() {
     bankName: null,
     bankIcon: null,
     effect: null,
-    sort: null
+    sort: null,
+    type: configBankListTypes[0]
   };
   proxy.resetForm("configBankListRef");
 }

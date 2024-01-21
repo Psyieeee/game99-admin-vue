@@ -72,10 +72,12 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="configBankList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="银行名称" align="center" prop="bankName" min-width="120"/>
+      <el-table-column label="银行名称" align="center" prop="bankAccount" min-width="120"
+                       :formatter="getBankName"/>
+<!--      <el-table-column label="银行名称" align="center" prop="bankName" min-width="120"/>-->
       <el-table-column label="银行账号" align="center" prop="bankAccount" min-width="180"/>
       <el-table-column label="排序" align="center" prop="sort"/>
-      <el-table-column label="开户地" :show-overflow-tooltip="true" min-width="180" align="center" prop="bankAddress"/>
+<!--      <el-table-column label="开户地" :show-overflow-tooltip="true" min-width="180" align="center" prop="bankAddress"/>-->
       <el-table-column label="状态" align="center" prop="effect">
         <template #default="scope">
           <el-switch
@@ -166,11 +168,11 @@
         </el-form-item>
 
         <div class="el-row">
-          <div class="el-col-lg-12">
-            <el-form-item label="开户地址" prop="bankAddress">
-              <el-input v-model="form.bankAddress" placeholder="请输入开户地址"/>
-            </el-form-item>
-          </div>
+<!--          <div class="el-col-lg-12">-->
+<!--            <el-form-item label="开户地址" prop="bankAddress">-->
+<!--              <el-input v-model="form.bankAddress" placeholder="请输入开户地址"/>-->
+<!--            </el-form-item>-->
+<!--          </div>-->
           <div class="el-col-lg-12">
             <el-form-item label="优惠比例" prop="discountBill">
               <el-input v-model="form.discountBill" placeholder="请输入优惠比例"/>
@@ -259,6 +261,7 @@ import {
     updatePayRechargeBank
 } from "@/api/pay/payRechargeBank";
 import {downloadExcel} from "@/utils/common";
+import DictTag from "@/components/DictTag/index.vue";
 
 const configBankList = ref([]);
 const bankListOptions = ref([]);
@@ -323,6 +326,7 @@ function getList() {
   });
 }
 
+
 // 表单重置
 function reset() {
   form.value = {
@@ -338,7 +342,7 @@ function reset() {
     remark: null,
     status: null,
     accountName: null,
-    bankAddress: null,
+    // bankAddress: null,
     discountBill: null,
     openLevelMin: null,
     openLevelMax: null,
@@ -380,6 +384,15 @@ function bankList() {
     }
     loading.value = false;
   });
+}
+
+function formatterBank(row) {
+    for (const pt of bankListOptions.value) {
+        if (pt.id === row.bankId) {
+            return pt.BankName
+        }
+    }
+    return ""
 }
 
 
@@ -500,6 +513,10 @@ function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
+}
+
+function getBankName( row ) {
+  return bankListOptions.value.find(bank => bank.id === row.bankId).bankName;
 }
 
 bankList()

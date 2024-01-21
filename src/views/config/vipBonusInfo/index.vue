@@ -1,15 +1,16 @@
 <template>
   <div class="app-container">
-    <el-form :disabled="isButtonDisabled" :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item prop="标题" class="input-wd20">
         <el-input
             v-model="queryParams.title"
+            :disabled="loading"
             placeholder="输入标题"
             clearable
             @keyup.enter="handleSearchQuery"/>
       </el-form-item>
       <el-form-item prop="效果">
-        <el-select v-model="queryParams.effect" placeholder="效果" clearable>
+        <el-select :disabled="loading" v-model="queryParams.effect" placeholder="效果" clearable>
           <el-option label="Disabled" value="0"></el-option>
           <el-option label="Enabled" value="1"></el-option>
         </el-select>
@@ -17,6 +18,7 @@
       <el-form-item label="奖励类型" prop="typeId" label-width="100px">
         <el-select
             filterable
+            :disabled="loading"
             v-model="queryParams.typeId"
             placeholder="选择奖金类型"
             clearable
@@ -29,8 +31,8 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="Search" size="small" @click="handleSearchQuery">搜索</el-button>
-        <el-button icon="Refresh" size="small" @click="handleResetQuery">重置</el-button>
+        <el-button :disabled="loading" type="primary" icon="Search" size="small" @click="handleSearchQuery">搜索</el-button>
+        <el-button :disabled="loading" icon="Refresh" size="small" @click="handleResetQuery">重置</el-button>
       </el-form-item>
     </el-form>
 
@@ -40,7 +42,7 @@
             plain
             icon="Plus"
             size="small"
-            :disabled="isButtonDisabled"
+            :disabled="loading"
             @click="handleAddBonusActivity"
             v-hasPermi="['config:vipBonusInfo:add']">添加
         </el-button>
@@ -49,7 +51,7 @@
             plain
             icon="Delete"
             size="small"
-            :disabled="multiple"
+            :disabled="multiple || loading"
             @click="handleDeleteTableData"
             v-hasPermi="['config:vipBonusInfo:remove']">删除
         </el-button>
@@ -58,7 +60,7 @@
             plain
             icon="Download"
             size="small"
-            :disabled="isButtonDisabled"
+            :disabled="loading"
             @click="handleExportData"
             v-hasPermi="['config:vipBonusInfo:export']">导出
         </el-button>
@@ -71,21 +73,23 @@
       <el-table-column label="标题" align="center" prop="title" min-width="180"/>
       <el-table-column label="奖励类型" align="center" prop="typeId" :formatter="formatterActivityType"  min-width="100"/>
       <el-table-column label="支持的平台" align="center" prop="platforms" min-width="120"/>
-<!--      <el-table-column label="Icon" align="center" prop="icon">-->
-<!--          <template #default="scope">-->
-<!--            <el-image-->
-<!--                style="height: 50px;"-->
-<!--                :src="scope.row.icon"-->
-<!--                fit="contain">-->
-<!--            </el-image>-->
-<!--          </template>-->
-<!--        </el-table-column>-->
-<!--      <el-table-column label="内容" align="center" prop="content"  min-width="100">-->
-<!--        <template v-slot="{row}">-->
-<!--          <div v-html="row.content" style="max-height: 80px"></div>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-<!--      <el-table-column label="跳转链接" align="center" prop="url"  min-width="100"/>-->
+<!--      <el-table-column label="Icon" align="center" prop="icon">
+          <template #default="scope">
+            <el-image
+                style="height: 50px;"
+                :src="scope.row.icon"
+                fit="contain">
+            </el-image>
+          </template>
+        </el-table-column>
+      <el-table-column label="内容" align="center" prop="content"  min-width="100">
+        <template v-slot="{row}">
+          <div v-html="row.content" style="max-height: 80px"></div>
+        </template>
+      </el-table-column>
+      <el-table-column label="跳转链接" align="center" prop="url"  min-width="100"/>-->
+      <el-table-column label="基金目的地" align="center" prop="fundDestination"  min-width="100"/>
+      <el-table-column label="乘数" align="center" prop="multiplier"  min-width="100"/>
       <el-table-column label="日程类型" align="center" prop="scheduleType"  min-width="100"/>
       <el-table-column label="开始效果" align="center" prop="startEffect"  min-width="120"/>
       <el-table-column label="结束效果" align="center" prop="endEffect"  min-width="120"/>
@@ -106,7 +110,7 @@
       <el-table-column label="动作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="120">
         <template #default="scope">
           <el-button
-              :disabled="isButtonDisabled"
+              :disabled="loading"
               size="small"
               type="primary"
               link
@@ -115,7 +119,7 @@
               v-hasPermi="['config:vipBonusInfo:edit']">编辑
           </el-button>
           <el-button
-              :disabled="isButtonDisabled"
+              :disabled="loading"
               size="small"
               type="danger"
               link
@@ -145,14 +149,14 @@
           padding-bottom: 20px
         "
         append--body
-        @closed="handleClosedForm"
+        @closed="handleClosedForm()"
         :close-on-click-modal="false"
     >
-      <el-form ref="vipBonusForm" :model="form" :rules="rules" label-width="120">
+      <el-form ref="vipBonusForm" v-loading="loading" :model="form" :rules="rules" label-width="120">
         <div class="el-row">
 <!-- Configurations -->
 <!--          <div style="min-width: 40%"> -->
-          <div class="el-col el-col-11" style="padding-right: 50px">
+          <div class="el-col el-col-10" style="padding-right: 50px">
             <label style="font-size: 25px; text-align: left">基本配置</label>
             <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
             <el-form-item label="奖金类型" prop="typeId">
@@ -187,7 +191,7 @@
                                 clearable
                                 format="YYYY-MM-DD"
                                 value-format="YYYY-MM-DD HH:mm:ss"
-                                @change="calculateNumberOfDays"/>
+                />
             </el-form-item>
             <el-form-item v-show="form.scheduleType === '2'" label="开始日期" prop="startDate">
               <el-date-picker type="date"
@@ -210,6 +214,15 @@
                 <el-checkbox v-for="(option, index) in platforms" :key="index" :label="option" @change="handleChangePlatform(option)">{{ option }}</el-checkbox>
               </el-checkbox-group>
             </el-form-item>
+            <el-form-item label="基金目的地" prop="fundDestination">
+              <el-radio-group v-model="form.fundDestination" @change="handleFundDestinationChange()">
+                <el-radio label="1">积分</el-radio>
+                <el-radio label="2">账户</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item v-if="form.fundDestination === '2'" label="乘数" prop="multiplier">
+              <el-input style="width: 60px"  v-model="form.multiplier"/>
+            </el-form-item>
 <!-- Other Config -->
 <!--            <label style="font-size: 25px;padding-top: 10px; text-align: left">其他配置</label>-->
 <!--            <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">-->
@@ -229,8 +242,8 @@
 <!--              </el-form-item>-->
 <!--            </div>-->
           </div>
-          <div class="el-col el-col-12">
-            <label style="font-size: 25px; text-align: left">{{ vipBonusTypes.find((type) => type.id === form.typeId).name + ' 配置'}}</label>
+          <div class="el-col el-col-14">
+            <label style="font-size: 25px; text-align: left">登录配置</label>
             <hr style="max-width: 800px; margin-top: 20px; margin-left: 0">
 <!-- Sign in Config -->
             <div v-if="form.typeId === 1">
@@ -242,7 +255,7 @@
                 <div class="upload-image-container">
                   <div v-for="(icon, index) in configurations.rewardIcons.web" :key="index" class="image-preview-container">
                     <img :src="icon" alt="Reward Icon Preview" class="image-preview">
-                    <div class="reward-close-button" @click="removeImage('web','rewardImg','web', icon)">x</div>
+                    <div class="reward-close-button" @click="removeImageAndList('web','rewardImg','web', icon)">x</div>
                   </div>
                 </div>
               </el-form-item>
@@ -253,7 +266,7 @@
                 <div class="upload-image-container">
                   <div v-for="(icon, index) in configurations.rewardIcons.mobile" :key="index" class="image-preview-container">
                     <img :src="icon" alt="Reward Icon Preview" class="image-preview">
-                    <div class="reward-close-button" @click="removeImage('mobile','rewardImg','mobile', icon)">x</div>
+                    <div class="reward-close-button" @click="removeImageAndList('mobile','rewardImg','mobile', icon)">x</div>
                   </div>
                 </div>
               </el-form-item>
@@ -264,22 +277,22 @@
                 <div class="image-container">
                   <div class="image-wrapper">
                     <el-image class="status-image-preview" :src="configurations.signIn.statusIcon.web.claimable"/>
-                    <div v-if="configurations.signIn.statusIcon.web.claimable !== null" class="status-close-button" @click="removeImage('web','statusImg','claimable',configurations.signIn.statusIcon.web.claimable)">x</div>
+                    <div v-if="configurations.signIn.statusIcon.web.claimable !== null" class="status-close-button" @click="removeImageAndList('web','statusImg','claimable',configurations.signIn.statusIcon.web.claimable)">x</div>
                     <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','claimable')">可索赔</div>
                   </div>
                   <div class="image-wrapper">
                     <el-image class="status-image-preview" :src="configurations.signIn.statusIcon.web.claimed"/>
-                    <div v-if="configurations.signIn.statusIcon.web.claimed !== null" class="status-close-button" @click="removeImage('web','statusImg','claimed',configurations.signIn.statusIcon.web.claimed)">x</div>
+                    <div v-if="configurations.signIn.statusIcon.web.claimed !== null" class="status-close-button" @click="removeImageAndList('web','statusImg','claimed',configurations.signIn.statusIcon.web.claimed)">x</div>
                     <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','claimed')">已申请</div>
                   </div>
                   <div class="image-wrapper">
                     <el-image class="status-image-preview" :src="configurations.signIn.statusIcon.web.notClaimable"/>
-                    <div v-if="configurations.signIn.statusIcon.web.notClaimable !== null" class="status-close-button" @click="removeImage('web','statusImg','notClaimable',configurations.signIn.statusIcon.web.notClaimable)">x</div>
+                    <div v-if="configurations.signIn.statusIcon.web.notClaimable !== null" class="status-close-button" @click="removeImageAndList('web','statusImg','notClaimable',configurations.signIn.statusIcon.web.notClaimable)">x</div>
                     <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','notClaimable')">不可索赔</div>
                   </div>
                   <div class="image-wrapper">
                     <el-image class="status-image-preview" :src="configurations.signIn.statusIcon.web.notClaimed"/>
-                    <div v-if="configurations.signIn.statusIcon.web.notClaimed !== null" class="status-close-button" @click="removeImage('web','statusImg','notClaimed',configurations.signIn.statusIcon.web.notClaimed)">x</div>
+                    <div v-if="configurations.signIn.statusIcon.web.notClaimed !== null" class="status-close-button" @click="removeImageAndList('web','statusImg','notClaimed',configurations.signIn.statusIcon.web.notClaimed)">x</div>
                     <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','web','notClaimed')">未申请</div>
                   </div>
                 </div>
@@ -289,22 +302,22 @@
                 <div class="image-container">
                   <div class="image-wrapper">
                     <el-image class="status-image-preview" :src="configurations.signIn.statusIcon.mobile.claimable"/>
-                    <div v-if="configurations.signIn.statusIcon.mobile.claimable !== null" class="status-close-button"  @click="removeImage('mobile','statusImg','claimable',configurations.signIn.statusIcon.mobile.claimable)">x</div>
+                    <div v-if="configurations.signIn.statusIcon.mobile.claimable !== null" class="status-close-button"  @click="removeImageAndList('mobile','statusImg','claimable',configurations.signIn.statusIcon.mobile.claimable)">x</div>
                     <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','claimable')">可索赔</div>
                   </div>
                   <div class="image-wrapper">
                     <el-image class="status-image-preview" :src="configurations.signIn.statusIcon.mobile.claimed"/>
-                    <div v-if="configurations.signIn.statusIcon.mobile.claimed !== null" class="status-close-button" @click="removeImage('mobile','statusImg','claimed',configurations.signIn.statusIcon.mobile.claimed)">x</div>
+                    <div v-if="configurations.signIn.statusIcon.mobile.claimed !== null" class="status-close-button" @click="removeImageAndList('mobile','statusImg','claimed',configurations.signIn.statusIcon.mobile.claimed)">x</div>
                     <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','claimed')">已申请</div>
                   </div>
                   <div class="image-wrapper">
                     <el-image class="status-image-preview" :src="configurations.signIn.statusIcon.mobile.notClaimable"/>
-                    <div v-if="configurations.signIn.statusIcon.mobile.notClaimable !== null" class="status-close-button" @click="removeImage('mobile','statusImg','notClaimable',configurations.signIn.statusIcon.mobile.notClaimable)">x</div>
+                    <div v-if="configurations.signIn.statusIcon.mobile.notClaimable !== null" class="status-close-button" @click="removeImageAndList('mobile','statusImg','notClaimable',configurations.signIn.statusIcon.mobile.notClaimable)">x</div>
                     <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','notClaimable')">不可索赔</div>
                   </div>
                   <div class="image-wrapper">
                     <el-image class="status-image-preview" :src="configurations.signIn.statusIcon.mobile.notClaimed"/>
-                    <div v-if="configurations.signIn.statusIcon.mobile.notClaimed !== null" class="status-close-button" @click="removeImage('mobile','statusImg','notClaimed',configurations.signIn.statusIcon.mobile.notClaimed)">x</div>
+                    <div v-if="configurations.signIn.statusIcon.mobile.notClaimed !== null" class="status-close-button" @click="removeImageAndList('mobile','statusImg','notClaimed',configurations.signIn.statusIcon.mobile.notClaimed)">x</div>
                     <div v-else class="upload-status-icon-button" @click="handleUploadIcon('statusImg','mobile','notClaimed')">未申请</div>
                   </div>
                 </div>
@@ -318,14 +331,14 @@
                 </el-radio-group>
               </el-form-item>
               <el-form-item label="周期" prop="cycle">
-                <el-input style="width: 350px" disabled v-model="configurations.signIn.cycle" placeholder="7" @change="populateSignInConfigTable(configurations.signIn.cycle)"/>
+                <el-input style="width: 350px" disabled v-model="configurations.signIn.cycle" @change="populateConfigTableByTypeId()"/>
               </el-form-item>
-              <el-form-item label="自定义日" prop="customDay" @change="populateSignInConfigTable(configurations.signIn.cycle)">
-                <el-radio-group v-model="configurations.signIn.customDay" >
-                  <el-radio label="1">启用</el-radio>
-                  <el-radio label="2">禁用</el-radio>
-                </el-radio-group>
-              </el-form-item>
+<!--              <el-form-item label="自定义日" prop="customDay" @change="populateConfigTableByTypeId(configurations.signIn.cycle)">-->
+<!--                <el-radio-group v-model="configurations.signIn.customDay" >-->
+<!--                  <el-radio label="1">启用</el-radio>-->
+<!--                  <el-radio label="2">禁用</el-radio>-->
+<!--                </el-radio-group>-->
+<!--              </el-form-item>-->
               <el-form-item label="VIP 级别">
                 <el-select
                     v-model="configurations.vipLevel"
@@ -342,20 +355,21 @@
                   ></el-option>
                 </el-select>
                 <div style="padding-left: 10px">
-                  <el-button type="primary" size="small" @click="saveSignInConfig">节省</el-button>
+                  <el-button type="primary" size="small" @click="saveSignInConfig">确认</el-button>
                   <el-button icon="Refresh" size="small" @click="resetSignInConfig">重置</el-button>
                 </div>
               </el-form-item>
               <el-form-item>
-                <el-table :data="configurations.signIn.dailyData" style="max-width: 670px; max-height: 430px;overflow-y:auto; border: 5px solid #e0e0e0; border-radius: 5px" >
+                <el-table :data="configurations.signIn.dailyData" style="max-width: 620px; max-height: 430px;overflow-y:auto; border: 5px solid #e0e0e0; border-radius: 5px" >
                   <el-table-column label="日" width="60px" align="center" prop="day">
                     <template #default="scope">
-                      <div v-if="configurations.signIn.customDay === '1'">
-                        <el-input v-model="scope.row.day"/>
-                      </div>
-                      <div v-else>
-                        {{ scope.row.day }}
-                      </div>
+<!--                      <div v-if="configurations.signIn.customDay === '1'">-->
+<!--                        <el-input v-model="scope.row.day"/>-->
+<!--                      </div>-->
+<!--                      <div v-else>-->
+<!--                        {{ scope.row.day }}-->
+<!--                      </div>-->
+                      {{ scope.row.day }}
                     </template>
                   </el-table-column>
                   <el-table-column label="奖励类型" width="105px" align="center"  prop="rewardType">
@@ -370,14 +384,14 @@
                             label="固定式"
                             value="1"
                         ></el-option>
-                        <el-option
-                            label="随机"
-                            value="2"
-                        ></el-option>
+<!--                        <el-option-->
+<!--                            label="随机"-->
+<!--                            value="2"-->
+<!--                        ></el-option>-->
                       </el-select>
                     </template>
                   </el-table-column>
-                  <el-table-column label="金额" width="70px" align="center">
+                  <el-table-column label="金额" width="140px" align="center">
                     <template #default="scope">
                       <template v-if="scope.row.rewardType === '1'">
                         <el-input v-model="scope.row.rewardAmount.max"/>
@@ -389,16 +403,16 @@
                       </template>
                     </template>
                   </el-table-column>
-                  <el-table-column label="所需存款" width="70px" align="center"  prop="topUpRequirement">
-                    <template #default="scope">
-                      <el-input v-model="scope.row.topUpRequirement"/>
-                    </template>
-                  </el-table-column>
-                  <el-table-column label="所需投注" width="70px" align="center"  prop="codingRequirement">
-                    <template #default="scope">
-                      <el-input v-model="scope.row.codingRequirement"/>
-                    </template>
-                  </el-table-column>
+<!--                  <el-table-column label="所需存款" width="70px" align="center"  prop="topUpRequirement">-->
+<!--                    <template #default="scope">-->
+<!--                      <el-input v-model="scope.row.topUpRequirement"/>-->
+<!--                    </template>-->
+<!--                  </el-table-column>-->
+<!--                  <el-table-column label="所需投注" width="70px" align="center"  prop="codingRequirement">-->
+<!--                    <template #default="scope">-->
+<!--                      <el-input v-model="scope.row.codingRequirement"/>-->
+<!--                    </template>-->
+<!--                  </el-table-column>-->
                   <el-table-column label="Web 奖励图标" align="center" width="135px">
                     <template #default="scope">
                       <el-select
@@ -556,25 +570,23 @@ import html2canvas from 'html2canvas';
 import {getVipBonusTypeList} from "@/api/config/vipBonusType";
 import WangEditor from "@/components/WangEditor";
 import {
-    vipBonusInfoAdd,
-    vipBonusInfoDelete,
-    vipBonusInfoExport,
-    vipBonusInfoFindById,
-    vipBonusInfoUpdate,
-    vipBonusInfoUpdateStatus,
-    getVipBonusInfoList,
-    getAllVipBonusBanner,
-    getAllVipBonusLogo,
-    removeVipBonusBanner,
-    removeVipBonusLogo,
-    uploadVipBonusBanner,
-    uploadVipBonusLogo, getUploadedImages, removeAndListImages, cleanImagesByType, configVpiDataList,
+  vipBonusInfoAdd,
+  vipBonusInfoDelete,
+  vipBonusInfoExport,
+  vipBonusInfoFindById,
+  vipBonusInfoUpdate,
+  vipBonusInfoUpdateStatus,
+  getVipBonusInfoList,
+  configVpiDataList,
+  uploadImages, listImages, removeImages, deleteImagesByType, saveImageUrl,
 } from "@/api/config/vipBonusInfo";
 
-const isButtonDisabled    = ref(true); //Used for disabling button
+const uploadImageParam = ref({type: '',platform: '', field: ''})
+const isButtonDisabled = ref(true); //Used for disabling button
 const vipBonusInfoList = ref([]);
 const vipBonusTypes    = ref([]);
-const configVipList = ref([]);
+const configVipList    = ref([]);
+const rewardStatus     = ref( ['claimable', 'claimed', 'notClaimable', 'notClaimed'])
 const showSearch       = ref(true);
 const multiple = ref(true); //Multiple Row Selection
 const loading  = ref(false);
@@ -584,8 +596,6 @@ const total    = ref(0); //Total rows
 const open     = ref(false); //Opening form
 const ids      = ref([]); //Selected ids of table rows
 const fileInput = ref(null);
-const activityUploadIconParam = ref({type: '',platform: '', field: ''})
-const rewardStatus = ref( ['claimable', 'claimed', 'notClaimable', 'notClaimed'])
 
 /** Create Banner Related */
 const treasureIcons = ref([
@@ -593,28 +603,28 @@ const treasureIcons = ref([
   'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdbx2.png',
   'https://company-fj.s3.ap-east-1.amazonaws.com/siteadmin/active/img_qdbx3.png',
 ]);
-const fontOptions   = ref([
-  "Arial, sans-serif",
-  "Helvetica, sans-serif",
-  "Georgia, serif",
-  "Times New Roman, serif",
-  "Courier New, monospace",
-  "Verdana, sans-serif",
-  "Trebuchet MS, sans-serif",
-  "Arial Black, sans-serif",
-  "Impact, sans-serif",
-  "Comic Sans MS, cursive",
-  "Palatino, serif",
-  "Garamond, serif",
-  "Book Antiqua, serif",
-  "Lucida Sans Unicode, sans-serif",
-  "Lucida Console, monospace",
-  "Tahoma, sans-serif",
-  "Geneva, sans-serif",
-  "Courier, monospace",
-  "MS Sans Serif, sans-serif",
-  "MS Serif, serif",
-]);
+// const fontOptions   = ref([
+//   "Arial, sans-serif",
+//   "Helvetica, sans-serif",
+//   "Georgia, serif",
+//   "Times New Roman, serif",
+//   "Courier New, monospace",
+//   "Verdana, sans-serif",
+//   "Trebuchet MS, sans-serif",
+//   "Arial Black, sans-serif",
+//   "Impact, sans-serif",
+//   "Comic Sans MS, cursive",
+//   "Palatino, serif",
+//   "Garamond, serif",
+//   "Book Antiqua, serif",
+//   "Lucida Sans Unicode, sans-serif",
+//   "Lucida Console, monospace",
+//   "Tahoma, sans-serif",
+//   "Geneva, sans-serif",
+//   "Courier, monospace",
+//   "MS Sans Serif, sans-serif",
+//   "MS Serif, serif",
+// ]);
 
 /** Others */
 const {proxy}   = getCurrentInstance();
@@ -630,11 +640,11 @@ const data      =  reactive({
     title: [
       {required: true, message: "标题不能为空", trigger: "blur"}
     ],
-    icon: [
-      {required: true, message: "图标不能不上传", trigger: "blur"}
+    dateRange: [
+      { validator: (rule, value, callback) => validateDateRange(rule, value, callback, dateRange.value), trigger: "blur" }
     ],
-    typeId: [
-      {required: true, message: "活动类型不能为空", trigger: "blur"}
+    multiplier: [
+      { validator: (rule, value, callback) => validateMultiplier(rule, value, callback), trigger: "blur" }
     ]
   },
   dateRange: [],
@@ -655,18 +665,19 @@ function handleResetQuery(){
   proxy.resetForm("queryForm");
   handleSearchQuery();
 }
-function handleDeleteTableData(row){
+async function handleDeleteTableData(row) {
   const id = row.id || ids.value;
-  proxy.$modal.confirm('是否确认删除"' + row.title + '"?', "警告", {
+
+  await proxy.$modal.confirm('是否确认删除"' + row.title + '"?', "警告", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning"
-  }).then(function () {
-    return vipBonusInfoDelete(id);
-  }).then(() => {
-    listVipBonusActivities();
-    proxy.$modal.msgSuccess("删除成功");
-  })
+  }).then(()=>{
+    vipBonusInfoDelete(id).then(async ()=>{
+      await proxy.$modal.msgSuccess("删除成功")
+      await listVipBonusActivities()
+    })
+  });
 }
 function handleExportData(){
   proxy.$modal.confirm('确认处理Excel并下载，数据量大的时候会延迟，请耐心等待...', '警告', {
@@ -686,11 +697,13 @@ function handleMultipleSelection(selection) {
   multiple.value = !selection.length
 }
 function listVipBonusActivities(){
+  loading.value = true;
   getVipBonusInfoList(queryParams.value).then((res)=>{
     vipBonusInfoList.value = res.data
     total.value = res.total
   }).then( () => {
     isButtonDisabled.value = false
+    loading.value = false;
   })
 }
 function handleEffectChange(row){
@@ -711,6 +724,9 @@ function handleEffectChange(row){
 function formatterActivityType(row) {
   for (const a of vipBonusTypes.value) {
     if (a.id === row.typeId) {
+        if( a.name =="Sign in"){
+            a.name = "登录配置"
+        }
       return a.name;
     }
   }
@@ -718,38 +734,30 @@ function formatterActivityType(row) {
 }
 /** Handle Form */
 function handleClosedForm() {
-  listVipBonusActivities()
+  listVipBonusActivities();
 }
-function handleResetData() {
-  // createBanner.value = {
-  //   type: '1',
-  //   isActionFinished: false,
-  //   customize: {
-  //     iconCollection: null,
-  //     properties: {
-  //       background: '#030303',
-  //       icon: null,
-  //       text: 'PUT TEXT HERE',
-  //       textStyle: {
-  //         font: "Arial, sans-serif",
-  //         size: 30,
-  //         color: '#ffffff'
-  //       }
-  //     }
-  //   },
-  //   preMade: {
-  //     bannerCollection: null,
-  //     banner: null,
-  //   },
-  //   pagination: {
-  //     param: {
-  //       pageNum: 1,
-  //       pageSize: 10
-  //     },
-  //     pageTotal: 1
-  //   }
-  // };
 
+function resetForm(){
+  dateRange.value = []
+  const f = form.value;
+  f.id = null;
+  f.typeId = vipBonusTypes.value[0].id;
+  f.title = null;
+  f.scheduleType = '1';
+  f.startEffect = null;
+  f.platforms = ['mobile']
+  f.endEffect = null;
+  f.isDisplayHome = false;
+  f.configString = null;
+  f.content = '';
+  f.fundDestination = '1';
+  f.multiplier = null;
+  // f.jumpType = '1';
+  // f.url = null;
+  // f.icon = null;
+}
+
+function resetEventConfig(){
   configurations.value = {
     vipLevel: 1,
     rewardIcons: {
@@ -758,8 +766,8 @@ function handleResetData() {
     },
     signIn: {
       collectMethod: '1',
-      cycle: null,
-      customDay: '2',
+      cycle: 7,
+      // customDay: '2',
       dailyData: [],
       listOfDailyData: [],
       statusIcon: {
@@ -778,24 +786,43 @@ function handleResetData() {
       }
     }
   };
+}
 
-  const f = form.value;
-  f.id = null;
-  f.typeId = 1;
-  f.title = null;
-  f.scheduleType = '1';
-  f.startEffect = null;
-  f.platforms = ['mobile']
-  f.endEffect = null;
-  f.isDisplayHome = false;
-  f.configString = null;
-  // f.jumpType = '1';
-  f.content = '';
-  // f.url = null;
-  // f.icon = null;
-  dateRange.value = []
-
-  cleanImagesByType(['rewardImg', 'statusImg'])
+// function resetCreateBannerConfig(){
+//   createBanner.value = {
+//     type: '1',
+//     isActionFinished: false,
+//     customize: {
+//       iconCollection: null,
+//       properties: {
+//         background: '#030303',
+//         icon: null,
+//         text: 'PUT TEXT HERE',
+//         textStyle: {
+//           font: "Arial, sans-serif",
+//           size: 30,
+//           color: '#ffffff'
+//         }
+//       }
+//     },
+//     preMade: {
+//       bannerCollection: null,
+//       banner: null,
+//     },
+//     pagination: {
+//       param: {
+//         pageNum: 1,
+//         pageSize: 10
+//       },
+//       pageTotal: 1
+//     }
+//   };
+// }
+async function handleResetData() {
+  // await resetCreateBannerConfig();
+  await resetEventConfig();
+  await resetForm()
+  await deleteImagesByType(['rewardImg', 'statusImg'])
 }
 function handleChangePlatform(option) {
   //This Logic is based on beforeChanges
@@ -815,65 +842,65 @@ function handleChangePlatform(option) {
 }
 
 /**  Handle Images */
-function handleUploadImage(event) {
-  if ( event.currentTarget.files[0] === undefined ) return;
-  formData.set( "file", event.currentTarget.files[0])
-  let uploadFunction = createBanner.value.type === '1' ? uploadVipBonusLogo( formData )
-      : uploadVipBonusBanner( formData );
-
-  uploadFunction.then( () => {
-    getBannerCreationRelatedImages(1);
-  }).then(() => {
-    ElMessage.success('Success')
-  })
-}
-function handleRemoveImage(){
-  event.preventDefault();
-  const type = createBanner.value.type;
-  const logo = createBanner.value.customize.properties.icon;
-  const banner = createBanner.value.preMade.banner;
-  if ( (type === '1' && logo === undefined) || (type === '2' && banner === undefined) ) return;
-
-  if (confirm("Are you sure you want to remove the image?")){
-    let removeFunction = type === '1' ? removeVipBonusLogo(logo)
-        : removeVipBonusBanner(banner);
-
-    setTimeout( () => {
-      removeFunction.then( () => {
-        getBannerCreationRelatedImages(1);
-      }).then( () => {
-        ElMessage.success('Success')
-      })
-    },1000);
-  }
-}
-function getBannerCreationRelatedImages (pageNum) {
-  const _this      = createBanner.value;
-  const pagination = _this.pagination;
-  const customize  = _this.customize;
-  const preMade    = _this.preMade;
-  const param      = pagination.param;
-
-  param.pageNum = pageNum;
-  if ( createBanner.value.type === '1' ) {
-    param.pageSize = 10;
-    getAllVipBonusLogo(param).then( res => {
-      res.rows = res.rows.map(img => prependActivityInfoImageBaseURI(img))
-      customize.iconCollection  = res.rows;
-      let icon = customize.properties.icon;
-      customize.properties.icon = icon === null ? res.rows[0]: icon;
-      pagination.pageTotal = Math.max(1,Math.ceil(res.total / param.pageSize))
-    })
-  } else {
-    param.pageSize = 6;
-    getAllVipBonusBanner(param).then( res => {
-      preMade.bannerCollection = res.rows;
-      let banner = preMade.banner;
-      preMade.banner = banner === null ? res.rows[0] : banner;
-      pagination.pageTotal = Math.max(1,Math.ceil(res.total / param.pageSize));
-    })
-  }
-}
+// function handleUploadImage(event) {
+//   if ( event.currentTarget.files[0] === undefined ) return;
+//   formData.set( "file", event.currentTarget.files[0])
+//   let uploadFunction = createBanner.value.type === '1' ? uploadVipBonusLogo( formData )
+//       : uploadVipBonusBanner( formData );
+//
+//   uploadFunction.then( () => {
+//     getBannerCreationRelatedImages(1);
+//   }).then(() => {
+//     ElMessage.success('Success')
+//   })
+// }
+// function handleRemoveImage(){
+//   event.preventDefault();
+//   const type = createBanner.value.type;
+//   const logo = createBanner.value.customize.properties.icon;
+//   const banner = createBanner.value.preMade.banner;
+//   if ( (type === '1' && logo === undefined) || (type === '2' && banner === undefined) ) return;
+//
+//   if (confirm("Are you sure you want to remove the image?")){
+//     let removeFunction = type === '1' ? removeVipBonusLogo(logo)
+//         : removeVipBonusBanner(banner);
+//
+//     setTimeout( () => {
+//       removeFunction.then( () => {
+//         getBannerCreationRelatedImages(1);
+//       }).then( () => {
+//         ElMessage.success('Success')
+//       })
+//     },1000);
+//   }
+// }
+// function getBannerCreationRelatedImages (pageNum) {
+//   const _this      = createBanner.value;
+//   const pagination = _this.pagination;
+//   const customize  = _this.customize;
+//   const preMade    = _this.preMade;
+//   const param      = pagination.param;
+//
+//   param.pageNum = pageNum;
+//   if ( createBanner.value.type === '1' ) {
+//     param.pageSize = 10;
+//     getAllVipBonusLogo(param).then( res => {
+//       res.rows = res.rows.map(img => prependActivityInfoImageBaseURI(img))
+//       customize.iconCollection  = res.rows;
+//       let icon = customize.properties.icon;
+//       customize.properties.icon = icon === null ? res.rows[0]: icon;
+//       pagination.pageTotal = Math.max(1,Math.ceil(res.total / param.pageSize))
+//     })
+//   } else {
+//     param.pageSize = 6;
+//     getAllVipBonusBanner(param).then( res => {
+//       preMade.bannerCollection = res.rows;
+//       let banner = preMade.banner;
+//       preMade.banner = banner === null ? res.rows[0] : banner;
+//       pagination.pageTotal = Math.max(1,Math.ceil(res.total / param.pageSize));
+//     })
+//   }
+// }
 function prependActivityInfoImageBaseURI(img) {
   return url.baseUrl + url.game99PlatformAdminWeb + "/config/vipBonusInfo/image?url=" + img;
 }
@@ -882,93 +909,124 @@ function getOriginalImageLink(img){
   const match = img.match(urlRegex);
   return match ? match[1] : img;
 }
-function handleImagePagination(isNext){
-  event.preventDefault();
-  const pageTotal = createBanner.value.pagination.pageTotal;
-  let   pageNum    = createBanner.value.pagination.param.pageNum;
-
-  if ( isNext && pageNum < pageTotal ) pageNum++;
-  else if ( !isNext && pageNum > 1 ) pageNum--;
-  else return;
-  createBanner.value.isActionFinished = true;
-  setTimeout(() => {
-    getBannerCreationRelatedImages(pageNum);
-    createBanner.value.isActionFinished = false;
-  },500)
-}
+// function handleImagePagination(isNext){
+//   event.preventDefault();
+//   const pageTotal = createBanner.value.pagination.pageTotal;
+//   let   pageNum    = createBanner.value.pagination.param.pageNum;
+//
+//   if ( isNext && pageNum < pageTotal ) pageNum++;
+//   else if ( !isNext && pageNum > 1 ) pageNum--;
+//   else return;
+//   createBanner.value.isActionFinished = true;
+//   setTimeout(() => {
+//     getBannerCreationRelatedImages(pageNum);
+//     createBanner.value.isActionFinished = false;
+//   },500)
+// }
 function handleUploadIcon (type, platform, field){
-  activityUploadIconParam.value = {type: type, platform: platform, field: field};
+  uploadImageParam.value = {type: type, platform: platform, field: field};
   fileInput.value.click();
 }
-async function removeImage(platform, type, field, imageUrl) {
-  let updatedImages;
-  await removeAndListImages(type, platform, field, getOriginalImageLink(imageUrl)).then(  res => {
-    res.data = res.data.map(img => prependActivityInfoImageBaseURI(img));
-    updatedImages = res.data;
-  }).then(()=>{
-    switch ( type ) {
-      case 'rewardImg': {
-        configurations.value.rewardIcons[platform] = updatedImages;
-        updateSignInRewardIcons({type: type, platform: platform, field: field});
-        break;
-      }
-      case 'statusImg': {
-        configurations.value.signIn.statusIcon[platform][field] = null;
-        break;
-      }
-      //TODO: Add more field in the future
-    }
-  });
-}
-function onFileInputChange() {
-  const conf = configurations.value;
-  const signIn = conf.signIn;
+
+async function onFileInputChange() {
   const newFileInput = fileInput.value;
   const files = Array.from(newFileInput.files);
   const formData = new FormData();
-  const param = activityUploadIconParam.value;
+  const param = uploadImageParam.value;
 
-  files.forEach( file => {
-    formData.append('files', file);
-  })
+  files.forEach( file => formData.append('files', file));
   formData.append('type', param.type)
   formData.append('platform', param.platform)
   formData.append('field', param.field)
 
-  getUploadedImages(formData).then(res => {
-    res.data = res.data.map(img => prependActivityInfoImageBaseURI(img));
-    const result = Array.isArray(res.data) ? res.data : [res.data];
-    switch (param.type){
+  loading.value = true;
+  const promises = [
+    await uploadImages(formData),
+    await listUpdatedImages(param)
+  ];
+
+  switch ( form.value.typeId ) {
+    case 1: {promises.push( title.value === '添加奖励活动' ? populateConfigTableByTypeId() : updateSignInRewardIcons(param));}
+      //TODO: Future vip bonus activity
+  }
+
+  await Promise.all(promises);
+  loading.value = false;
+  newFileInput.value = null;
+  uploadImageParam.value = null;
+}
+
+function removeImageAndList(platform, type, field, imageUrl) {
+  const param = { type: type, platform: platform, field: field };
+  loading.value = true;
+  removeImages(type, platform, field, getOriginalImageLink(imageUrl))
+      .then(() => listUpdatedImages(param))
+      .then(() => {if(type === 'rewardImg') updateSignInRewardIcons(param)})
+      .then(() => loading.value = false);
+}
+
+async function listUpdatedImages(param) {
+  try {
+    const conf = configurations.value;
+    const signIn = conf.signIn;
+    const res = await listImages(param);
+    const updatedImages = await Promise.all(res.rows.map(async img => prependActivityInfoImageBaseURI(img)));
+    switch (param.type) {
       case 'rewardImg': {
-        conf.rewardIcons[param.field] = result;
+        console.log(updatedImages)
+        conf.rewardIcons[param.platform] = updatedImages;
         break;
       }
       case 'statusImg': {
-        signIn.statusIcon[param.platform][param.field] = result[0];
+        const image = updatedImages[0];
+        signIn.statusIcon[param.platform][param.field] = image === undefined ? null : image;
         break;
       }
     }
-  }).then( ()=> {
-    newFileInput.value = null;
-    activityUploadIconParam.value = null;
-    if ( title.value === '添加奖励活动') populateSignInConfigTable();
-    else updateSignInRewardIcons(param);
-  });
+  } catch (error) {
+    console.error("Error in listUpdatedImages:", error);
+  }
+}
+function validateDateRange(rule, value, callback, dateRange) {
+  if ( form.value.scheduleType === '2') callback();
+
+  if (dateRange && dateRange.length === 2) {
+    const start = new Date(dateRange[0]);
+    const end = new Date(dateRange[1]);
+    const timeDifference = end - start;
+    const dayCount = Math.ceil(timeDifference / (1000 * 60 * 60 * 24)) + 1;
+
+    if (dayCount === 7) {
+      callback(); // Validation successful
+    } else {
+      callback(new Error("日期范围必须是 7 天"));
+    }
+  } else {
+    callback(new Error("日期范围格式不正确"));
+  }
+}
+
+function validateMultiplier(rule, value, callback) {
+  const f = form.value;
+  if ( f.fundDestination === '2' && /^[1-9][0-9]*$/.test(f.multiplier) ) callback();
+  else {
+    f.multiplier = 1;
+    callback(new Error("如果资金目的地是账户，则必须输入大于或等于 1 的有效数字"));
+  }
 }
 
 /**  Handle Add/Update Bonus Activity */
 async function handleAddBonusActivity(){
-  await handleResetData()
+  await handleResetData();
+  await populateConfigTableByTypeId();
   // await getBannerCreationRelatedImages(1);
   title.value = "添加奖励活动"
   open.value  = true
-  populateSignInConfigTable()
-    this.vipBonusInfoList()
 }
 function handleUpdateForm(row) {
   handleResetData()
   vipBonusInfoFindById(row.id).then( async res => {
-    await populateForm(res.data)
+    await populateForm(res.data);
     // await populateBannerConfiguration()
     await populateBonusTypeConfiguration();
   }).then( () => {
@@ -976,6 +1034,7 @@ function handleUpdateForm(row) {
     open.value = true;
   })
 }
+
 function populateForm( r ){
   const f = form.value;
   f.id = r.id
@@ -991,6 +1050,8 @@ function populateForm( r ){
   // f.url = r.url
   // f.icon = r.icon
   f.platforms = r.platforms.split(',');
+  f.fundDestination = r.fundDestination.toString();
+  f.multiplier = f.fundDestination === '2' ? r.multiplier : 1;
   dateRange.value = r.scheduleType === 1 ? [ form.value.startEffect, form.value.endEffect ] : []
 }
 // function populateBannerConfiguration() {
@@ -1005,26 +1066,44 @@ function populateForm( r ){
 //   }
 //   getBannerCreationRelatedImages(1);
 // }
-function populateBonusTypeConfiguration(){
-  let parsedEventConfig = JSON.parse(form.value.configString).eventConfig;
-  switch ( form.value.typeId ) {
+async function populateBonusTypeConfiguration() {
+  const parsedEventConfig = JSON.parse(form.value.configString).eventConfig;
+  const conf = configurations.value
+
+  switch (form.value.typeId) {
     case 1: //Sign In
-        const conf = configurations.value
-        conf.signIn = parsedEventConfig;
-        if ( parsedEventConfig.listOfDailyData.length > 0 ) {
-          let listOfDailyData = parsedEventConfig.listOfDailyData;
-          conf.signIn.dailyData = listOfDailyData === undefined ? [] : listOfDailyData[0].config;
-        }
-        break;
-      //TODO: Update when added more bonus type
+      conf.signIn = parsedEventConfig;
+      await populateRewardIcons()
+      break;
   }
+}
+async function populateRewardIcons(){
+  const listOfDailyData = configurations.value.signIn.listOfDailyData;
+  const rewardImgUrlList = listOfDailyData.length < 1
+          ? null
+          : listOfDailyData[0].config.length < 0
+              ? null
+              : listOfDailyData[0].config.map((data) => data.rewardIcon);
+  if ( rewardImgUrlList === null ) return;
+
+  const promises = [];
+  for (const platform1 of platforms.value.filter(platform => platform !== 'all')) {
+    const param   = { type: 'rewardImg', platform: platform1, field: null };
+    const imgUrls = (rewardImgUrlList.map( imgUrls => imgUrls[platform1])).filter(imgUrl => typeof imgUrl === 'string');
+    if (imgUrls.length > 0) {
+      const promise = (async () => {
+        await saveImageUrl(imgUrls, param);
+        await listUpdatedImages(param);
+      })();
+      promises.push(promise);
+    }
+  }
+  await Promise.all(promises);
 }
 
 /**  Handle Submit Form */
 async function handleSubmitForm() {
-  proxy.$refs["vipBonusForm"].validate(async valid => {
-    if (!valid) return
-  });
+  await proxy.$refs["vipBonusForm"].validate();
 
   const f = form.value;
   const isScheduleFixed = f.scheduleType === '1';
@@ -1039,21 +1118,24 @@ async function handleSubmitForm() {
     customBannerConfig: create.type === '1' ? create.customize.properties : null
   });
   f.platforms = f.platforms.join(',');
+  f.multiplier = f.fundDestination === '1' ? null : f.multiplier;
 
   let actionMethod = f.id === null ? vipBonusInfoAdd(f) : vipBonusInfoUpdate(f);
   actionMethod.then(() => {
     proxy.$modal.msgSuccess("修改成功");
     open.value = false;
-  })
+  });
 }
 function getEventConfigByTypeId(){
   // TypeId = Vip Bonus Activity Type
   const config = configurations.value;
   const statusIcon = config.signIn.statusIcon;
   const listOfDailyData = config.signIn.listOfDailyData;
-  switch ( form.value.typeId ) {
+  const f = form.value;
+
+  switch ( f.typeId ) {
     case 1: {
-      const platforms = form.value.platforms.filter( platform => platform !== 'all');
+      const platforms = [...f.platforms].filter( pf => pf !== 'all');
       rewardStatus.value.forEach( status => {
         platforms.forEach( platform => {
           const img = statusIcon[platform][status];
@@ -1069,6 +1151,7 @@ function getEventConfigByTypeId(){
           })
         })
       });
+      config.signIn.dailyData = listOfDailyData[0].config
       return config.signIn;
     }
       //TODO: Update this when added more vip bonus activity
@@ -1087,122 +1170,133 @@ function getEventConfigByTypeId(){
 // }
 
 /**  Sign In Related */
-function customDay_populateSignInConfigTable(){
-  const signIn = configurations.value.signIn;
-  let firstConfig = signIn.listOfDailyData[0].config
-  if ( firstConfig === undefined ) return;
-
-  signIn.dailyData = []
-  for ( let i = 0; i < firstConfig.length; i++ ) {
-    let row = firstConfig[i];
-    signIn.dailyData .push(
-        {
-          day: row.day,
-          rewardType: row.rewardType,
-          rewardAmount: {
-            min: null,
-            max: null
-          },
-          topUpRequirement: null,
-          codingRequirement: null,
-          rewardIcon: row.rewardIcon
-        }
-    )
-  }
-}
+// function customDay_populateSignInConfigTable(){
+//   const signIn = configurations.value.signIn;
+//   let firstConfig = signIn.listOfDailyData[0].config
+//   if ( firstConfig === undefined ) return;
+//
+//   signIn.dailyData = []
+//   for ( let i = 0; i < firstConfig.length; i++ ) {
+//     let row = firstConfig[i];
+//     signIn.dailyData .push(
+//         {
+//           day: row.day,
+//           rewardType: row.rewardType,
+//           rewardAmount: {
+//             min: null,
+//             max: null
+//           },
+//           topUpRequirement: null,
+//           codingRequirement: null,
+//           rewardIcon: row.rewardIcon
+//         }
+//     )
+//   }
+// }
 function updateSignInRewardIcons(param) {
-  const icons = configurations.value.rewardIcons[param.platform];
-  const signIn = configurations.value.signIn;
+  const icons    = configurations.value.rewardIcons[param.platform];
+  const signIn   = configurations.value.signIn;
   const dataList = signIn.listOfDailyData;
 
-  if (icons.length <= 0) return;
+  if (icons.length < 0) return;
 
-  if ( dataList.length <= 0 ) {
-    signIn.dailyData.forEach( (data,i) => {
-      data.rewardIcon[param.platform] = icons[i];
+  dataList.forEach(data => {
+    data.config.forEach((res, index) => {
+      res.rewardIcon[param.platform] = icons[index] || null;
     });
-  } else {
-    dataList.forEach((dataPerVip) => {
-      dataPerVip = Array.isArray(dataPerVip) ? dataPerVip : [dataPerVip];
-      dataPerVip.forEach( data => {
-        data.config.forEach( (config,i) => {
-          config.rewardIcon[param.platform] = i >= icons.length ? null : icons[i];
-        })
-      })
-    });
-  }
+  });
+
+  signIn.dailyData.forEach((data, i) => data.rewardIcon[param.platform] = icons[i] || null);
 }
 
-function populateSignInConfigTable(){
+function populateConfigTableByTypeId(){
   const rewardIcons = configurations.value.rewardIcons;
-  const signIn = configurations.value.signIn;
-  // let cycle = signIn.cycle;
-  let cycle = 7;
-  signIn.dailyData  = [];
 
-  for ( let i = 0; i < cycle; i++ ) {
-    const webImg = rewardIcons.web[i];
-    const mobileImg = rewardIcons.mobile[i];
-
-    signIn.dailyData .push(
-        {
-          day: i+1,
-          rewardType: '1',
-          rewardAmount: {
-            min: null,
-            max: null
-          },
-          topUpRequirement: null,
-          codingRequirement: null,
-          rewardIcon: {
-            web: webImg === undefined ? null : getOriginalImageLink(webImg),
-            mobile: mobileImg === undefined ? null : getOriginalImageLink(mobileImg)
-          }
-        }
-    )
-  }
-}
-function calculateNumberOfDays() {
-  if ( form.value.scheduleType === '1' ) {
-    const start = new Date(dateRange.value[0]);
-    const end   = new Date(dateRange.value[1]);
-    const timeDifference = end - start;
-    const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
-    configurations.value.signIn.cycle = daysDifference + 1;
-    populateSignInConfigTable()
-  }
-}
-function handleVipLevelChange(){
-  const config = configurations.value;
   switch ( form.value.typeId ) {
     case 1: {
-      let signIn      = config.signIn;
-      let tableConfig = signIn.listOfDailyData[config.vipLevel];
+      const signIn = configurations.value.signIn;
+      const cycle  = signIn.cycle;
+      signIn.dailyData  = [];
 
-      if ( tableConfig !== undefined ) {
+      for ( let i = 0; i < cycle; i++ ) {
+        const webImg    = rewardIcons.web[i];
+        const mobileImg = rewardIcons.mobile[i];
+
+        signIn.dailyData .push(
+            {
+              day: i+1,
+              rewardType: '1',
+              rewardAmount: {
+                min: null,
+                max: null
+              },
+              topUpRequirement: null,
+              codingRequirement: null,
+              rewardIcon: {
+                web: webImg === undefined ? null : getOriginalImageLink(webImg),
+                mobile: mobileImg === undefined ? null : getOriginalImageLink(mobileImg)
+              }
+            }
+        )
+      }
+    }
+    //TODO: Update when added more vip activity
+  }
+
+
+}
+// function calculateNumberOfDays() {
+//   if ( form.value.scheduleType === '1' && dateRange.value !== null) {
+//     const start = new Date(dateRange.value[0]);
+//     const end   = new Date(dateRange.value[1]);
+//     const timeDifference = end - start;
+//     const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+//     configurations.value.signIn.cycle = daysDifference + 1;
+//     populateConfigTableByTypeId()
+//   }
+// }
+function handleFundDestinationChange() {
+  const f = form.value;
+  f.multiplier = f.multiplier === null ? 1 : f.multiplier;
+}
+
+function handleVipLevelChange(){
+  const config = configurations.value;
+  const signIn = config.signIn;
+  switch ( form.value.typeId ) {
+    case 1: {
+      const levelThatHasData    = signIn.listOfDailyData.map( data => data.level);
+      const indexOfCurrentLevel = levelThatHasData.indexOf(config.vipLevel);
+
+      if ( indexOfCurrentLevel >= 0 ) {
+        const tableConfig = signIn.listOfDailyData[indexOfCurrentLevel];
         config.signIn.dailyData = tableConfig.config
         break;
       }
+      populateConfigTableByTypeId()
 
-      if ( signIn.customDay === '1' ) customDay_populateSignInConfigTable()
-      else populateSignInConfigTable()
-      break;
+      // if ( signIn.customDay === '1' ) customDay_populateSignInConfigTable()
+      // else populateConfigTableByTypeId()
+      // break;
     }
   }
 }
 function handleRewardChangeType(scope){
+  const row = scope.row;
   const rewardIcons = configurations.value.rewardIcons
-  scope.row.rewardIcon.web = scope.row.rewardType === '1' ? rewardIcons.web[0] : treasureIcons.value[0];
-  scope.row.rewardIcon.mobile = scope.row.rewardType === '1' ? rewardIcons.mobile[0] : treasureIcons.value[0];
+  row.rewardIcon.web    = row.rewardType === '1' ? rewardIcons.web[0]    : treasureIcons.value[0];
+  row.rewardIcon.mobile = row.rewardType === '1' ? rewardIcons.mobile[0] : treasureIcons.value[0];
 }
 function saveSignInConfig(){
-  const signIn = configurations.value.signIn;
-  const indexOfExistingData = signIn.listOfDailyData.findIndex(data => data.level === configurations.value.vipLevel);
-  const hasData = indexOfExistingData !== -1;
+  const signIn   = configurations.value.signIn;
+  const vipLevel = configurations.value.vipLevel;
+  const levelsThatHasData = signIn.listOfDailyData.map( data => data.level );
 
+  const hasData = levelsThatHasData.includes(vipLevel);
   if ( hasData ) {
     //Update
-    signIn.listOfDailyData[indexOfExistingData].config = signIn.dailyData;
+    const index = levelsThatHasData.indexOf(vipLevel);
+    signIn.listOfDailyData[index].config = signIn.dailyData;
   } else {
     //Insert
     signIn.listOfDailyData.push({
@@ -1215,7 +1309,7 @@ function saveSignInConfig(){
 function resetSignInConfig(){
   configurations.value.signIn.listOfDailyData = []
   configurations.value.vipLevel = 0;
-  populateSignInConfigTable()
+  populateConfigTableByTypeId()
 }
 function initQuery(){
   listVipBonusActivities()
@@ -1225,12 +1319,11 @@ function initQuery(){
 }
 
 function getVipDataList(){
-    loading.value = true
-    configVpiDataList().then(res=>{
-        configVipList.value = res.data
-        console.log(res.data)
-        loading.value =false
-    })
+  loading.value = true
+  configVpiDataList().then(res=>{
+      configVipList.value = res.data
+      loading.value =false
+  })
 }
 
 getVipDataList();

@@ -87,15 +87,25 @@
     <el-table v-loading="loading" :data="activityInfoList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="标题" align="center" prop="title" min-width="180"/>
-        <el-table-column label="图标" align="center" prop="icon">
-          <template #default="scope">
-            <el-image
-                style="height: 50px;"
-                :src="scope.row.icon"
-                fit="contain">
-            </el-image>
-          </template>
-        </el-table-column>
+      <el-table-column label="活动图 " align="center" prop="icon">
+        <template #default="scope">
+          <el-image
+              style="height: 50px;"
+              :src="scope.row.icon"
+              fit="contain">
+          </el-image>
+        </template>
+      </el-table-column>
+      <el-table-column label="轮播图" align="center" prop="eventBanner">
+        <template #default="scope">
+          <el-image
+              v-if="scope.row.eventBanner != null"
+              style="height: 50px;"
+              :src="scope.row.eventBanner"
+              fit="contain">
+          </el-image>
+        </template>
+      </el-table-column>
       <el-table-column label="活动详情" align="center" prop="content"  min-width="160">
         <template v-slot="{row}">
           <div v-html="row.content" style="max-height: 80px"></div>
@@ -115,7 +125,32 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="排序" align="center" prop="sort"  min-width="160"/>
+      <el-table-column label="跳转状态" align="center" prop="jumpStatus"  min-width="100">
+        <template #default="scope">
+          <el-switch
+              v-model="scope.row.jumpStatus"
+              :active-value="true"
+              :inactive-value="false"
+              @change="handleJumpStatusChange(scope.row)">
+          </el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column label="内部跳转类型" align="center" prop="internalJumpType"  min-width="120"/>
+        
+<!--      <el-table-column label="事件跳转状态" align="center" prop="eventJumpStatus"  min-width="120">-->
+<!--        <template #default="scope">-->
+<!--          <el-switch-->
+<!--              v-model="scope.row.eventJumpStatus"-->
+<!--              :active-value="true"-->
+<!--              :inactive-value="false"-->
+<!--              :disabled="true"-->
+<!--              @change="handleEventJumpStatusChange(scope.row)">-->
+<!--          </el-switch>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column label="活动跳跃类型" align="center" prop="eventJumpType"  min-width="120"/>-->
+
+      <el-table-column label="排序" align="center" prop="sort"  min-width="50"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="120">
         <template #default="scope">
           <el-button
@@ -207,6 +242,9 @@
                               value-format="YYYY-MM-DD HH:mm:ss"
                               clearable>
               </el-date-picker>
+            </el-form-item>
+            <el-form-item label="分类" prop="sort">
+              <el-input style="width: 110px" v-model="form.sort" placeholder="输入排序编号" @change="signInConfig"/>
             </el-form-item>
             <el-form-item label="主页弹出窗口" label-width="120">
               <el-switch
@@ -397,28 +435,79 @@
 <!-- Jump Type -->
             <div style="max-width: 1000px">
               <el-form-item label="跳转类型" prop="type">
-                <el-radio-group v-model="form.type">
-<!--                  <el-radio label="0">活动详情</el-radio>-->
+                <el-radio-group v-model="form.type" @change="handleTypeChange()">
+                  <el-radio label="0">活动详情</el-radio>
                   <el-radio label="1">内部浏览器</el-radio>
                   <el-radio label="2">外部浏览器</el-radio>
+                  <el-radio label="3">事件跳转状态</el-radio>
                 </el-radio-group>
               </el-form-item>
-<!--              <el-form-item label="活动详情" prop="content" v-if="form.type === '0'">-->
-<!--                <WangEditor v-model="form.content" style="max-width: 680px" image-path="ActivityInfo" />-->
-<!--              </el-form-item>-->
+              <el-form-item label="活动详情" prop="content" v-if="form.type === '0'">
+                <WangEditor v-model="form.content" style="max-width: 680px" image-path="ActivityInfo" />
+              </el-form-item>
               <el-form-item label="跳转链接" prop="url" v-if="form.type === '1' || form.type === '2'">
                 <el-input v-model="form.url" placeholder="请输入图标跳转链接 " style="max-width: 680px"/>
               </el-form-item>
             </div>
+
+            <el-form-item v-if="form.type == 3" label="活动跳跃类型">
+              <el-select
+                  filterable
+                  v-model="form.eventJumpType"
+                  style="width: 240px">
+                <el-option
+                    v-for="jumpType in jumpTypes"
+                    :key="jumpType"
+                    :label="jumpType"
+                    :value="jumpType"/>
+              </el-select>
+            </el-form-item>
+
+            <el-form-item label="跳转状态">
+              <el-switch
+                  :disabled="form.effect"
+                  v-model="form.jumpStatus"
+                  :active-value="true"
+                  :inactive-value="false">
+              </el-switch>
+            </el-form-item>
+
+            <el-form-item v-if="form.jumpStatus" label="内部跳转类型">
+              <el-select
+                  filterable
+                  v-model="form.internalJumpType"
+                  style="width: 240px">
+                <el-option
+                    v-for="jumpType in jumpTypes"
+                    :key="jumpType"
+                    :label="jumpType"
+                    :value="jumpType"/>
+              </el-select>
+            </el-form-item>
+
+<!--            <el-form-item label="事件跳转状态">-->
+<!--              <el-switch-->
+<!--                  v-model="form.eventJumpStatus"-->
+<!--                  :active-value="true"-->
+<!--                  :inactive-value="false">-->
+<!--              </el-switch>-->
+<!--            </el-form-item>-->
           </div>
           <div class="el-col el-col-12">
+
+
+            <label style="font-size: 25px; text-align: left">首页轮播图</label>
+            <hr>
+            <imageUpload v-model="form.eventBanner" path="eventBanner"/><br>
+
             <div>
-              <label style="font-size: 25px; text-align: left">创建横幅</label>
+              <label style="font-size: 25px; text-align: left">活动首页图</label>
               <el-radio-group style="float: right;" v-model="createBanner.type" @change="changeBannerCreationType(createBanner.type)">
                 <el-radio style="width: 120px" label="1" border>定制</el-radio>
                 <el-radio style="width: 120px" label="2" border>预制</el-radio>
               </el-radio-group><hr style="margin-top: 20px; margin-bottom: 20px">
             </div>
+
             <label style="font-size: 20px">预览</label>
 
             <div v-if="createBanner.type === '1'">
@@ -438,7 +527,8 @@
                   `"
                   >{{createBanner.customize.properties.text}}</pre>
                 </div>
-              </div><hr style="margin-top: 10px">
+              </div>
+              <hr style="margin-top: 10px">
               <div class="form-group">
                 <label for="background">背景颜色:</label>
                 <input style="margin-left: 10px; width: 100px; border: 2px solid #000000"
@@ -468,7 +558,7 @@
               <hr>
               <div class="form-group">
                 <p>活动说明:</p>
-                <label for="font">字体: </label>
+                <label for="font">字体:</label>
                 <el-select style="width: 200px" v-model="createBanner.customize.properties.textStyle.font">
                   <el-option v-for="font in fontOptions" :key="font" :label="font" :value="font"></el-option>
                 </el-select>
@@ -546,8 +636,9 @@ import {
   getActivityInfoList,
   getAllRewardIcon,
   uploadImage,
-  listImages, removeImage
+  listImages, removeImage, activityInfoUpdateJumpStatus, activityInfoUpdateEventJumpStatus
 } from "@/api/activity/activityInfo";
+import ImageUpload from "@/components/ImageUpload/index.vue";
 
 const {proxy} = getCurrentInstance();
 /** 活动信息表格数据 */
@@ -669,6 +760,7 @@ const fileInput = ref(null);
 const activityUploadIconParam = ref({type: '', field: ''})
 const eventIds = ref([19,20]);
 
+const jumpTypes = [ "VIP", "DAILY_BONUS", "FUND" ,"RECHARGE","BINDPHONE"]
 
 const {queryParams,form,rules, configurations, createBanner} = toRefs(data);
 const {activityInfo_status} = proxy.useDict("activityInfo_status");
@@ -913,6 +1005,7 @@ function populateForm(rspData){
   selectDate.value = rspData.scheduleType === 1 ? [rspData.startEffect, rspData.endEffect] : [];
   const f = form.value;
   f.id = rspData.id;
+  f.effect = rspData.effect;
   f.typeId = rspData.typeId;
   f.title = rspData.title;
   f.scheduleType = rspData.scheduleType.toString();
@@ -924,6 +1017,10 @@ function populateForm(rspData){
   f.url = rspData.url;
   f.icon = rspData.icon;
   f.sort = rspData.sort;
+  f.jumpStatus = rspData.jumpStatus
+  f.internalJumpType = rspData.internalJumpType
+  f.eventJumpStatus = rspData.eventJumpStatus
+  f.eventJumpType = rspData.eventJumpType
 }
 async function populateBannerConfiguration(){
   const configString = form.value.configString;
@@ -1048,8 +1145,13 @@ function resetForm(){
   f.content = '';
   f.url = '';
   f.icon = null;
+  f.eventBanner = null
   f.sort = null;
   f.creationType = '1';
+  f.jumpStatus = false
+  f.internalJumpType = jumpTypes[0];
+  f.eventJumpStatus = false
+  f.eventJumpType = jumpTypes[0];
 }
 function resetCreateBannerConfig(){
   createBanner.value = {
@@ -1101,7 +1203,6 @@ function getList(){
 }
 function activityTypeList(){
   getActivityTypeAllList().then((res)=>{
-    console.log( res );
     activityTypes.value = res;
   })
 }
@@ -1118,6 +1219,8 @@ function formatterType(row) {
     return '内部浏览器'
   } else if( row.type == 2 ) {
     return '外部浏览器'
+  } else if( row.type == 3 ){
+    return '事件跳转状态'
   } else {
     return ''
   }
@@ -1146,13 +1249,48 @@ function handleEffectChange(row){
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
-  }).then(function () {
-    return activityInfoUpdateStatus( row.id, row.effect )
+  }).then ( () => {
+    activityInfoUpdateStatus( row.id, row.effect )
+    row.eventJumpStatus = row.effect
   }).then(() => {
     proxy.$modal.msgSuccess(text + '成功')
   }).catch(function () {
     row.effect = !row.effect
   })
+}
+
+function handleJumpStatusChange(row){
+  let text = row.jumpStatus ? '启用' : '停用'
+  proxy.$modal.confirm('确认要"' + text + '""' + row.title + '"吗?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(function () {
+      activityInfoUpdateJumpStatus( row.id, row.jumpStatus )
+  }).then(() => {
+    proxy.$modal.msgSuccess(text + '成功')
+  }).catch(function () {
+    row.jumpStatus = !row.jumpStatus
+  })
+}
+
+function handleEventJumpStatusChange(row){
+  let text = row.eventJumpStatus ? '启用' : '停用'
+  proxy.$modal.confirm('确认要"' + text + '""' + row.title + '"吗?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(function () {
+    return activityInfoUpdateEventJumpStatus( row.id, row.eventJumpStatus )
+  }).then(() => {
+    proxy.$modal.msgSuccess(text + '成功')
+  }).catch(function () {
+    row.eventJumpStatus = !row.eventJumpStatus
+  })
+}
+
+function handleTypeChange() {
+  form.value.eventJumpStatus = form.value.type == 3
 }
 
 getList()

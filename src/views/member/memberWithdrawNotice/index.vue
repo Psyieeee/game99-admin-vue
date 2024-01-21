@@ -194,13 +194,13 @@ function handleAdd() {
 /** submit new data and handle insert data api*/
 function submitForm() {
   if (form.value.id != null) {
-    edit(form.value).then(response => {
+    edit(form.value).then(() => {
       proxy.$modal.msgSuccess('修改成功')
       open.value = false
       getList()
     })
   } else {
-    add(params).then(response => {
+    add(form.value).then(() => {
       proxy.$modal.msgSuccess('新增成功')
       open.value = false
       getList()
