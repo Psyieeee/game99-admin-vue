@@ -1,5 +1,5 @@
 /**
- * 判断url是否是http或https 
+ * 判断url是否是http或https
  * @param {string} path
  * @returns {Boolean}
  */
@@ -95,7 +95,7 @@ export function isArray(arg) {
 
 export function validMobile(rule, value, callback) {
   //校验整数
-  let numberReg= /^([0-9]{1,3})+([*0-9_\.-]{4})+([0-9]{3,10})$/;
+  let numberReg= /^([+0-9]{1,3})+([*0-9_\.-]{4})+([0-9]{3,10})$/;
   const rsCheck = numberReg.test(value);
   if (!rsCheck) {
     callback(new Error('手机号格式有误,请重新输入'));
