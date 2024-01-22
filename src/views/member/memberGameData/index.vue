@@ -42,6 +42,16 @@
             @keyup.enter="handleQuery"
         />
       </el-form-item>
+
+      <el-form-item prop="sonPlatformName" style="width: 150px" class="small-layout">
+        <el-input
+            v-model.trim="queryParams.sonPlatformName"
+            placeholder="请输入您的子平台名称"
+            clearable
+            @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+
       <el-form-item prop="gameId" class="small-layout" style="width: 200px">
         <el-input
             v-model="queryParams.gameId"
