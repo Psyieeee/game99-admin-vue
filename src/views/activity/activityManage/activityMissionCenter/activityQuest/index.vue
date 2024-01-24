@@ -86,7 +86,7 @@
       <!--      <el-table-column align="center" label="奖励类型" min-width="180" prop="rewardType"/>-->
       <el-table-column align="center" label="奖励金额" min-width="180" prop="reward"/>
       <el-table-column align="center" label="奖励类型" min-width="180" prop="missionRewardTypeTranslated"/>
-      <el-table-column align="center" label="乘法器" min-width="180" prop="multiplier"/>
+      <el-table-column align="center" label="倍数" min-width="180" prop="multiplier"/>
       <el-table-column align="center" min-width="150" label="状态" prop="status">
         <template #default="scope">
           <el-switch
