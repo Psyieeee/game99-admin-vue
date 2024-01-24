@@ -159,7 +159,7 @@
             <el-checkbox label="2">安卓</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
-        <el-form-item label="红利利率" prop="rate">
+        <el-form-item label="页面比例显示" prop="rate">
           <el-input v-model="form.rate" placeholder="请输入红利利率"/>
         </el-form-item>
 
