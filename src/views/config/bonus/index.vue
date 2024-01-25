@@ -121,16 +121,16 @@
     <el-dialog :title="title" v-model="open" width="700px" append-to-body>
       <el-form ref="bonusRef" :model="form" :rules="rules" label-width="120px" style="padding-bottom: 50px">
         <el-form-item label="最小金额" prop="minAmount">
-          <el-input-number max="1000000" :step="100" v-model="form.minAmount" placeholder="请输入最低金额"/>
+          <el-input-number :step="100" v-model="form.minAmount" placeholder="请输入最低金额"/>
         </el-form-item>
         <el-form-item label="最大金额" prop="maxAmount">
-          <el-input-number max="1000000" :step="100" v-model="form.maxAmount" placeholder="请输入最大金额"/>
+          <el-input-number :step="100" v-model="form.maxAmount" placeholder="请输入最大金额"/>
         </el-form-item>
         <el-form-item label="积分" prop="bonus">
-          <el-input-number max="1000000" :step="1" v-model="form.bonus" placeholder="请输入奖金"/>
+          <el-input-number :step="1" v-model="form.bonus" placeholder="请输入奖金"/>
         </el-form-item>
         <el-form-item label="乘数" prop="multiplier">
-          <el-input-number max="1000000" :step="100" v-model="form.multiplier" placeholder="请输入乘数"/>
+          <el-input-number :step="100" v-model="form.multiplier" placeholder="请输入乘数"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer" style="float: right;margin-top: -20px">
