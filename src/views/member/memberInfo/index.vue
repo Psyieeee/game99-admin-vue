@@ -253,7 +253,7 @@
           <span v-if="scope.row.channelcode == null"
                 :style="{'color': '#5FB878'}">会员|{{
               scope.row.version == null || scope.row.version == '' || scope.row.version == undefined ? '无' : scope.row.version
-            }}|{{ scope.row.loginDev == 2 ? 'andriod' : scope.row.loginDev == 1 ? 'ios' : '其它' }}</span>
+            }}|{{ scope.row.loginDev == 2 ? 'andriod' : scope.row.loginDev == 1 ? 'ios' : scope.row.loginDev == 0 ? 'H5' : '其它' }}</span>
           <span v-else :style="{color: (memberType = statusOptions[scope.row.channelcode > 0 ? 1 : 0]).color}">{{
               memberType.dictLabel
             }}|{{
