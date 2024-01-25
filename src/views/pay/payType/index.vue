@@ -71,7 +71,7 @@
           <dict-tag :options="pay_type" :value="scope.row.type"/>
         </template>
       </el-table-column>
-      <el-table-column label="红利利率" align="center" prop="rate"/>
+      <el-table-column label="页面显示比例" align="center" prop="rate"/>
       <el-table-column label="是否推荐" align="center" prop="recommend">
         <template #default="scope">
           <el-switch
