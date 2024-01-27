@@ -76,9 +76,9 @@
             @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item prop="bankAccount" style="width: 155px;" class="bankAccount">
+      <el-form-item prop="account" style="width: 155px;" class="bankAccount">
         <el-input
-            v-model="queryParams.bankAccount"
+            v-model="queryParams.account"
             placeholder="银行卡号/真实姓名"
             clearable
             @keyup.enter="handleQuery"
@@ -531,7 +531,7 @@ const data = reactive({
     pageNum: 1,
     pageSize: 20,
     email: '',
-    bankAccount: '',
+    account: '',
     searchValue: '', //会员Id,手机号*/
     status: '',
     loginIp: '',
