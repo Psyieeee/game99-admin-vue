@@ -55,7 +55,7 @@
     <!-- display Data in the table -->
     <el-table :data="logMoneyList" :stripe="true" stripe v-loading="loading">
       <el-table-column label="会员编号" align="center" prop="userId" min-width="140"/>
-      <el-table-column label="变化类型" prop="type" align="center" min-width="60">
+      <el-table-column label="变化类型" prop="type" align="center" min-width="120">
         <template #default="scope">
           <div v-for="(item, index) in types">
             <span v-if="item.type === scope.row.type">{{ item.des }}</span>
