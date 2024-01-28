@@ -6,15 +6,15 @@
         <div class="font">会员Id</div>
         <div class="font">注册时间</div>
         <!--        <div class="font">电话号码</div>-->
-        <div class="font">用户类型</div>
-        <div class="font">会员打码</div>
+<!--        <div class="font">用户类型</div>-->
+<!--        <div class="font">会员打码</div>-->
         <div class="font">会员IP</div>
       </div>
       <div class="mount" style="width: 28%">
         <div class="font">{{ dataInfo.会员编号}}</div>
         <div class="font">{{ dataInfo.会员注册时间 }}</div>
-        <div class="font">{{ dataInfo.用户类型 }}</div>
-        <div class="font">{{ dataInfo.会员打码 }}</div>
+<!--        <div class="font">{{ dataInfo.用户类型 }}</div>-->
+<!--        <div class="font">{{ dataInfo.会员打码 }}</div>-->
         <div class="font">{{ dataInfo.登陆IP }}</div>
       </div>
       <div class="mount" style="width: 12%">
@@ -57,23 +57,23 @@
       <div class="mount" style="width: 80%">
         <div style="display: flex;justify-content: flex-start;">
           <div class="mount" style="width: 43%">
-            <div class="font">线上充值金额(一月内): {{ dataInfo.线上金额 }}</div>
+            <div class="font">线上充值金额(一月内): {{ parseFloat(dataInfo.线上金额).toFixed(0) }}</div>
           </div>
           <div class="mount" style="width: 45%">
-            <div class="font">线上历史充值金额:{{ historyRecharge || 0.00 }}</div>
+            <div class="font">线上历史充值金额:{{ historyRecharge || 0 }}</div>
           </div>
           <div class="mount" style="width: 12%;">
             <el-button type="primary" plain @click="getHistoryRecharge()" style="height: 40px">查询</el-button>
           </div>
         </div>
-        <div class="font">线下充值金额: {{ parseFloat(dataInfo.线下充值金额).toFixed(2) }}</div>
-        <div class="font">USDT充值金额: {{ parseFloat(dataInfo.USDT充值金额).toFixed(2) }}</div>
+        <div class="font">线下充值金额: {{ parseFloat(dataInfo.线下充值金额).toFixed(0) }}</div>
+        <div class="font">USDT充值金额: {{ parseFloat(dataInfo.USDT充值金额).toFixed(0) }}</div>
         <div class="font">代充金额: {{ dataInfo.人工代充金额 }}</div>
-        <div class="font">手工上分金额: {{ dataInfo.手动增加金额 }}</div>
-        <div class="font">平台赠送金额: {{ dataInfo.平台赠送金额 }}</div>
-        <div class="font">充值总金额: {{ parseFloat(totalRecharge || 0.00).toFixed(2) }}</div>
+        <div class="font">手工上分金额: {{ parseFloat(dataInfo.手动增加金额).toFixed(0) }}</div>
+        <div class="font">平台赠送金额: {{ parseFloat(dataInfo.平台赠送金额).toFixed(0) }}</div>
+        <div class="font">充值总金额: {{ parseFloat(totalRecharge || 0).toFixed(0) }}</div>
         <div class="font">提现次数: {{ dataInfo.会员提现次数 }}</div>
-        <div class="font">提现金额: {{ parseFloat(dataInfo.会员提现金额).toFixed(2) }}</div>
+        <div class="font">提现金额: {{ parseFloat(dataInfo.会员提现金额).toFixed(0) }}</div>
       </div>
     </div>
     <div class="lotteryInfo">
