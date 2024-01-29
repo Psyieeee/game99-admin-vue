@@ -105,9 +105,15 @@
       <el-table-column label="平台名称" prop="platformId" align="center" :formatter="formatterPlatformName"/>
       <el-table-column label="游戏名称" align="center" prop="kindId"/>
       <el-table-column label="子平台名称" align="center" prop="sonPlatformName" min-width="120"/>
-      <el-table-column label="有效下注" align="center" prop="cellScore"/>
-      <el-table-column label="总下注" align="center" prop="allBet"/>
-      <el-table-column label="盈利" align="center" prop="profit"/>
+      <el-table-column label="有效下注" align="center" prop="cellScore">
+        <template #default="scope">{{ convertStrENotationToNumber(scope.row.cellScore)}}</template>
+      </el-table-column>
+      <el-table-column label="总下注" align="center" prop="allBet">
+        <template #default="scope">{{ convertStrENotationToNumber(scope.row.allBet)}}</template>
+      </el-table-column>
+      <el-table-column label="盈利" align="center" prop="profit">
+        <template #default="scope">{{ convertStrENotationToNumber(scope.row.profit)}}</template>
+      </el-table-column>
       <el-table-column label="结算时间" align="center" prop="gameEndTime" min-width="160"/>
     </el-table>
 
@@ -342,6 +348,14 @@ function openRecordLink(row) {
   }).catch(() => {
     loading.value = false
   })
+}
+
+function convertStrENotationToNumber(strVal){
+  if(strVal.toLowerCase().includes('e')){
+    const val = Number(strVal)
+    return isNaN(val) ? strVal : val;
+  }
+  return strVal;
 }
 
 </script>
