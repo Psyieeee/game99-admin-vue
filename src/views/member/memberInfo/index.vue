@@ -92,7 +92,14 @@
             @keyup.enter="handleQuery"
         />
       </el-form-item>
-
+      <el-form-item prop="deviceId" style="width: 110px;" class="deviceId">
+        <el-input
+            v-model="queryParams.deviceId"
+            placeholder="设备id"
+            clearable
+            @keyup.enter="handleQuery"
+        />
+      </el-form-item>
       <!--   min and max search -->
       <el-form-item prop="cost">
         <el-input
