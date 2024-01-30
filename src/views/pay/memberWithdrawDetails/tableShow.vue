@@ -29,8 +29,8 @@
       <div class="mount" style="width: 28%">
         <div class="font">{{ dataInfo.会员积分 }}</div>
         <div class="font">{{ dataInfo.登录时间 }}</div>
-        <div class="font">{{ dataInfo.会员VIP }}</div>
-        <div class="font">{{ dataInfo.会员注单 }}</div>
+        <div class="font">{{dataInfo.会员VIP  }}</div>
+        <div class="font">{{  parseFloat( dataInfo.会员注单).toFixed() }}</div>
         <div class="font" @click="showAddress" style="background-color: #cccc77">{{ address }}</div>
       </div>
     </div>
@@ -49,14 +49,14 @@
             <el-button type="primary" plain @click="getHistoryRecharge()" style="height: 40px">查询</el-button>
           </div>
         </div>
-        <div class="font">线下充值金额: {{ dataInfo.线下充值金额 }}</div>
-        <div class="font">USDT充值金额: {{ dataInfo.USDT充值金额 }}</div>
+        <div class="font">线下充值金额: {{ parseFloat( dataInfo.线下充值金额).toFixed(0) }}</div>
+        <div class="font">USDT充值金额: {{ parseFloat(dataInfo.USDT充值金额).toFixed(0) }}</div>
         <div class="font">代充金额: {{ dataInfo.人工代充金额 }}</div>
-        <div class="font">手工上分金额: {{ dataInfo.手动增加金额 }}</div>
-        <div class="font">平台赠送金额: {{ dataInfo.平台赠送金额 }}</div>
-        <div class="font">充值总金额: {{ totalRecharge || 0.00 }}</div>
-        <div class="font">提现次数: {{ dataInfo.会员提现次数 }}</div>
-        <div class="font">提现金额: {{ dataInfo.会员提现金额 }}</div>
+        <div class="font">手工上分金额: {{ parseFloat(dataInfo.手动增加金额).toFixed(0) }}</div>
+        <div class="font">平台赠送金额: {{ parseFloat( dataInfo.平台赠送金额 ).toFixed(0)}}</div>
+        <div class="font">充值总金额: {{ parseFloat(totalRecharge).toFixed(0) || 0 }}</div>
+        <div class="font">提现次数: {{ parseFloat(dataInfo.会员提现次数).toFixed(0) }}</div>
+        <div class="font">提现金额: {{ parseFloat(dataInfo.会员提现金额).toFixed(0) }}</div>
       </div>
     </div>
     <div class="lotteryInfo">
