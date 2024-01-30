@@ -78,7 +78,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="地位" align="center" prop="status">
+      <el-table-column label="状态" align="center" prop="status">
         <template #default="scope">
           <el-switch
               v-model="scope.row.status"
