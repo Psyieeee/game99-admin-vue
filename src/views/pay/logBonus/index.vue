@@ -29,6 +29,19 @@
             @keyup.enter="handleQuery"
         />
       </el-form-item>
+      <el-form-item prop="type">
+        <el-select v-model="queryParams.type" placeholder="语言" clearable>
+          <el-option
+              v-for="tradeType in types"
+              :key="tradeType.type"
+              :label="tradeType.des"
+              :value="tradeType.type"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item prop="des">
+        <el-input v-model="queryParams.des" placeholder="描述" clearable/>
+      </el-form-item>
       <el-form-item prop="mark">
         <el-input v-model="queryParams.mark" placeholder="请选择入款备注" clearable/>
       </el-form-item>
