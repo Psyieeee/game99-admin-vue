@@ -103,7 +103,7 @@
         </el-table-column>
         <el-table-column label="usdt金额" min-width="100" align="center" prop="totalLast">
           <template v-slot="{row}">
-            <span style="color: #5FB878">{{ row.usetJine}}</span>
+            <span style="color: #5FB878">{{ row.usdtJine}}</span>
           </template>
         </el-table-column>
         <el-table-column label="优惠人数" min-width="100" align="center" prop="palmYouhuirenshu">
