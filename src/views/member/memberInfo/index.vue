@@ -277,6 +277,7 @@
         </template>
       </el-table-column>
       <el-table-column label="登录备注" align="center" prop="remark" :show-overflow-tooltip="true" min-width="130"/>
+      <el-table-column label="频道代码" align="center" prop="channelCode" :show-overflow-tooltip="true" min-width="130"/>
       <el-table-column label="设备id" align="center" prop="deviceId" :show-overflow-tooltip="true" min-width="130"/>
       <el-table-column label="话163" align="center" prop="yun_163" :show-overflow-tooltip="true" min-width="130"/>
       <el-table-column label="登录备注" align="center" prop="remark" :show-overflow-tooltip="true" min-width="130"/>
