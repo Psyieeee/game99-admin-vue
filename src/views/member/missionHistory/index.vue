@@ -14,6 +14,12 @@
       </el-form-item>
     </el-form>
 
+    <el-form ref="clearMonthOldRef" :inline="true" v-show="showSearch" >
+      <el-form-item>
+        <el-button type="danger" :icon="Delete" @click="clearMonthOldMission">删除一个月前的任务</el-button>
+      </el-form-item>
+    </el-form>
+
     <!--    button on the table for query-->
     <el-row :gutter="10" class="mb8">
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
@@ -52,8 +58,10 @@
 
 import {
   listRecord,
+  clearMonthOld
 } from "@/api/member/missionHistory.js";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
+import {Delete} from "@element-plus/icons-vue";
 const {proxy} = getCurrentInstance();
 
 const recordList = ref([]);
@@ -84,6 +92,19 @@ function getList() {
 function handleQuery() {
   queryParams.pageNum = 1
   getList()
+}
+
+function clearMonthOldMission() {
+  loading.value = true;
+  clearMonthOld().then( () => {
+    loading.value = false;
+    proxy.$modal.msgSuccess("清除任务历史");
+    getList();
+  }).catch(() => {
+    loading.value = false;
+    proxy.$modal.msgError("删除旧任务失败");
+    getList();
+  });
 }
 
 function resetQuery() {

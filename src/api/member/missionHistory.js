@@ -8,3 +8,9 @@ export function listRecord(query){
         params:query
     })
 }
+export function clearMonthOld(){
+    return request({
+        url:url.game99PlatformAdminWeb+"/mission/history/clearMonthOld",
+        method:'delete'
+    })
+}
