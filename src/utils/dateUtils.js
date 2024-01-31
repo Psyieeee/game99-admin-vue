@@ -46,6 +46,12 @@ export function getDefaultTime() {
     return [startTime, endTime]
 }
 
+export function getDefaultLastWeekTime() {
+    const startTime = new Date(get7beforeDay().setHours(0, 0, 0, 0))
+    const endTime = new Date(new Date().setHours(0, 0, 0, 0) + 24 * 60 * 60 * 1000 - 1)
+    return [startTime, endTime]
+}
+
 // 获取今天开始时间
 export function getTodayStartTime() {
     return getDateStartTime(new Date())

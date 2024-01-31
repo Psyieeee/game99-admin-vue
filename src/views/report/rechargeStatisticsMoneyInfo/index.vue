@@ -3,7 +3,7 @@
     <el-button type="primary" @click="copy1">入款总额: {{ totalCount.paymentAmount || 0 }}</el-button>
     <el-button type="success" @click="copy2">出款总额: {{ totalCount.outMoney || 0 }}</el-button>
     <el-button type="primary" @click="copy3">金额合计: {{ totalCount.countMoney || 0 }}</el-button>
-    <el-button type="success" @click="copy4">主播工资: {{ totalCount.totalAccountGifts || 0 }}</el-button>
+<!--    <el-button type="success" @click="copy4">主播工资: {{ totalCount.totalAccountGifts || 0 }}</el-button>-->
 
 <!-- search form-->
     <el-form :model="queryParams" ref="queryForm" style="margin-top: 10px" :inline="true" v-show="showSearch"
@@ -18,7 +18,7 @@
                         end-placeholder="开始时间"
                         range-separator="至"
                         clearable
-                        :default-time="getDefaultTime()"
+                        :default-value="getDefaultLastWeekTime()"
                         :shortcuts="pickerDateTimeShortcuts"/>
       </el-form-item>
       <el-form-item>
@@ -138,7 +138,7 @@
 <script setup name="RechargeStatisticMoneyInfo">
 
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
-import {getDefaultTime, pickerDateTimeShortcuts} from "@/utils/dateUtils";
+import {getDefaultLastWeekTime, getDefaultTime, pickerDateTimeShortcuts} from "@/utils/dateUtils";
 import {listReportMoneyInfo, reportMoneyInfoCount, reportMoneyInfoExport} from "@/api/report/reportMoneyInfo";
 
 const {proxy} = getCurrentInstance();
@@ -154,7 +154,8 @@ const data = reactive({
     reptime: null
   },
 
-  dateRange : [proxy.parseTime(proxy.getTodayStartTime()), proxy.parseTime(proxy.getTodayEndTime())],
+  dateRange : [proxy.parseTime(proxy.get7beforeDay().setHours(0, 0, 0, 0))
+    , proxy.parseTime(proxy.getTodayEndTime())],
 
   totalCount:{},
 
@@ -179,7 +180,7 @@ function copy4(){
 function getList(){
   loading.value = true
   listReportMoneyInfo({reptime: queryParams.value,
-    params: {beginTime: dateRange.value[0], endTime: dateRange.value[1]}}).then(res=>{
+    params: {beginTime: dateRange.value[0], endTime: dateRange.value[1]}} ).then(res=>{
     reportRechargeMoney.value = res.rows
     loading.value = false
     count()
@@ -188,10 +189,17 @@ function getList(){
 
 function count() {
   loading.value = true
-  reportMoneyInfoCount(queryParams.value).then(response => {
+  // queryParams.value.begindate = dateRange.value[0];
+
+  reportMoneyInfoCount({reptime: queryParams.value,
+    params: {beginTime: dateRange.value[0], endTime: dateRange.value[1]}}).then(response => {
     totalCount.value = response.data
     loading.value = false
   })
+  // reportMoneyInfoCount(queryParams.value).then(response => {
+  //   totalCount.value = response.data
+  //   loading.value = false
+  // })
 }
 
 /** 搜索按钮操作 handle reset */
@@ -202,7 +210,10 @@ function handleQuery(){
 
 /** 重置按钮操作 handle resetQuery*/
 function handleReset(){
+  dateRange.value = [proxy.parseTime(proxy.get7beforeDay().setHours(0, 0, 0, 0))
+    , proxy.parseTime(proxy.getTodayEndTime())]
   proxy.resetForm("queryForm")
+
   handleQuery()
   loading.value = false
 }
