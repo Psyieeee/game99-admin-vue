@@ -50,24 +50,32 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item prop="inviterCode" style="width: 110px;" id="inviterCode">
+<!--      <el-form-item prop="inviterCode" style="width: 110px;" id="inviterCode">-->
+<!--        <el-input-->
+<!--            v-model="queryParams.inviterCode"-->
+<!--            placeholder="邀请码"-->
+<!--            clearable-->
+<!--            @keyup.enter="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+      <el-form-item prop="channelCode" style="width: 110px;" id="channelCode">
         <el-input
-            v-model="queryParams.inviterCode"
-            placeholder="邀请码"
+            v-model="queryParams.channelCode"
+            placeholder="频道代码"
             clearable
             @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item prop="channelcode" style="width: 110px;" id="channelCode">
-        <el-select v-model="queryParams.channelcode" placeholder="全部类型" clearable>
-          <el-option
-              v-for="dict in member_device_type"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
+<!--      <el-form-item prop="channelCode" style="width: 110px;" id="channelCode">-->
+<!--        <el-select v-model="queryParams.channelcode" placeholder="全部类型" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in member_device_type"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
       <el-form-item prop="loginIp" style="width: 110px;" class="loginIp">
         <el-input
             v-model="queryParams.loginIp"
