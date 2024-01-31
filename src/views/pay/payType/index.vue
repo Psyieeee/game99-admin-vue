@@ -71,7 +71,7 @@
           <dict-tag :options="pay_type" :value="scope.row.type"/>
         </template>
       </el-table-column>
-      <el-table-column label="红利利率" align="center" prop="rate"/>
+      <el-table-column label="页面显示比例" align="center" prop="rate"/>
       <el-table-column label="是否推荐" align="center" prop="recommend">
         <template #default="scope">
           <el-switch
@@ -159,7 +159,7 @@
             <el-checkbox label="2">安卓</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
-        <el-form-item label="红利利率" prop="rate">
+        <el-form-item label="页面比例显示" prop="rate">
           <el-input v-model="form.rate" placeholder="请输入红利利率"/>
         </el-form-item>
 

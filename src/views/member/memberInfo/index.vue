@@ -84,9 +84,9 @@
             @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item prop="bankAccount" style="width: 155px;" class="bankAccount">
+      <el-form-item prop="account" style="width: 155px;" class="bankAccount">
         <el-input
-            v-model="queryParams.bankAccount"
+            v-model="queryParams.account"
             placeholder="银行卡号/真实姓名"
             clearable
             @keyup.enter="handleQuery"
@@ -100,7 +100,14 @@
             @keyup.enter="handleQuery"
         />
       </el-form-item>
-
+      <el-form-item prop="deviceId" style="width: 110px;" class="deviceId">
+        <el-input
+            v-model="queryParams.deviceId"
+            placeholder="设备id"
+            clearable
+            @keyup.enter="handleQuery"
+        />
+      </el-form-item>
       <!--   min and max search -->
       <el-form-item prop="cost">
         <el-input
@@ -216,9 +223,9 @@
       <el-table-column label="手机" prop="phone" align="center" width="120px"/>
       <el-table-column label="会员vip" align="center" prop="vip" width="70px"/>
       <el-table-column label="余额" :show-overflow-tooltip="true" align="center" prop="accountNow" min-width="120"/>
-      <el-table-column label="账户余额" :show-overflow-tooltip="true" align="center" prop="bonusMoney" min-width="120"/>
-      <el-table-column label="促销数量" :show-overflow-tooltip="true" align="center" prop="promotionAmount" min-width="120"/>
-      <el-table-column label="收回账户" :show-overflow-tooltip="true" align="center" prop="withdrawAccount" min-width="120"/>
+      <el-table-column label="积分" :show-overflow-tooltip="true" align="center" prop="bonusMoney" min-width="120"/>
+      <el-table-column label="总平台赠送" :show-overflow-tooltip="true" align="center" prop="promotionAmount" min-width="120"/>
+      <el-table-column label="总提现" :show-overflow-tooltip="true" align="center" prop="withdrawAccount" min-width="120"/>
       <el-table-column label="电子邮件" :show-overflow-tooltip="true" align="center" prop="email"
                        min-width="120"
                        :formatter="maskedEmailRow"/>
@@ -261,7 +268,7 @@
           <span v-if="scope.row.channelcode == null"
                 :style="{'color': '#5FB878'}">会员|{{
               scope.row.version == null || scope.row.version == '' || scope.row.version == undefined ? '无' : scope.row.version
-            }}|{{ scope.row.loginDev == 2 ? 'andriod' : scope.row.loginDev == 1 ? 'ios' : '其它' }}</span>
+            }}|{{ scope.row.loginDev == 2 ? 'andriod' : scope.row.loginDev == 1 ? 'ios' : scope.row.loginDev == 0 ? 'H5' : '其它' }}</span>
           <span v-else :style="{color: (memberType = statusOptions[scope.row.channelcode > 0 ? 1 : 0]).color}">{{
               memberType.dictLabel
             }}|{{
@@ -269,6 +276,9 @@
             }}|{{ scope.row.loginDev == 2 ? 'andriod' : scope.row.loginDev == 1 ? 'ios' : '其它' }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="登录备注" align="center" prop="remark" :show-overflow-tooltip="true" min-width="130"/>
+      <el-table-column label="设备id" align="center" prop="deviceId" :show-overflow-tooltip="true" min-width="130"/>
+      <el-table-column label="话163" align="center" prop="yun_163" :show-overflow-tooltip="true" min-width="130"/>
       <el-table-column label="登录备注" align="center" prop="remark" :show-overflow-tooltip="true" min-width="130"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="250">
         <template #default="scope">
@@ -539,7 +549,7 @@ const data = reactive({
     pageNum: 1,
     pageSize: 20,
     email: '',
-    bankAccount: '',
+    account: '',
     searchValue: '', //会员Id,手机号*/
     status: '',
     loginIp: '',

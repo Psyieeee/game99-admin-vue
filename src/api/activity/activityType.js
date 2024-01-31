@@ -85,7 +85,12 @@ export function activityTypeUpdateIsUrl( id,isUrl ){
     })
 }
 
-
+export function activityTypeUpdateStatus( id,status ){
+    return request({
+        url:url.game99PlatformAdminWeb+"/activity/activityType/changeStatus/"+id+"/"+ status,
+        method:'put',
+    })
+}
 
 
 

@@ -78,6 +78,17 @@
         </template>
       </el-table-column>
 
+      <el-table-column label="状态" align="center" prop="status">
+        <template #default="scope">
+          <el-switch
+              v-model="scope.row.status"
+              :active-value=1
+              :inactive-value=0
+              @click="handleStatusChange(scope.row)">
+          </el-switch>
+        </template>
+      </el-table-column>
+
       <el-table-column label="排序" align="center" prop="sort"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
@@ -140,7 +151,8 @@ import {
   activityTypeDataById, activityTypeExport,
   activityTypeListData,
   addActivityTypeData, deleteActivityType,
-  updateActivityType, activityTypeUpdateIsUrl
+  updateActivityType, activityTypeUpdateIsUrl,
+  activityTypeUpdateStatus
 } from "@/api/activity/activityType";
 import {activityInfoUpdateStatus} from "@/api/activity/activityInfo";
 
@@ -308,6 +320,21 @@ function handleEffectChange(row){
     proxy.$modal.msgSuccess(text + '成功')
   }).catch(function () {
     row.isUrl = !row.isUrl
+  })
+}
+
+function handleStatusChange(row){
+  let text = row.status === '1' ? '启用' : '停用'
+  proxy.$confirm('确认要' + text + '"?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消'
+
+  }).then(function () {
+    return activityTypeUpdateStatus(row.id, row.status)
+  }).then(() => {
+    proxy.$modal.msgSuccess(text + '成功')
+  }).catch(function () {
+    row.status = !row.status
   })
 }
 

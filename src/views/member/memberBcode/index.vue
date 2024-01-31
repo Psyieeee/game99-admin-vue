@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
     <!--    search -->
-    <el-button type="primary" @click="copy1">总充值 {{ totalData.total.toFixed(2) }}</el-button>
-    <el-button type="success" @click="copy2">总打码 {{ totalData.countCur.toFixed(2) }}</el-button>
+    <el-button type="primary" @click="copy1">总需打码 {{ totalData.total.toFixed(2) }}</el-button>
+    <el-button type="success" @click="copy2">总已打码 {{ totalData.countCur.toFixed(2) }}</el-button>
     <el-button type="warning" @click="copy3">还需打码 {{
         (totalData.total - totalData.countCur).toFixed(2)
       }}
@@ -64,6 +64,7 @@
         </template>
       </el-table-column>
       <el-table-column label="当前打码量" align="center" prop="cur"/>
+      <el-table-column label="充电" align="center" prop="charge"/>
       <el-table-column label="创建时间" align="center" prop="createTime" min-width="160"/>
       <el-table-column label="操作" width="220" align="center" class-name="small-padding fixed-width" fixed="right">
         <template #default="scope">

@@ -31,7 +31,9 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="tableList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="VIP等级" min-width="60" prop="vipLevel"/>
+      <el-table-column align="center" label="VIP等级" min-width="60" prop="vipLevel">
+        <template #default="scope">{{scope.row.vipLevel===0?'DEFAULT':scope.row.vipLevel}}</template>
+      </el-table-column>
       <el-table-column align="center" label="链接" min-width="185" prop="supportLink"/>
       <el-table-column label="状态" prop="status" align="center" width="100">
         <template #default="scope">
@@ -69,16 +71,22 @@
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="600px">
       <el-form ref="queryRef" :model="form" :rules="rules" label-width="100px">
-          <el-form-item label="VIP 等级" prop="vipLevel">
-            <el-select v-model="form.vipLevel" clearable placeholder="选择">
-              <el-option
-                  v-for="item in vipLevels"
-                  :key="item"
-                  :label="item"
-                  :value="item"
-              />
-            </el-select>
-          </el-form-item>
+        <el-form-item>
+          <el-radio-group v-model="vipStatus" @change="handleVIPStatusChange()">
+            <el-radio label="VIP">VIP</el-radio>
+            <el-radio label="DEFAULT">預設</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="VIP 等级" prop="vipLevel">
+          <el-select v-model="form.vipLevel" clearable placeholder="选择" :disabled="vipStatus==='DEFAULT'">
+            <el-option
+                v-for="item in vipLevels"
+                :key="item"
+                :label="item"
+                :value="item"
+            />
+          </el-select>
+        </el-form-item>
           <el-form-item label="链接" prop="supportLink">
             <el-input type="textarea" v-model="form.supportLink" placeholder="支撑连杆"/>
           </el-form-item>
@@ -118,6 +126,8 @@ const title = ref('');
 const loading = ref(true);
 const multiple = ref(true);
 const open = ref(false);
+const vipStatus = ref('VIP');
+const currentVIPLevel = ref(null);
 const vipLevels = ref([]);
 const data = reactive({
 
@@ -166,6 +176,8 @@ function reset() {
     supportLink: null,
     status: 1
   }
+  currentVIPLevel.value = null;
+  vipStatus.value = 'VIP';
   proxy.resetForm('queryRef');
 }
 
@@ -208,6 +220,11 @@ function handleUpdate(row) {
   reset();
   getCustomerSupport(row.id).then(response => {
     form.value = response.data;
+    if(form.value.vipLevel===0){
+      vipStatus.value = 'DEFAULT';
+    }else {
+      currentVIPLevel.value = form.value.vipLevel;
+    }
   });
   console.log(JSON.stringify(form.value) + " @@@@")
   open.value = true
@@ -249,6 +266,18 @@ function toggleSwitch (row) {
     loading.value = false
     row.status = row.status === 0 ? 1 : 0
   })
+}
+
+function handleVIPStatusChange(){
+  if(vipStatus.value === 'VIP'){
+    if(form.value.vipLevel===null){
+      form.value.vipLevel = '';
+    }else{
+      form.value.vipLevel = currentVIPLevel.value;
+    }
+  }else {
+    form.value.vipLevel = 0;
+  }
 }
 
 getList()
