@@ -325,7 +325,7 @@ function copy1() {
 }
 
 function copy2() {
-  proxy.copyCommand(totalData.value.successCount, proxy)
+  proxy.copyCommand(totalData.value.totalMoney, proxy)
 }
 
 function copy3() {

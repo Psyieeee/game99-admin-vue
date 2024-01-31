@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
     <!--    search -->
-    <el-button type="primary" @click="copy1">总充值 {{ totalData.total.toFixed(2) }}</el-button>
-    <el-button type="success" @click="copy2">总打码 {{ totalData.countCur.toFixed(2) }}</el-button>
+    <el-button type="primary" @click="copy1">总需打码 {{ totalData.total.toFixed(2) }}</el-button>
+    <el-button type="success" @click="copy2">总已打码 {{ totalData.countCur.toFixed(2) }}</el-button>
     <el-button type="warning" @click="copy3">还需打码 {{
         (totalData.total - totalData.countCur).toFixed(2)
       }}

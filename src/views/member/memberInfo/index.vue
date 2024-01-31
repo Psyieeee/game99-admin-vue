@@ -50,24 +50,32 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item prop="inviterCode" style="width: 110px;" id="inviterCode">
+<!--      <el-form-item prop="inviterCode" style="width: 110px;" id="inviterCode">-->
+<!--        <el-input-->
+<!--            v-model="queryParams.inviterCode"-->
+<!--            placeholder="邀请码"-->
+<!--            clearable-->
+<!--            @keyup.enter="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+      <el-form-item prop="channelCode" style="width: 110px;" id="channelCode">
         <el-input
-            v-model="queryParams.inviterCode"
-            placeholder="邀请码"
+            v-model="queryParams.channelCode"
+            placeholder="频道代码"
             clearable
             @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item prop="channelcode" style="width: 110px;" id="channelCode">
-        <el-select v-model="queryParams.channelcode" placeholder="全部类型" clearable>
-          <el-option
-              v-for="dict in member_device_type"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
+<!--      <el-form-item prop="channelCode" style="width: 110px;" id="channelCode">-->
+<!--        <el-select v-model="queryParams.channelcode" placeholder="全部类型" clearable>-->
+<!--          <el-option-->
+<!--              v-for="dict in member_device_type"-->
+<!--              :key="dict.value"-->
+<!--              :label="dict.label"-->
+<!--              :value="dict.value"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
       <el-form-item prop="loginIp" style="width: 110px;" class="loginIp">
         <el-input
             v-model="queryParams.loginIp"
@@ -92,7 +100,14 @@
             @keyup.enter="handleQuery"
         />
       </el-form-item>
-
+      <el-form-item prop="deviceId" style="width: 110px;" class="deviceId">
+        <el-input
+            v-model="queryParams.deviceId"
+            placeholder="设备id"
+            clearable
+            @keyup.enter="handleQuery"
+        />
+      </el-form-item>
       <!--   min and max search -->
       <el-form-item prop="cost">
         <el-input
@@ -209,8 +224,8 @@
       <el-table-column label="会员vip" align="center" prop="vip" width="70px"/>
       <el-table-column label="余额" :show-overflow-tooltip="true" align="center" prop="accountNow" min-width="120"/>
       <el-table-column label="积分" :show-overflow-tooltip="true" align="center" prop="bonusMoney" min-width="120"/>
-      <el-table-column label="促销数量" :show-overflow-tooltip="true" align="center" prop="promotionAmount" min-width="120"/>
-      <el-table-column label="收回账户" :show-overflow-tooltip="true" align="center" prop="withdrawAccount" min-width="120"/>
+      <el-table-column label="总平台赠送" :show-overflow-tooltip="true" align="center" prop="promotionAmount" min-width="120"/>
+      <el-table-column label="总提现" :show-overflow-tooltip="true" align="center" prop="withdrawAccount" min-width="120"/>
       <el-table-column label="电子邮件" :show-overflow-tooltip="true" align="center" prop="email"
                        min-width="120"
                        :formatter="maskedEmailRow"/>
@@ -262,6 +277,7 @@
         </template>
       </el-table-column>
       <el-table-column label="登录备注" align="center" prop="remark" :show-overflow-tooltip="true" min-width="130"/>
+      <el-table-column label="频道代码" align="center" prop="channelCode" :show-overflow-tooltip="true" min-width="130"/>
       <el-table-column label="设备id" align="center" prop="deviceId" :show-overflow-tooltip="true" min-width="130"/>
       <el-table-column label="话163" align="center" prop="yun_163" :show-overflow-tooltip="true" min-width="130"/>
       <el-table-column label="登录备注" align="center" prop="remark" :show-overflow-tooltip="true" min-width="130"/>
