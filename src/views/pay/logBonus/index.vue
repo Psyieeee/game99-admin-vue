@@ -1,7 +1,11 @@
 <template>
   <div class="app-container">
     <div v-loading="totalLoading">
-      <el-button type="primary" @click="copy1">行为类型统计 {{ totalData.totalIncome || 0 }}</el-button>
+      <el-button type="primary" @click="copy(totalData.totalIncome)">行为类型统计 {{ totalData.totalIncome || 0 }}</el-button>
+      <el-button type="primary" @click="copy(totalData.sumPay)">总支出 {{ totalData.sumPay || 0 }}</el-button>
+      <el-button type="primary" @click="copy(totalData.sumIncome)">总收入 {{ totalData.sumIncome || 0 }}</el-button>
+      <el-button type="primary" @click="copy(totalData.sumTotalBefore)">变动前余额合计 {{ totalData.sumTotalBefore || 0 }}</el-button>
+      <el-button type="primary" @click="copy(totalData.sumTotal)">总余额 {{ totalData.sumTotal || 0 }}</el-button>
       <el-button type="primary" icon="Search" size="small" @click="listCount()" style="margin-left: 20px">统计查询
       </el-button>
     </div>
@@ -28,6 +32,19 @@
             clearable
             @keyup.enter="handleQuery"
         />
+      </el-form-item>
+      <el-form-item prop="type">
+        <el-select v-model="queryParams.type" placeholder="语言" clearable>
+          <el-option
+              v-for="tradeType in types"
+              :key="tradeType.type"
+              :label="tradeType.des"
+              :value="tradeType.type"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item prop="des">
+        <el-input v-model="queryParams.des" placeholder="描述" clearable/>
       </el-form-item>
       <el-form-item prop="mark">
         <el-input v-model="queryParams.mark" placeholder="请选择入款备注" clearable/>
@@ -130,7 +147,11 @@ const data = reactive({
 
 
   totalData: {
-    totalIncome: 0
+    totalIncome: 0,
+    sumPay: 0,
+    sumIncome: 0,
+    sumTotalBefore: 0,
+    sumTotal: 0
   }
 
 });
@@ -139,8 +160,8 @@ const {totalData, queryParams, selectTime} = toRefs(data);
 const {log_money_mark} = proxy.useDict("log_money_mark");
 
 
-function copy1() {
-  proxy.copyCommand(totalData.value.totalIncome, proxy)
+function copy(val) {
+  proxy.copyCommand(val, proxy)
 }
 
 /**
