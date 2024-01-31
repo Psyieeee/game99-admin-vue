@@ -38,7 +38,8 @@ import {
     addDateRange,
     getDefaultTime,
     pickerDateTimeShortcuts,
-    pickerDateShortcuts
+    pickerDateShortcuts,
+    get7beforeDay
 } from '@/utils/dateUtils'
 
 // 分页组件
@@ -80,6 +81,7 @@ app.config.globalProperties.getMeiDongTodayStartTime = getMeiDongTodayStartTime
 app.config.globalProperties.getMeiDongTodayEndTime = getMeiDongTodayEndTime
 app.config.globalProperties.getDateStartTime = getDateStartTime
 app.config.globalProperties.getDateEndTime = getDateEndTime
+app.config.globalProperties.get7beforeDay = get7beforeDay
 app.config.globalProperties.pickerDateTimeShortcuts = pickerDateTimeShortcuts
 app.config.globalProperties.pickerDateShortcuts = pickerDateShortcuts
 app.config.globalProperties.getDefaultTime = getDefaultTime
