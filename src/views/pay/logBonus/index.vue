@@ -1,11 +1,8 @@
 <template>
   <div class="app-container">
     <div v-loading="totalLoading">
-      <el-button type="primary" @click="copy(totalData.totalIncome)">行为类型统计 {{ totalData.totalIncome || 0 }}</el-button>
       <el-button type="primary" @click="copy(totalData.sumPay)">总支出 {{ totalData.sumPay || 0 }}</el-button>
       <el-button type="primary" @click="copy(totalData.sumIncome)">总收入 {{ totalData.sumIncome || 0 }}</el-button>
-      <el-button type="primary" @click="copy(totalData.sumTotalBefore)">变动前余额合计 {{ totalData.sumTotalBefore || 0 }}</el-button>
-      <el-button type="primary" @click="copy(totalData.sumTotal)">总余额 {{ totalData.sumTotal || 0 }}</el-button>
       <el-button type="primary" icon="Search" size="small" @click="listCount()" style="margin-left: 20px">统计查询
       </el-button>
     </div>
@@ -147,11 +144,8 @@ const data = reactive({
 
 
   totalData: {
-    totalIncome: 0,
     sumPay: 0,
     sumIncome: 0,
-    sumTotalBefore: 0,
-    sumTotal: 0
   }
 
 });
