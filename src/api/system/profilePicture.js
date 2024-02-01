@@ -25,6 +25,18 @@ export function addProfilePicture(data){
         data : data
     })
 }
+/** 新增 add */
+export function addProfilePictureUpload(formData, data){
+    return request({
+        url:url.game99PlatformAdminWeb+"/system/profilePicture/addUpload",
+        method:'post',
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        },
+        formData,
+        data : data
+    })
+}
 
 /** 新增 edit */
 export function updateProfilePicture(data){

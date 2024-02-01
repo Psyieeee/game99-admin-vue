@@ -66,7 +66,7 @@
                   style="height: 50px;"
                   :src="scope.row.icon"
                   fit="contain"
-                  :href="scope.row.icon" />
+                  :href="scope.row.icon"/>
             </a>
           </div>
         </template>
@@ -191,7 +191,7 @@ import {
   deleteProfilePicture,
   fileUpload,
   getProfilePictureData,
-  updateProfilePicture
+  updateProfilePicture, addProfilePictureUpload
 } from "@/api/system/profilePicture";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {url} from "@/utils/url";
@@ -313,30 +313,43 @@ function submitForm() {
         icon: null
       }
 
-      if (formData.get("file") != null) {
-        await fileUpload(formData).then(res => {
-          console.log(" params.icon " + params.icon)
-          if (form.value.id != null) {
-            form.value.icon = res.data
-          } else {
-            params.icon = res.data
-          }
-        });
-      }
-
-      console.log("form.value.icon " + form.value.icon)
+      // if (formData.get("file") != null) {
+      //   await fileUpload(formData).then(res => {
+      //     console.log(" params.icon " + params.icon)
+      //     if (form.value.id != null) {
+      //       form.value.icon = res.data
+      //     } else {
+      //       params.icon = res.data
+      //     }
+      //   });
+      // }
 
       if (form.value.id != null) {
-        updateProfilePicture(form.value).then(() => {
-          proxy.$modal.msgSuccess('修改成功')
-          open.value = false
-          getList()
+        updateProfilePicture(form.value).then(async () => {
+          if (formData.get("file") != null) {
+            formData.set("id", form.value.id);
+            await fileUpload(formData).then(res => {
+              proxy.$modal.msgSuccess('新增成功')
+              open.value = false
+              getList()
+            });
+            proxy.$modal.msgSuccess('修改成功')
+            open.value = false
+            getList()
+          }
         })
       } else {
-        addProfilePicture(params).then(() => {
-          proxy.$modal.msgSuccess('新增成功')
-          open.value = false
-          getList()
+        // addProfilePicture(params).then(() => {
+        addProfilePicture(params).then(async (response) => {
+          if (formData.get("file") != null) {
+            formData.set("id", response.data.id);
+            await fileUpload(formData).then(res => {
+              proxy.$modal.msgSuccess('新增成功')
+              open.value = false
+              getList()
+            });
+          }
+
 
         })
       }
@@ -466,8 +479,8 @@ function submitUpload() {
 
 function selectFile1(file, fileList) {
   this.fileToUpload = file;
-  formData.append("file", file.raw)
-  formData.append("name", file.name)
+  formData.set("file", file.raw)
+  formData.set("name", file.name)
 }
 
 getList()
