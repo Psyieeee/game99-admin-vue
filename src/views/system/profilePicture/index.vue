@@ -275,7 +275,7 @@ function reset() {
   proxy.resetForm('profilePictureRef')
 }
 
-function clearUpload(){
+function clearUpload() {
   upload.value = [];
   formData.delete("file")
   formData.delete("name")
@@ -483,7 +483,7 @@ function selectFile1(file, fileList) {
 
   const fileExtension = file.name.split('.')[1]
   const isLt2M = file.size / 1024 / 1024 < 100
-  if (fileExtension !== 'png' ){
+  if (fileExtension !== 'png') {
 
     proxy.$modal.msgError('无效音乐')
     clearUpload()
