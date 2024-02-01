@@ -49,6 +49,13 @@
           ></el-option>
         </el-select>
       </el-form-item>
+      <el-form-item prop="loginDev" style="width: 110px;" id="channelCode">
+        <el-select v-model="queryParams.loginDev" placeholder="登录设备" clearable style="width: 110px">
+          <el-option value="0" label="H5"></el-option>
+          <el-option value="1" label="ios"></el-option>
+          <el-option value="2" label="android"></el-option>
+        </el-select>
+      </el-form-item>
 
 <!--      <el-form-item prop="inviterCode" style="width: 110px;" id="inviterCode">-->
 <!--        <el-input-->
@@ -558,6 +565,7 @@ const data = reactive({
     nickName: '',
     inviterCode: '',
     channelcode: '',
+    loginDevice:'',
     downLoadDate: [],
     withdrawStatus: null,
     selectDate: [proxy.parseTime(proxy.getTodayStartTime()), proxy.parseTime(proxy.getTodayEndTime())],
