@@ -65,10 +65,10 @@
 <!--            @keyup.enter="handleQuery"-->
 <!--        />-->
 <!--      </el-form-item>-->
-      <el-form-item prop="channelCode" style="width: 110px;" id="channelCode">
+      <el-form-item prop="inviterCode" style="width: 110px;" id="inviterCode">
         <el-input
-            v-model="queryParams.channelCode"
-            placeholder="频道代码"
+            v-model="queryParams.inviterCode"
+            placeholder="邀请码"
             clearable
             @keyup.enter="handleQuery"
         />
@@ -269,7 +269,7 @@
       <el-table-column label="限制地区" :show-overflow-tooltip="true" align="center" prop="loginProvince" width="180"/>
       <el-table-column label="打码账户" align="center" prop="codeNow" min-width="110"/>
       <el-table-column label="累计有效投注" align="center" prop="codeTotal" min-width="110"/>
-<!--      <el-table-column label="邀请码" align="center" prop="inviterCode" min-width="100"/>-->
+      <el-table-column label="邀请码" align="center" prop="inviterCode" min-width="100"/>
       <el-table-column label="邀请码" align="center" prop="channelCode" min-width="100"/>
       <el-table-column label="用户类型" align="center" prop="channelcode" min-width="200">
         <template #default="scope">
@@ -285,7 +285,6 @@
         </template>
       </el-table-column>
       <el-table-column label="登录备注" align="center" prop="remark" :show-overflow-tooltip="true" min-width="130"/>
-<!--      <el-table-column label="频道代码" align="center" prop="channelCode" :show-overflow-tooltip="true" min-width="130"/>-->
       <el-table-column label="设备id" align="center" prop="deviceId" :show-overflow-tooltip="true" min-width="130"/>
       <el-table-column label="话163" align="center" prop="yun_163" :show-overflow-tooltip="true" min-width="130"/>
       <el-table-column label="登录备注" align="center" prop="remark" :show-overflow-tooltip="true" min-width="130"/>
