@@ -135,8 +135,7 @@
             </el-form-item>
             <el-form-item>
               <el-upload
-                  ref="upload"
-
+                  v-model:file-list="upload"
                   :action="uploadFileUrl"
                   :auto-upload="false"
 
@@ -149,11 +148,11 @@
                   :on-preview="handlePreview"
                   :on-remove="handleRemove"
                   :on-success="uploadSuccess"
+                  :before-upload="beforeAvatarUpload"
                   class="upload-demo"
                   drag
                   name="profilePicture"
               >
-                <!--                  :before-upload="beforeAvatarUpload"-->
                 <div class="el-upload__text">Drop file here or <em>点击上传</em></div>
                 <div class="el-upload__tip">
                   最大文件大小为 100 MB
@@ -201,6 +200,7 @@ import {useRouter} from "vue-router";
 const router = useRouter();
 const {proxy} = getCurrentInstance();
 const formData = new FormData();
+const upload = ref([]);
 
 const profilePictureList = ref([]);
 const ids = ref([]);
@@ -264,7 +264,6 @@ function reset() {
   form.value = {
     id: null,
     title: null,
-    size: null,
     upload: null,
     icon: null,
     effect: null,
@@ -272,15 +271,15 @@ function reset() {
     updateTime: null
   }
   // proxy.$refs.upload.clearFiles();
+  clearUpload()
   proxy.resetForm('profilePictureRef')
 }
 
-function resetFormText() {
-  form.value = {
-    id: null,
-    text2: null
-  }
-  proxy.resetForm('textFormRef')
+function clearUpload() {
+  upload.value = [];
+  formData.delete("file")
+  formData.delete("name")
+  formData.delete("id")
 }
 
 /** 搜索按钮操作 handle search query*/
@@ -344,13 +343,12 @@ function submitForm() {
           if (formData.get("file") != null) {
             formData.set("id", response.data.id);
             await fileUpload(formData).then(res => {
-              proxy.$modal.msgSuccess('新增成功')
-              open.value = false
-              getList()
+
             });
           }
-
-
+          proxy.$modal.msgSuccess('新增成功')
+          open.value = false
+          getList()
         })
       }
     }
@@ -453,21 +451,25 @@ function uploadSuccess() {
   getList()
 }
 
-// function beforeAvatarUpload(file) {
-//   const fileExtension = file.name.split('.')[1]
-//   const isLt2M = file.size / 1024 / 1024 < 100
-//   if (fileExtension !== 'mp3' &&
-//       fileExtension !== 'mp4' &&
-//       fileExtension !== 'm4a' &&
-//       fileExtension !== 'aac' &&
-//       fileExtension !== 'wma' &&
-//       fileExtension !== 'wav' &&
-//       fileExtension !== 'flac') {
-//     proxy.$modal.msgError('无效音乐')
-//   } else if (!isLt2M) {
-//     proxy.$modal.msgError('上传模板大小不能超过100MB!')
-//   }
-// }
+function beforeAvatarUpload(file) {
+  const fileExtension = file.name.split('.')[1]
+  const isLt2M = file.size / 1024 / 1024 < 100
+  console.log("awa ")
+  if (fileExtension !== 'mp3' &&
+      fileExtension !== 'mp4' &&
+      fileExtension !== 'm4a' &&
+      fileExtension !== 'aac' &&
+      fileExtension !== 'wma' &&
+      fileExtension !== 'wav' &&
+      fileExtension !== 'jpg' &&
+      fileExtension !== 'jpeg' &&
+      fileExtension !== 'bmp' &&
+      fileExtension !== 'flac') {
+    proxy.$modal.msgError('无效音乐')
+  } else if (!isLt2M) {
+    proxy.$modal.msgError('上传模板大小不能超过100MB!')
+  }
+}
 
 function uploadProfilePictureUrl() {
   return url.baseUrl + url.game99PlatformAdminWeb + "/system/profilePicture/upload";
@@ -478,7 +480,22 @@ function submitUpload() {
 }
 
 function selectFile1(file, fileList) {
-  this.fileToUpload = file;
+
+  const fileExtension = file.name.split('.')[1]
+  const isLt2M = file.size / 1024 / 1024 < 100
+  if (fileExtension !== 'png') {
+
+    proxy.$modal.msgError('无效音乐')
+    clearUpload()
+    return false;
+  } else if (!isLt2M) {
+    proxy.$modal.msgError('上传模板大小不能超过100MB!')
+    clearUpload()
+    return false;
+  }
+
+  console.log("aw")
+  // this.fileToUpload = file;
   formData.set("file", file.raw)
   formData.set("name", file.name)
 }
