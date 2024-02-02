@@ -284,7 +284,7 @@
             }}|{{ scope.row.loginDev == 2 ? 'andriod' : scope.row.loginDev == 1 ? 'ios' : '其它' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="登录备注" align="center" prop="remark" :show-overflow-tooltip="true" min-width="130"/>
+      <!--<el-table-column label="登录备注" align="center" prop="remark" :show-overflow-tooltip="true" min-width="130"/>-->
       <el-table-column label="设备id" align="center" prop="deviceId" :show-overflow-tooltip="true" min-width="130"/>
       <el-table-column label="话163" align="center" prop="yun_163" :show-overflow-tooltip="true" min-width="130"/>
       <el-table-column label="登录备注" align="center" prop="remark" :show-overflow-tooltip="true" min-width="130"/>
