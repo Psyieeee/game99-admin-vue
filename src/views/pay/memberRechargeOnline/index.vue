@@ -76,6 +76,31 @@
             @keyup.enter="handleQuery"
         />
       </el-form-item>
+      <el-form-item prop="money" label-width="70px">
+        <el-input
+            v-model="queryParams.priceMin"
+            placeholder="￥"
+            clearable
+            autocomplete="on"
+            min="0"
+            style="width: 86px"
+            type="number"
+            class="no-number"
+            @keyup.enter.native="handleQuery"
+        />
+        -
+        <el-input
+            v-model="queryParams.priceMax"
+            placeholder="￥"
+            clearable
+            autocomplete="on"
+            min="0"
+            style="width: 86px"
+            type="number"
+            class="no-number"
+            @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" size="small" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" size="small" @click="resetQuery">重置</el-button>
@@ -296,6 +321,8 @@ const data = reactive({
     status: null,
     realMoney: null,
     downLoadDate: [],
+    priceMin: null,
+    priceMax: null,
   },
   updateTime: [proxy.parseTime(proxy.getTodayStartTime()), proxy.parseTime(proxy.getTodayEndTime())],
 
