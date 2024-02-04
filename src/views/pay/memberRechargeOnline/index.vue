@@ -83,7 +83,7 @@
             clearable
             autocomplete="on"
             min="0"
-            style="width: 86px"
+            style="width: 150px"
             type="number"
             class="no-number"
             @keyup.enter.native="handleQuery"
@@ -95,7 +95,7 @@
             clearable
             autocomplete="on"
             min="0"
-            style="width: 86px"
+            style="width: 150px"
             type="number"
             class="no-number"
             @keyup.enter.native="handleQuery"
