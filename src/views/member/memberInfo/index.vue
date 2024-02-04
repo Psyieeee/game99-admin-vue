@@ -267,7 +267,7 @@
       <el-table-column label="登录ip" :show-overflow-tooltip="true" align="center" prop="loginIp" width="180"/>
       <el-table-column label="注册IP" :show-overflow-tooltip="true" align="center" prop="registerIp" width="180"/>
       <el-table-column label="限制地区" :show-overflow-tooltip="true" align="center" prop="loginProvince" width="180"/>
-      <el-table-column label="打码账户" align="center" prop="codeNow" min-width="110"/>
+<!--      <el-table-column label="打码账户" align="center" prop="codeNow" min-width="110"/>-->
       <el-table-column label="累计有效投注" align="center" prop="codeTotal" min-width="110"/>
       <el-table-column label="邀请码" align="center" prop="inviterCode" min-width="100"/>
       <el-table-column label="邀请码" align="center" prop="channelCode" min-width="100"/>
