@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="名称" prop="name">
-        <el-input-number
+        <el-input
             v-model="queryParams.name"
             placeholder="请输入名称"
             clearable
@@ -68,8 +68,8 @@
 
     <el-table stripe v-loading="loading" :data="configCommissionList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="名字" align="center"    prop="name"/>
-      <el-table-column label="价值" align="center" prop="value"/>
+      <el-table-column label="名字" align="center"      prop="name"/>
+      <el-table-column label="价值" align="center"      prop="value"/>
       <el-table-column align="center" label="状态"     prop="status">
         <template #default="scope">
           <el-switch
