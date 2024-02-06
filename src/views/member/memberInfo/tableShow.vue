@@ -31,7 +31,7 @@
 
         <div style="display: flex;justify-content: flex-start;">
           <div class="mount" style="width: 60%; border: none">
-            <div class="font" style="border: none">{{ dataInfo.会员注单 }}</div>
+            <div class="font" style="border: none">{{ convertStrENotationToNumber( dataInfo.会员注单 ) }}</div>
           </div>
           <div class="mount" style="width: 40%; border: none">
             <el-button type="primary"
@@ -227,6 +227,14 @@ function getHistoryRecharge() {
     }
     proxy.$modal.msgSuccess('更新成功')
   });
+}
+
+function convertStrENotationToNumber(strVal){
+  if(strVal.toLowerCase().includes('e')){
+    const val = Number(strVal)
+    return isNaN(val) ? strVal : val;
+  }
+  return strVal;
 }
 
 defineExpose({
