@@ -57,7 +57,7 @@
         </el-select>
       </el-form-item>
       <el-form-item prop="hasAccountCharge" style="width: 110px;" id="hasAccountCharge">
-        <el-select v-model="queryParams.hasAccountCharge" placeholder="有账户收费" clearable style="width: 110px">
+        <el-select v-model="queryParams.hasAccountCharge" placeholder="是否充值" clearable style="width: 110px">
           <el-option value="true" label="是"></el-option>
           <el-option value="false" label="否"></el-option>
         </el-select>
