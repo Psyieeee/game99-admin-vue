@@ -7,7 +7,7 @@
         <div class="font">会员Id</div>
         <div class="font">注册时间</div>
         <!--        <div class="font">电话号码</div>-->
-        <div class="font">用户类型</div>
+<!--        <div class="font">用户类型</div>-->
 <!--        <div class="font">会员打码</div>-->
         <div class="font">会员IP</div>
       </div>
@@ -15,7 +15,7 @@
         <div class="font">{{ dataInfo.会员编号 }}</div>
         <div class="font">{{ dataInfo.会员注册时间 }}</div>
         <!--        <div class="font" @click="showPhone" style="background-color: #cccc77">{{ data.会员名称 }}</div>-->
-        <div class="font">{{ dataInfo.用户类型 }}</div>
+<!--        <div class="font">{{ dataInfo.用户类型 }}</div>-->
 <!--        <div class="font">{{ dataInfo.会员打码 }}</div>-->
         <div class="font">{{ dataInfo.登陆IP }}</div>
       </div>
