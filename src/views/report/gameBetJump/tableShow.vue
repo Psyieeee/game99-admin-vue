@@ -1,7 +1,6 @@
 <template>
   <div>
-    <el-dialog :visible.sync="open" title="投注详情" style="margin-bottom: 150px" append-to-body>
-
+    <el-dialog v-model="open" title="投注详情" style="margin-bottom: 150px; width: 100%" append-to-body>
       <el-row :gutter="10" class="mb8">
         <el-col :span="1.5">
           <el-button
@@ -13,30 +12,34 @@
           > export
           </el-button>
         </el-col>
-        <right-toolbar :showSearch.sync="showSearch" @queryTable="list"></right-toolbar>
+<!--        <right-toolbar v-model="showSearch" @queryTable="list"></right-toolbar>-->
       </el-row>
-
-      <el-table :data="tableData" style="width: 100%;">
+<!--      <el-row :gutter="10" class="mb8">-->
+      <el-table :data="tableData" style="width: 100%;" v-loading="loading" >
         <el-table-column property="agentchild" label="会员ID"   header-align="center" align="center"/>
         <el-table-column property="gamecell"   label="有效下注"  header-align="center" align="center"/>
         <el-table-column property="gameprofit" label="盈利"     header-align="center" align="center"/>
       </el-table>
       <pagination
-        v-show="total>0"
+        v-show="total"
         :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
+        v-model:page="queryParams.pageNum"
+        v-model:limit="queryParams.pageSize"
+        :page-sizes="[20,50,100]"
         @pagination="list"
       />
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="close">取消</el-button>
-      </div>
+<!--      </el-row>-->
+<!--      <el-row :gutter="10" class="mb8">-->
+<!--      <div slot="footer" class="dialog-footer">-->
+<!--        <el-button @click="close">取消</el-button>-->
+<!--      </div>-->
+<!--      </el-row>-->
     </el-dialog>
   </div>
 </template>
 
 
-<script>
+<script setup name="TableShow">
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {useRouter} from "vue-router";
 import {exportReportChildPlamGames, listByGamePepole} from "@/api/report/gameBetJump.js";
@@ -45,8 +48,9 @@ import {exportReportChildPlamGames, listByGamePepole} from "@/api/report/gameBet
 const {proxy} = getCurrentInstance();
 const router = useRouter();
 const tableData = ref([]);
-const open = ref(true);
+const open = ref(false);
 const showSearch = ref(true);
+const loading = ref(false);
 const showPages = ref(false);
 const total = ref(0);
 
@@ -62,10 +66,12 @@ const {queryParams, totalData} = toRefs(data);
 
 
 function list(){
+  loading.value = true
   listByGamePepole( queryParams.value ).then((res) =>{
-    tableData.value = res.rows;
+    tableData.value = res.data;
     total.value = res.total
     open.value = true;
+    loading.value = false;
   })
 }
 
@@ -87,7 +93,15 @@ function handleExport() {
   })
 }
 
-list();
+// list();
+
+defineExpose({
+  setParam
+});
+function setParam(params){
+  queryParams.value = params;
+  list()
+}
 
 </script>
 

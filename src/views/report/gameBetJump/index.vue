@@ -43,7 +43,11 @@
             <el-table-column label="名称-详情" align="center" prop="gameplame" min-width="120"/>
             <el-table-column label="子平台编号" align="center" prop="agentchild" min-width="120"/>
             <el-table-column label="子平台名称" align="center" prop="agentchildname" min-width="120"/>
-            <el-table-column label="投注人数" align="center" prop="gamepepole" min-width="120"/>
+            <el-table-column label="投注人数" align="center" prop="gamepepole" min-width="120">
+              <template  #default="scope">
+                <a style="color: #00afff" @click="handleClickBetCount(scope.row)">{{scope.row.gamepepole}}</a>
+              </template>
+            </el-table-column>
             <el-table-column label="投注比数" align="center" prop="gametouzhu" min-width="120"/>
             <el-table-column label="总投注金额" align="center" prop="gamecell" min-width="120"/>
             <el-table-column label="有效投注金额" align="center" prop="gamebet" min-width="120"/>
@@ -52,6 +56,7 @@
             <el-table-column label="比例" align="center" prop="bili" min-width="120"/>
             <el-table-column label="日期" align="center" prop="begindate" min-width="150"/>
         </el-table>
+      <tableShow ref="tableShow"></tableShow>
         <pagination
                 v-show="total"
                 :total="total"
@@ -75,6 +80,7 @@ import {
 } from "@/utils/dateUtils";
 import {listGameChildBet} from "@/api/report/gameBetJump";
 import {useRouter} from "vue-router";
+import TableShow from "./tableShow"
 
 const {proxy} = getCurrentInstance();
 const router = useRouter();
@@ -163,6 +169,18 @@ function setQueryParams() {
             parseTime(new Date(new Date(proxy.$route.query.endDate).setHours(23,59,59)))];
     }
     return defaultParams;
+}
+
+function handleClickBetCount(row) {
+console.log("aw", queryParams)
+console.log("row", row)
+  queryParams.value.begindate  = queryParams.value.dateTimeRange[0];
+  queryParams.value.endDate    = queryParams.value.dateTimeRange[1];
+  queryParams.value.agentchild = row.agentchild
+  queryParams.value.gamepepole = row.gamepepole;
+  queryParams.value.gameagent  = row.gameagent;
+  queryParams.value.gameUuid   = row.gameUuid;
+  proxy.$refs["tableShow"].setParam(queryParams);
 }
 
 getList()
