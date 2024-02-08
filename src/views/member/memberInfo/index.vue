@@ -57,9 +57,9 @@
         </el-select>
       </el-form-item>
       <el-form-item prop="hasAccountCharge" style="width: 110px;" id="hasAccountCharge">
-        <el-select v-model="queryParams.hasAccountCharge" placeholder="有账户收费" clearable style="width: 110px">
+        <el-select v-model="queryParams.hasAccountCharge" placeholder="是否充值" clearable style="width: 110px">
           <el-option value="true" label="是"></el-option>
-          <el-option value="false" label="没有"></el-option>
+          <el-option value="false" label="否"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item prop="version" style="width: 110px;" id="version">
@@ -280,7 +280,7 @@
       <el-table-column label="登录ip" :show-overflow-tooltip="true" align="center" prop="loginIp" width="180"/>
       <el-table-column label="注册IP" :show-overflow-tooltip="true" align="center" prop="registerIp" width="180"/>
       <el-table-column label="限制地区" :show-overflow-tooltip="true" align="center" prop="loginProvince" width="180"/>
-      <el-table-column label="打码账户" align="center" prop="codeNow" min-width="110"/>
+<!--      <el-table-column label="打码账户" align="center" prop="codeNow" min-width="110"/>-->
       <el-table-column label="累计有效投注" align="center" prop="codeTotal" min-width="110"/>
       <el-table-column label="邀请码" align="center" prop="inviterCode" min-width="100"/>
       <el-table-column label="邀请码" align="center" prop="channelCode" min-width="100"/>

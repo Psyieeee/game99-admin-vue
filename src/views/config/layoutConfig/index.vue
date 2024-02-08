@@ -9,6 +9,14 @@
             @keyup.enter="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="名字" prop="name">
+        <el-input
+            v-model="queryParams.name"
+            placeholder="名字"
+            clearable
+            @keyup.enter="handleQuery"
+        />
+      </el-form-item>
       <el-form-item label="日期" prop="createTime">
         <el-date-picker type="datetimerange"
                         v-model="createTime"
@@ -33,7 +41,7 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['config:textConfig:add']"
+            v-hasPermi="['config:layoutConfig:add']"
             icon="Plus"
             plain
             size="small"
@@ -44,7 +52,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['config:textConfig:delete']"
+            v-hasPermi="['config:layoutConfig:delete']"
             :disabled="multiple"
             icon="Delete"
             plain
@@ -61,7 +69,26 @@
     <el-table v-loading="loading" :data="recordList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="代码" min-width="180" prop="code"/>
-      <el-table-column align="center" label="价值" min-width="180" prop="value"/>
+      <el-table-column align="center" label="名字" min-width="180" prop="name"/>
+      <el-table-column align="center" label="内容" min-width="180" prop="content"/>
+      <el-table-column align="center" label="图像" prop="image">
+        <template #default="scope" >
+          <a
+              v-if="scope.row.image !== ''"
+              :href="scope.row.image"
+              style="color: #409eff; font-size: 12px"
+              target="_blank"
+          >
+            <el-image
+                style="height: 50px;"
+                :src="scope.row.image"
+                fit="contain"
+                :href="scope.row.image"
+                target="_blank"
+            />
+          </a>
+        </template>
+      </el-table-column>
       <el-table-column label="地位" prop="status" align="center" width="180">
         <template #default="scope">
           <el-switch
@@ -85,14 +112,14 @@
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
-              v-hasPermi="['config:textConfig:edit']"
+              v-hasPermi="['config:layoutConfig:edit']"
               icon="Edit" link
               size="small"
               type="primary"
               @click="handleUpdate(scope.row)">修改
           </el-button>
           <el-button
-              v-hasPermi="['config:textConfig:delete']"
+              v-hasPermi="['config:layoutConfig:delete']"
               icon="Delete" link
               size="small"
               style="color: #e05e5e"
@@ -111,8 +138,33 @@
         <el-form-item label="代码" prop="code">
           <el-input v-model="form.code" placeholder="代码"/>
         </el-form-item>
-        <el-form-item label="价值" prop="value">
-          <el-input v-model="form.value" placeholder="价值"/>
+        <el-form-item label="姓名" prop="name">
+          <el-input v-model="form.name" placeholder="姓名"/>
+        </el-form-item>
+        <el-form-item label="内容" prop="content">
+          <el-input v-model="form.content" placeholder="内容" type="textarea"/>
+        </el-form-item>
+        <el-form-item>
+          <el-upload
+              v-model:file-list="upload"
+              :auto-upload="false"
+              :limit="1"
+              :multiple="false"
+              :on-change="selectFile"
+              :on-error="uploadFalse"
+              :on-exceed="handleExceed"
+              :on-preview="handlePreview"
+              :on-remove="handleRemove"
+              :on-success="uploadSuccess"
+              class="upload-demo"
+              drag
+              name="countryIcon"
+          >
+            <div class="el-upload__text">Drop file here or <em>点击上传</em></div>
+            <div class="el-upload__tip">
+              最大文件大小为 100 MB
+            </div>
+          </el-upload>
         </el-form-item>
         <el-form-item label="地位" prop="status">
           <el-switch v-model="form.status"
@@ -137,8 +189,9 @@ import {
   addRecord,
   updateRecord,
   getRecord,
-  changeStatus
-} from "@/api/settings/textConfig";
+  changeStatus,
+  fileUpload
+} from "@/api/config/layoutConfig";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {getDefaultTime} from "@/utils/dateUtils.js";
 const {proxy} = getCurrentInstance();
@@ -149,6 +202,8 @@ const title = ref('');
 const loading = ref(true);
 const multiple = ref(true);
 const open = ref(false);
+const upload = ref([]);
+const formData = new FormData();
 const data = reactive({
   /** 查询参数 query params*/
   queryParams: {},
@@ -160,7 +215,10 @@ const data = reactive({
     code: [
       {required: true, message: '无效的值', trigger: 'blur'}
     ],
-    value: [
+    name: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    content: [
       {required: true, message: '无效的值', trigger: 'blur'}
     ]
   },
@@ -186,9 +244,12 @@ function getList() {
 // 表单重置
 function reset() {
   form.value = {
+    code: null,
     name: null,
+    content: null,
     status: 1
   }
+  clearUpload();
   proxy.resetForm('queryForm');
 }
 
@@ -203,6 +264,11 @@ function handleAdd() {
 function submitForm() {
   proxy.$refs['queryForm'].validate(async valid => {
     if (valid) {
+      if (formData.get("file") != null) {
+        await fileUpload(formData).then(res => {
+          form.value.image = res.data
+        });
+      }
       if (form.value.id != null) {
         updateRecord(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
@@ -222,6 +288,7 @@ function submitForm() {
 
 /** handle update data */
 function handleUpdate(row) {
+  clearUpload()
   getRecord(row.id).then(response => {
     form.value = response.data;
   });
@@ -276,6 +343,44 @@ function resetQuery() {
   proxy.resetForm('queryRef')
   handleQuery()
   loading.value = false
+}
+
+function selectFile(file) {
+  //this.fileToUpload = file;
+  formData.append("file", file.raw)
+  formData.append("name", file.name)
+}
+
+function handleRemove() {
+  proxy.$modal.msgSuccess('移除成功')
+}
+
+function uploadFalse() {
+  proxy.$modal.msgError('上传失败')
+}
+
+function uploadSuccess() {
+  proxy.$modal.msgSuccess('上传文件成功');
+  getList()
+}
+
+function handleExceed() {
+  proxy.$modal.msgError('只能选择一个文件，如果要更改，请退出并重新选择。')
+}
+
+function clearUpload(){
+  upload.value = [];
+  formData.delete("file")
+  formData.delete("name")
+}
+
+function handlePreview(file) {
+  console.info(file.response.status)
+  if (file.response.status) {
+    proxy.$modal.msgSuccess('此文件导入成功')
+  } else {
+    proxy.$modal.msgError('此文件导入失败')
+  }
 }
 
 getList()

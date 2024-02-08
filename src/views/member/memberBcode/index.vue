@@ -7,6 +7,7 @@
         (totalData.total - totalData.countCur).toFixed(2)
       }}
     </el-button>
+    <el-button type="success" @click="copy4">总充值 {{ totalData.charge.toFixed(2) }}</el-button>
     <el-form :model="queryParams" ref="queryForm" style="margin-top: 10px" :inline="true" v-show="showSearch"
              label-width="100px">
       <el-form-item label="日期范围" prop="createTime">
@@ -64,7 +65,7 @@
         </template>
       </el-table-column>
       <el-table-column label="当前打码量" align="center" prop="cur"/>
-      <el-table-column label="充电" align="center" prop="charge"/>
+      <el-table-column label="充值" align="center" prop="charge"/>
       <el-table-column label="创建时间" align="center" prop="createTime" min-width="160"/>
       <el-table-column label="操作" width="220" align="center" class-name="small-padding fixed-width" fixed="right">
         <template #default="scope">
@@ -163,7 +164,8 @@ const data = reactive({
   },
   totalData: {
     total: 0,
-    countCur: 0
+    countCur: 0,
+    charge:0
   },
   createTime: [parseTime(getTodayStartTime()), parseTime(getTodayEndTime())],
 
@@ -199,6 +201,10 @@ function copy2() {
 
 function copy3() {
   proxy.copyCommand((totalData.value.total - totalData.value.countCur),proxy)
+}
+
+function copy4() {
+  proxy.copyCommand(totalData.value.charge,proxy)
 }
 
 /** 查询会员打码数据列表 Query member code data list*/

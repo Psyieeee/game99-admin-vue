@@ -10,3 +10,21 @@ export function listGameChildBet(query) {
         params: query
     })
 }
+
+export function listByGamePepole(query) {
+    return request({
+        url: url.game99PlatformAdminWeb + '/report/plamGamesChilds/plamGameListData',
+        method: 'get',
+        params: query
+    })
+}
+
+export function exportReportChildPlamGames(query) {
+    return request({
+        url: url.game99PlatformAdminWeb + '/report/plamGamesChilds/export',
+        method: 'get',
+        params: query,
+        responseType: 'arraybuffer',
+        timeout: 60000
+    })
+}
