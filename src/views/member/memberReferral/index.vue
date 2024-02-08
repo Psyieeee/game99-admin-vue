@@ -20,7 +20,7 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button type ="primary" size="small" @click="showReport">
+        <el-button type ="primary" size="small" @click="showReport"  >
           Referral Report
         </el-button>
         <el-button icon="Search" size="small" type="primary" @click="handleQuery">搜索</el-button>
@@ -44,31 +44,6 @@
       <el-table-column align="center" label="Time" prop="time"/>
       <el-table-column align="center" label="Bet" prop="bet"/>
     </el-table>
-
-    <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
-               width="400px">
-      <el-form :inline="true" :model="form" :rules="rules" label-width="100px">
-        <div class="centered-form">
-          <el-form-item label="Level" prop="playerCount">
-            <el-input type="number" v-model="form.level" placeholder="Level"/>
-          </el-form-item>
-          <el-form-item label="Player Count" prop="playerCount">
-            <el-input type="number" v-model="form.playerCount" placeholder="Player Count"/>
-          </el-form-item>
-          <el-col>
-            <el-form-item label="Commission Rate" prop="commissionRate" >
-              <el-input type="number" v-model="form.commissionRate" placeholder="Commission Rate"/>
-            </el-form-item>
-          </el-col>
-        </div>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" v-if="data.showAddButton" @click="submitForm">提交</el-button>
-        <el-button type="primary" v-if="data.showEditButton" @click="handleUpdate">编辑</el-button>
-        <el-button @click="open=false">取 消</el-button>
-
-      </div>
-    </el-dialog>
     <pagination
         v-show="total"
         v-model:limit="queryParams.pageSize"
@@ -77,53 +52,18 @@
         :total="total"
         @pagination="getList"/>
 
-    <el-dialog v-model="scheduleDialog" title="Scheduler更新调度程序" append-to-body style="padding-bottom: 20px"
-               width="600px">
-      <el-form ref="scheduleTimerForm" :model="scheduleForm" label-width="120px">
-        <el-form-item label-width="120px" label="Start Time" prop="schedule">
-          <el-col>
-            <!--            <el-time-picker v-model="schedule.commissionTimer" type="fixed-time" placeholder="Pick a time"-->
-            <!--                            style="width: 100%;"/>-->
-            <el-time-select
-                v-model="scheduleForm.startTimer"
-                start="00:00"
-                step="00:30"
-                end="23:59"
-                placeholder="Select time"
-                format="hh:mm"
-            />
-          </el-col>
-        </el-form-item>
-        <el-form-item label-width="120px" label="End Time" prop="schedule" >
-          <el-col >
-            <el-time-select
-                v-model="scheduleForm.endTimer"
-                start="00:00"
-                step="00:30"
-                end="23:59"
-                placeholder="Select time"
-                format="hh:mm"
-            />
-          </el-col>
-        </el-form-item>
-
-      </el-form>
-      <el-form-item label="活跃" label-width="120px" prop="effect" style="min-width: 290px">
-        <template #default="scope">
-          <el-switch
-              v-model="scheduleForm.effect"
-              :active-value="1"
-              :inactive-value="0"
-          ></el-switch>
-        </template>
-      </el-form-item>
-      <template #footer>
-        <div>
-          <el-button type="primary" @click="editScheduler">确 定</el-button>
-          <el-button @click="scheduleDialog=false">取 消</el-button>
+    <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
+               width="400px">
+      <el-form :inline="true"  :rules="rules" label-width="100px">
+        <div class="centered-form">
+          <el-table v-loading="bonuses" :data="referralReport">
+            <el-table-column align="center" label="Bonus" prop="bonus"/>
+            <el-table-column align="center" label="Time" prop="time"/>
+          </el-table>
         </div>
-      </template>
+      </el-form>
     </el-dialog>
+
   </div>
 </template>
 
@@ -149,7 +89,8 @@ const memberReferralList = ref({
 const gameTypeList = ref([])
 
 const loading = ref(false)
-const referralReport = ref(false)
+const bonuses = ref(false)
+const referralReport = ref([])
 const open = ref(false)
 const scheduleDialog = ref(false)
 
@@ -202,10 +143,16 @@ function getList() {
 }
 
 function showReport() {
-  open.value = true
-  memberReferralReport(queryParams.value).then(res => {
-    referralReport.value = res.data
-  })
+  if( queryParams.account != null && queryParams.startTime != null ) {
+    open.value = true
+    bonuses.value = true
+    memberReferralReport(queryParams.value).then(res => {
+      bonuses.value = true
+      referralReport.value = res.data
+    })
+  } else {
+    console.warn("Insert a member ID and datetime first")
+  }
 }
 
 /** 搜索按钮操作 handle query*/
