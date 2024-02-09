@@ -185,7 +185,7 @@ const {queryParams, form, rules} = toRefs(data);
 
 const types = ref([
   {
-    value: 'BIND_PHONE_BONUS',
+    value: 'BIND_PHONE',
     label: '绑定手机'
   }
 ])

@@ -13,7 +13,7 @@ export function listGameChildBet(query) {
 
 export function listByGamePepole(query) {
     return request({
-        url: url.game99PlatformAdminWeb + '/admin/reportPlamGameschilds/plamGameListData',
+        url: url.game99PlatformAdminWeb + '/report/plamGamesChilds/plamGameListData',
         method: 'get',
         params: query
     })
@@ -21,7 +21,7 @@ export function listByGamePepole(query) {
 
 export function exportReportChildPlamGames(query) {
     return request({
-        url: url.game99PlatformAdminWeb + '/admin/reportPlamGameschilds/export',
+        url: url.game99PlatformAdminWeb + '/report/plamGamesChilds/export',
         method: 'get',
         params: query,
         responseType: 'arraybuffer',
