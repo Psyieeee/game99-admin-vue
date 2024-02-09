@@ -225,7 +225,8 @@ function handleExport(){
     cancelButtonText: '取消',
     type: 'warning'
   }).then(function () {
-    return reportMoneyInfoExport(queryParams.value)
+    return reportMoneyInfoExport({reptime: queryParams.value,
+      params: {beginTime: dateRange.value[0], endTime: dateRange.value[1]}} )
   }).then(response => {
     proxy.downloadExcel(response, '平台资金报表')
   }).catch(() => {
