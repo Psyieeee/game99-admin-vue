@@ -10,17 +10,6 @@
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item prop="现状" style="min-width: 50px">
-        <el-select v-model="queryParams.missionRepeatType" clearable placeholder="任务重复类型">
-          <el-option
-              v-for="dict in missionRepeatTypeList"
-              :key="dict.name"
-              :label="dict.translatedName"
-              :value="dict.name"
-          ></el-option>
-        </el-select>
-      </el-form-item>
-
       <el-form-item>
         <el-button icon="Search" size="small" type="primary" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" size="small" @click="resetQuery">重置</el-button>
@@ -52,22 +41,10 @@
         >删除
         </el-button>
       </el-col>
-<!--            <el-col :span="1.5">-->
-<!--              <el-button-->
-<!--                  v-hasPermi="['mission:activity:settings']"-->
-<!--                  icon="gear"-->
-<!--                  plain-->
-<!--                  size="small"-->
-<!--                  type="primary"-->
-<!--                  @click="handleSettings"-->
-<!--              >设置-->
-<!--              </el-button>-->
-<!--            </el-col>-->
       <right-toolbar v-model="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <!--    display data in table -->
-    <!--    <el-table-column align="center" label="所需活动级别" min-width="180" prop="requiredActivityLevel"/>-->
     <el-table v-loading="loading" :data="activityMissionLists" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column align="center" label="活动名称" min-width="180" prop="name"/>
@@ -76,14 +53,8 @@
           <el-image :src="scope.row.icon" lazy fit="contain" style="width: 60px;"/>
         </template>
       </el-table-column>
-
       <el-table-column align="center" label="登录领取积分" min-width="180" prop="completionCount"/>
-      <el-table-column align="center" label="任务重复类型" min-width="180" prop="missionRepeatTypeTranslated">
-<!--        <template #default="scope">-->
-<!--          {{scope.row.missionRepeatType.value}}-->
-<!--        </template>-->
-      </el-table-column>
-      <!--      <el-table-column align="center" label="奖励类型" min-width="180" prop="rewardType"/>-->
+      <el-table-column align="center" label="任务重复类型" min-width="180" prop="missionRepeatTypeTranslated"/>
       <el-table-column align="center" label="奖励金额" min-width="180" prop="reward"/>
       <el-table-column align="center" label="奖励类型" min-width="180" prop="missionRewardTypeTranslated"/>
       <el-table-column align="center" label="倍数" min-width="180" prop="multiplier"/>
@@ -141,13 +112,6 @@
               placeholder="名称"
           />
         </el-form-item>
-        <!--          <el-form-item label="所需的活动水平" prop="requiredActivityLevel" >-->
-        <!--            <el-input-->
-        <!--              v-model="form.requiredActivityLevel"-->
-        <!--              clearable-->
-        <!--              placeholder="请输入所需的活动级别"-->
-        <!--          />-->
-        <!--          </el-form-item>-->
         <el-form-item label="登录领取积分" prop="completionCount">
           <el-input-number
               v-model="form.completionCount"
@@ -165,13 +129,6 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <!--          <el-form-item label="奖励类型" prop="rewardType" >-->
-        <!--            <el-input-->
-        <!--                v-model="form.rewardType"-->
-        <!--                clearable-->
-        <!--                placeholder="输入奖励类型"-->
-        <!--            />-->
-        <!--          </el-form-item>-->
         <el-form-item label="奖励金额" prop="reward">
           <el-input-number
               v-model="form.reward"
@@ -189,7 +146,6 @@
             />
           </el-select>
         </el-form-item>
-<!--        :v-if="form.value.rewardType === 'ACCOUNT'"-->
         <el-form-item label="倍数" prop="multiplier" v-if="form.rewardType === 'ACCOUNT'" >
           <el-input-number
               precision="2"
@@ -201,15 +157,6 @@
               placeholder="输入乘数"
           />
         </el-form-item>
-        <!--          <el-form-item label="现状" prop="status" style="min-width: 290px">-->
-        <!--          <template #default="scope">-->
-        <!--            <el-switch-->
-        <!--                v-model="form.status"-->
-        <!--                :active-value="1"-->
-        <!--                :inactive-value="0"-->
-        <!--            ></el-switch>-->
-        <!--          </template>-->
-        <!--        </el-form-item>-->
         <el-form-item label="排序" prop="sort">
           <el-input-number type="number" v-model="form.sort" placeholder="请输入排序"/>
         </el-form-item>
@@ -218,7 +165,6 @@
         </el-form-item>
         <el-form-item label="图片">
           <div class="centered-form">
-            <!--                :action="uploadFileUrl"-->
             <el-upload
                 ref="upload"
                 :before-upload="beforeAvatarUpload"
@@ -251,60 +197,6 @@
         <el-button @click="open=false">取 消</el-button>
       </div>
     </el-dialog>
-
-    <el-dialog v-model="settingsOpen" :close-on-click-modal="false" title="汪跃度设署" append-to-body
-               style="padding-bottom: 20px" width="400px" v-loading="uploadLoading">
-      <el-form :inline="true" ref="settingsRef" :model="settingsForm" :rules="rules" label-width="150px">
-        <el-col :span="24">
-          <el-form-item label="环形路" prop="reset"
-                        style="min-width: 290px">
-            <template #default="scope">
-              <el-select v-model="settingsForm.reset" placeholder="请选择您所在的区域">
-                <el-option label="Mission Cycle (每日周期（重置为 0:00）" :value="0"/>
-                <el-option label="Weekly Cycle (每周循环（周一0:00重置)" :value="1"/>
-              </el-select>
-            </template>
-          </el-form-item>
-        </el-col>
-        <el-col :span="24">
-          <el-form-item label="重复开胸周期时间" prop="repeatOpenSwitch" style="min-width: 290px">
-            <template #default="scope">
-              <el-switch
-                  v-model="settingsForm.repeatOpenSwitch"
-                  :active-value="1"
-                  :inactive-value="0"
-              ></el-switch>
-            </template>
-          </el-form-item>
-        </el-col>
-        <el-col :span="24">
-          <el-form-item label="审计乘数" prop="auditMultiplier" style="min-width: 290px">
-            <el-input-number
-                v-model="settingsForm.auditMultiplier"
-                clearable
-                placeholder="输入审计乘数"
-                type="number"
-            />
-          </el-form-item>
-        </el-col>
-        <el-col :span="24">
-          <el-form-item label="审计限制平台" prop="auditRestrictedPlatformsSwitch" style="min-width: 290px">
-            <template #default="scope">
-              <el-switch
-                  v-model="settingsForm.auditRestrictedPlatformsSwitch"
-                  :active-value="1"
-                  :inactive-value="0"
-              ></el-switch>
-            </template>
-          </el-form-item>
-        </el-col>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitSettingsForm">确 定</el-button>
-        <el-button @click="settingsOpen=false">取 消</el-button>
-      </div>
-    </el-dialog>
-
   </div>
 </template>
 
@@ -318,16 +210,13 @@ import {
   addActivityMission,
   updateActivityMission,
   changeMissionActivityStatus,
-  getMissionActivitySettings,
-  updateMissionActivitySettings, getMissionRewardTypeList
+  getMissionRewardTypeList
 } from "@/api/activity/activityMission";
 
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {getToken} from "@/utils/auth";
 import {useRouter} from "vue-router";
-import {url} from "@/utils/url";
 import {fileUpload} from "@/api/activity/activityQuest";
-import {getMissionTrigger} from "@/api/activity/missionRepeat";
 
 const router = useRouter();
 
@@ -341,12 +230,10 @@ const updateBy = ref('');
 const title = ref('');
 const total = ref(0);
 const open = ref(false);
-const settingsOpen = ref(false);
 const showSearch = ref(true);
 const single = ref(true);
 const multiple = ref(true);
 const loading = ref(true);
-const uploadLoading = ref(true);
 const formData = new FormData();
 const fileList = ref([])
 const rewardTypeList = ref([]);
@@ -363,18 +250,8 @@ const data = reactive({
     name: null,
   },
 
-  settingsForm: {
-    reset: null,
-    repeatOpenSwitch: null,
-    auditMultiplier: null,
-    auditRestrictedPlatformsSwitch: null,
-    auditPlatformRestricted: null
-  },
-
   /** 表单参数 form parameter*/
   form: {},
-
-  uploadFileUrl: uploadAdvertisementUrl(),
 
   headers: {
     Authorization: 'Bearer ' + getToken()
@@ -406,13 +283,8 @@ const data = reactive({
           {required: true, message: '排序为必填项', trigger: 'blur'}
         ]
   }
-
 });
-const {uploadFileUrl, queryParams, settingsForm, form, rules, headers} = toRefs(data);
-
-function uploadAdvertisementUrl() {
-  return url.baseUrl + url.game99PlatformAdminWeb + "/activity/mission/uploadFile";
-}
+const {queryParams, form, rules, headers} = toRefs(data);
 
 function beforeAvatarUpload(file) {
   const fileExtension = file.name.split('.')[1]
@@ -499,7 +371,6 @@ function handleQuery() {
 function getList() {
   loading.value = true;
   activityMissionList(queryParams.value).then(response => {
-    // console.log(JSON.stringify(response.data) + " @@@")
     activityMissionLists.value = response.data;
     total.value = response.total;
     loading.value = false;
@@ -542,7 +413,6 @@ function clearUpload() {
   formData.delete("name")
 }
 
-
 /** 重置按钮操作 handle reset query*/
 function resetQuery() {
   proxy.resetForm('queryForm')
@@ -561,10 +431,6 @@ function handleAdd() {
 function submitForm() {
   proxy.$refs['ref'].validate(async valid => {
     if (valid) {
-
-      // if (formData.get("file") != null) {
-      //   await fileUpload(formData).then(res => params.icon = res.data);
-      // }
       const params = {
         name: form.value.name,
         missionSettingsId: 'ACTIVITY',
@@ -572,13 +438,11 @@ function submitForm() {
         completionCount: form.value.completionCount,
         missionRepeatType: form.value.missionRepeatType,
         rewardType: form.value.rewardType,
-        // multiplier: form.value.rewardType === 'ACCOUNT' && form.value.multiplier !== null ? form.value.multiplier : 0,
         multiplier: getMultiplier(),
         reward: form.value.reward,
         status: 0,
         sort: form.value.sort,
         description: form.value.description,
-        // icon: form.value.icon !== null ? form.value.icon : null
       }
 
       if (formData.get("file") != null) {
@@ -617,26 +481,6 @@ function getMultiplier(){
       : 0;
 }
 
-function submitSettingsForm() {
-  proxy.$refs['settingsRef'].validate(async valid => {
-    if (valid) {
-      const params = {
-        id: "ACTIVITY",
-        reset: settingsForm.value.reset,
-        repeatOpenSwitch: settingsForm.value.repeatOpenSwitch,
-        auditMultiplier: settingsForm.value.auditMultiplier,
-        auditRestrictedPlatformsSwitch: settingsForm.value.auditRestrictedPlatformsSwitch,
-        missionSettingsId: 'ACTIVITY'
-      }
-      updateMissionActivitySettings(params).then(() => {
-        proxy.$modal.msgSuccess('修改成功')
-        settingsOpen.value = false
-        getList()
-      })
-    }
-  })
-}
-
 /** handle update data */
 function handleUpdate(row) {
   reset()
@@ -661,13 +505,6 @@ function handleDelete(row) {
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess('删除成功')
-  })
-}
-
-function handleSettings() {
-  getMissionActivitySettings(id).then(response => {
-    settingsForm.value = response.data
-    settingsOpen.value = true;
   })
 }
 
