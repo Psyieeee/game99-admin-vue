@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form v-show="showSearch" ref="queryRef" :inline="true" :model="queryParams">
+    <el-form v-show="showSearch" :rules="rules"  ref="queryRef" :inline="true" :model="queryParams">
       <el-form-item class="input-wd25" label="成员编号" prop="account">
         <el-input
             v-model.trim="queryParams.account"
@@ -54,7 +54,7 @@
 
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="400px">
-      <el-form :inline="true"  :rules="rules" label-width="100px">
+      <el-form :inline="true"  label-width="100px">
         <div class="centered-form">
           <el-table v-loading="bonuses" :data="referralReport">
             <el-table-column align="center" label="Bonus" prop="bonus"/>
@@ -114,8 +114,8 @@ const data = reactive({
     endTime: '',
   },
   rules: {
-    gameType: [
-      {required: true, message: 'Game Type is needed', trigger: 'blur'}
+    account: [
+      {required: true, message: '需要会员 ID', trigger: 'blur'}
     ]
   },
   form: {},
@@ -157,8 +157,12 @@ function showReport() {
 
 /** 搜索按钮操作 handle query*/
 function handleQuery() {
-  queryParams.pageNum = 1;
-  getList();
+  proxy.$refs['queryRef'].validate(async valid => {
+    if (valid) {
+      queryParams.pageNum = 1;
+      getList();
+    }
+  });
 }
 
 function resetQuery() {
