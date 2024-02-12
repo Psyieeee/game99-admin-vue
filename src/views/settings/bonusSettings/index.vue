@@ -71,6 +71,7 @@
           </el-switch>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="邀请码" width="180" prop="inviterCode" />
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
@@ -127,6 +128,9 @@
                      :active-value=1
                      :inactive-value=0
           />
+        </el-form-item>
+        <el-form-item label="邀请码" prop="inviterCode">
+          <el-input v-model="form.inviterCode" placeholder="邀请码" type="text"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
