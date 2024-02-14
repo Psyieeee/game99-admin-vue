@@ -1,39 +1,35 @@
 <template>
   <div>
-    <el-dialog v-model="open" title="投注详情" style="margin-bottom: 150px; width: 100%" append-to-body>
+    <el-dialog v-model="open" title="投注详情" style="margin-bottom: 150px; width: 50%" append-to-body>
       <el-row :gutter="10" class="mb8">
         <el-col :span="1.5">
           <el-button
-            type="warning"
-            plain
-            icon="Download"
-            size="small"
-            @click="handleExport"
+              type="warning"
+              plain
+              icon="Download"
+              size="small"
+              @click="handleExport"
           > export
           </el-button>
         </el-col>
-<!--        <right-toolbar v-model="showSearch" @queryTable="list"></right-toolbar>-->
+        <!--        <right-toolbar v-model="showSearch" @queryTable="list"></right-toolbar>-->
       </el-row>
-<!--      <el-row :gutter="10" class="mb8">-->
-      <el-table :data="tableData" style="width: 100%;" v-loading="loading" >
-        <el-table-column property="agentchild" label="会员ID"   header-align="center" align="center"/>
-        <el-table-column property="gamecell"   label="有效下注"  header-align="center" align="center"/>
-        <el-table-column property="gameprofit" label="盈利"     header-align="center" align="center"/>
-      </el-table>
-      <pagination
-        v-show="total"
-        :total="total"
-        v-model:page="queryParams.pageNum"
-        v-model:limit="queryParams.pageSize"
-        :page-sizes="[20,50,100]"
-        @pagination="list"
-      />
-<!--      </el-row>-->
-<!--      <el-row :gutter="10" class="mb8">-->
-<!--      <div slot="footer" class="dialog-footer">-->
-<!--        <el-button @click="close">取消</el-button>-->
-<!--      </div>-->
-<!--      </el-row>-->
+      <el-row :gutter="10" class="mb8">
+        <el-table :data="tableData" style="width: 100%;" v-loading="loading">
+          <el-table-column property="agentchild" label="会员ID" header-align="center" align="center"/>
+          <el-table-column property="gamecell" label="有效下注" header-align="center" align="center"/>
+          <el-table-column property="gameprofit" label="盈利" header-align="center" align="center"/>
+        </el-table>
+        <pagination
+            v-show="total"
+            :total="total"
+            v-model:page="queryParams.pageNum"
+            v-model:limit="queryParams.pageSize"
+            :page-sizes="[20,50,100]"
+            @pagination="list"
+        />
+
+      </el-row>
     </el-dialog>
   </div>
 </template>
@@ -65,9 +61,9 @@ const data = reactive({
 const {queryParams, totalData} = toRefs(data);
 
 
-function list(){
+function list() {
   loading.value = true
-  listByGamePepole( queryParams.value ).then((res) =>{
+  listByGamePepole(queryParams.value).then((res) => {
     tableData.value = res.data;
     total.value = res.total
     open.value = true;
@@ -75,20 +71,20 @@ function list(){
   })
 }
 
-function close(){
+function close() {
   open.value = false;
 }
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.$confirm( "确认处理Excel并下载，数据量大的时候会延迟，请耐心等待...", "警告" , {
-    confirmButtonText: "确定" ,
-    cancelButtonText: "取 消" ,
+  proxy.$confirm("确认处理Excel并下载，数据量大的时候会延迟，请耐心等待...", "警告", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取 消",
     type: 'warning'
   }).then(function () {
-    return exportReportChildPlamGames( queryParams.value)
+    return exportReportChildPlamGames(queryParams.value)
   }).then(response => {
-    this.downloadExcel(response,'出款银行列表')
+    this.downloadExcel(response, '出款银行列表')
   }).catch(() => {
   })
 }
@@ -98,7 +94,8 @@ function handleExport() {
 defineExpose({
   setParam
 });
-function setParam(params){
+
+function setParam(params) {
   queryParams.value = params;
   list()
 }
