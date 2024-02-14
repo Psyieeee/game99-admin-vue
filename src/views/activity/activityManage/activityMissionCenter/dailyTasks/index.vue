@@ -123,11 +123,11 @@
         <el-form-item label="排序" prop="sort">
           <el-input-number type="number" v-model="form.sort" placeholder="请输入排序"/>
         </el-form-item>
-        <el-form-item label="说明" prop="description">
-          <el-input v-model="form.description" type="textarea" placeholder="说明" :rows="3"/>
+        <el-form-item label="说明代码" prop="description">
+          <el-input v-model="form.description" type="textarea" placeholder="说明代码" :rows="3"/>
         </el-form-item>
         <el-form-item label="图片">
-<!--          :action="uploadFileUrl"-->
+          <!--          :action="uploadFileUrl"-->
           <div class="centered-form">
             <el-upload
                 ref="upload"
@@ -418,7 +418,7 @@ function submitForm() {
       }
 
       if (form.value.id != null) {
-        console.log("form " , form.value)
+        console.log("form ", form.value)
         updateMissionRepeat(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
@@ -527,6 +527,6 @@ getList();
 
 <style>
 .centered-form {
-//margin-left: 50px; max-width: 200px;
+  //margin-left: 50px; max-width: 200px;
 }
 </style>
