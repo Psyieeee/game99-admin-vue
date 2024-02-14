@@ -187,8 +187,6 @@ import {fileUpload} from "@/api/activity/activityQuest";
 const router = useRouter();
 const {proxy} = getCurrentInstance();
 
-const selectAll = ref(true);
-
 const missionRepeatLists = ref([]);
 const ids = ref([]);
 const status = ref(1);
@@ -206,8 +204,6 @@ const fileList = ref([])
 const data = reactive({
   /** 查询参数 query params*/
   auditRestrictedTabs: [],
-
-  rechargeCategory: [],
 
   queryParams: {
     missionSettingsId: 'DAILY',
@@ -262,9 +258,8 @@ function getMissionTriggerList() {
   })
 }
 
-function handleEffectChange(row) {
-  let text = row.tipBubbleSwitch === '1' ? '启用' : '停用'
-  proxy.$confirm('确认要' + text + '吗?', '提示', {
+function handleEffectChange( row ) {
+  proxy.$confirm('确认要吗?', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消'
   }).then(function () {
@@ -275,7 +270,7 @@ function handleEffectChange(row) {
       return status
     }
   }).then(() => {
-    proxy.$modal.msgSuccess(text + '成功')
+    proxy.$modal.msgSuccess('任务更新')
     getList()
   }).catch(function () {
     row.status = row.status === '0' ? '1' : '0'
@@ -312,7 +307,6 @@ function reset() {
     missionIntroduction: null,
     status: null,
     sort: null,
-    // icon: null
   }
   proxy.resetForm('missionRepeatRef');
   clearUpload();
@@ -330,64 +324,12 @@ function handleAdd() {
   reset()
   open.value = true
   title.value = '添加每日任务'
-  selectAll.value = false;
-  data.rechargeCategory = [];
-  handleCheckAllChange();
 }
 
 /** submit new data and handle insert data api*/
 function submitForm() {
   proxy.$refs['missionRepeatRef'].validate(async valid => {
     if (valid) {
-      // let params = {
-      //   id: form.value.id,
-      //   missionRepeatType: 'DAILY',
-      //   missionSettingsId: 'DAILY',
-      //   taskCurrency: checkedCurrency.value.map((item) => item).join(','),
-      //   taskClassification: form.value.taskClassification,
-      //   reward: form.value.reward,
-      //   completionCount: form.value.completionCount,
-      //   cumulativeRechargeAmount: form.value.cumulativeRechargeAmount,
-      //   missionObjectives: form.value.missionObjectives,
-      //   accumulatedRechargeSource: null,
-      //   platformId: form.value.platformType,
-      //   gameTypeId: form.value.gameType,
-      //   gameId: form.value.gameType,
-      //   rewardActivity: form.value.rewardActivity,
-      //   status: form.value.status,
-      //   sort: form.value.sort,
-      //   icon: form.value.icon
-      // }
-      // if (form.value.missionObjectives === '累计充值') {
-      //   params = {
-      //     accumulatedRechargeSource: data.rechargeCategory.map((item) => item).join(','),
-      //     platformId: null,
-      //     gameTypeId: null,
-      //     gameId: null,
-      //
-      //     // id: checkedCurrency.value.id,
-      //     id: form.value.id,
-      //     missionRepeatType: 'DAILY',
-      //     missionSettingsId: 'DAILY',
-      //     // taskCurrency : checkedCurrency.value.toString(),
-      //     taskCurrency: checkedCurrency.value.map((item) => item).join(','),
-      //     taskClassification: form.value.taskClassification,
-      //     reward: form.value.reward,
-      //     completionCount: form.value.completionCount,
-      //     missionObjectives: form.value.missionObjectives,
-      //     cumulativeRechargeAmount: form.value.cumulativeRechargeAmount,
-      //     rewardActivity: form.value.rewardActivity,
-      //     status: form.value.status,
-      //     description: form.value.description,
-      //     sort: form.value.sort,
-      //     icon: form.value.icon
-      //   }
-      // }
-      //url validator
-      // if (formData.get("file") != null) {
-      //   await fileUpload(formData).then(res => params.icon = res.data);
-      // }
-
       const params = {
         name: form.value.name,
         id: form.value.id,
