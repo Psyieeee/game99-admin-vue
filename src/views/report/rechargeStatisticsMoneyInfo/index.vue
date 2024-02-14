@@ -23,7 +23,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" size="small" @click="handleQuery">搜索</el-button>
-        <el-button type="warning" icon="Search" size="small" @click="handleReset">搜索</el-button>
+<!--        <el-button type="warning" icon="Search" size="small" @click="handleReset">搜索</el-button>-->
       </el-form-item>
     </el-form>
 
