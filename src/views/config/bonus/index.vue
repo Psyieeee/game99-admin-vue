@@ -72,6 +72,7 @@
       <el-table-column label="最大金额" align="center"    prop="maxAmount"/>
       <el-table-column label="赠送百分比" align="center" prop="bonus"/>
       <el-table-column label="打码倍数" align="center" prop="multiplier"/>
+      <el-table-column label="装置" align="center" prop="device" :formatter="formatterDevice"/>
       <el-table-column align="center" label="状态"     prop="status">
         <template #default="scope">
           <el-switch
@@ -118,7 +119,7 @@
     />
 
     <!-- 添加或修改 bonus 配置对话框 Add or modify bonus configuration dialog -->
-    <el-dialog :title="title" v-model="open" width="700px" append-to-body>
+    <el-dialog :title="title" v-model="open" width="400px" append-to-body>
       <el-form ref="bonusRef" :model="form" :rules="rules" label-width="120px" style="padding-bottom: 50px">
         <el-form-item label="最小金额" prop="minAmount">
           <el-input-number :step="100" v-model="form.minAmount" placeholder="请输入最低金额"/>
@@ -131,6 +132,12 @@
         </el-form-item>
         <el-form-item label="打码倍数" prop="multiplier">
           <el-input-number max="1000000" :step="100" v-model="form.multiplier" placeholder="请输入打码倍数"/>
+        </el-form-item>
+        <el-form-item label="装置" prop="device" width="100px" style="padding-right: 90px">
+          <el-select v-model="form.device" placeholder="选择设备" width="100px">
+            <el-option label="网站" :value=0></el-option>
+            <el-option label="手机登录" :value=1></el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer" style="float: right;margin-top: -20px">
@@ -202,6 +209,9 @@ const data = reactive({
       {required: true, message: '奖金为必填项', trigger: 'blur'}
     ],
     multiplier: [
+      {required: true, message: '倍数为必填项', trigger: 'blur'}
+    ],
+    device: [
       {required: true, message: '倍数为必填项', trigger: 'blur'}
     ],
     // vhost: [
@@ -335,7 +345,19 @@ function handleEffect(row) {
     getList()
     proxy.$modal.msgSuccess('修改状态成功')
   }).catch(() => {
+    row.status = row.status === '0' ? '1' : '0'
   })
+}
+
+function formatterDevice(row) {
+  switch (row.device) {
+    case 0 :
+      return "网站";
+    case 1 :
+      return "手机登录";
+    default  :
+      return "";
+  }
 }
 
 getList()
