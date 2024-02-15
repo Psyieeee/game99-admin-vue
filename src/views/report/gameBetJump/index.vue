@@ -52,7 +52,7 @@
             <el-table-column label="总投注金额" align="center" prop="gamecell" min-width="120"/>
             <el-table-column label="有效投注金额" align="center" prop="gamebet" min-width="120"/>
             <el-table-column label="平台抽水" align="center" prop="gamerevenve" min-width="120"/>
-            <el-table-column label="会员盈利" align="center" prop="gameprofit" min-width="120"/>
+            <el-table-column label="会员盈利" align="center" prop="plampfit" min-width="120"/>
             <el-table-column label="比例" align="center" prop="bili" min-width="120"/>
             <el-table-column label="日期" align="center" prop="begindate" min-width="150"/>
         </el-table>
