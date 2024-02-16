@@ -104,6 +104,14 @@
             @keyup.enter="handleQuery"
         />
       </el-form-item>
+      <el-form-item prop="registerIp" style="width: 110px;" class="registerIp">
+        <el-input
+            v-model="queryParams.registerIp"
+            placeholder="注册IP"
+            clearable
+            @keyup.enter="handleQuery"
+        />
+      </el-form-item>
       <el-form-item prop="account" style="width: 155px;" class="bankAccount">
         <el-input
             v-model="queryParams.account"
