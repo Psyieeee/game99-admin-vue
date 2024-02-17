@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" >
-      <el-form-item label="语言" prop="type">
-        <el-select v-model="queryParams.type" placeholder="语言" clearable>
+      <el-form-item label="类型" prop="type">
+        <el-select v-model="queryParams.type" placeholder="类型" clearable>
           <el-option
               v-for="type in types"
               :key="type.value"
@@ -11,8 +11,22 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="地位" prop="status">
-        <el-select v-model="queryParams.status" placeholder="语言" clearable>
+      <el-form-item label="邀请码"  prop="inviterCode">
+        <el-input
+            v-model="queryParams.inviterCode"
+            placeholder="邀请码"
+            clearable
+            @keyup.enter="getList"
+        />
+      </el-form-item>
+      <el-form-item label="装置" prop="device">
+        <el-select v-model="queryParams.device" placeholder="装置" clearable>
+          <el-option label="网站" :value=0></el-option>
+          <el-option label="手机登录" :value=1></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="状态" prop="status">
+        <el-select v-model="queryParams.status" placeholder="状态" clearable>
           <el-option label="不活跃的" :value=0></el-option>
           <el-option label="积极的" :value=1></el-option>
         </el-select>
@@ -61,7 +75,9 @@
       <el-table-column align="center" label="基金目的地" width="180" prop="destination" :formatter="formatterDestination"/>
       <el-table-column align="center" label="倍数" width="180" prop="multiplier" />
       <el-table-column align="center" label="描述" width="180" prop="description" />
-      <el-table-column align="center" label="地位" width="180" prop="status">
+      <el-table-column align="center" label="邀请码" width="180" prop="inviterCode" />
+      <el-table-column label="装置" align="center" prop="device" :formatter="formatterDevice"/>
+      <el-table-column align="center" label="状态" width="180" prop="status">
         <template #default="scope">
           <el-switch
               v-model="scope.row.status"
@@ -71,7 +87,6 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="邀请码" width="180" prop="inviterCode" />
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
@@ -123,7 +138,7 @@
         <el-form-item label="描述" prop="description">
           <el-input v-model="form.description" placeholder="描述" type="textarea"/>
         </el-form-item>
-        <el-form-item label="地位" prop="status">
+        <el-form-item label="状态" prop="status">
           <el-switch v-model="form.status"
                      :active-value=1
                      :inactive-value=0
@@ -131,6 +146,12 @@
         </el-form-item>
         <el-form-item label="邀请码" prop="inviterCode">
           <el-input v-model="form.inviterCode" placeholder="邀请码" type="text"/>
+        </el-form-item>
+        <el-form-item label="装置" prop="device" width="100px">
+          <el-select v-model="form.device" placeholder="选择设备" width="100px">
+            <el-option label="网站" :value=0></el-option>
+            <el-option label="手机登录" :value=1></el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -211,7 +232,7 @@ function getList() {
 // 表单重置
 function reset() {
   form.value = {
-    status: 1,
+    status: 0,
     multiplier: 0,
     destination: 'ACCOUNT'
   }
@@ -311,6 +332,17 @@ function formatterDestination(row) {
 function handleDestinationChange(){
   if ( form.value.destination === 'BONUS') {
     form.value.multiplier = 0;
+  }
+}
+
+function formatterDevice(row) {
+  switch (row.device) {
+    case 0 :
+      return "网站";
+    case 1 :
+      return "手机登录";
+    default  :
+      return "";
   }
 }
 
