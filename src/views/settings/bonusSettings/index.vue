@@ -155,7 +155,7 @@
                      :inactive-value=0
           />
         </el-form-item>
-        <el-form-item label="邀请码" prop="inviterCode">
+        <el-form-item label="此处填写邀请码,该邀请码不赠送" prop="inviterCode">
           <el-input v-model="form.inviterCode" placeholder="邀请码" type="text"/>
         </el-form-item>
         <el-form-item label="装置" prop="device" width="100px">
