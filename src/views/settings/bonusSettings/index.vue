@@ -74,6 +74,17 @@
       </el-table-column>
       <el-table-column align="center" label="基金目的地" width="180" prop="destination" :formatter="formatterDestination"/>
       <el-table-column align="center" label="倍数" width="180" prop="multiplier" />
+      <el-table-column label="装置" align="center" prop="device" :formatter="formatterDevice"/>
+      <el-table-column align="center" label="状态" width="180" prop="status">
+        <template #default="scope">
+          <el-switch
+              v-model="scope.row.status"
+              :active-value=1
+              :inactive-value=0
+              @click="toggleSwitch(scope.row)">
+          </el-switch>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="描述" width="180" prop="description" />
       <el-table-column align="center" label="邀请码" width="180" prop="inviterCode" />
       <el-table-column label="装置" align="center" prop="device" :formatter="formatterDevice"/>
