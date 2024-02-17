@@ -12,7 +12,7 @@
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" style="margin-top: 20px">
 
       <el-form-item label="平台名称" prop="platformId" id="checkbox">
-        <el-checkbox-group v-model="queryParams.platformIds">
+        <el-checkbox-group v-model="queryParams.platformIds" @change="getSubPlatformList">
           <el-checkbox v-for="item in platformList" :key="item.id" :label="item.id">{{ item.name }}</el-checkbox>
         </el-checkbox-group>
         <el-checkbox v-model="checkNodeAll" @change="handleCheckedTreeNodeAll()"
@@ -43,13 +43,18 @@
         />
       </el-form-item>
 
-      <el-form-item prop="sonPlatformName" style="width: 150px" class="small-layout">
-        <el-input
-            v-model.trim="queryParams.sonPlatformName"
-            placeholder="请输入您的子平台名称"
-            clearable
-            @keyup.enter="handleQuery"
-        />
+      <el-form-item prop="subPlatformId" style="width: 150px" class="small-layout">
+        <el-select v-model.trim="queryParams.subPlatformId"
+                   placeholder="请输入您的子平台名称"
+                   clearable
+                   @keyup.enter="handleQuery"
+                   filterable>
+          <el-option
+              v-for="subPlatform in subPlatforms"
+              :key="subPlatform.id"
+              :label="subPlatform.name"
+              :value="subPlatform.id" />
+        </el-select>
       </el-form-item>
 
       <el-form-item prop="gameId" class="small-layout" style="width: 200px">
@@ -136,6 +141,7 @@
 
 import {getCurrentInstance, onMounted, reactive, ref, toRefs} from "vue";
 import {listAllPlatform} from "@/api/game/platform";
+import {listSubPlatforms} from "@/api/game/info";
 import {
   gameRecordList,
   listMemberGameData,
@@ -155,17 +161,16 @@ const platformList = ref([]);
 const checkNodeAll = ref(false);
 const showSearch = ref(true);
 const loading = ref(false);
-
-const total = ref(0)
+const total = ref(0);
+const subPlatforms = ref([]);
 
 const data = reactive({
 
   queryParams: {
-    sonPlatformName: null,
     pageNum: 1,
     platformIds: [],
     pageSize: 20,
-    gameId: null,
+    subPlatformId: null,
     gameRound: null,
     account: null,
     kindId: null,
@@ -224,7 +229,6 @@ function listCount() {
   })
 }
 
-
 onMounted(() => {
   init()
 })
@@ -242,6 +246,13 @@ function init() {
 /**list of data */
 function getList() {
   loading.value = false
+  let gameInfo = subPlatforms.value.find( subPlatform => subPlatform.id === queryParams.value.subPlatformId );
+
+  if( gameInfo != null ) {
+    queryParams.value.platformId = gameInfo.platformId;
+    queryParams.value.kindId = gameInfo.kindId;
+  }
+
   listMemberGameData(queryParams.value).then(res => {
     memberGameList.value = res.data
     total.value = res.total
@@ -280,7 +291,8 @@ function handleQuery() {
 
 /** 搜索按钮操作 handle query*/
 function resetQuery() {
-  queryParams.sonPlatformName = null;
+  queryParams.value.platformId = null;
+  queryParams.value.kindId = null;
   proxy.resetForm('queryForm')
   handleQuery()
   resetCount();
@@ -358,5 +370,13 @@ function convertStrENotationToNumber(strVal){
   return strVal;
 }
 
-</script>
+function getSubPlatformList() {
+  listSubPlatforms( queryParams.value ).then( response => {
+    subPlatforms.value = response.data;
+  });
+}
 
+getSubPlatformList();
+getList();
+
+</script>

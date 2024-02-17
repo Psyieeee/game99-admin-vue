@@ -10,6 +10,14 @@ export function listGameInfo(query) {
     })
 }
 
+export function listSubPlatforms(data) {
+    return request({
+        url: url.game99GameAdminWeb + '/game/info/listSubPlatforms',
+        method: 'post',
+        data: data
+    })
+}
+
 // 查询游戏信息列表
 export function listGameInfoAllList(platformId) {
     return request({
