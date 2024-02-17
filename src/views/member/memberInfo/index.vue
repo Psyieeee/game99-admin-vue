@@ -62,6 +62,12 @@
           <el-option value="false" label="否"></el-option>
         </el-select>
       </el-form-item>
+      <el-form-item prop="online" style="width: 110px;">
+        <el-select v-model="queryParams.online" placeholder="在线状态" clearable style="width: 110px">
+          <el-option value="true" label="在线的"></el-option>
+          <el-option value="false" label="离线"></el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item prop="version" style="width: 110px;" id="version">
         <el-input
             v-model="queryParams.version"
@@ -248,6 +254,9 @@
         </template>
       </el-table-column>
       <el-table-column label="绑卡姓名" :show-overflow-tooltip="true" align="center" prop="cardRealName" width="140"/>
+      <el-table-column label="在线状态" :show-overflow-tooltip="true" align="center" prop="online" width="140">
+        <template #default="scope">{{scope.row.online ? "在线的" : "离线"}}</template>
+      </el-table-column>
       <el-table-column label="手机" prop="phone" align="center" width="120px"/>
       <el-table-column label="会员vip" align="center" prop="vip" width="70px"/>
       <el-table-column label="余额" :show-overflow-tooltip="true" align="center" prop="accountNow" min-width="120"/>
@@ -581,6 +590,7 @@ const data = reactive({
     account: '',
     searchValue: '', //会员Id,手机号*/
     status: '',
+    registerIp: '',
     loginIp: '',
     nickName: '',
     inviterCode: '',
