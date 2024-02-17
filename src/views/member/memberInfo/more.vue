@@ -144,7 +144,7 @@
           <el-table-column align="center" prop="realName" label="真实姓名" :show-overflow-tooltip="true"
                            min-width="120">
             <template v-slot="{row}" v-if="index===5">
-              <el-input v-model="row.realName"></el-input>
+              <el-input v-model="row.realName" disabled></el-input>
             </template>
           </el-table-column>
 
