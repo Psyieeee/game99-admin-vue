@@ -5,8 +5,8 @@
     <div v-loading="totalLoading">
       <el-button type="primary" @click="copy1">会员人数 {{ totalData.peopledTotal || 0 }}</el-button>
       <el-button type="success" @click="copy2">余额总计 {{ totalData.totalMoney || 0 }}</el-button>
-      <el-button type="warning" @click="copy3">保险箱余额总计 {{ totalData.safeBalanceTotalMoney || 0 }}
-      </el-button>
+      <el-button type="warning" @click="copy3">保险箱余额总计 {{ totalData.safeBalanceTotalMoney || 0 }}</el-button>
+      <el-button type="info"    @click="copy4">在线成员总数 {{ totalData.totalOnline || 0 }}</el-button>
       <el-button type="primary" icon="Search" size="small" @click="listCount()" style="margin-left: 20px">
         统计查询
       </el-button>
@@ -521,7 +521,6 @@ const {
   muteRemarkOptions
 } = useDict("member_type", "member_device_type", "muteRemarkOptions");
 
-
 const statusOptions = ref([]);
 const ids = ref([]);
 const memberInfoList = ref([]);
@@ -576,7 +575,8 @@ const data = reactive({
   totalData: {
     peopledTotal: 0,
     totalMoney: 0,
-    safeBalanceTotalMoney: 0
+    safeBalanceTotalMoney: 0,
+    totalOnline: 0
   },
 
   fromMuteRemark: {},
@@ -654,11 +654,16 @@ function copy3() {
   copyCommand(totalData.value.safeBalanceTotalMoney)
 }
 
+function copy4() {
+  copyCommand(totalData.value.totalOnline)
+}
+
 /**  统计 count */
 function listCount() {
   totalLoading.value = true
   listCountApi(queryParams.value).then((response) => {
     totalData.value = response
+    totalData.value.totalOnline = memberInfoList.value.reduce( ( total, member ) => member.online ? 1 : 0, 0 );
   }).finally(() => {
     totalLoading.value = false
   })
