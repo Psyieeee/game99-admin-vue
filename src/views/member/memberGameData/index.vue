@@ -48,7 +48,8 @@
                    placeholder="请输入您的子平台名称"
                    clearable
                    @keyup.enter="handleQuery"
-                   filterable>
+                   filterable
+                   @change="setPlatformAndKindId">
           <el-option
               v-for="subPlatform in subPlatforms"
               :key="subPlatform.id"
@@ -246,12 +247,6 @@ function init() {
 /**list of data */
 function getList() {
   loading.value = false
-  let gameInfo = subPlatforms.value.find( subPlatform => subPlatform.id === queryParams.value.subPlatformId );
-
-  if( gameInfo != null ) {
-    queryParams.value.platformId = gameInfo.platformId;
-    queryParams.value.kindId = gameInfo.kindId;
-  }
 
   listMemberGameData(queryParams.value).then(res => {
     memberGameList.value = res.data
@@ -368,6 +363,18 @@ function convertStrENotationToNumber(strVal){
     return isNaN(val) ? strVal : val;
   }
   return strVal;
+}
+
+function setPlatformAndKindId() {
+  let gameInfo = subPlatforms.value.find( subPlatform => subPlatform.id === queryParams.value.subPlatformId );
+
+  if( gameInfo ) {
+    queryParams.value.platformId = gameInfo.platformId;
+    queryParams.value.kindId = gameInfo.kindId;
+  } else {
+    queryParams.value.platformId = null;
+    queryParams.value.kindId = null;
+  }
 }
 
 function getSubPlatformList() {

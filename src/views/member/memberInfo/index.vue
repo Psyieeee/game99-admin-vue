@@ -663,7 +663,7 @@ function listCount() {
   totalLoading.value = true
   listCountApi(queryParams.value).then((response) => {
     totalData.value = response
-    totalData.value.totalOnline = memberInfoList.value.reduce( ( total, member ) => member.online ? 1 : 0, 0 );
+    totalData.value.totalOnline = memberInfoList.value.reduce( ( total, member ) => total + ( member.online ? 1 : 0 ), 0 );
   }).finally(() => {
     totalLoading.value = false
   })
