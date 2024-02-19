@@ -84,7 +84,7 @@
     <el-table stripe v-loading="loading" :data="messageOnSiteList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="信息标题" prop="title" min-width="150" align="center"/>
-      <el-table-column label="内容" align="center" prop="content" min-width="290">
+      <el-table-column label="内容ID" align="center" prop="content" min-width="290">
         <template #default="scope">
           <div v-if="scope.row.content != null" v-html="scope.row.content.replaceAll('\$\{domain\.oss\}', domain)"
                style="max-height: 80px"></div>
@@ -308,13 +308,13 @@ function submitForm() {
   proxy.$refs["msgOnsiteFormRef"].validate(valid => {
     if (valid) {
       if (form.value.id != null) {
-        updateMessageOnSite(form.value).then(res => {
+        updateMessageOnSite(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功');
           open.value = false;
           getList()
         })
       } else {
-        addMessageOnSite(form.value).then(response => {
+        addMessageOnSite(form.value).then(() => {
           proxy.$modal.msgSuccess('新增成功');
           open.value = false;
           getList()
@@ -346,7 +346,7 @@ function handleSendUserMessage(){
 function submitFormUserMessage(){
   proxy.$refs['sendSmsPrivate'].validate(valid => {
     if (valid) {
-      addUserMessage(form.value).then(response => {
+      addUserMessage(form.value).then(() => {
         proxy.$modal.msgSuccess('发送成功')
         openUserMessage.value = false
         getList()
