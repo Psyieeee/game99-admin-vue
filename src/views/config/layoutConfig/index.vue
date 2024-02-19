@@ -68,7 +68,11 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="recordList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="代码" min-width="180" prop="code"/>
+      <el-table-column align="center" label="代码" min-width="180" prop="code">
+        <template #default="scope">
+          {{ getLabelByCode(scope.row.code) }}
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="名字" min-width="180" prop="name"/>
       <el-table-column align="center" label="内容" min-width="180" prop="content"/>
       <el-table-column align="center" label="图像" prop="image">
@@ -243,14 +247,19 @@ const {queryParams, form, rules, createTime} = toRefs(data);
 
 const types = ref([
   {
-    value: 'BIND_PHONE_BONUS',
-    label: '绑定手机'
+    value: 'LOGO',
+    label: '标志'
   },
   {
     value: 'LAYOUT_LOGO',
     label: '布局标志'
   }
 ])
+
+const getLabelByCode = (code) => {
+  const type = types.value.find((item) => item.value === code);
+  return type ? type.label : code;
+};
 
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id);
