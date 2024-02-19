@@ -137,7 +137,7 @@
                width="600px">
       <el-form ref="queryForm" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="代码" prop="code">
-          <el-select v-model="queryParams.type" placeholder="类型" clearable>
+          <el-select v-model="form.code" placeholder="类型" clearable>
             <el-option
                 v-for="type in types"
                 :key="type.value"
