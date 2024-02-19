@@ -99,6 +99,7 @@
           </el-switch>
         </template>
       </el-table-column>
+      <el-table-column label="装置" align="center" prop="device" :formatter="formatterDevice"/>
       <el-table-column label="创建时间" align="center" prop="createTime" min-width="180">
         <template #default="scope">{{new Date(scope.row.createTime).toLocaleString('zh-CN', {
           year: 'numeric',
@@ -136,13 +137,26 @@
                width="600px">
       <el-form ref="queryForm" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="代码" prop="code">
-          <el-input v-model="form.code" placeholder="代码"/>
+          <el-select v-model="queryParams.type" placeholder="类型" clearable>
+            <el-option
+                v-for="type in types"
+                :key="type.value"
+                :label="type.label"
+                :value="type.value"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="姓名" prop="name">
           <el-input v-model="form.name" placeholder="姓名"/>
         </el-form-item>
         <el-form-item label="内容" prop="content">
           <el-input v-model="form.content" placeholder="内容" type="textarea"/>
+        </el-form-item>
+        <el-form-item label="装置" prop="device" width="100px">
+          <el-select v-model="form.device" placeholder="选择设备" width="100px">
+            <el-option label="网站" :value=0></el-option>
+            <el-option label="手机登录" :value=1></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item>
           <el-upload
@@ -226,6 +240,17 @@ const data = reactive({
   createTime: [],
 });
 const {queryParams, form, rules, createTime} = toRefs(data);
+
+const types = ref([
+  {
+    value: 'BIND_PHONE_BONUS',
+    label: '绑定手机'
+  },
+  {
+    value: 'LAYOUT_LOGO',
+    label: '布局标志'
+  }
+])
 
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id);
@@ -380,6 +405,17 @@ function handlePreview(file) {
     proxy.$modal.msgSuccess('此文件导入成功')
   } else {
     proxy.$modal.msgError('此文件导入失败')
+  }
+}
+
+function formatterDevice(row) {
+  switch (row.device) {
+    case 0 :
+      return "网站";
+    case 1 :
+      return "手机登录";
+    default  :
+      return "";
   }
 }
 
