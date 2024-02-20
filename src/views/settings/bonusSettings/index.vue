@@ -212,6 +212,10 @@ const types = ref([
   {
     value: 'BIND_PHONE_BONUS',
     label: '绑定手机'
+  },
+  {
+    value: 'BIND_EMAIL_BONUS',
+    label: '绑电子邮件'
   }
 ])
 
