@@ -40,6 +40,7 @@
             placeholder="请输入会员ID"
             clearable
             @keyup.enter="handleQuery"
+            :disabled="isNumber( queryParams.tableLast )"
         />
       </el-form-item>
 
@@ -55,6 +56,17 @@
               :key="subPlatform.id"
               :label="subPlatform.name"
               :value="subPlatform.id" />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item prop="tableLast" style="width: 150px" class="small-layout" >
+        <el-select v-model="queryParams.tableLast" placeholder="请选择表格索引"
+                   :disabled="queryParams.account != null && queryParams.account != ''"
+                   clearable>
+          <el-option v-for="item in tableIndices"
+                     :key="item"
+                     :label="item"
+                     :value="item"/>
         </el-select>
       </el-form-item>
 
@@ -154,6 +166,9 @@ import record from './record'
 import AgRecord from './agRecord'
 import {handleThemeStyle} from "@/utils/theme";
 import useSettingsStore from "@/store/modules/settings";
+import {isNumber} from "element-plus/es/utils/index";
+
+const tableIndices = [ 0,1,2,3,4,5,6,7,8,9 ];
 
 const {proxy} = getCurrentInstance();
 
@@ -165,11 +180,14 @@ const loading = ref(false);
 const total = ref(0);
 const subPlatforms = ref([]);
 
+
+
 const data = reactive({
 
   queryParams: {
     pageNum: 1,
     platformIds: [],
+    tableLast: null,
     pageSize: 20,
     subPlatformId: null,
     gameRound: null,
@@ -248,7 +266,7 @@ function init() {
 function getList() {
   loading.value = false
 
-  listMemberGameData(queryParams.value).then(res => {
+  listMemberGameData( queryParams.value ).then(res => {
     memberGameList.value = res.data
     total.value = res.total
     // getCount()
