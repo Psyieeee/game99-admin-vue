@@ -238,6 +238,9 @@ const data = reactive({
     ],
     content: [
       {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    device: [
+      {required: true, message: '无效的值', trigger: 'blur'}
     ]
   },
 
@@ -281,7 +284,8 @@ function reset() {
     code: null,
     name: null,
     content: null,
-    status: 1
+    status: 0,
+    device: null
   }
   clearUpload();
   proxy.resetForm('queryForm');
