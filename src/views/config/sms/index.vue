@@ -161,7 +161,7 @@
         <el-form-item label="签名" prop="signature" v-if="form.provider == 4 || form.provider == 0">
           <el-input v-model="form.signature" placeholder="请输入签名" />
         </el-form-item>
-        <el-form-item label="模板" prop="template" v-if=" form.provider == 0 ">
+        <el-form-item label="模板" prop="template" v-if=" form.provider == 5  ||  form.provider == 0 ">
           <el-input v-model="form.template" placeholder="请输入模板"/>
         </el-form-item>
         <el-form-item label="地区" prop="region" v-if="form.provider == 3">
