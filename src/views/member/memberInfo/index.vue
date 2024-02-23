@@ -300,7 +300,7 @@
 <!--      <el-table-column label="打码账户" align="center" prop="codeNow" min-width="110"/>-->
       <el-table-column label="累计有效投注" align="center" prop="codeTotal" min-width="110"/>
       <el-table-column label="邀请码" align="center" prop="inviterCode" min-width="100"/>
-      <el-table-column label="邀请码" align="center" prop="channelCode" min-width="100"/>
+<!--      <el-table-column label="邀请码" align="center" prop="channelCode" min-width="100"/>-->
       <el-table-column label="用户类型" align="center" prop="channelcode" min-width="200">
         <template #default="scope">
           <span v-if="scope.row.channelcode == null"
