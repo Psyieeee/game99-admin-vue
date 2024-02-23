@@ -277,6 +277,17 @@
                     <dict-tag :options="member_withdraw_status" :value="scope.row.status"/>
                 </template>
             </el-table-column>
+          <el-table-column label="操作人" min-width="120" align="center" prop="opName"/>
+          <el-table-column label="审核备注" min-width="200" align="center" prop="remark"
+                           :show-overflow-tooltip="true">
+            <template v-slot="{row}">
+              <a style="color: #00afff" @click="updateRemark(row.withdrawOrderNo, row.remark)">{{
+                  row.remark
+                }}</a>
+            </template>
+          </el-table-column>
+          <el-table-column label="下单时间" width="160" align="center" prop="createTime"/>
+          <el-table-column label="最后修改时间" width="160" align="center" prop="updateTime"/>
             <el-table-column label="提现费用" min-width="100" align="center" prop="withdrawFeeAmount">
               <template v-slot="{row}">
                 <a style="color: #00afff" @click="copyColumn(row.withdrawFeeAmount)">{{ row.withdrawFeeAmount }}</a>
@@ -291,17 +302,6 @@
               </template>
             </el-table-column>
             <el-table-column label="投注打码比例" min-width="110" align="center" prop="rechargeBcodeRate"/>
-            <el-table-column label="操作人" min-width="120" align="center" prop="opName"/>
-            <el-table-column label="审核备注" min-width="200" align="center" prop="remark"
-                             :show-overflow-tooltip="true">
-                <template v-slot="{row}">
-                    <a style="color: #00afff" @click="updateRemark(row.withdrawOrderNo, row.remark)">{{
-                        row.remark
-                        }}</a>
-                </template>
-            </el-table-column>
-            <el-table-column label="下单时间" width="160" align="center" prop="createTime"/>
-            <el-table-column label="最后修改时间" width="160" align="center" prop="updateTime"/>
             <el-table-column label="操作" min-width="350" align="center" class-name="small-padding fixed-width"
                              fixed="right">
                 <template #default="scope">
