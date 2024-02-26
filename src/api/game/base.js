@@ -16,3 +16,10 @@ export function gameEsc(platformId, managerId) {
         method: 'get'
     })
 }
+
+export function transferMoney(orderId) {
+    return request({
+        url: url.game99GameAdminWeb + '/game/base/transferMoney/' + orderId,
+        method: 'get'
+    })
+}

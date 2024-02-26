@@ -64,6 +64,13 @@
        </template>
      </el-table-column>
      <el-table-column label="上分金额" prop="money" align="center"/>
+     <el-table-column label="转钱" align="center">
+       <template #default="scope">
+         <el-button type="primary" size="small"
+                    :disabled="scope.row.status !== 0 || scope.row.money <= 0"
+                    @click="transferPlatformMoney( scope.row )">调动</el-button>
+       </template>
+     </el-table-column>
      <el-table-column label="创建时间" prop="createTime" align="center"/>
      <el-table-column label="更新时间" prop="updateTime" align="center"/>
    </el-table>
@@ -87,6 +94,8 @@ import {
   pickerDateTimeShortcuts,
   getDefaultTime
 } from "@/utils/dateUtils";
+import {transferMoney} from "@/api/game/base";
+import {changeWithdrawStatus} from "@/api/member/memberInfo.js";
 
 const {proxy} = getCurrentInstance();
 const memberGameMoneyList = ref([]);
@@ -145,6 +154,28 @@ function formatterPlatformId(row) {
 function handleQuery(){
   queryParams.pageNum = 1;
   getList()
+}
+
+function transferPlatformMoney( row ) {
+  const platform = formatterPlatformId( row );
+
+  proxy.$modal.confirm('您确定要从 ' +platform+ ' 转账 ' + row.memberId + ' 吗？', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(function () {
+    return transferMoney( row.orderId );
+  }).then((resp) => {
+    getList();
+
+    if( resp.code == 200 ) {
+      proxy.$modal.msgSuccess("成功");
+
+    } else {
+      proxy.$modal.msgError( "fail" );
+    }
+
+  })
 }
 
 function reset(){

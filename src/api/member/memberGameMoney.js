@@ -11,3 +11,11 @@ export function memberGameMoneyListData(query){
         params: query
     })
 }
+
+export function memberGamePlatformMoneyListData(query){
+    return request({
+        url:url.game99GameAdminWeb + "/game/memberGameMoney/listWithPlatformMoney",
+        method:'get',
+        params: query
+    })
+}
