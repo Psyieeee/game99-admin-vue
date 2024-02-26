@@ -7,7 +7,7 @@
         (totalData.total - totalData.countCur).toFixed(2)
       }}
     </el-button>
-    <el-button type="success" @click="copy4">总充值 {{ parseFloat(totalData.charge).toFixed(2) || 0 }}</el-button>
+    <el-button type="success" @click="copy4">总充值 {{ totalData.charge || 0.0}}</el-button>
     <el-form :model="queryParams" ref="queryForm" style="margin-top: 10px" :inline="true" v-show="showSearch"
              label-width="100px">
       <el-form-item label="日期范围" prop="createTime">
