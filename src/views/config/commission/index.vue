@@ -68,8 +68,10 @@
 
     <el-table stripe v-loading="loading" :data="configCommissionList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column label="代码" align="center"       prop="code"/>
       <el-table-column label="名字" align="center"      prop="name"/>
       <el-table-column label="价值" align="center"      prop="value"/>
+      <el-table-column label="数据类型" align="center"      prop="dataType"/>
       <el-table-column align="center" label="状态"     prop="status">
         <template #default="scope">
           <el-switch
@@ -113,6 +115,9 @@
         </el-form-item>
         <el-form-item label="姓名" prop="name">
           <el-input v-model="form.name" placeholder="请输入姓名"/>
+        </el-form-item>
+        <el-form-item label="数据类型" prop="dataType">
+          <el-input v-model="form.dataType" placeholder="请输入数据类型" disabled/>
         </el-form-item>
         <el-form-item label="价值" prop="value">
           <el-input v-model="form.value" placeholder="请输入值"/>
