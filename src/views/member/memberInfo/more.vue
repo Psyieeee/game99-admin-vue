@@ -25,9 +25,9 @@
           <button type="button" class="el-button el-button--primary el-button--small is-plain"
                   @click="change(21,'重置电子邮件')">
               <span>重置电子邮件</span></button>
-<!--        <button type="button" class="el-button el-button&#45;&#45;primary el-button&#45;&#45;small is-plain"-->
-<!--                @click="change(13,'重置邀请码')">-->
-<!--          <span>重置邀请码</span></button>-->
+        <button type="button" class="el-button el-button--primary el-button--small is-plain"
+                @click="change(13,'重置邀请码')">
+          <span>重置邀请码</span></button>
 
         <button type="button" class="el-button el-button--success el-button--small is-plain"
                 @click="change(2,'资金明细')">
