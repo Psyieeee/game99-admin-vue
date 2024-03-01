@@ -68,9 +68,9 @@
 
     <el-table stripe v-loading="loading" :data="configCommissionList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="名字" align="center"      prop="name"/>
-      <el-table-column label="价值" align="center"      prop="value"/>
-      <el-table-column align="center" label="状态"     prop="status">
+      <el-table-column label="名称" align="center"      prop="name"/>
+      <el-table-column label="值" align="center"      prop="value"/>
+      <el-table-column align="center" label="键"     prop="status">
         <template #default="scope">
           <el-switch
               v-model="scope.row.status"
