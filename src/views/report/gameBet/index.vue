@@ -106,7 +106,7 @@ const dataInfo = reactive({
         pageNum: 1,
         pageSize: 20,
         data: [],
-        dateTimeRange: [parseTime(new Date(), '{y}-{m}-{d}'), parseTime(new Date(), '{y}-{m}-{d}')],
+        dateTimeRange: [parseTime((new Date() - 3600 * 1000 * 24), '{y}-{m}-{d}'), parseTime(new Date(), '{y}-{m}-{d}')],
         gameplame: null
     },
     totalData: {
