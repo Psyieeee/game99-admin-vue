@@ -34,6 +34,7 @@
       <el-table-column label="状态" prop="status" align="center" width="80">
         <template #default="scope">
           <el-switch
+              :disabled="scope.row.title === 'MAINTAIN'"
               v-model="scope.row.status"
               :active-value=1
               :inactive-value=0
@@ -47,7 +48,7 @@
               v-model="scope.row.homePrompt"
               :active-value=1
               :inactive-value=0
-              :disabled="!scope.row.status"
+              :disabled="scope.row.title === 'MAINTAIN'"
               @click="!scope.row.status ? null : toggleSwitch('homePrompt', scope.row)">
             >
           </el-switch>
@@ -246,6 +247,9 @@ function handleDelete(row) {
 
 
 function toggleSwitch(label, row) {
+  if(row.title === 'MAINTAIN') {
+    return;
+  }
   let rowValue = label==="status" ?  row.status : row.homePrompt;
   const text = rowValue === 1 ? '启用' : '停用'
   proxy.$confirm('确认要' + text + '"?', '警告', {
