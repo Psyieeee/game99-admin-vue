@@ -205,9 +205,6 @@ function submitForm() {
   proxy.$refs['formAddUpdate'].validate(valid => {
     if (valid) {
       if (form.value.id != null) {
-        if(form.value.title === 'MAINTAIN') {
-          form.value.status = 0
-        }
         updateRecord(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
