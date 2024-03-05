@@ -87,14 +87,14 @@
           <el-form-item label="内容" prop="content">
             <el-input v-model="form.content" placeholder="内容" type="textarea"/>
           </el-form-item>
-          <el-form-item label="状态" prop="status">
+          <el-form-item v-if="form.title !== 'MAINTAIN'" label="状态" prop="status">
             <el-switch v-model="form.status"
                        :active-value=1
                        :inactive-value=0
                        @click="toggleStatusForm(form)"
             />
           </el-form-item>
-          <el-form-item label="弹框开关" prop="homePrompt">
+          <el-form-item v-if="form.title !== 'MAINTAIN'" label="弹框开关" prop="homePrompt">
             <el-switch v-model="form.homePrompt"
                        :active-value=1
                        :inactive-value=0
@@ -205,6 +205,9 @@ function submitForm() {
   proxy.$refs['formAddUpdate'].validate(valid => {
     if (valid) {
       if (form.value.id != null) {
+        if(form.value.title === 'MAINTAIN') {
+          form.value.status = 0
+        }
         updateRecord(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
