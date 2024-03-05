@@ -64,7 +64,7 @@
       <div class="mount" style="width: 80%">
         <div class="member-note-field">
           <el-input type="textarea" id="text-area" class="font" style="height: auto" v-model.trim="email" maxlength="50" show-word-limit></el-input>
-          <el-button class="renew-btn2" type="primary" plain @click="updateEmail(email,dataInfo.会员编号)">更新</el-button>
+          <el-button class="renew-btn2" type="primary" plain @click="updateRemarks(dataInfo['会员编号'],email)">更新</el-button>
         </div>
       </div>
     </div>
@@ -86,7 +86,7 @@ member
 <script setup name="TableShow">
 import {
   getHistoryRecharges,
-  getMemberLoginAddress
+  getMemberLoginAddress, updateRemarks
 } from '@/api/member/memberInfo'
 import {getCurrentInstance, ref} from "vue";
 
