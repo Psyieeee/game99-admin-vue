@@ -77,15 +77,15 @@
 
 
     <!-- 添加或修改记录 Add or modify records-->
-    <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
-               width="400">
+    <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px; padding-right: 20px"
+               width="800px" >
       <el-form ref="formAddUpdate" :model="form" :rules="rules" label-width="100px">
-        <div class="centered-form">
+        <div>
           <el-form-item label="标题" prop="title">
             <el-input v-model="form.title" placeholder="标题"/>
           </el-form-item>
           <el-form-item label="内容" prop="content">
-            <el-input v-model="form.content" placeholder="内容" type="textarea"/>
+            <el-input v-model="form.content" placeholder="内容" type="textarea" style="height: 300px;"/>
           </el-form-item>
           <el-form-item v-if="form.title !== 'MAINTAIN'" label="状态" prop="status">
             <el-switch v-model="form.status"
