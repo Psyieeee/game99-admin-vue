@@ -177,7 +177,7 @@
   </div>
 </template>
 
-<script name="MemberProfilePicture" setup>
+<script name="inviterGameCard" setup>
 
 import {
   listInviterGameCard,

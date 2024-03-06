@@ -230,7 +230,7 @@ const data = reactive({
   /** 表单校验 form validation */
   rules: {
     title: [
-      {required: true, message: '银行名称不能为空', trigger: 'blur'}
+      {required: true, message: '名称不能为空', trigger: 'blur'}
     ],
   },
 

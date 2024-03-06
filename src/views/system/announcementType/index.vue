@@ -4,7 +4,7 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['announcement:content:add']"
+            v-hasPermi="['announcementType:add']"
             icon="Plus"
             plain
             size="small"
@@ -14,7 +14,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['announcement:content:delete']"
+            v-hasPermi="['announcementType:delete']"
             :disabled="multiple"
             icon="Delete"
             plain
@@ -29,9 +29,9 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="tableList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column label="标题" prop="title" align="center"/>
-      <el-table-column label="内容" prop="content" align="center" width="950"/>
-      <el-table-column label="类型" prop="type" align="center" width="950"/>
+      <el-table-column label="标题" prop="name" align="center"/>
+      <el-table-column label="说明" prop="description" align="center" width="950"/>
+      <el-table-column label="内容" prop="sort" align="center" />
       <el-table-column label="状态" prop="status" align="center" width="80">
         <template #default="scope">
           <el-switch
@@ -57,14 +57,14 @@
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="100">
         <template #default="scope">
           <el-button
-              v-hasPermi="['announcement:content:edit']"
+              v-hasPermi="['announcementType:edit']"
               icon="Edit" link
               size="small"
               type="primary"
               @click="handleUpdate(scope.row)">修改
           </el-button>
           <el-button
-              v-hasPermi="['announcement:content:delete']"
+              v-hasPermi="['announcementType:delete']"
               icon="Delete" link
               size="small"
               style="color: #e05e5e"
@@ -81,34 +81,20 @@
                width="400">
       <el-form ref="formAddUpdate" :model="form" :rules="rules" label-width="100px">
         <div class="centered-form">
-          <el-form-item label="标题" prop="title">
-            <el-input v-model="form.title" placeholder="标题"/>
+          <el-form-item label="标题" prop="name">
+            <el-input v-model="form.name" placeholder="标题"/>
           </el-form-item>
-          <el-form-item label="内容" prop="content">
-            <el-input v-model="form.content" placeholder="内容" type="textarea"/>
+          <el-form-item label="说明" prop="description">
+            <el-input v-model="form.description" placeholder="说明" type="textarea"/>
           </el-form-item>
-          <el-form-item label="类型" prop="type">
-            <el-select v-model="form.type" placeholder="类型" clearable>
-              <el-option
-                  v-for="type in announcementTypeList"
-                  :key="type.name"
-                  :label="type.name"
-                  :value="type.name"
-              />
-            </el-select>
+          <el-form-item label="内容" prop="sort">
+            <el-input-number v-model="form.sort" placeholder="内容"/>
           </el-form-item>
           <el-form-item label="状态" prop="status">
             <el-switch v-model="form.status"
                        :active-value=1
                        :inactive-value=0
                        @click="toggleStatusForm(form)"
-            />
-          </el-form-item>
-          <el-form-item label="弹框开关" prop="homePrompt">
-            <el-switch v-model="form.homePrompt"
-                       :active-value=1
-                       :inactive-value=0
-                       :disabled="!form.status"
             />
           </el-form-item>
         </div>
@@ -126,23 +112,19 @@
 <script setup>
 
 import {
-  recordList,
+  announcementList,
   addRecord,
   updateRecord,
   changeStatus,
   getRecord,
   deleteRecord,
   changeHomePrompt,
-} from "@/api/system/announcement";
-import {
-  announcementList
 } from "@/api/system/announcementType";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 const {proxy} = getCurrentInstance();
 
 
 const tableList = ref([]);
-const announcementTypeList = ref([]);
 const ids = ref([]);
 const title = ref('');
 const loading = ref(true);
@@ -156,9 +138,24 @@ const data = reactive({
   /** 表单参数 form parameter*/
   form: {},
   rules: {
-    name: [
+    provideTimesLimit: [
       {required: true, message: '无效的值', trigger: 'blur'}
     ],
+    perDayTimesLimit: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    totalAmount: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    perDayAmount: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    memberMinMoney: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    afterRegisterTime: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ]
   }
 
 });
@@ -167,7 +164,7 @@ const {queryParams, form, rules} = toRefs(data);
 /** fetch all data from back-end as getList */
 function getList() {
   loading.value = true;
-  recordList(queryParams.value).then(response => {
+  announcementList(queryParams.value).then(response => {
     tableList.value = response.data;
     loading.value = false;
   });
@@ -283,14 +280,7 @@ function toggleStatusForm (form) {
   }
 }
 
-function getAnnouncementTypeList() {
-  announcementList().then(res => {
-    announcementTypeList.value = res.data
-  })
-}
-
-getAnnouncementTypeList();
-getList();
+getList()
 </script>
 
 <style>
