@@ -174,16 +174,6 @@
       </div>
     </el-dialog>
 
-    <el-dialog v-model="openText" :close-on-click-modal="false" :name="name" append-to-body width="600px">
-      <el-form ref="textFormRef" :model="form" :rules="rulesFormText" label-width="80px">
-        <el-form-item label="文本2 " prop="text2">
-          <el-input v-model="form.text2" placeholder=" 请输入文本2 " rows="4" type="textarea"/>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitFormText"> 确 定</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -199,8 +189,6 @@ import {
   delInviterGameCard
 } from "@/api/config/inviterGameCard.js";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
-import {url} from "@/utils/url";
-import {getToken} from "@/utils/auth";
 import {useRouter} from "vue-router";
 
 const router = useRouter();
@@ -213,7 +201,6 @@ const ids = ref([]);
 const name = ref('');
 const total = ref(0);
 const open = ref(false);
-const openText = ref(false);
 const showSearch = ref(true);
 const single = ref(true);
 const multiple = ref(true);
@@ -236,23 +223,15 @@ const data = reactive({
   /** 表单校验 form validation */
   rules: {
     name: [
-      {required: true, message: '银行名称不能为空', trigger: 'blur'}
+      {required: true, message: '名称不能为空', trigger: 'blur'}
+    ],
+    points: [
+      {required: true, message: '点不能为空', trigger: 'blur'}
     ],
   },
 
-  headers: {
-    Authorization: 'Bearer ' + getToken()
-  },
-
-  uploadFileUrl: uploadProfilePictureUrl(),
-
-  DialogForm: {
-    name: null,
-    status: null,
-  }
-
 });
-const {queryParams, form, rules, rulesFormText, headers, uploadFileUrl, fileToUpload} = toRefs(data);
+const {queryParams, form, rules, headers, uploadFileUrl} = toRefs(data);
 
 
 /** fetch all data from back-end as getList */
@@ -273,9 +252,7 @@ function reset() {
     points: null,
     upload: null,
     icon: null,
-    status: null,
-    createTime: null,
-    updateTime: null
+    status: 1,
   }
   // proxy.$refs.upload.clearFiles();
   clearUpload()
@@ -313,46 +290,19 @@ function handleAdd() {
 function submitForm() {
   proxy.$refs['inviterGameCardRef'].validate(async valid => {
     if (valid) {
-      const params = {
-        name: form.value.name,
-        status: form.value.status,
-        icon: null
+      if (formData.get("file") != null) {
+        await fileUpload(formData).then(res => {
+          form.value.icon = res.data
+        });
       }
-
-      // if (formData.get("file") != null) {
-      //   await fileUpload(formData).then(res => {
-      //     console.log(" params.icon " + params.icon)
-      //     if (form.value.id != null) {
-      //       form.value.icon = res.data
-      //     } else {
-      //       params.icon = res.data
-      //     }
-      //   });
-      // }
-
       if (form.value.id != null) {
-        updateInviterGameCard(form.value).then(async () => {
-          if (formData.get("file") != null) {
-            formData.set("id", form.value.id);
-            await fileUpload(formData).then(res => {
-              proxy.$modal.msgSuccess('新增成功')
-              open.value = false
-              getList()
-            });
-            proxy.$modal.msgSuccess('修改成功')
-            open.value = false
-            getList()
-          }
+        updateInviterGameCard(form.value).then(() => {
+          proxy.$modal.msgSuccess('修改成功')
+          open.value = false
+          getList()
         })
       } else {
-        // addProfilePicture(params).then(() => {
-        addInviterGameCard(params).then(async (response) => {
-          if (formData.get("file") != null) {
-            formData.set("id", response.data.id);
-            await fileUpload(formData).then(res => {
-
-            });
-          }
+        addInviterGameCard(form.value).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
@@ -387,20 +337,6 @@ function handleDelete(row) {
     proxy.$modal.msgSuccess('删除成功')
   })
 }
-
-/**  导出按钮操作 handle export data as excel query */
-// function handleExport() {
-//   proxy.$confirm('确认处理Excel并下载，数据量大的时候会延迟，请耐心等待...', '警告', {
-//     confirmButtonText: '确认',
-//     cancelButtonText: '取消',
-//     type: 'warning'
-//   }).then(function () {
-//     return exportMemberProfilePicture(queryParams.value)
-//   }).then(response => {
-//     downloadExcel(response, '公司入款银行')
-//   }).catch(() => {
-//   })
-// }
 
 function handleEffectChange(row) {
   let text = row.status === '1' ? '启用' : '停用'
@@ -478,14 +414,6 @@ function beforeAvatarUpload(file) {
   }
 }
 
-function uploadProfilePictureUrl() {
-  return url.baseUrl + url.game99PlatformAdminWeb + "/system/inviterGameCard/upload";
-}
-
-function submitUpload() {
-  proxy.$refs.upload.submit()
-}
-
 function selectFile1(file, fileList) {
 
   const fileExtension = file.name.split('.')[1]
@@ -501,7 +429,6 @@ function selectFile1(file, fileList) {
     return false;
   }
 
-  console.log("aw")
   // this.fileToUpload = file;
   formData.set("file", file.raw)
   formData.set("name", file.name)

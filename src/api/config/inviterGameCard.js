@@ -29,7 +29,7 @@ export function getInviterGameCard(bonusCode) {
 // 新增【请填写功能名称】
 export function addInviterGameCard(data) {
     return request({
-        url: url.game99PlatformAdminWeb + '/config/inviterGameCard',
+        url: url.game99PlatformAdminWeb + '/config/inviterGameCard/add',
         method: 'post',
         data: data
     })
