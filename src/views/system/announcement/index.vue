@@ -54,6 +54,7 @@
           </el-switch>
         </template>
       </el-table-column>
+      <el-table-column label="排序" align="center" prop="sort" width="80"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="100">
         <template #default="scope">
           <el-button
@@ -100,6 +101,9 @@
                        :inactive-value=0
                        :disabled="!form.status"
             />
+          </el-form-item>
+          <el-form-item label="排序" prop="sort">
+            <el-input v-model="form.sort" placeholder="请输入排序" type="number"/>
           </el-form-item>
         </div>
       </el-form>
@@ -159,6 +163,9 @@ const data = reactive({
     ],
     afterRegisterTime: [
       {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    sort: [
+      {required: true, message: '无效的值', trigger: 'blur'}
     ]
   }
 
@@ -176,7 +183,6 @@ function getList() {
 
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id);
-  console.log( "selection " + !selection.length)
   multiple.value = !selection.length;
 }
 
@@ -188,7 +194,8 @@ function reset() {
     author: null,
     status: 1,
     homePrompt: 1,
-    displayTime: null
+    displayTime: null,
+    sort: null
   }
   proxy.resetForm('formAddUpdate');
 }
