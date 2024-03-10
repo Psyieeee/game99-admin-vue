@@ -3,6 +3,7 @@
         <el-button type="primary" @click="copy1">总投注金额: {{ totalData.countBetMoney || 0 }}</el-button>
         <el-button type="success" @click="copy2">总投注人数: {{ totalData.countBetPeople || 0 }}</el-button>
         <el-button type="success">会员盈利: {{ totalData.memberProfit || 0 }}</el-button>
+        <el-button type="success">会员盈利: {{ totalData.memberCount || 0 }}</el-button>
 
         <!--search form -->
         <el-form :model="queryParams" ref="queryForm" style="margin-top: 10px" :inline="true" label-width="68px"
@@ -114,7 +115,8 @@ const dataInfo = reactive({
         countCur: 0,
         countBetMoney: 0,
         countBetPeople: 0,
-        memberProfit: 0
+        memberProfit: 0,
+        memberCount: 0
     },
     backupDateTimeRange: null
 });
