@@ -86,7 +86,7 @@
             <el-input v-model="form.title" placeholder="标题"/>
           </el-form-item>
           <el-form-item label="内容" prop="content">
-            <el-input v-model="form.content" placeholder="内容" type="textarea" style="height: 300px;"/>
+            <el-input v-model="form.content" placeholder="内容" type="textarea" rows="15"/>
           </el-form-item>
           <el-form-item v-if="form.title !== 'MAINTAIN'" label="状态" prop="status">
             <el-switch v-model="form.status"
