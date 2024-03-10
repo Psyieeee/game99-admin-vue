@@ -29,36 +29,39 @@
     </el-form>
 
     <el-descriptions :column="3" border>
-      <el-descriptions-item label="My ID" align="center">{{ memberReferralList.id }}</el-descriptions-item>
-      <el-descriptions-item label="Recommendation ID" align="center" >{{ memberReferralList.inviterId }}</el-descriptions-item>
-      <el-descriptions-item label="Today Register" align="center">{{ memberReferralList.todayRegistered }}</el-descriptions-item>
-      <el-descriptions-item label="Total Register" align="center">{{ memberReferralList.totalRegistered }}</el-descriptions-item>
-      <el-descriptions-item label="Today Bonus" align="center">{{ memberReferralList.referralBonusToday }}</el-descriptions-item>
-      <el-descriptions-item label="Total Bonus" align="center">{{ memberReferralList.referralBonusTotal }}</el-descriptions-item>
+      <el-descriptions-item label="我的身份证" align="center">{{ memberReferralList.id }}</el-descriptions-item>
+      <el-descriptions-item label="推荐" align="center" >{{ memberReferralList.inviterId }}</el-descriptions-item>
+      <el-descriptions-item label="今日注册" align="center">{{ memberReferralList.todayRegistered }}</el-descriptions-item>
+      <el-descriptions-item label="注册总数" align="center">{{ memberReferralList.totalRegistered }}</el-descriptions-item>
+      <el-descriptions-item label="今日奖金" align="center">{{ memberReferralList.referralBonusToday }}</el-descriptions-item>
+      <el-descriptions-item label="奖金总额" align="center">{{ memberReferralList.referralBonusTotal }}</el-descriptions-item>
     </el-descriptions>
     <el-divider/>
-    <el-table v-loading="loading" :data="memberReferralList.referralDetails">
-      <el-table-column align="center" label="Inviter Id" prop="inviterId"/>
-      <el-table-column align="center" label="Level" prop="level"/>
-      <el-table-column align="center" label="Bonus" prop="bonus"/>
-      <el-table-column align="center" label="Time" prop="time"/>
-      <el-table-column align="center" label="Bet" prop="bet"/>
-    </el-table>
-    <pagination
-        v-show="total"
-        v-model:limit="queryParams.pageSize"
-        v-model:page="queryParams.pageNum"
-        :page-sizes="[20,30,50,100]"
-        :total="total"
-        @pagination="getList"/>
+    <div class="app-container">
+      <el-table v-loading="loading" :data="memberReferralList.referralDetails">
+        <el-table-column align="center" label="成员 ID" prop="inviterId"/>
+        <el-table-column align="center" label="级别" prop="level"/>
+        <el-table-column align="center" label="奖金" prop="bonus"/>
+        <el-table-column align="center" label="时间" prop="time"/>
+        <el-table-column align="center" label="投注" prop="bet"/>
+      </el-table>
+      <pagination
+          v-show="total"
+          v-model:limit="queryParams.pageSize"
+          v-model:page="queryParams.pageNum"
+          :page-sizes="[20,30,50,100]"
+          :total="total"
+          @pagination="getList"
+      />
+    </div>
 
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="400px">
       <el-form :inline="true"  label-width="100px">
         <div class="centered-form">
           <el-table v-loading="bonuses" :data="referralReport">
-            <el-table-column align="center" label="Bonus" prop="bonus"/>
-            <el-table-column align="center" label="Time" prop="time"/>
+            <el-table-column align="center" label="奖金" prop="bonus"/>
+            <el-table-column align="center" label="时间" prop="time"/>
           </el-table>
         </div>
       </el-form>
@@ -134,11 +137,12 @@ const {queryParams, rules, form, scheduleForm, schedule} = toRefs(data)
 function getList() {
   loading.value = true
   memberReferralListData(queryParams.value).then(res => {
-    console.log( JSON.stringify(res.data) + " )@#)) ")
     loading.value = false
     memberReferralList.value = res.data
-    console.log( JSON.stringify(memberReferralList.value) )
-    total.value = res.total
+    memberReferralReport(queryParams.value).then(res2 => {
+      memberReferralList.value.referralDetails = res2.data
+      total.value = res2.total
+    })
   })
 }
 
