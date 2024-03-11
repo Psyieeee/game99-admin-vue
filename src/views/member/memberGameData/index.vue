@@ -259,7 +259,7 @@ function init() {
   }
   getList()
   listPlatform()
-  listCount()
+  // listCount()
 }
 
 /**list of data */
