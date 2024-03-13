@@ -2,10 +2,10 @@
   <div class="app-container">
 
     <el-form v-show="showSearch" :rules="rules"  ref="queryRef" :inline="true" :model="queryParams">
-      <el-form-item class="input-wd25" label="成员 ID Prefix" prop="account">
+      <el-form-item class="input-wd25" label="会员ID" prop="account">
         <el-input
             v-model.trim="queryParams.memberId"
-            placeholder="成员 ID Prefix"
+            placeholder="会员 ID 前缀"
             clearable
             type="primary"
             link
@@ -20,7 +20,9 @@
 
     <!--    display data in table -->
     <el-table v-loading="loading" :data="memberOnlineList" @selection-change="handleSelectionChange">
-      <el-table-column align="center" label="成员 ID" min-width="180" prop="memberId"/>
+      <el-table-column align="center" label="会员ID" min-width="180" prop="memberId"/>
+      <el-table-column align="center" label="phone" min-width="180" prop="phone"/>
+      <el-table-column align="center" label="email" min-width="180" prop="email"/>
     </el-table>
 
     <pagination
