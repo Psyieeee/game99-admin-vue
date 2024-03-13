@@ -71,7 +71,7 @@
 <script name="GameBetJump" setup>
 
 
-import {getCurrentInstance, onActivated, onMounted, reactive, ref, toRefs} from "vue";
+import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {
     getTodayEndTime,
     getTodayStartTime,
@@ -100,13 +100,13 @@ const data = reactive({
 });
 const {queryParams, backupDateTimeRange} = toRefs(data);
 
-onActivated( () => {
-    init()
-})
-
-onMounted(() => {
-    init();
-})
+// onActivated( () => {
+//     init()
+// })
+//
+// onMounted(() => {
+//     init();
+// })
 
 
 function init() {
@@ -119,7 +119,7 @@ function init() {
     getList();
 }
 
-init()
+
 
 
 /** list data */
@@ -133,6 +133,10 @@ function getList() {
     queryParams.value.dateTimeRange = backupDateTimeRange.value;
     proxy.$modal.msgError("日期是必需的")
   }
+  queryParams.value.gamepepole = null;
+  queryParams.value.gameagent  = null;
+  queryParams.value.gameUuid   = null;
+  queryParams.value.agentchild   = null;
 
   listGameChildBet(queryParams.value).then(res => {
     gameBetChildList.value = res.data;
@@ -172,8 +176,6 @@ function setQueryParams() {
 }
 
 function handleClickBetCount(row) {
-console.log("aw", queryParams)
-console.log("row", row)
   queryParams.value.begindate  = queryParams.value.dateTimeRange[0];
   queryParams.value.endDate    = queryParams.value.dateTimeRange[1];
   queryParams.value.agentchild = row.agentchild
@@ -183,7 +185,8 @@ console.log("row", row)
   proxy.$refs["tableShow"].setParam(queryParams);
 }
 
-getList()
+init()
+// getList()
 </script>
 
 <style scoped>
