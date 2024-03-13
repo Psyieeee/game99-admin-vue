@@ -21,6 +21,8 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="memberOnlineList" @selection-change="handleSelectionChange">
       <el-table-column align="center" label="会员ID" min-width="180" prop="memberId"/>
+      <el-table-column align="center" label="phone" min-width="180" prop="phone"/>
+      <el-table-column align="center" label="email" min-width="180" prop="email"/>
     </el-table>
 
     <pagination
