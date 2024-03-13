@@ -243,7 +243,7 @@
                               clearable>
               </el-date-picker>
             </el-form-item>
-            <el-form-item label="分类" prop="sort">
+            <el-form-item label="状态" prop="sort">
               <el-input style="width: 110px" v-model="form.sort" placeholder="输入排序编号" @change="signInConfig"/>
             </el-form-item>
             <el-form-item label="主页弹出窗口" label-width="120">
