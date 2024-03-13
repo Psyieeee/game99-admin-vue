@@ -20,9 +20,6 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button type ="primary" size="small" @click="showReport"  >
-          Referral Report
-        </el-button>
         <el-button icon="Search" size="small" type="primary" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" size="small" @click="resetQuery">重置</el-button>
       </el-form-item>
@@ -42,6 +39,11 @@
         <el-table-column align="center" label="成员 ID" prop="inviterId"/>
         <el-table-column align="center" label="级别" prop="level"/>
         <el-table-column align="center" label="奖金" prop="bonus"/>
+        <el-table-column align="center" label="描述" prop="inviterId">
+          <template #default="scope">
+            {{scope.row.inviterId}}_{{scope.row.bonus}}
+          </template>
+        </el-table-column>
         <el-table-column align="center" label="时间" prop="time"/>
         <el-table-column align="center" label="投注" prop="bet"/>
       </el-table>
@@ -170,6 +172,7 @@ function handleQuery() {
 }
 
 function resetQuery() {
+  queryParams.value.account = null;
   proxy.resetForm("queryRef");
   handleQuery();
 }
@@ -188,9 +191,3 @@ function reset() {
 }
 
 </script>
-
-<style>
-.example-basic .el-date-editor {
-  margin: 8px;
-}
-</style>
