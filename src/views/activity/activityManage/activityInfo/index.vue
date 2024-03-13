@@ -136,6 +136,7 @@
         </template>
       </el-table-column>
       <el-table-column label="内部跳转类型" align="center" prop="internalJumpType"  min-width="120"/>
+      <el-table-column label="活动跳跃类型" align="center" prop="eventJumpType"  min-width="120"/>
         
 <!--      <el-table-column label="事件跳转状态" align="center" prop="eventJumpStatus"  min-width="120">-->
 <!--        <template #default="scope">-->
@@ -1149,9 +1150,9 @@ function resetForm(){
   f.sort = null;
   f.creationType = '1';
   f.jumpStatus = false
-  f.internalJumpType = jumpTypes[0];
+  f.internalJumpType = null;
   f.eventJumpStatus = false
-  f.eventJumpType = jumpTypes[0];
+  f.eventJumpType = null;
 }
 function resetCreateBannerConfig(){
   createBanner.value = {
