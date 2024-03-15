@@ -60,6 +60,17 @@
         >基础数据预生成
         </el-button>
       </el-col>
+      <el-col :span="1.5">
+        <el-button
+            v-hasPermi="['report:agentCount:list']"
+            icon="Delete"
+            plain
+            size="small"
+            type="danger"
+            @click="handleDelete"
+        >删除频道代码
+        </el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -94,12 +105,32 @@
       </el-table>
     </div>
 
+    <!-- 添加或修改记录 Add or modify records-->
+    <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
+               width="500px">
+      <el-form :inline="true" ref="queryRef" :model="form" :rules="rules" label-width="150px">
+        <el-form-item label="渠道编码" prop="agentCode">
+          <el-input type="text" v-model="form.agentCode" placeholder="取款限额"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm">提交</el-button>
+        <el-button @click="open=false">取 消</el-button>
+
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
 <script setup name="ReportAgentCount">
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
-import {listReportAgentCountData, reportAgentCountExport, reportGenerateData} from "@/api/report/reportAgentCount";
+import {
+  deletePromotionCode,
+  listReportAgentCountData,
+  reportAgentCountExport,
+  reportGenerateData
+} from "@/api/report/reportAgentCount";
 import {parseTime} from "@/utils/dateUtils";
 
 const {proxy} = getCurrentInstance();
@@ -112,15 +143,22 @@ const loading = ref(false);
 const open = ref(false);
 const dateRange = ref([parseTime(new Date(), '{y}-{m}-{d}'), parseTime(new Date(), '{y}-{m}-{d}')]);
 
+const title = ref('删除频道代码');
+
 const data = reactive({
+  form: {},
   queryParams: {
     agentcode: '',
     /*agentname: '',*/
     agenttime: null
   },
-  rules: {}
+  rules: {
+    agentCode: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ]
+  }
 });
-const {queryParams, rules} = toRefs(data);
+const {queryParams, rules, form} = toRefs(data);
 
 /**
  * 查询代理统计，主要用于代理渠道的统计列表
@@ -155,7 +193,21 @@ function handleExport() {
 
 
 function handleDelete() {
+  open.value = true
+}
 
+function submitForm() {
+  proxy.$confirm('是否确认删除?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(function () {
+    return deletePromotionCode(form.value.agentCode)
+  }).then(() => {
+    open.value = false
+    getList()
+    proxy.$modal.msgSuccess('删除成功')
+  })
 }
 
 function generateData() {
