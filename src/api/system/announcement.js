@@ -52,7 +52,3 @@ export function changeHomePrompt(id, homePrompt) {
         method: 'put'
     })
 }
-
-export function listAnnouncementType() {
-
-}
