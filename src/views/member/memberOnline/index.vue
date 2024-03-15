@@ -1,7 +1,11 @@
 <template>
   <div class="app-container">
 
-    <el-form v-show="showSearch" :rules="rules"  ref="queryRef" :inline="true" :model="queryParams">
+    <div>
+      <el-button type="info"    @click="copy1">在线成员总数 {{ total || 0 }}</el-button>
+    </div>
+
+    <el-form v-show="showSearch" :rules="rules"  ref="queryRef" :inline="true" :model="queryParams" style="margin-top: 20px">
       <el-form-item class="input-wd25" label="会员ID" prop="account">
         <el-input
             v-model.trim="queryParams.memberId"
@@ -106,6 +110,19 @@ function getList() {
   });
 }
 
+function copy1() {
+  copyCommand(total.value)
+}
+
+function copyCommand(value) {
+  let inputElement = document.createElement('input')
+  inputElement.value = value
+  document.body.appendChild(inputElement)
+  inputElement.select() //选中文本
+  document.execCommand('copy') //执行浏览器复制命令
+  inputElement.remove()
+  proxy.$modal.msgSuccess('复制成功')
+}
 
 /** 重置按钮操作 handle reset query*/
 function resetQuery() {
