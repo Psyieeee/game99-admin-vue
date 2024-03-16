@@ -11,12 +11,11 @@
             @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="推荐投注倍数" prop="referralBetMultiplier">
+      <el-form-item label="推荐投注倍数" prop="startDate">
         <el-date-picker
-            v-model="queryParams.startTime"
-            type="datetime"
+            v-model="queryParams.startDate"
+            type="date"
             placeholder="Pick a day"
-            :size="size"
         />
       </el-form-item>
       <el-form-item>
@@ -115,8 +114,7 @@ const data = reactive({
     pageNum: 1,
     pageSize: 20,
     account: '',
-    startTime: '',
-    endTime: '',
+    startDate: null,
   },
   rules: {
     account: [
@@ -136,15 +134,17 @@ const {queryParams, rules, form, scheduleForm, schedule} = toRefs(data)
 /**
  * 查询游戏字典列表 list of data
  */
+
 function getList() {
   loading.value = true
   memberReferralListData(queryParams.value).then(res => {
     loading.value = false
     memberReferralList.value = res.data
-    memberReferralReport(queryParams.value).then(res2 => {
-      memberReferralList.value.referralDetails = res2.data
-      total.value = res2.total
-    })
+  })
+  memberReferralReport(queryParams.value).then(res2 => {
+    console.log( JSON.stringify(queryParams.value) +  " @@@@@ ")
+    memberReferralList.value.referralDetails = res2.data
+    total.value = res2.total
   })
 }
 
@@ -166,6 +166,7 @@ function handleQuery() {
   proxy.$refs['queryRef'].validate(async valid => {
     if (valid) {
       queryParams.pageNum = 1;
+      queryParams.startDate = new Date(queryParams.startDate)
       getList();
     }
   });
