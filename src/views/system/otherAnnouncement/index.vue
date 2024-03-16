@@ -1,146 +1,145 @@
 <template>
   <div class="app-container">
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-            v-hasPermi="['other:announcement:content:add']"
-            icon="Plus"
-            plain
-            size="small"
-            type="primary"
-            @click="handleAdd">新增
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-            v-hasPermi="['other:announcement:content:delete']"
-            :disabled="multiple"
-            icon="Delete"
-            plain
-            size="small"
-            type="danger"
-            @click="handleDelete">删除
-        </el-button>
-      </el-col>
-      <right-toolbar @queryTable="getList"></right-toolbar>
+    <el-row style="display: inline">
+        <el-button v-for=" button in Object.values(HOME_BUTTON)" :icon="button.icon" :size="button.size" :type="button.type" v-hasPermi="[button.permission]" @click="button.handler">{{ button.label }}</el-button>
     </el-row>
-
     <el-table v-loading="loading" :data="tableList" @selection-change="handleSelectionChange">
-      <el-table-column align="center" type="selection" width="60"/>
-      <el-table-column label="标题" prop="title" align="center"/>
-      <el-table-column label="内容" prop="content" align="center">
+      <el-table-column :align="TEXT.CENTER" :type="TEXT.SELECTION" width="60"/>
+      <template v-for="field in Object.values(TABLE)">
+        <el-table-column v-if="field.prop === TEXT.PROP_CONTENT" :label="field.label" :prop="field.prop" :align="field.align">
+          <template  #default="scope">
+            <div :class="scope.row.content.includes('<img') ? 'content-cell-img':' content-cell-text'" v-html="scope.row.content" />
+          </template>
+        </el-table-column>
+        <el-table-column v-else-if="field.prop === TEXT.PROP_STATUS"   :label="field.label" :prop="field.prop" :align="field.align">
+          <template #default="scope">
+            <el-switch v-model="scope.row.status" :active-value=1 :inactive-value=0 @click="toggleStatusSwitch(scope.row)"/>
+          </template>
+        </el-table-column>
+        <el-table-column v-else                                        :label="field.label" :prop="field.prop" :align="field.align"/>
+      </template>
+      <el-table-column :align="TEXT.CENTER" class-name="small-padding fixed-width" :fixed="TEXT.RIGHT" :label="TEXT.LABEL_ACTION" min-width="100">
         <template #default="scope">
-          <span v-html="scope.row.content"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="跳跃式" prop="jumpType" align="center"/>
-      <el-table-column label="状态" prop="status" align="center">
-        <template #default="scope">
-          <el-switch
-              :disabled="scope.row.title === 'MAINTAIN'"
-              v-model="scope.row.status"
-              :active-value=1
-              :inactive-value=0
-              @click="toggleSwitch('status', scope.row)">
-          </el-switch>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="100">
-        <template #default="scope">
-          <el-button
-              v-hasPermi="['other:announcement:content:edit']"
-              icon="Edit" link
-              size="small"
-              type="primary"
-              @click="handleUpdate(scope.row)">修改
-          </el-button>
-          <el-button
-              v-hasPermi="['other:announcement:content:delete']"
-              icon="Delete" link
-              size="small"
-              style="color: #e05e5e"
-              type="danger"
-              @click="handleDelete(scope.row)">删除
-          </el-button>
+          <el-button v-for=" button in Object.values(ACTION_BUTTON)" :icon="button.icon" link :size="button.size" :type="button.type" v-hasPermi="[button.permission]" @click="button.handler(scope.row)">{{ button.label }}</el-button>
         </template>
       </el-table-column>
     </el-table>
-
-    <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px; padding-right: 20px" width="800px" >
-      <el-form ref="formAddUpdate" :model="form" :rules="rules" label-width="100px">
-          <el-form-item label="标题" prop="title">
-            <el-input v-model="form.title" placeholder="标题"/>
+    <el-dialog v-model="openForm" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px; padding-right: 20px" width="800px" >
+      <el-form :ref="TEXT.REF_NAME" :model="form" :rules="rules" label-width="100px">
+          <el-form-item :label="TEXT.LABEL_TITLE" :prop="TEXT.PROP_TITLE">
+            <el-input v-model="form.title" :placeholder="TEXT.PLACEHOLDER_TITLE" />
           </el-form-item>
-          <el-form-item label="状态" prop="status">
-            <el-switch v-model="form.status"
-                       :active-value=1
-                       :inactive-value=0
-                       @click="toggleStatusForm(form)"
-            />
+          <el-form-item :label="TEXT.LABEL_STATUS" :prop="TEXT.PROP_STATUS">
+            <el-switch v-model="form.status" :active-value=1 :inactive-value=0 />
           </el-form-item>
-          <el-form-item label="活动详情" prop="content">
-            <WangEditor v-model="form.content" style="max-width: 680px" image-path="OtherAnnouncement" />
+          <el-form-item :label="TEXT.LABEL_CONTENT" :prop="TEXT.PROP_CONTENT">
+            <WangEditor v-model="form.content" style="max-width: 680px" :image-path="TEXT.IMG_PATH" />
           </el-form-item>
-          <el-form-item label="内部跳转类型">
-            <el-select
-                filterable
-                v-model="form.jumpType"
-                style="width: 240px">
-              <el-option
-                  v-for="jumpType in jumpTypes"
-                  :key="jumpType"
-                  :label="jumpType"
-                  :value="jumpType"/>
+          <el-form-item :label="TEXT.LABEL_JUMP_TYPE">
+            <el-select v-model="form.jumpType">
+              <el-option v-for="type in jumpTypes" :key="type" :label="type" :value="type"/>
             </el-select>
           </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">提交</el-button>
-        <el-button @click="open=false">取 消</el-button>
+      <div :slot="TEXT.FOOTER" class="dialog-footer">
+        <el-button v-for=" field in Object.values(FOOTER_BUTTON)" :icon="field.icon" :size="field.size" :type="field.type" @click="field.handler">{{ field.label }}</el-button>
       </div>
     </el-dialog>
-
-
   </div>
 </template>
 
 <script setup>
-
-import {
-  recordList,
-  addRecord,
-  updateRecord,
-  changeStatus,
-  getRecord,
-  deleteRecord,
-} from "@/api/system/otherAnnouncement.js";
-import {getCurrentInstance, reactive, ref, toRefs} from "vue";
+import { reactive, ref, toRefs } from "vue";
+import { recordList, addRecord, updateRecord, changeStatus, getRecord, deleteRecord } from "@/api/system/otherAnnouncement.js";
 import WangEditor from "@/components/WangEditor/index.vue";
-const {proxy} = getCurrentInstance();
 
-
+const jumpTypes = ["VIP", "DAILY_BONUS", "FUND" ,"RECHARGE","BIND_PHONE" , "INVITER"]
+const {proxy}   = getCurrentInstance();
+const openForm  = ref(false);
+const multiple  = ref(true);
+const loading   = ref(true);
 const tableList = ref([]);
-const ids = ref([]);
-const title = ref('');
-const loading = ref(true);
-const multiple = ref(true);
-const open = ref(false);
-const jumpTypes = [ "VIP", "DAILY_BONUS", "FUND" ,"RECHARGE","BIND_PHONE" , "INVITER"]
+const idList    = ref([]);
+const title     = ref('');
+const TEXT      = {
+  PERMISSION_DEL:    'other:announcement:content:delete',
+  PERMISSION_EDIT:   'other:announcement:content:edit',
+  PERMISSION_ADD:    'other:announcement:content:add',
+  ANNOUNCEMENT_EDIT: '更新公告',
+  ANNOUNCEMENT_ADD:  '添加公告',
+  LABEL_ACTION:      'action',
+  LABEL_JUMP_TYPE:   '跳跃式',
+  LABEL_CONTENT:     '内容',
+  LABEL_STATUS:      '状态',
+  LABEL_CONFIRM:     '确定',
+  LABEL_SUBMIT:      '提交',
+  LABEL_CANCEL:      '取消',
+  LABEL_TITLE:       '标题',
+  LABEL_ADD:         '新增',
+  LABEL_EDIT:        '新增',
+  LABEL_DEL:         '删除',
+  PROP_JUMP_TYPE:    'jumpType',
+  PROP_CONTENT:      'content',
+  PROP_STATUS:       'status',
+  PROP_TITLE:        'title',
+  PLACEHOLDER_TITLE: '需要标题',
+  IMG_PATH:          'OtherAnnouncement',
+  REF_NAME:          'formAddUpdate',
+  SELECTION:         'selection',
+  WARNING:           'warning',
+  PRIMARY:           'primary',
+  CANCEL:            'cancel',
+  FOOTER:            'footer',
+  DELETE:            'Delete',
+  DANGER:            'danger',
+  CENTER:            'center',
+  TRIG_CHANGE:       'change',
+  TRIG_BLUR:         'blur',
+  SMALL:             'small',
+  RIGHT:             'right',
+  PLUS:              'Plus',
+  CONFIRM_WARNING:   '你确定要继续吗？',
+  DEL_SUCCESS:       '已成功删除',
+  EDIT_SUCCESS:      '修改成功',
+  ADD_SUCCESS:       '新增成功',
+  INVALID_TITLE:     '需要标题',
+  INVALID_CONTENT:   '所需内容',
+  EDIT_FAILED:       '修改',
+  ACTIVE:            '启用',
+  INACTIVE:          '停用',
+}
 
-const data = reactive({
+const ACTION_BUTTON = {
+  EDIT: { label: TEXT.LABEL_EDIT, icon: TEXT.PRIMARY, size: TEXT.SMALL, type: TEXT.PRIMARY, permission: TEXT.PERMISSION_EDIT, handler: handleUpdate },
+  DEL:  { label: TEXT.LABEL_DEL,  icon: TEXT.DELETE,  size: TEXT.SMALL, type: TEXT.DANGER,  permission: TEXT.PERMISSION_DEL,  handler: handleDelete },
+}
+const FOOTER_BUTTON = {
+  SUBMIT: { label: TEXT.LABEL_SUBMIT, icon: TEXT.PLUS,   size: TEXT.SMALL, type: TEXT.PRIMARY, handler: submitForm },
+  CANCEL: { label: TEXT.LABEL_CANCEL, icon: TEXT.DELETE, size: TEXT.SMALL, type: TEXT.PRIMARY, handler: () => openForm.value = false },
+}
+const HOME_BUTTON   = {
+  ADD: { label: TEXT.LABEL_ADD, icon: TEXT.PLUS,   size: TEXT.SMALL, type: TEXT.PRIMARY, permission: TEXT.PERMISSION_ADD, handler: handleAdd },
+  DEL: { label: TEXT.LABEL_DEL, icon: TEXT.DELETE, size: TEXT.SMALL, type: TEXT.DANGER,  permission: TEXT.PERMISSION_DEL, handler: handleDelete },
+}
+const TABLE         = {
+  TITLE:     { label: TEXT.LABEL_TITLE,     prop: TEXT.PROP_TITLE,     align: TEXT.CENTER },
+  CONTENT:   { label: TEXT.LABEL_CONTENT,   prop: TEXT.PROP_CONTENT,   align: TEXT.CENTER },
+  JUMP_TYPE: { label: TEXT.LABEL_JUMP_TYPE, prop: TEXT.PROP_JUMP_TYPE, align: TEXT.CENTER },
+  STATUS:    { label: TEXT.LABEL_STATUS,    prop: TEXT.PROP_STATUS,    align: TEXT.CENTER },
+}
+const data          = reactive({
   queryParams: {},
   form: {},
   rules: {
-    title: {required: true, message: '需要标题', trigger: 'blur'},
-    content: { validator: (rule, value, callback) => validateContent(rule, value, callback), trigger: "change" }
+    title: { required: true, message: TEXT.INVALID_TITLE, trigger: TEXT.TRIG_BLUR },
+    content: { validator: (rule, value, callback) => validateContent(rule, value, callback), trigger: TEXT.TRIG_CHANGE }
   }
-
 });
-const {queryParams, form, rules} = toRefs(data);
+const { queryParams, form, rules } = toRefs(data);
 
 function validateContent(rule, value, callback){
   if (value === "<p><br></p>") {
-    callback(new Error("需要内容"));
+    callback(new Error(TEXT.INVALID_CONTENT));
   }
   callback();
 }
@@ -154,7 +153,7 @@ function getList() {
 }
 
 function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.id);
+  idList.value   = selection.map(item => item.id);
   multiple.value = !selection.length;
 }
 
@@ -162,94 +161,70 @@ function reset() {
   form.value = {
     title: null,
     content: null,
-    status: 1,
+    status: 0,
     jumpType: jumpTypes[0]
   }
-  proxy.resetForm('formAddUpdate');
+  proxy.resetForm(TEXT.REF_NAME);
 }
 
 function handleAdd() {
   reset()
-  open.value = true
-  title.value = '添加客户支持'
-}
-
-function submitForm() {
-  proxy.$refs['formAddUpdate'].validate(valid => {
-    if (valid) {
-      if (form.value.id != null) {
-        updateRecord(form.value).then(() => {
-          proxy.$modal.msgSuccess('修改成功')
-          open.value = false
-          getList()
-        })
-      } else {
-        addRecord(form.value).then(() => {
-          proxy.$modal.msgSuccess('新增成功')
-          open.value = false
-          getList()
-        })
-      }
-    }
-  })
+  openForm.value = true
+  title.value    = TEXT.ANNOUNCEMENT_ADD;
 }
 
 function handleUpdate(row) {
   reset();
-  open.value = true
-  title.value = '更新'
-  getRecord(row.id).then(response => {
-    form.value = response.data;
-  });
+  openForm.value = true
+  title.value    = TEXT.ANNOUNCEMENT_EDIT;
+  getRecord(row.id).then(res => form.value = res.data);
+}
+
+function submitForm() {
+  proxy.$refs[TEXT.REF_NAME].validate(valid => {
+    if (!valid) return;
+    const isUpdate = form.value.id !== null;
+    const message  = isUpdate ? TEXT.EDIT_SUCCESS : TEXT.ADD_SUCCESS;
+    const method   = isUpdate ? updateRecord(form.value) : addRecord(form.value);
+    method.then(()=>{
+      proxy.$modal.msgSuccess(message)
+      openForm.value = false
+      getList()
+    })
+  })
 }
 
 function handleDelete(row) {
-  const idss = row.id || ids.value
-  proxy.$confirm('是否确认删除?', '警告', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(function () {
-    return deleteRecord(idss)
-  }).then(() => {
-    getList()
-    proxy.$modal.msgSuccess('删除成功')
+  const ids = row.id || idList.value
+  proxy.$confirm(TEXT.CONFIRM_WARNING, {
+    confirmButtonText: TEXT.LABEL_CONFIRM,
+    cancelButtonText:  TEXT.LABEL_CANCEL,
+    type: TEXT.WARNING
+  })
+  .then(()=> deleteRecord(ids))
+  .then(()=> {
+    getList();
+    proxy.$modal.msgSuccess(TEXT.DEL_SUCCESS)
   })
 }
 
-
-function toggleSwitch(label, row) {
-  let rowValue = label==="status" ?  row.status : row.homePrompt;
-  const text = rowValue === 1 ? '启用' : '停用'
-  proxy.$confirm('确认要' + text + '"?', '警告', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消'
-  }).then(function () {
-    let status;
-    loading.value = true
-    if(label==="status"){
-      status = changeStatus(row.id, row.status);
+function toggleStatusSwitch(row) {
+  try {
+    proxy.$confirm(TEXT.CONFIRM_WARNING, {
+      confirmButtonText: TEXT.LABEL_CONFIRM,
+      cancelButtonText: TEXT.LABEL_CANCEL
+    }).then(()=>{
+      loading.value = true;
+      changeStatus(row.id, row.status);
+      proxy.$modal.msgSuccess(TEXT.EDIT_SUCCESS);
+      getList();
+    }).catch(()=> row.status = !row.status);
+  } catch (error) {
+    if (error !== TEXT.CANCEL) {
+      proxy.$modal.msgError(TEXT.EDIT_FAILED);
     }
-    if (status) {
-      return status
-    }
-  }).then(() => {
-    loading.value = false
-    proxy.$modal.msgSuccess(text + '成功')
-    getList()
-  }).catch(function () {
-    loading.value = false
-    if(label==="status"){
-      row.status = row.status === 0 ? 1 : 0
-    }else{
-      row.homePrompt = row.homePrompt === 0 ? 1 : 0
-    }
-  })
-}
-
-function toggleStatusForm (form) {
-  if(form.status === 0){
-    form.homePrompt = 0;
+  } finally {
+    loading.value = false;
   }
 }
 
@@ -257,4 +232,20 @@ getList()
 </script>
 
 <style>
+.content-cell-img img{
+  max-height: 100px;
+  max-width:  100px;
+  object-fit: contain;
+  display:    block;
+  margin: 0   auto
+}
+
+.content-cell-text {
+  text-overflow: ellipsis;
+  white-space:   normal;
+  max-height:    100px;
+  line-height:   1.2;
+  overflow-y:    auto;
+  display:       block;
+}
 </style>
