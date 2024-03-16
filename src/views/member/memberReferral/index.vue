@@ -115,6 +115,7 @@ const data = reactive({
     pageSize: 20,
     account: '',
     startDate: '',
+    endDate:''
   },
   rules: {
     account: [
@@ -137,7 +138,11 @@ const {queryParams, rules, form, scheduleForm, schedule} = toRefs(data)
 
 function getList() {
   loading.value = true
-  toLocalDate()
+
+  if(data.queryParams.startDate != ''){
+    toLocalDate()
+  }
+
   memberReferralListData(queryParams.value).then(res => {
     loading.value = false
     memberReferralList.value = res.data
