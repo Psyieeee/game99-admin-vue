@@ -3,7 +3,7 @@
     <el-form v-show="showSearch" :rules="rules"  ref="queryRef" :inline="true" :model="queryParams">
       <el-form-item class="input-wd25" label="成员编号" prop="account">
         <el-input
-            v-model.trim="queryParams.account"
+            v-model="queryParams.account"
             placeholder="成员编号"
             clearable
             type="primary"
@@ -114,7 +114,7 @@ const data = reactive({
     pageNum: 1,
     pageSize: 20,
     account: '',
-    startDate: null,
+    startDate: '',
   },
   rules: {
     account: [
@@ -137,28 +137,16 @@ const {queryParams, rules, form, scheduleForm, schedule} = toRefs(data)
 
 function getList() {
   loading.value = true
+  toLocalDate()
   memberReferralListData(queryParams.value).then(res => {
     loading.value = false
     memberReferralList.value = res.data
   })
+
   memberReferralReport(queryParams.value).then(res2 => {
-    console.log( JSON.stringify(queryParams.value) +  " @@@@@ ")
     memberReferralList.value.referralDetails = res2.data
     total.value = res2.total
   })
-}
-
-function showReport() {
-  if( queryParams.account != null && queryParams.startTime != null ) {
-    open.value = true
-    bonuses.value = true
-    memberReferralReport(queryParams.value).then(res => {
-      bonuses.value = true
-      referralReport.value = res.data
-    })
-  } else {
-    console.warn("Insert a member ID and datetime first")
-  }
 }
 
 /** 搜索按钮操作 handle query*/
@@ -189,6 +177,14 @@ function reset() {
     effect: null
   };
   proxy.resetForm("memberReferralFormRef");
+}
+
+function toLocalDate(){
+  const date = new Date(data.queryParams.startDate)
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  data.queryParams.startDate = year + '-' + month + '-' + day;
 }
 
 </script>
