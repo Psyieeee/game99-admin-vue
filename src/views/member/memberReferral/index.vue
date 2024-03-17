@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-form v-show="showSearch" :rules="rules"  ref="queryRef" :inline="true" :model="queryParams">
-      <el-form-item class="input-wd25" label="成员编号" prop="account">
+      <el-form-item class="input-wd25" label="会员ID">
         <el-input
             v-model.trim="queryParams.account"
             placeholder="成员编号"
@@ -11,11 +11,11 @@
             @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="推荐投注倍数" prop="referralBetMultiplier">
+      <el-form-item label="日期范围">
         <el-date-picker
             v-model="queryParams.startTime"
             type="datetime"
-            placeholder="Pick a day"
+            placeholder="选择日期"
             :size="size"
         />
       </el-form-item>
@@ -97,7 +97,6 @@ const loading = ref(false)
 const bonuses = ref(false)
 const referralReport = ref([])
 const open = ref(false)
-const scheduleDialog = ref(false)
 
 const ids = ref([]);
 const total = ref(0);
@@ -114,6 +113,8 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 20,
+    orderByColumn: 'time',
+    isAsc: 'desc',
     account: '',
     startTime: '',
     endTime: '',
