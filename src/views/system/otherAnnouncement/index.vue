@@ -6,9 +6,9 @@
     <el-table v-loading="loading" :data="tableList" @selection-change="handleSelectionChange">
       <el-table-column :align="TEXT.CENTER" :type="TEXT.SELECTION" width="60"/>
       <template v-for="field in Object.values(TABLE)">
-        <el-table-column v-if="field.prop === TEXT.PROP_CONTENT" :label="field.label" :prop="field.prop" :align="field.align">
-          <template  #default="scope">
-            <div :class="scope.row.content.includes('<img') ? 'content-cell-img':' content-cell-text'" v-html="scope.row.content" />
+        <el-table-column v-if="field.prop === TEXT.PROP_IMAGE" :label="field.label" :prop="field.prop" :align="field.align">
+          <template #default="scope">
+            <img :src="scope.row.image" class="image-preview">
           </template>
         </el-table-column>
         <el-table-column v-else-if="field.prop === TEXT.PROP_STATUS"   :label="field.label" :prop="field.prop" :align="field.align">
@@ -29,17 +29,21 @@
           <el-form-item :label="TEXT.LABEL_TITLE" :prop="TEXT.PROP_TITLE">
             <el-input v-model="form.title" :placeholder="TEXT.PLACEHOLDER_TITLE" />
           </el-form-item>
+        <el-form-item :label="TEXT.LABEL_JUMP_TYPE">
+          <el-select v-model="form.jumpType">
+            <el-option v-for="type in jumpTypes" :key="type" :label="type" :value="type"/>
+          </el-select>
+        </el-form-item>
+          <el-form-item :label="TEXT.LABEL_CONTENT" :prop="TEXT.PROP_CONTENT">
+            <textarea style="height: 100px; width: 640px; margin-top: 5px" v-model="form.content"/>
+          </el-form-item>
+          <el-form-item :label="TEXT.LABEL_IMAGE" :prop="TEXT.PROP_IMAGE">
+            <image-upload v-model="form.image" :path="TEXT.IMG_PATH"/>
+          </el-form-item>
           <el-form-item :label="TEXT.LABEL_STATUS" :prop="TEXT.PROP_STATUS">
             <el-switch v-model="form.status" :active-value=1 :inactive-value=0 />
           </el-form-item>
-          <el-form-item :label="TEXT.LABEL_CONTENT" :prop="TEXT.PROP_CONTENT">
-            <WangEditor v-model="form.content" style="max-width: 680px" :image-path="TEXT.IMG_PATH" />
-          </el-form-item>
-          <el-form-item :label="TEXT.LABEL_JUMP_TYPE">
-            <el-select v-model="form.jumpType">
-              <el-option v-for="type in jumpTypes" :key="type" :label="type" :value="type"/>
-            </el-select>
-          </el-form-item>
+
       </el-form>
       <div :slot="TEXT.FOOTER" class="dialog-footer">
         <el-button v-for=" field in Object.values(FOOTER_BUTTON)" :icon="field.icon" :size="field.size" :type="field.type" @click="field.handler">{{ field.label }}</el-button>
@@ -51,7 +55,6 @@
 <script setup>
 import { reactive, ref, toRefs } from "vue";
 import { recordList, addRecord, updateRecord, changeStatus, getRecord, deleteRecord } from "@/api/system/otherAnnouncement.js";
-import WangEditor from "@/components/WangEditor/index.vue";
 
 const jumpTypes = ["VIP", "DAILY_BONUS", "FUND" ,"RECHARGE","BIND_PHONE" , "INVITER"]
 const {proxy}   = getCurrentInstance();
@@ -75,6 +78,7 @@ const TEXT      = {
   LABEL_SUBMIT:      '提交',
   LABEL_CANCEL:      '取消',
   LABEL_TITLE:       '标题',
+  LABEL_IMAGE:       '照片',
   LABEL_ADD:         '新增',
   LABEL_EDIT:        '新增',
   LABEL_DEL:         '删除',
@@ -82,8 +86,9 @@ const TEXT      = {
   PROP_CONTENT:      'content',
   PROP_STATUS:       'status',
   PROP_TITLE:        'title',
+  PROP_IMAGE:        'image',
   PLACEHOLDER_TITLE: '需要标题',
-  IMG_PATH:          'OtherAnnouncement',
+  IMG_PATH:          'otherAnnouncementImage',
   REF_NAME:          'formAddUpdate',
   SELECTION:         'selection',
   WARNING:           'warning',
@@ -122,6 +127,7 @@ const HOME_BUTTON   = {
   DEL: { label: TEXT.LABEL_DEL, icon: TEXT.DELETE, size: TEXT.SMALL, type: TEXT.DANGER,  permission: TEXT.PERMISSION_DEL, handler: handleDelete },
 }
 const TABLE         = {
+  IMAGE:     { label: TEXT.LABEL_IMAGE,     prop: TEXT.PROP_IMAGE,     align: TEXT.CENTER },
   TITLE:     { label: TEXT.LABEL_TITLE,     prop: TEXT.PROP_TITLE,     align: TEXT.CENTER },
   CONTENT:   { label: TEXT.LABEL_CONTENT,   prop: TEXT.PROP_CONTENT,   align: TEXT.CENTER },
   JUMP_TYPE: { label: TEXT.LABEL_JUMP_TYPE, prop: TEXT.PROP_JUMP_TYPE, align: TEXT.CENTER },
@@ -132,17 +138,9 @@ const data          = reactive({
   form: {},
   rules: {
     title: { required: true, message: TEXT.INVALID_TITLE, trigger: TEXT.TRIG_BLUR },
-    content: { validator: (rule, value, callback) => validateContent(rule, value, callback), trigger: TEXT.TRIG_CHANGE }
   }
 });
 const { queryParams, form, rules } = toRefs(data);
-
-function validateContent(rule, value, callback){
-  if (value === "<p><br></p>") {
-    callback(new Error(TEXT.INVALID_CONTENT));
-  }
-  callback();
-}
 
 function getList() {
   loading.value = true;
@@ -160,6 +158,7 @@ function handleSelectionChange(selection) {
 function reset() {
   form.value = {
     title: null,
+    image: null,
     content: null,
     status: 0,
     jumpType: jumpTypes[0]
@@ -232,20 +231,11 @@ getList()
 </script>
 
 <style>
-.content-cell-img img{
-  max-height: 100px;
-  max-width:  100px;
+.image-preview{
+  max-height: 50px;
+  max-width:  50px;
   object-fit: contain;
   display:    block;
   margin: 0   auto
-}
-
-.content-cell-text {
-  text-overflow: ellipsis;
-  white-space:   normal;
-  max-height:    100px;
-  line-height:   1.2;
-  overflow-y:    auto;
-  display:       block;
 }
 </style>
