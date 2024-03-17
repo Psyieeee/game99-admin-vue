@@ -11,11 +11,11 @@
             @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="推荐投注倍数" prop="startDate">
+      <el-form-item label="日期范围" prop="startDate">
         <el-date-picker
             v-model="queryParams.startDate"
-            type="date"
-            placeholder="Pick a day"
+            type="startDate"
+            placeholder="选择日期"
         />
       </el-form-item>
       <el-form-item>
