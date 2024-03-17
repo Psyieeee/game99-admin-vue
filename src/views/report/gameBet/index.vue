@@ -3,7 +3,8 @@
         <el-button type="primary" @click="copy1">总投注金额: {{ totalData.countBetMoney || 0 }}</el-button>
         <el-button type="success" @click="copy2">总投注人数: {{ totalData.countBetPeople || 0 }}</el-button>
         <el-button type="success">会员盈利: {{ totalData.memberProfit || 0 }}</el-button>
-        <el-button type="success">会员盈利: {{ totalData.memberCount || 0 }}</el-button>
+        <el-button type="warning">投注会员数: {{ totalData.memberCount || 0 }}</el-button>
+        <el-button type="primary" icon="Position" size="small" @click="countBettingMembers">获取投注人数</el-button>
 
         <!--search form -->
         <el-form :model="queryParams" ref="queryForm" style="margin-top: 10px" :inline="true" label-width="68px"
@@ -92,7 +93,8 @@ import {
 import {
     exportReportPlamGames,
     listGameBet,
-    reportPlamGamesCount
+    reportPlamGamesCount,
+    reportBettingMembersCount
 } from "@/api/report/gameBet";
 
 const {proxy} = getCurrentInstance();
@@ -155,6 +157,14 @@ function getList() {
 function handleQuery() {
     queryParams.pageNum = 1;
     getList();
+}
+
+function countBettingMembers() {
+  reportBettingMembersCount(queryParams.value).then(response => {
+    if (response.data) {
+      totalData.value.memberCount = response.data;
+    }
+  })
 }
 
 /** 重置按钮操作 handle resetQuery*/

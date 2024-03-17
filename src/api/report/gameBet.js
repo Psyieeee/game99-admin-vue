@@ -20,6 +20,14 @@ export function reportPlamGamesCount(query) {
     })
 }
 
+export function reportBettingMembersCount(query) {
+    return request({
+        url: url.game99PlatformAdminWeb + '/report/reportPlamGames/countBettingMembers',
+        method: 'get',
+        params: query
+    })
+}
+
 export function exportReportPlamGames(query) {
     return request({
         url: url.game99PlatformAdminWeb + '/report/reportPlamGames/export',

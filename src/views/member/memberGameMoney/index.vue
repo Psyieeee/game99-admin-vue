@@ -68,7 +68,7 @@
        <template #default="scope">
          <el-button type="primary" size="small"
                     :disabled="scope.row.status !== 0 || scope.row.money <= 0"
-                    @click="transferPlatformMoney( scope.row )">调动</el-button>
+                    @click="transferPlatformMoney( scope.row )">补分</el-button>
        </template>
      </el-table-column>
      <el-table-column label="创建时间" prop="createTime" align="center"/>

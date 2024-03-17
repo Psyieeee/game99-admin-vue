@@ -3,7 +3,7 @@
     <el-form v-show="showSearch" :rules="rules"  ref="queryRef" :inline="true" :model="queryParams">
       <el-form-item class="input-wd25" label="会员ID">
         <el-input
-            v-model.trim="queryParams.account"
+            v-model="queryParams.account"
             placeholder="成员编号"
             clearable
             type="primary"
@@ -11,12 +11,11 @@
             @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="日期范围">
+      <el-form-item label="推荐投注倍数" prop="startDate">
         <el-date-picker
-            v-model="queryParams.startTime"
-            type="datetime"
-            placeholder="选择日期"
-            :size="size"
+            v-model="queryParams.startDate"
+            type="date"
+            placeholder="Pick a day"
         />
       </el-form-item>
       <el-form-item>
@@ -116,8 +115,8 @@ const data = reactive({
     orderByColumn: 'time',
     isAsc: 'desc',
     account: '',
-    startTime: '',
-    endTime: '',
+    startDate: '',
+    endDate:''
   },
   rules: {
     account: [
@@ -137,29 +136,23 @@ const {queryParams, rules, form, scheduleForm, schedule} = toRefs(data)
 /**
  * 查询游戏字典列表 list of data
  */
+
 function getList() {
   loading.value = true
+
+  if(data.queryParams.startDate != ''){
+    toLocalDate()
+  }
+
   memberReferralListData(queryParams.value).then(res => {
     loading.value = false
     memberReferralList.value = res.data
-    memberReferralReport(queryParams.value).then(res2 => {
-      memberReferralList.value.referralDetails = res2.data
-      total.value = res2.total
-    })
   })
-}
 
-function showReport() {
-  if( queryParams.account != null && queryParams.startTime != null ) {
-    open.value = true
-    bonuses.value = true
-    memberReferralReport(queryParams.value).then(res => {
-      bonuses.value = true
-      referralReport.value = res.data
-    })
-  } else {
-    console.warn("Insert a member ID and datetime first")
-  }
+  memberReferralReport(queryParams.value).then(res2 => {
+    memberReferralList.value.referralDetails = res2.data
+    total.value = res2.total
+  })
 }
 
 /** 搜索按钮操作 handle query*/
@@ -167,6 +160,7 @@ function handleQuery() {
   proxy.$refs['queryRef'].validate(async valid => {
     if (valid) {
       queryParams.pageNum = 1;
+      queryParams.startDate = new Date(queryParams.startDate)
       getList();
     }
   });
@@ -189,6 +183,14 @@ function reset() {
     effect: null
   };
   proxy.resetForm("memberReferralFormRef");
+}
+
+function toLocalDate(){
+  const date = new Date(data.queryParams.startDate)
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  data.queryParams.startDate = year + '-' + month + '-' + day;
 }
 
 </script>

@@ -3,7 +3,7 @@ import {url} from "@/utils/url";
 
 export function recordList(query){
     return request({
-        url:url.game99PlatformAdminWeb+"/announcement/list",
+        url:url.game99PlatformAdminWeb+"/other/announcement/list",
         method:'get',
         params:query
     })
@@ -11,14 +11,14 @@ export function recordList(query){
 
 export function deleteRecord(ids){
     return request({
-        url:url.game99PlatformAdminWeb+"/announcement/"+ids,
+        url:url.game99PlatformAdminWeb+"/other/announcement/"+ids,
         method:'delete',
     })
 }
 
 export function addRecord(data){
     return request({
-        url:url.game99PlatformAdminWeb+"/announcement/add",
+        url:url.game99PlatformAdminWeb+"/other/announcement/add",
         method:'post',
         data : data
     })
@@ -26,7 +26,7 @@ export function addRecord(data){
 
 export function updateRecord(data){
     return request({
-        url:url.game99PlatformAdminWeb+"/announcement/edit",
+        url:url.game99PlatformAdminWeb+"/other/announcement/edit",
         method:'put',
         data : data
     })
@@ -34,21 +34,16 @@ export function updateRecord(data){
 
 export function getRecord(id) {
     return request({
-        url: url.game99PlatformAdminWeb + "/announcement/" + id,
+        url: url.game99PlatformAdminWeb + "/other/announcement/" + id,
         method: 'get'
     })
 }
 
 export function changeStatus(id, status) {
     return request({
-        url: url.game99PlatformAdminWeb + "/announcement/changeStatus/" + id + "/" + status,
+        url: url.game99PlatformAdminWeb + "/other/announcement/changeStatus/" + id + "/" + status,
         method: 'put'
     })
 }
 
-export function changeHomePrompt(id, homePrompt) {
-    return request({
-        url: url.game99PlatformAdminWeb + "/announcement/changeHomePrompt/" + id + "/" + homePrompt,
-        method: 'put'
-    })
-}
+
