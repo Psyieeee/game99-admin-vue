@@ -43,6 +43,7 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="装置" min-width="180" prop="dev" :formatter="formatterDev"/>
+      <el-table-column align="center" label="分类" min-width="180" prop="sort"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
@@ -88,6 +89,9 @@
             <el-option label="网站" :value=0></el-option>
             <el-option label="手机登录" :value=1></el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label="排序" prop="sort">
+          <el-input-number v-model="form.sort" placeholder="请输入排序" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
