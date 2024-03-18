@@ -679,7 +679,7 @@ function handleBatchPayAgentOk() {
               if (response.code == 200) {
                 batchMemberWithdrawOpen.value = false
                 getList()
-                var successNum = response.data.sucess
+                var successNum = response.data.success
                 var failData = response.data.fail
                 var failTxt = '成功数量: ' + successNum + ';<br/> 失败原因: <br/>'
                 for (let failDataKey in failData) {
