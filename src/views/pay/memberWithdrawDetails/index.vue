@@ -675,24 +675,24 @@ function handleBatchPayAgentOk() {
                 withdrawOrderNos: orderNos.value,
                 googleAuthCode: batchMemberWithdrawForm.value.googleAuthCode,
             }).then(response => {
-                proxy.$modal.msgSuccess(response.msg)
-                if (response.code == 200) {
-                    batchMemberWithdrawOpen.value = false
-                    getList()
-                    var successNum = response.data.sucess
-                    var failData = response.data.fail
-                    var failTxt = '成功数量: ' + successNum + ';<br/> 失败原因: <br/>'
-                    for (let failDataKey in failData) {
-                        failTxt += failDataKey + '  ' + failData[failDataKey] + ' ;<br/> '
-                    }
-                    proxy.$alert(failTxt, '批量代付信息', {
-                        confirmButtonText: '确定',
-                        dangerouslyUseHTMLString: true
-                    })
+              proxy.$modal.msgSuccess(response.msg)
+              if (response.code == 200) {
+                batchMemberWithdrawOpen.value = false
+                getList()
+                var successNum = response.data.sucess
+                var failData = response.data.fail
+                var failTxt = '成功数量: ' + successNum + ';<br/> 失败原因: <br/>'
+                for (let failDataKey in failData) {
+                  failTxt += failDataKey + '  ' + failData[failDataKey] + ' ;<br/> '
                 }
+                proxy.$alert(failTxt, '批量代付信息', {
+                  confirmButtonText: '确定',
+                  dangerouslyUseHTMLString: true
+                })
+              }
             })
         } else {
-            $message.error("表单验证不通过")
+          proxy.$modal.msgError("表单验证不通过")
         }
     })
 }
