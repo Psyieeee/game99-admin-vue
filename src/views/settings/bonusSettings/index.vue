@@ -75,6 +75,7 @@
       <el-table-column align="center" label="基金目的地" width="180" prop="destination" :formatter="formatterDestination"/>
       <el-table-column align="center" label="倍数" width="180" prop="multiplier" />
       <el-table-column align="center" label="数数" min-width="180" prop="count" />
+      <el-table-column align="center" label="生效日期和时间" min-width="180" prop="effectiveTime" />
       <el-table-column label="装置" align="center" prop="device" :formatter="formatterDevice"/>
       <el-table-column align="center" label="状态" width="180" prop="status">
         <template #default="scope">
@@ -113,7 +114,7 @@
     <!-- 添加或修改公司入款银行列表对话框 Add or modify company deposit bank list dialog-->
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="600px" :rules="rules">
-      <el-form ref="queryForm" :model="form" :rules="rules" label-width="100px">
+      <el-form ref="queryForm" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="钱" prop="money">
           <el-input type="number" v-model="form.money" placeholder="钱"/>
         </el-form-item>
@@ -138,6 +139,15 @@
         </el-form-item>
         <el-form-item label="数数" prop="count">
           <el-input type="number" v-model="form.count" placeholder="数数"/>
+        </el-form-item>
+        <el-form-item label="生效日期和时间" prop="effectiveTime">
+          <el-date-picker
+              v-model="form.effectiveTime"
+              type="datetime"
+              placeholder="选择生效日期和时间"
+              format="YYYY-MM-DD hh:mm:ss"
+              value-format="YYYY-MM-DD hh:mm:ss"
+          />
         </el-form-item>
         <el-form-item label="描述" prop="description">
           <el-input v-model="form.description" placeholder="描述" type="textarea"/>
@@ -205,6 +215,12 @@ const data = reactive({
       {required: true, message: '无效的设备', trigger: 'blur'}
     ],
     destination: [
+      {required: true, message: '无效的设备', trigger: 'blur'}
+    ],
+    count: [
+      {required: true, message: '无效的设备', trigger: 'blur'}
+    ],
+    effectiveTime: [
       {required: true, message: '无效的设备', trigger: 'blur'}
     ]
   },
