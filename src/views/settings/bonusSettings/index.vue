@@ -74,8 +74,8 @@
       </el-table-column>
       <el-table-column align="center" label="基金目的地" width="180" prop="destination" :formatter="formatterDestination"/>
       <el-table-column align="center" label="倍数" width="180" prop="multiplier" />
-      <el-table-column align="center" label="数数" min-width="180" prop="count" />
-      <el-table-column align="center" label="生效日期和时间" min-width="180" prop="effectiveTime" />
+      <el-table-column align="center" label="设备安装要求" min-width="180" prop="count" />
+      <el-table-column align="center" label="注册时间要求" min-width="180" prop="effectiveTime" />
       <el-table-column label="装置" align="center" prop="device" :formatter="formatterDevice"/>
       <el-table-column align="center" label="状态" width="180" prop="status">
         <template #default="scope">
