@@ -45,3 +45,10 @@ export function changeStatus(id, status) {
         method: 'put'
     })
 }
+
+export function updateDisplayIcon(id, displayIcon) {
+    return request({
+        url: url.game99PlatformAdminWeb + "/settings/bonus/displayIcon/" + id + "/" + displayIcon,
+        method: 'put'
+    })
+}

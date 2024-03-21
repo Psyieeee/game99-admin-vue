@@ -77,13 +77,23 @@
       <el-table-column align="center" label="数数" min-width="180" prop="count" />
       <el-table-column align="center" label="生效日期和时间" min-width="180" prop="effectiveTime" />
       <el-table-column label="装置" align="center" prop="device" :formatter="formatterDevice"/>
+      <el-table-column align="center" label="显示图标" width="180" prop="displayIcon">
+        <template #default="scope">
+          <el-switch
+              v-model="scope.row.displayIcon"
+              :active-value=1
+              :inactive-value=0
+              @click="toggleSwitchDisplay(scope.row)">
+          </el-switch>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="状态" width="180" prop="status">
         <template #default="scope">
           <el-switch
               v-model="scope.row.status"
               :active-value=1
               :inactive-value=0
-              @click="toggleSwitch(scope.row)">
+              @click="toggleSwitchStatus(scope.row)">
           </el-switch>
         </template>
       </el-table-column>
@@ -152,6 +162,12 @@
         <el-form-item label="描述" prop="description">
           <el-input v-model="form.description" placeholder="描述" type="textarea"/>
         </el-form-item>
+        <el-form-item label="显示图标" prop="displayIcon">
+          <el-switch v-model="form.displayIcon"
+                     :active-value=1
+                     :inactive-value=0
+          />
+        </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-switch v-model="form.status"
                      :active-value=1
@@ -184,7 +200,8 @@ import {
   addRecord,
   updateRecord,
   getRecord,
-  changeStatus
+  changeStatus,
+  updateDisplayIcon
 } from "@/api/settings/bonusSettings.js";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 
@@ -256,6 +273,7 @@ function getList() {
 // 表单重置
 function reset() {
   form.value = {
+    displayIcon: 1,
     status: 0,
     multiplier: 0,
     destination: 'ACCOUNT'
@@ -316,7 +334,7 @@ function handleDelete(row) {
 }
 
 
-function toggleSwitch(row) {
+function toggleSwitchStatus(row) {
   const text = row.status === 1 ? '启用' : '停用'
   proxy.$confirm('确认要' + text + '"?', '警告', {
     confirmButtonText: '确定',
@@ -338,6 +356,27 @@ function toggleSwitch(row) {
   })
 }
 
+function toggleSwitchDisplay(row) {
+  const text = row.displayIcon === 1 ? '启用' : '停用'
+  proxy.$confirm('确认要' + text + '"?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消'
+  }).then(function () {
+    let status;
+    loading.value = true
+    status = updateDisplayIcon(row.id, row.displayIcon);
+    if (status) {
+      return status
+    }
+  }).then(() => {
+    loading.value = false
+    proxy.$modal.msgSuccess(text + '成功')
+    getList()
+  }).catch(function () {
+    loading.value = false
+    row.displayIcon = row.displayIcon === 0 ? 1 : 0
+  })
+}
 function resetQuery() {
   proxy.resetForm('queryRef')
   getList()
