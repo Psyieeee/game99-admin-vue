@@ -56,7 +56,7 @@
 import { reactive, ref, toRefs } from "vue";
 import { recordList, addRecord, updateRecord, changeStatus, getRecord, deleteRecord } from "@/api/system/otherAnnouncement.js";
 
-const jumpTypes = ["VIP", "DAILY_BONUS", "FUND" ,"RECHARGE","BIND_PHONE" , "INVITER"]
+const jumpTypes = ["VIP", "DAILY_BONUS", "FUND" ,"RECHARGE","BIND_PHONE" , "INVITER", "EXTERNAL"]
 const {proxy}   = getCurrentInstance();
 const openForm  = ref(false);
 const multiple  = ref(true);
@@ -157,6 +157,7 @@ function handleSelectionChange(selection) {
 
 function reset() {
   form.value = {
+    id: null,
     title: null,
     image: null,
     content: null,
