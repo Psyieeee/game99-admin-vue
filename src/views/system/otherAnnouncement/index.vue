@@ -26,7 +26,7 @@
     </el-table>
     <el-dialog v-model="openForm" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px; padding-right: 20px" width="800px" >
       <el-form :ref="TEXT.REF_NAME" :model="form" :rules="rules" label-width="100px">
-          <el-form-item :label="TEXT.LABEL_TITLE" :prop="TEXT.PROP_TITLE">
+        <el-form-item :label="TEXT.LABEL_TITLE" :prop="TEXT.PROP_TITLE">
             <el-input v-model="form.title" :placeholder="TEXT.PLACEHOLDER_TITLE" />
           </el-form-item>
         <el-form-item :label="TEXT.LABEL_JUMP_TYPE">
@@ -34,15 +34,18 @@
             <el-option v-for="type in jumpTypes" :key="type" :label="type" :value="type"/>
           </el-select>
         </el-form-item>
-          <el-form-item :label="TEXT.LABEL_CONTENT" :prop="TEXT.PROP_CONTENT">
-            <textarea style="height: 100px; width: 640px; margin-top: 5px" v-model="form.content"/>
-          </el-form-item>
-          <el-form-item :label="TEXT.LABEL_IMAGE" :prop="TEXT.PROP_IMAGE">
-            <image-upload v-model="form.image" :path="TEXT.IMG_PATH"/>
-          </el-form-item>
-          <el-form-item :label="TEXT.LABEL_STATUS" :prop="TEXT.PROP_STATUS">
-            <el-switch v-model="form.status" :active-value=1 :inactive-value=0 />
-          </el-form-item>
+        <el-form-item :label="TEXT.LABEL_CONTENT" :prop="TEXT.PROP_CONTENT">
+          <textarea style="height: 100px; width: 640px; margin-top: 5px" v-model="form.content"/>
+        </el-form-item>
+        <el-form-item :label="TEXT.LABEL_IMAGE" :prop="TEXT.PROP_IMAGE">
+          <image-upload v-model="form.image" :path="TEXT.IMG_PATH"/>
+        </el-form-item>
+        <el-form-item :label="TEXT.LABEL_STATUS" :prop="TEXT.PROP_STATUS">
+          <el-switch v-model="form.status" :active-value=1 :inactive-value=0 />
+        </el-form-item>
+        <el-form-item :label="TEXT.LABEL_SORT" :prop="TEXT.PROP_SORT">
+          <el-input v-model="form.sort" style="width: 50px"/>
+        </el-form-item>
 
       </el-form>
       <div :slot="TEXT.FOOTER" class="dialog-footer">
@@ -81,12 +84,14 @@ const TEXT      = {
   LABEL_IMAGE:       '照片',
   LABEL_ADD:         '新增',
   LABEL_EDIT:        '新增',
+  LABEL_SORT:        '分类',
   LABEL_DEL:         '删除',
   PROP_JUMP_TYPE:    'jumpType',
   PROP_CONTENT:      'content',
   PROP_STATUS:       'status',
   PROP_TITLE:        'title',
   PROP_IMAGE:        'image',
+  PROP_SORT:         'sort',
   PLACEHOLDER_TITLE: '需要标题',
   IMG_PATH:          'otherAnnouncementImage',
   REF_NAME:          'formAddUpdate',
@@ -111,7 +116,6 @@ const TEXT      = {
   INVALID_CONTENT:   '所需内容',
   EDIT_FAILED:       '修改',
   ACTIVE:            '启用',
-  INACTIVE:          '停用',
 }
 
 const ACTION_BUTTON = {
@@ -132,6 +136,7 @@ const TABLE         = {
   CONTENT:   { label: TEXT.LABEL_CONTENT,   prop: TEXT.PROP_CONTENT,   align: TEXT.CENTER },
   JUMP_TYPE: { label: TEXT.LABEL_JUMP_TYPE, prop: TEXT.PROP_JUMP_TYPE, align: TEXT.CENTER },
   STATUS:    { label: TEXT.LABEL_STATUS,    prop: TEXT.PROP_STATUS,    align: TEXT.CENTER },
+  SORT:      { label: TEXT.LABEL_SORT,      prop: TEXT.PROP_SORT,      align: TEXT.CENTER },
 }
 const data          = reactive({
   queryParams: {},
@@ -162,7 +167,8 @@ function reset() {
     image: null,
     content: null,
     status: 0,
-    jumpType: jumpTypes[0]
+    jumpType: jumpTypes[0],
+    sort: null
   }
   proxy.resetForm(TEXT.REF_NAME);
 }
