@@ -28,17 +28,17 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--            type="primary"-->
-<!--            plain-->
-<!--            icon="Plus"-->
-<!--            size="small"-->
-<!--            @click="handleAdd"-->
-<!--            v-hasPermi="['config:commission:add']"-->
-<!--        >新增-->
-<!--        </el-button>-->
-<!--      </el-col>-->
+      <el-col :span="1.5">
+        <el-button
+            type="primary"
+            plain
+            icon="Plus"
+            size="small"
+            @click="handleAdd"
+            v-hasPermi="['config:commission:add']"
+        >新增
+        </el-button>
+      </el-col>
       <el-col :span="1.5">
         <el-button
             type="success"
@@ -50,18 +50,6 @@
             v-hasPermi="['config:commission:edit']"
         >修改
         </el-button>
-<!--      </el-col>-->
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--            type="danger"-->
-<!--            plain-->
-<!--            icon="Delete"-->
-<!--            size="small"-->
-<!--            :disabled="multiple"-->
-<!--            @click="handleDelete"-->
-<!--            v-hasPermi="['config:commission:remove']"-->
-<!--        >删除-->
-<!--        </el-button>-->
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -109,7 +97,7 @@
     <el-dialog :title="title" v-model="open" width="700px" append-to-body>
       <el-form ref="commissionRef" :model="form" :rules="rules" label-width="120px" style="padding-bottom: 50px">
         <el-form-item label="代码" prop="code">
-          <el-input v-model="form.code" placeholder="请输入验证码" disabled/>
+          <el-input v-model="form.code" placeholder="请输入验证码" :disabled="newConfig"/>
         </el-form-item>
         <el-form-item label="姓名" prop="name">
           <el-input v-model="form.name" placeholder="请输入姓名"/>
@@ -157,6 +145,8 @@ const multiple = ref(true);
 const showSearch = ref(true);
 // 是否显示弹出层
 const open = ref(false);
+
+const newConfig = ref(false);
 
 const data = reactive({
   // 查询参数
@@ -246,6 +236,7 @@ function handleSelectionChange(selection) {
 function handleAdd() {
   reset()
   open.value = true
+  newConfig.value = false;
   title.value = '添加佣金配置'
 }
 
@@ -253,6 +244,7 @@ function handleAdd() {
 /** 修改按钮操作 Modify button action*/
 function handleUpdate(row) {
   reset()
+  newConfig.value = true;
   const id = row.id || ids.value
   getConfigCommission(id).then(response => {
     form.value = response.data

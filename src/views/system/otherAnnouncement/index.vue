@@ -46,7 +46,6 @@
         <el-form-item :label="TEXT.LABEL_SORT" :prop="TEXT.PROP_SORT">
           <el-input v-model="form.sort" style="width: 50px"/>
         </el-form-item>
-
       </el-form>
       <div :slot="TEXT.FOOTER" class="dialog-footer">
         <el-button v-for=" field in Object.values(FOOTER_BUTTON)" :icon="field.icon" :size="field.size" :type="field.type" @click="field.handler">{{ field.label }}</el-button>
@@ -98,6 +97,7 @@ const TEXT      = {
   SELECTION:         'selection',
   WARNING:           'warning',
   PRIMARY:           'primary',
+  SUCCESS:           'success',
   CANCEL:            'cancel',
   FOOTER:            'footer',
   DELETE:            'Delete',
@@ -123,8 +123,8 @@ const ACTION_BUTTON = {
   DEL:  { label: TEXT.LABEL_DEL,  icon: TEXT.DELETE,  size: TEXT.SMALL, type: TEXT.DANGER,  permission: TEXT.PERMISSION_DEL,  handler: handleDelete },
 }
 const FOOTER_BUTTON = {
-  SUBMIT: { label: TEXT.LABEL_SUBMIT, icon: TEXT.PLUS,   size: TEXT.SMALL, type: TEXT.PRIMARY, handler: submitForm },
-  CANCEL: { label: TEXT.LABEL_CANCEL, icon: TEXT.DELETE, size: TEXT.SMALL, type: TEXT.PRIMARY, handler: () => openForm.value = false },
+  SUBMIT: { label: TEXT.LABEL_SUBMIT, icon: null,    size: TEXT.SMALL, type: TEXT.SUCCESS, handler: submitForm },
+  CANCEL: { label: TEXT.LABEL_CANCEL, icon: null,         size: TEXT.SMALL, type: TEXT.PRIMARY, handler: () => openForm.value = false },
 }
 const HOME_BUTTON   = {
   ADD: { label: TEXT.LABEL_ADD, icon: TEXT.PLUS,   size: TEXT.SMALL, type: TEXT.PRIMARY, permission: TEXT.PERMISSION_ADD, handler: handleAdd },
