@@ -25,8 +25,8 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="memberOnlineList" @selection-change="handleSelectionChange">
       <el-table-column align="center" label="会员ID" min-width="180" prop="memberId"/>
-      <el-table-column align="center" label="手机" min-width="180" prop="phone"/>
-      <el-table-column align="center" label="登录备注" min-width="180" prop="email"/>
+      <el-table-column align="center" label="手机号" min-width="180" prop="phone"/>
+      <el-table-column align="center" label="电子邮件" min-width="180" prop="email"/>
       <el-table-column align="center" label="会员vip" min-width="180" prop="vip"/>
       <el-table-column align="center" label="登录ip" min-width="180" prop="loginIp"/>
     </el-table>
