@@ -44,7 +44,7 @@
           <el-switch v-model="form.status" :active-value=1 :inactive-value=0 />
         </el-form-item>
         <el-form-item :label="TEXT.LABEL_SORT" :prop="TEXT.PROP_SORT">
-          <el-input v-model="form.sort" style="width: 50px"/>
+          <el-input v-model="form.sort" style="width: 100px"/>
         </el-form-item>
       </el-form>
       <div :slot="TEXT.FOOTER" class="dialog-footer">

@@ -57,6 +57,7 @@
     <el-table stripe v-loading="loading" :data="configCommissionList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="名称" align="center"      prop="name"/>
+      <el-table-column label="类型" align="center"      prop="dataType"/>
       <el-table-column label="值" align="center"      prop="value"/>
       <el-table-column align="center" label="键"     prop="status">
         <template #default="scope">
@@ -102,8 +103,29 @@
         <el-form-item label="姓名" prop="name">
           <el-input v-model="form.name" placeholder="请输入姓名"/>
         </el-form-item>
+        <el-form-item label="类型" prop="dataType">
+          <el-select v-model="form.dataType" :disabled="newConfig" clearable placeholder="Select">
+            <el-option
+                v-for="type in dataTypes"
+                :key="type.value"
+                :label="type.value"
+                :value="type.value"
+            />
+          </el-select>
+        </el-form-item>
         <el-form-item label="价值" prop="value">
-          <el-input v-model="form.value" placeholder="请输入值"/>
+          <template v-if="form.dataType === 'STRING'">
+            <el-input v-model="form.value" placeholder="请输入值" type="text"/>
+          </template>
+          <template v-if="form.dataType === 'BOOLEAN'">
+            <el-select v-model="form.value" clearable placeholder="Select">
+              <el-option :key="true" :value="true" label="true" />
+              <el-option :key="false" :value="false" label="false" />
+            </el-select>
+          </template>
+          <template v-if="form.dataType === 'INTEGER' || form.dataType === 'DECIMAL'">
+            <el-input v-model="form.value" placeholder="请输入值" type="number"/>
+          </template>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer" style="float: right;margin-top: -20px">
@@ -174,6 +196,23 @@ const data = reactive({
 });
 const {queryParams, bonusTestForm, form, rules} = toRefs(data);
 
+const dataTypes = ref([
+  {
+    value: 'STRING',
+    label: 'STRING'
+  },
+  {
+    value: 'BOOLEAN',
+    label: 'BOOLEAN'
+  },
+  {
+    value: 'INTEGER',
+    label: 'INTEGER'
+  },
+  {
+    value: 'DECIMAL',
+    label: 'DECIMAL'
+  }])
 
 /** 查询bonus服务配置列表 Query the bonus  service configuration list */
 function getList() {
@@ -198,10 +237,7 @@ function cancel() {
 function reset() {
   form.value = {
     id: null,
-    minAmount: null,
-    maxAmount: null,
-    bonus: null,
-    multiplier: null,
+    dataType: 'STRING',
     status: 0,
     updatedBy: null,
     updateTime: null
