@@ -157,7 +157,7 @@
          <el-button @click="openEdit=!openEdit">取 消</el-button>
        </div>
      </el-dialog>
-     <el-dialog :close-on-click-modal="false" :title="title" v-model="openEditRescue" width="700px" style="height: 280px" append-to-body>
+     <el-dialog :close-on-click-modal="false" :title="title" v-model="openEditRescue" width="600px" style="height: 250px" append-to-body>
        <el-form ref="configVipUpdateRef" :model="form" label-width="120px">
         <el-form-item label="救援奖金率" prop="rescueBonusRate">
           <el-input v-model="form.rescueBonusRate" placeholder="请输入救援奖金率" type="number" />
@@ -172,13 +172,13 @@
              />
            </el-select>
          </el-form-item>
-        <el-form-item label="倍数" prop="rescueBonusMultiplier" >
+        <el-form-item v-if="form.rescueBonusType === 'ACCOUNT'" label="倍数" prop="rescueBonusMultiplier" >
            <el-input-number precision="2" step="0.5" value-on-clear=0 v-model="form.rescueBonusMultiplier" clearable placeholder="输入乘数"/>
         </el-form-item>
        </el-form>
        <div slot="footer" class="dialog-footer">
          <el-button type="primary" @click="submitFormEdit">确 定</el-button>
-         <el-button @click="openEdit=!openEdit">取 消</el-button>
+         <el-button @click="openEditRescue = false">取 消</el-button>
        </div>
      </el-dialog>
 
