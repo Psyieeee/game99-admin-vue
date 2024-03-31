@@ -22,10 +22,18 @@
        <el-table-column label="月俸禄" prop="monthBonus" align="center"/>
        <el-table-column label="需求打码" prop="bcode" align="center"/>
        <el-table-column label="救援奖金率" prop="rescueBonusRate" align="center"/>
-       <el-table-column label="奖励类型" prop="missionRewardTypeTranslated"/>
-       <el-table-column label="倍数" prop="multiplier"/>
+       <el-table-column label="奖励类型" prop="missionRewardTypeTranslated" align="center"/>
+       <el-table-column label="倍数" prop="multiplier"align="center"/>
+       <el-table-column label="救援奖金倍增器" prop="rescueBonusMultiplier" align="center"/>
        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="120">
          <template #default="scope">
+           <el-button
+               size="small"
+               type="primary"
+               link
+               icon="Edit"
+               @click="handleUpdateRescue(scope.row)"
+           >修改救援</el-button>
            <el-button
                size="small"
                type="primary"
@@ -75,7 +83,7 @@
          <el-form-item label="救援奖金率" prop="rescueBonusRate">
            <el-input v-model="form.rescueBonusRate" placeholder="请输入救援奖金率" type="number" />
          </el-form-item>
-         <el-form-item label="bbb任务分类" prop="rewardType" style="min-width: 290px">
+         <el-form-item label="任务分类" prop="rewardType" style="min-width: 290px">
            <el-select v-model="form.rewardType" placeholder="任务分类" clearable>
              <el-option
                  v-for="dict in rewardTypeList"
@@ -122,9 +130,6 @@
          <el-form-item label="需求打码" prop="bcode">
            <el-input v-model="form.bcode" placeholder="请输入需求打码量" type="number" />
          </el-form-item>
-         <el-form-item label="救援奖金率" prop="rescueBonusRate">
-           <el-input v-model="form.rescueBonusRate" placeholder="请输入救援奖金率" type="number" />
-         </el-form-item>
          <el-form-item label="任务分类" prop="rewardType" style="min-width: 290px">
            <el-select v-model="form.rewardType" placeholder="任务分类" clearable>
              <el-option
@@ -146,6 +151,30 @@
                placeholder="输入乘数"
            />
          </el-form-item>
+       </el-form>
+       <div slot="footer" class="dialog-footer">
+         <el-button type="primary" @click="submitFormEdit">确 定</el-button>
+         <el-button @click="openEdit=!openEdit">取 消</el-button>
+       </div>
+     </el-dialog>
+     <el-dialog :close-on-click-modal="false" :title="title" v-model="openEditRescue" width="700px" style="height: 280px" append-to-body>
+       <el-form ref="configVipUpdateRef" :model="form" label-width="120px">
+        <el-form-item label="救援奖金率" prop="rescueBonusRate">
+          <el-input v-model="form.rescueBonusRate" placeholder="请输入救援奖金率" type="number" />
+        </el-form-item>
+        <el-form-item label="任务分类" prop="rescueBonusType" style="min-width: 290px">
+           <el-select v-model="form.rescueBonusType" placeholder="任务分类" clearable>
+             <el-option
+                 v-for="dict in rewardTypeList"
+                 :key="dict.name"
+                 :label="dict.translatedName"
+                 :value="dict.name"
+             />
+           </el-select>
+         </el-form-item>
+        <el-form-item label="倍数" prop="rescueBonusMultiplier" >
+           <el-input-number precision="2" step="0.5" value-on-clear=0 v-model="form.rescueBonusMultiplier" clearable placeholder="输入乘数"/>
+        </el-form-item>
        </el-form>
        <div slot="footer" class="dialog-footer">
          <el-button type="primary" @click="submitFormEdit">确 定</el-button>
@@ -182,6 +211,7 @@ const multiple = ref(true)
 
 const open = ref(false)
 const openEdit = ref(false)
+const openEditRescue = ref(false)
 
 const showSearch = ref(true);
 const loading = ref(true);
@@ -234,6 +264,8 @@ function reset() {
     client: null,
     bcode: null,
     rescueBonusRate: null,
+    rescueBonusType: null,
+    rescueBonusMultiplier: null,
     rewardType: null,
     multiplier: 0,
   };
@@ -249,10 +281,12 @@ function resetUpdateForm() {
     monthBonus: null,
     channel: null,
     client: null,
-    rewardType: null,
-    multiplier: 0,
     bcode: null,
     rescueBonusRate: null,
+    rescueBonusType: null,
+    rescueBonusMultiplier: null,
+    rewardType: null,
+    multiplier: 0,
   };
   proxy.resetForm("configVipUpdateRef");
 }
@@ -274,6 +308,14 @@ function handleUpdate(row){
     title.value = "修改VIP配置"
   })
 }
+function handleUpdateRescue(row){
+  resetUpdateForm()
+  configVipDataById(row.level).then(res=>{
+    form.value = res.data
+    openEditRescue.value = true
+    title.value = "修改贵宾救援"
+  })
+}
 
 /** 提交按钮 submit add new data*/
 function submitForm(){
@@ -293,18 +335,30 @@ function submitForm(){
 function submitFormEdit(){
   proxy.$refs['configVipUpdateRef'].validate(validation=>{
     if(validation){
-
-      form.value.multiplier = getMultiplier();
+      const f = form.value;
+      f.multiplier = getMultiplier();
+      f.rescueBonusMultiplier = getRescueBonusMultiplier();
 
       console.log("form.value.multiplier " + form.value.multiplier)
 
     configVipEdit(form.value).then(()  => {
       proxy.$modal.msgSuccess("修改成功")
-      openEdit.value = false
+      if (openEdit.value) {
+        openEdit.value = false
+      } else {
+        openEditRescue.value = false
+      }
       getList()
     })
     }
   })
+}
+function getRescueBonusMultiplier() {
+  const f = form.value;
+  return f.rescueBonusType === 'ACCOUNT'
+  && f.rescueBonusMultiplier !== undefined
+      ? f.rescueBonusMultiplier
+      : 0;
 }
 
 function getMultiplier() {
