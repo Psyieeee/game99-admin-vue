@@ -54,12 +54,14 @@
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table stripe v-loading="loading" :data="configCommissionList" @selection-change="handleSelectionChange">
+    <el-table stripe v-loading="loading" :data="configCommissionList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="名称" align="center"      prop="name"/>
-      <el-table-column label="类型" align="center"      prop="dataType"/>
-      <el-table-column label="值" align="center"      prop="value"/>
-      <el-table-column align="center" label="键"     prop="status">
+      <el-table-column label="名称" align="center"      prop="name" sortable="custom" :sort-orders="['descending', 'ascending']"/>
+      <el-table-column label="类型" align="center"      prop="dataType" sortable="custom" :sort-orders="['descending', 'ascending']"/>
+      <el-table-column label="值" align="center"      prop="value" sortable="custom" :sort-orders="['descending', 'ascending']">
+        <template #default="scope">{{getValue(scope.row)}}</template>
+      </el-table-column>
+      <el-table-column align="center" label="键"     prop="status" sortable="custom" :sort-orders="['descending', 'ascending']">
         <template #default="scope">
           <el-switch
               v-model="scope.row.status"
@@ -69,8 +71,8 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="更新人" align="center" prop="updatedBy"/>
-      <el-table-column label="更新时间" align="center" prop="updateTime"/>
+      <el-table-column label="更新人" align="center" prop="updatedBy" sortable="custom" :sort-orders="['descending', 'ascending']"/>
+      <el-table-column label="更新时间" align="center" prop="updateTime" sortable="custom" :sort-orders="['descending', 'ascending']"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" width="120">
         <template #default="scope">
           <el-button
@@ -119,8 +121,12 @@
           </template>
           <template v-if="form.dataType === 'BOOLEAN'">
             <el-select v-model="form.value" clearable placeholder="Select">
-              <el-option :key="true" :value="true" label="true" />
-              <el-option :key="false" :value="false" label="false" />
+              <el-option
+                  v-for="type in boolVals"
+                  :key="type.value"
+                  :label="type.label"
+                  :value="type.value"
+              />
             </el-select>
           </template>
           <template v-if="form.dataType === 'INTEGER' || form.dataType === 'DECIMAL'">
@@ -177,7 +183,7 @@ const data = reactive({
     pageSize: 15,
     minAmount: null,
     maxAmount: null,
-    orderByColumn: 'status',
+    orderByColumn: 'update_time',
     isAsc: 'desc'
   },
 
@@ -213,6 +219,18 @@ const dataTypes = ref([
     value: 'DECIMAL',
     label: 'DECIMAL'
   }])
+
+const boolVals = ref([
+  {
+    value: 'true',
+    label: '真'
+  },
+  {
+    value: 'false',
+    label: '假'
+  }])
+
+const defaultSort = ref({prop: "update_time", order: "descending"});
 
 /** 查询bonus服务配置列表 Query the bonus  service configuration list */
 function getList() {
@@ -338,6 +356,22 @@ function handleEffect(row) {
   }).catch(() => {
   })
 }
+
+function handleSortChange(column, prop, order) {
+  queryParams.value.orderByColumn = column.prop;
+  queryParams.value.isAsc = column.order === 'ascending' ? 'asc' : 'desc';
+  getList();
+}
+
+function getValue(row) {
+  if(row.dataType==='BOOLEAN'){
+    if(row.value === 'true') return '真'
+    else return '假'
+  }
+  return row.value;
+}
+
+
 
 getList()
 

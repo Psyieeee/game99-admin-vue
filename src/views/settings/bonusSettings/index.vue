@@ -126,8 +126,8 @@
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="600px" :rules="rules">
       <el-form ref="queryForm" :model="form" :rules="rules" label-width="120px">
-        <el-form-item label="钱" prop="money">
-          <el-input type="number" v-model="form.money" placeholder="钱"/>
+        <el-form-item label="赠送金額" prop="money">
+          <el-input type="number" v-model="form.money" placeholder="赠送金額"/>
         </el-form-item>
         <el-form-item label="类型" prop="type">
           <el-select v-model="form.type" clearable placeholder="类型">
@@ -145,11 +145,11 @@
             <el-radio label="BONUS">积分</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="乘数" prop="multiplier">
-          <el-input type="number" v-model="form.multiplier" placeholder="乘数" :disabled="form.destination==='BONUS'"/>
+        <el-form-item label="赠送金额倍数" prop="multiplier">
+          <el-input type="number" v-model="form.multiplier" placeholder="赠送金额倍数" :disabled="form.destination==='BONUS'"/>
         </el-form-item>
-        <el-form-item label="数数" prop="count">
-          <el-input type="number" v-model="form.count" placeholder="数数"/>
+        <el-form-item label="设备数量" prop="count">
+          <el-input type="number" v-model="form.count" placeholder="设备数量"/>
         </el-form-item>
         <el-form-item label="生效日期和时间" prop="effectiveTime">
           <el-date-picker
