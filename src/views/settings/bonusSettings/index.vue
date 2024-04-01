@@ -254,6 +254,10 @@ const types = ref([
   {
     value: 'BIND_EMAIL_BONUS',
     label: '绑电子邮件'
+  },
+  {
+    value: 'BIND_GOOGLE_BONUS',
+    label: '绑谷歌'
   }
 ])
 
