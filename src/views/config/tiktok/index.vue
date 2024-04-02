@@ -122,7 +122,7 @@ const {proxy} = getCurrentInstance();
 const tiktokList = ref([]);
 const title = ref("");
 const total = ref(0);
-
+const ids = ref([]);
 
 //boolean types
 // 遮罩层
