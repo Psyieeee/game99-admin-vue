@@ -64,7 +64,7 @@
       <div class="mount" style="width: 80%">
         <div class="member-note-field">
           <el-input type="textarea" id="text-area" class="font" style="height: auto" v-model.trim="email" maxlength="50" show-word-limit></el-input>
-          <el-button class="renew-btn2" type="primary" plain @click="updateRemarks(dataInfo['会员编号'],email)">更新</el-button>
+          <el-button class="renew-btn2" type="primary" plain @click="updateRemark(email ,dataInfo['会员编号'])">更新</el-button>
         </div>
       </div>
     </div>
@@ -172,6 +172,16 @@ function show(data) {
   email.value = dataInfo.会员备注;
   // totalRechargeOriginal.value = data.充值总的金额;
   totalRecharge.value = dataInfo.充值总的金额;
+}
+
+function updateRemark(email, id) {
+  if (validateTextLength(email) > 50) {
+    proxy.$modal.msgError("最多输入50个汉字")
+  } else {
+    updateRemarks(id, email).then((res) => {
+      proxy.$modal.msgSuccess("修改成功")
+    })
+  }
 }
 
 defineExpose({

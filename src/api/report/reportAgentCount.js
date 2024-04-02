@@ -49,3 +49,11 @@ export function reportAgentCountExport(query) {
         timeout: 60000
     })
 }
+
+// 删除银行字典列表
+export function deletePromotionCode( code ) {
+    return request({
+        url: url.game99PlatformAdminWeb + '/report/agentCount/del/' + code,
+        method: 'delete'
+    })
+}
