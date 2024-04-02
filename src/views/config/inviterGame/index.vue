@@ -26,7 +26,7 @@
 <!--            size="small"-->
 <!--            :disabled="single"-->
 <!--            @click="handleUpdate"-->
-<!--            v-hasPermi="['config:commission:edit']"-->
+<!--            v-hasPermi="['config:inviterGame:update']"-->
 <!--        >修改-->
 <!--        </el-button>-->
 <!--      </el-col>-->
@@ -54,7 +54,7 @@
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" width="120">
         <template #default="scope">
           <el-button
-              v-hasPermi="['config:commission:edit']"
+              v-hasPermi="['config:inviterGame:update']"
               icon="Edit"
               link
               size="small"
@@ -160,7 +160,7 @@ const {queryParams, bonusTestForm, form, rules} = toRefs(data);
 /** 查询bonus服务配置列表 Query the bonus  service configuration list */
 function getList() {
   loading.value = true
-  queryParams.value.type = 'inviter'
+  queryParams.value.type = 'inviter_game'
   listConfigCommission(queryParams.value).then(response => {
     configCommissionList.value = response.data
     if (response.total) {
