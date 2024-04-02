@@ -2,8 +2,8 @@
     <div class="app-container">
         <el-button type="primary" @click="copy1">总投注金额: {{ totalData.countBetMoney || 0 }}</el-button>
         <el-button type="success" @click="copy2">总投注人数: {{ totalData.countBetPeople || 0 }}</el-button>
-        <el-button type="success">会员盈利: {{ totalData.memberProfit || 0 }}</el-button>
-        <el-button type="warning">投注会员数: {{ totalData.memberCount || 0 }}</el-button>
+        <el-button type="success" @click="copy3">会员盈利: {{ totalData.memberProfit || 0 }}</el-button>
+        <el-button type="warning" @click="copy4">投注会员数: {{ totalData.memberCount || 0 }}</el-button>
         <el-button type="primary" icon="Position" size="small" @click="countBettingMembers">获取投注人数</el-button>
 
         <!--search form -->
@@ -125,12 +125,20 @@ const dataInfo = reactive({
 const {queryParams, totalData, backupDateTimeRange} = toRefs(dataInfo)
 
 function copy1() {
-
+  proxy.copyCommand( totalData.value.countBetMoney, proxy )
 }
 
 function copy2() {
-
+  proxy.copyCommand( totalData.value.countBetPeople, proxy )
 }
+function copy3() {
+  proxy.copyCommand( totalData.value.memberProfit, proxy )
+}
+
+function copy4() {
+  proxy.copyCommand( totalData.value.memberCount, proxy )
+}
+
 
 /** get data list */
 function getList() {

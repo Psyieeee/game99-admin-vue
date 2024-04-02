@@ -74,8 +74,9 @@
       </el-table-column>
       <el-table-column align="center" label="基金目的地" width="180" prop="destination" :formatter="formatterDestination"/>
       <el-table-column align="center" label="倍数" width="180" prop="multiplier" />
-      <el-table-column align="center" label="数数" min-width="180" prop="count" />
-      <el-table-column align="center" label="生效日期和时间" min-width="180" prop="effectiveTime" />
+
+      <el-table-column align="center" label="设备安装要求" min-width="180" prop="count" />
+      <el-table-column align="center" label="注册时间要求" min-width="180" prop="effectiveTime" />
       <el-table-column label="装置" align="center" prop="device" :formatter="formatterDevice"/>
       <el-table-column align="center" label="显示图标" width="180" prop="displayIcon">
         <template #default="scope">
@@ -253,6 +254,10 @@ const types = ref([
   {
     value: 'BIND_EMAIL_BONUS',
     label: '绑电子邮件'
+  },
+  {
+    value: 'BIND_GOOGLE_BONUS',
+    label: '绑谷歌'
   }
 ])
 
