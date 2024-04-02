@@ -2,16 +2,16 @@
   <div class="app-container">
     <!--    search form-->
     <el-form v-show="showSearch" ref="queryForm" :inline="true" :model="queryParams" label-width="98px">
-      <el-form-item label="歌曲名称" prop="title" style="min-width: 290px">
+      <el-form-item label="歌曲名称" prop="name" style="min-width: 290px">
         <el-input
-            v-model="queryParams.title"
+            v-model="queryParams.name"
             clearable
             placeholder="请输入歌曲名称"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item prop="effect">
-        <el-select v-model="queryParams.effect" clearable placeholder="状态">
+      <el-form-item prop="status">
+        <el-select v-model="queryParams.status" clearable placeholder="状态">
           <el-option label="激活" value="true"></el-option>
           <el-option label="停用" value="false"></el-option>
         </el-select>
@@ -26,7 +26,7 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['system:profilePicture:add']"
+            v-hasPermi="['config:inviterGameCard:add']"
             icon="Plus"
             plain
             size="small"
@@ -37,7 +37,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['system:profilePicture:delete']"
+            v-hasPermi="['config:inviterGameCard:delete']"
             :disabled="multiple"
             icon="Delete"
             plain
@@ -51,9 +51,9 @@
     </el-row>
 
     <!--    display data in table -->
-    <el-table v-loading="loading" :data="profilePictureList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="inviterGameCardList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="歌曲名称" min-width="180" prop="title"/>
+      <el-table-column align="center" label="歌曲名称" min-width="180" prop="name"/>
       <el-table-column :show-overflow-tooltip="true" align="center" label="网址" min-width="180" prop="icon">
         <template #default="scope">
           <div>
@@ -71,27 +71,30 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="状态" prop="effect">
+      <el-table-column align="center" label="歌曲名称" min-width="180" prop="points"/>
+      <el-table-column align="center" label="状态" prop="status">
         <template #default="scope">
           <el-switch
-              v-model="scope.row.effect"
+              v-model="scope.row.status"
               :active-value=1
               :inactive-value=0
               @change="handleEffectChange(scope.row)"
           ></el-switch>
         </template>
       </el-table-column>
+      <el-table-column label="更新人" align="center" prop="updatedBy"/>
+      <el-table-column label="更新时间" align="center" prop="updateTime"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
-              v-hasPermi="['system:profilePicture:edit']"
+              v-hasPermi="['config:inviterGameCard:edit']"
               icon="Edit" link
               size="small"
               type="primary"
               @click="handleUpdate(scope.row)">修改
           </el-button>
           <el-button
-              v-hasPermi="['system:profilePicture:delete']"
+              v-hasPermi="['config:inviterGameCard:delete']"
               icon="Delete" link
               size="small"
               style="color: #e05e5e"
@@ -112,22 +115,25 @@
     />
 
     <!-- 添加或修改公司入款银行列表对话框 Add or modify company deposit bank list dialog-->
-    <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
+    <el-dialog v-model="open" :close-on-click-modal="false" :name="name" append-to-body style="padding-bottom: 20px"
                width="700px">
-      <el-form ref="profilePictureRef" :model="form" :rules="rules" label-width="120px">
+      <el-form ref="inviterGameCardRef" :model="form" :rules="rules" label-width="120px">
         <div class="el-row">
           <div class="el-col-lg-12">
-            <el-form-item label="歌曲名称" prop="title" style="min-width: 290px">
+            <el-form-item label="歌曲名称" prop="name" style="min-width: 290px">
               <el-input
-                  v-model="form.title"
+                  v-model="form.name"
                   clearable
                   placeholder="请输入歌曲名称"
               />
             </el-form-item>
-            <el-form-item v-hasPermi="['system:profilePicture:edit']" label="活跃" prop="effect">
+            <el-form-item label="积分" prop="points">
+              <el-input-number :step="0.01" v-model="form.points" placeholder="请输入点数"/>
+            </el-form-item>
+            <el-form-item v-hasPermi="['config:inviterGameCard:edit']" label="活跃" prop="status">
               <template #default="scope">
                 <el-switch
-                    v-model="form.effect"
+                    v-model="form.status"
                     :active-value="1"
                     :inactive-value="0"
                 ></el-switch>
@@ -151,7 +157,7 @@
                   :before-upload="beforeAvatarUpload"
                   class="upload-demo"
                   drag
-                  name="profilePicture"
+                  name="inviterGameCard"
               >
                 <div class="el-upload__text">Drop file here or <em>点击上传</em></div>
                 <div class="el-upload__tip">
@@ -168,33 +174,21 @@
       </div>
     </el-dialog>
 
-    <el-dialog v-model="openText" :close-on-click-modal="false" :title="title" append-to-body width="600px">
-      <el-form ref="textFormRef" :model="form" :rules="rulesFormText" label-width="80px">
-        <el-form-item label="文本2 " prop="text2">
-          <el-input v-model="form.text2" placeholder=" 请输入文本2 " rows="4" type="textarea"/>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitFormText"> 确 定</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
-<script name="MemberProfilePicture" setup>
+<script name="inviterGameCard" setup>
 
 import {
-  profilePictureListData,
-  addProfilePicture,
-  changeProfilePictureStatus,
-  deleteProfilePicture,
+  listInviterGameCard,
+  getInviterGameCard,
+  addInviterGameCard,
+  updateInviterGameCard,
+  changeStatus,
   fileUpload,
-  getProfilePictureData,
-  updateProfilePicture, addProfilePictureUpload
-} from "@/api/system/profilePicture";
+  delInviterGameCard
+} from "@/api/config/inviterGameCard.js";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
-import {url} from "@/utils/url";
-import {getToken} from "@/utils/auth";
 import {useRouter} from "vue-router";
 
 const router = useRouter();
@@ -202,12 +196,11 @@ const {proxy} = getCurrentInstance();
 const formData = new FormData();
 const upload = ref([]);
 
-const profilePictureList = ref([]);
+const inviterGameCardList = ref([]);
 const ids = ref([]);
-const title = ref('');
+const name = ref('');
 const total = ref(0);
 const open = ref(false);
-const openText = ref(false);
 const showSearch = ref(true);
 const single = ref(true);
 const multiple = ref(true);
@@ -219,8 +212,8 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 20,
-    title: null,
-    effect: null,
+    name: null,
+    status: null,
   },
   fileToUpload: null,
 
@@ -229,31 +222,23 @@ const data = reactive({
 
   /** 表单校验 form validation */
   rules: {
-    title: [
+    name: [
       {required: true, message: '名称不能为空', trigger: 'blur'}
+    ],
+    points: [
+      {required: true, message: '点不能为空', trigger: 'blur'}
     ],
   },
 
-  headers: {
-    Authorization: 'Bearer ' + getToken()
-  },
-
-  uploadFileUrl: uploadProfilePictureUrl(),
-
-  DialogForm: {
-    title: null,
-    effect: null,
-  }
-
 });
-const {queryParams, form, rules, rulesFormText, headers, uploadFileUrl, fileToUpload} = toRefs(data);
+const {queryParams, form, rules, headers, uploadFileUrl} = toRefs(data);
 
 
 /** fetch all data from back-end as getList */
 function getList() {
   loading.value = true;
-  profilePictureListData(queryParams.value).then(response => {
-    profilePictureList.value = response.data;
+  listInviterGameCard(queryParams.value).then(response => {
+    inviterGameCardList.value = response.data;
     total.value = response.total;
     loading.value = false;
   });
@@ -263,16 +248,15 @@ function getList() {
 function reset() {
   form.value = {
     id: null,
-    title: null,
+    name: null,
+    points: null,
     upload: null,
     icon: null,
-    effect: null,
-    createTime: null,
-    updateTime: null
+    status: 1,
   }
   // proxy.$refs.upload.clearFiles();
   clearUpload()
-  proxy.resetForm('profilePictureRef')
+  proxy.resetForm('inviterGameCardRef')
 }
 
 function clearUpload() {
@@ -299,53 +283,26 @@ function resetQuery() {
 function handleAdd() {
   reset()
   open.value = true
-  title.value = '添加会员音乐'
+  name.value = '添加会员音乐'
 }
 
 /** submit new data and handle insert data api*/
 function submitForm() {
-  proxy.$refs['profilePictureRef'].validate(async valid => {
+  proxy.$refs['inviterGameCardRef'].validate(async valid => {
     if (valid) {
-      const params = {
-        title: form.value.title,
-        effect: form.value.effect,
-        icon: null
+      if (formData.get("file") != null) {
+        await fileUpload(formData).then(res => {
+          form.value.icon = res.data
+        });
       }
-
-      // if (formData.get("file") != null) {
-      //   await fileUpload(formData).then(res => {
-      //     console.log(" params.icon " + params.icon)
-      //     if (form.value.id != null) {
-      //       form.value.icon = res.data
-      //     } else {
-      //       params.icon = res.data
-      //     }
-      //   });
-      // }
-
       if (form.value.id != null) {
-        updateProfilePicture(form.value).then(async () => {
-          if (formData.get("file") != null) {
-            formData.set("id", form.value.id);
-            await fileUpload(formData).then(res => {
-              proxy.$modal.msgSuccess('新增成功')
-              open.value = false
-              getList()
-            });
-            proxy.$modal.msgSuccess('修改成功')
-            open.value = false
-            getList()
-          }
+        updateInviterGameCard(form.value).then(() => {
+          proxy.$modal.msgSuccess('修改成功')
+          open.value = false
+          getList()
         })
       } else {
-        // addProfilePicture(params).then(() => {
-        addProfilePicture(params).then(async (response) => {
-          if (formData.get("file") != null) {
-            formData.set("id", response.data.id);
-            await fileUpload(formData).then(res => {
-
-            });
-          }
+        addInviterGameCard(form.value).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
@@ -359,10 +316,10 @@ function submitForm() {
 function handleUpdate(row) {
   reset()
   const id = row.id || this.ids
-  getProfilePictureData(id).then(response => {
+  getInviterGameCard(id).then(response => {
     form.value = response.data
     open.value = true
-    title.value = '修改音乐列表'
+    name.value = '修改音乐列表'
   })
 }
 
@@ -374,45 +331,31 @@ function handleDelete(row) {
     cancelButtonText: '取消',
     type: 'warning'
   }).then(function () {
-    return deleteProfilePicture(idss)
+    return delInviterGameCard(idss)
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess('删除成功')
   })
 }
 
-/**  导出按钮操作 handle export data as excel query */
-// function handleExport() {
-//   proxy.$confirm('确认处理Excel并下载，数据量大的时候会延迟，请耐心等待...', '警告', {
-//     confirmButtonText: '确认',
-//     cancelButtonText: '取消',
-//     type: 'warning'
-//   }).then(function () {
-//     return exportMemberProfilePicture(queryParams.value)
-//   }).then(response => {
-//     downloadExcel(response, '公司入款银行')
-//   }).catch(() => {
-//   })
-// }
-
 function handleEffectChange(row) {
-  let text = row.effect === '1' ? '启用' : '停用'
-  proxy.$confirm('确认要' + text + '"' + row.title + '"吗?', '警告', {
+  let text = row.status === '1' ? '启用' : '停用'
+  proxy.$confirm('确认要' + text + '"' + row.name + '"吗?', '警告', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
   }).then(function () {
-    const effect = changeProfilePictureStatus(row.id, row.effect);
+    const status = changeStatus(row.id, row.status);
     loading.value = true
-    if (effect) {
+    if (status) {
       loading.value = false
-      return effect
+      return status
     }
   }).then(() => {
     proxy.$modal.msgSuccess(text + '成功')
     getList()
   }).catch(function () {
-    row.effect = row.effect === '0' ? '1' : '0'
+    row.status = row.status === '0' ? '1' : '0'
   })
 }
 
@@ -471,14 +414,6 @@ function beforeAvatarUpload(file) {
   }
 }
 
-function uploadProfilePictureUrl() {
-  return url.baseUrl + url.game99PlatformAdminWeb + "/system/profilePicture/upload";
-}
-
-function submitUpload() {
-  proxy.$refs.upload.submit()
-}
-
 function selectFile1(file, fileList) {
 
   const fileExtension = file.name.split('.')[1]
@@ -494,7 +429,6 @@ function selectFile1(file, fileList) {
     return false;
   }
 
-  console.log("aw")
   // this.fileToUpload = file;
   formData.set("file", file.raw)
   formData.set("name", file.name)
