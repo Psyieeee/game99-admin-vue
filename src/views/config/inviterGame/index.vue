@@ -17,41 +17,29 @@
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-            type="primary"
-            plain
-            icon="Plus"
-            size="small"
-            @click="handleAdd"
-            v-hasPermi="['config:commission:add']"
-        >新增
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-            type="success"
-            plain
-            icon="Edit"
-            size="small"
-            :disabled="single"
-            @click="handleUpdate"
-            v-hasPermi="['config:commission:edit']"
-        >修改
-        </el-button>
-      </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
+<!--    <el-row :gutter="10" class="mb8">-->
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--            type="success"-->
+<!--            plain-->
+<!--            icon="Edit"-->
+<!--            size="small"-->
+<!--            :disabled="single"-->
+<!--            @click="handleUpdate"-->
+<!--            v-hasPermi="['config:inviterGame:update']"-->
+<!--        >修改-->
+<!--        </el-button>-->
+<!--      </el-col>-->
+<!--      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>-->
+<!--    </el-row>-->
 
-    <el-table stripe v-loading="loading" :data="configCommissionList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange">
+    <el-table stripe v-loading="loading" :data="configCommissionList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="名称" align="center"      prop="name" sortable="custom" :sort-orders="['descending', 'ascending']"/>
-      <el-table-column label="类型" align="center"      prop="dataType" sortable="custom" :sort-orders="['descending', 'ascending']"/>
-      <el-table-column label="值" align="center"      prop="value" sortable="custom" :sort-orders="['descending', 'ascending']">
-        <template #default="scope">{{getValue(scope.row)}}</template>
-      </el-table-column>
-      <el-table-column align="center" label="键"     prop="status" sortable="custom" :sort-orders="['descending', 'ascending']">
+      <el-table-column label="代码" align="center"       prop="code"/>
+      <el-table-column label="名字" align="center"      prop="name"/>
+      <el-table-column label="价值" align="center"      prop="value"/>
+      <el-table-column label="数据类型" align="center"      prop="dataType"/>
+      <el-table-column align="center" label="状态"     prop="status">
         <template #default="scope">
           <el-switch
               v-model="scope.row.status"
@@ -61,12 +49,12 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="更新人" align="center" prop="updatedBy" sortable="custom" :sort-orders="['descending', 'ascending']"/>
-      <el-table-column label="更新时间" align="center" prop="updateTime" sortable="custom" :sort-orders="['descending', 'ascending']"/>
+      <el-table-column label="更新人" align="center" prop="updatedBy"/>
+      <el-table-column label="更新时间" align="center" prop="updateTime"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" width="120">
         <template #default="scope">
           <el-button
-              v-hasPermi="['config:commission:edit']"
+              v-hasPermi="['config:inviterGame:update']"
               icon="Edit"
               link
               size="small"
@@ -90,38 +78,16 @@
     <el-dialog :title="title" v-model="open" width="700px" append-to-body>
       <el-form ref="commissionRef" :model="form" :rules="rules" label-width="120px" style="padding-bottom: 50px">
         <el-form-item label="代码" prop="code">
-          <el-input v-model="form.code" placeholder="请输入验证码" :disabled="newConfig"/>
+          <el-input v-model="form.code" placeholder="请输入验证码" disabled/>
         </el-form-item>
         <el-form-item label="姓名" prop="name">
           <el-input v-model="form.name" placeholder="请输入姓名"/>
         </el-form-item>
-        <el-form-item label="类型" prop="dataType">
-          <el-select v-model="form.dataType" :disabled="newConfig" clearable placeholder="Select">
-            <el-option
-                v-for="type in dataTypes"
-                :key="type.value"
-                :label="type.value"
-                :value="type.value"
-            />
-          </el-select>
+        <el-form-item label="数据类型" prop="dataType">
+          <el-input v-model="form.dataType" placeholder="请输入数据类型" disabled/>
         </el-form-item>
         <el-form-item label="价值" prop="value">
-          <template v-if="form.dataType === 'STRING'">
-            <el-input v-model="form.value" placeholder="请输入值" type="text"/>
-          </template>
-          <template v-if="form.dataType === 'BOOLEAN'">
-            <el-select v-model="form.value" clearable placeholder="Select">
-              <el-option
-                  v-for="type in boolVals"
-                  :key="type.value"
-                  :label="type.label"
-                  :value="type.value"
-              />
-            </el-select>
-          </template>
-          <template v-if="form.dataType === 'INTEGER' || form.dataType === 'DECIMAL'">
-            <el-input v-model="form.value" placeholder="请输入值" type="number"/>
-          </template>
+          <el-input v-model="form.value" placeholder="请输入值"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer" style="float: right;margin-top: -20px">
@@ -164,8 +130,6 @@ const showSearch = ref(true);
 // 是否显示弹出层
 const open = ref(false);
 
-const newConfig = ref(false);
-
 const data = reactive({
   // 查询参数
   queryParams: {
@@ -173,7 +137,7 @@ const data = reactive({
     pageSize: 15,
     minAmount: null,
     maxAmount: null,
-    orderByColumn: 'update_time',
+    orderByColumn: 'status',
     isAsc: 'desc'
   },
 
@@ -192,40 +156,11 @@ const data = reactive({
 });
 const {queryParams, bonusTestForm, form, rules} = toRefs(data);
 
-const dataTypes = ref([
-  {
-    value: 'STRING',
-    label: 'STRING'
-  },
-  {
-    value: 'BOOLEAN',
-    label: 'BOOLEAN'
-  },
-  {
-    value: 'INTEGER',
-    label: 'INTEGER'
-  },
-  {
-    value: 'DECIMAL',
-    label: 'DECIMAL'
-  }])
-
-const boolVals = ref([
-  {
-    value: 'true',
-    label: '真'
-  },
-  {
-    value: 'false',
-    label: '假'
-  }])
-
-const defaultSort = ref({prop: "update_time", order: "descending"});
 
 /** 查询bonus服务配置列表 Query the bonus  service configuration list */
 function getList() {
   loading.value = true
-  queryParams.value.type = 'inviter'
+  queryParams.value.type = 'inviter_game'
   listConfigCommission(queryParams.value).then(response => {
     configCommissionList.value = response.data
     if (response.total) {
@@ -237,7 +172,7 @@ function getList() {
 
 /** 取消按钮 cancel button */
 function cancel() {
-  open.value = false
+  open.value = falsed
   reset()
 }
 
@@ -246,7 +181,10 @@ function cancel() {
 function reset() {
   form.value = {
     id: null,
-    dataType: 'STRING',
+    minAmount: null,
+    maxAmount: null,
+    bonus: null,
+    multiplier: null,
     status: 0,
     updatedBy: null,
     updateTime: null
@@ -281,7 +219,6 @@ function handleSelectionChange(selection) {
 function handleAdd() {
   reset()
   open.value = true
-  newConfig.value = false;
   title.value = '添加佣金配置'
 }
 
@@ -289,7 +226,6 @@ function handleAdd() {
 /** 修改按钮操作 Modify button action*/
 function handleUpdate(row) {
   reset()
-  newConfig.value = true;
   const id = row.id || ids.value
   getConfigCommission(id).then(response => {
     form.value = response.data
@@ -347,22 +283,6 @@ function handleEffect(row) {
   }).catch(() => {
   })
 }
-
-function handleSortChange(column, prop, order) {
-  queryParams.value.orderByColumn = column.prop;
-  queryParams.value.isAsc = column.order === 'ascending' ? 'asc' : 'desc';
-  getList();
-}
-
-function getValue(row) {
-  if(row.dataType==='BOOLEAN'){
-    if(row.value === 'true') return '真'
-    else return '假'
-  }
-  return row.value;
-}
-
-
 
 getList()
 
