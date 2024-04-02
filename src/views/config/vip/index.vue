@@ -22,9 +22,10 @@
        <el-table-column label="月俸禄" prop="monthBonus" align="center"/>
        <el-table-column label="需求打码" prop="bcode" align="center"/>
        <el-table-column label="救援奖金率" prop="rescueBonusRate" align="center"/>
-       <el-table-column label="奖励类型" prop="missionRewardTypeTranslated" align="center"/>
-       <el-table-column label="倍数" prop="multiplier"align="center"/>
-       <el-table-column label="救援奖金倍增器" prop="rescueBonusMultiplier" align="center"/>
+       <el-table-column label="vip奖金类型" prop="missionRewardTypeTranslated" align="center"/>
+       <el-table-column label="vip倍数" prop="multiplier" align="center"/>
+       <el-table-column label="救援类型" prop="rescueBonusType" align="center"/>
+       <el-table-column label="救援彩金倍数" prop="rescueBonusMultiplier" align="center"/>
        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="120">
          <template #default="scope">
            <el-button
