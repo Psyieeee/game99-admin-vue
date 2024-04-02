@@ -15,7 +15,8 @@ export function listByGamePepole(query) {
     return request({
         url: url.game99PlatformAdminWeb + '/report/plamGamesChilds/plamGameListData',
         method: 'get',
-        params: query
+        params: query,
+        timeout: 60000
     })
 }
 
