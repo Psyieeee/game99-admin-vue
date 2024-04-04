@@ -10,6 +10,13 @@ export function listConfigCommission(query) {
     })
 }
 
+export function getInviterConfig() {
+    return request({
+        url: url.game99PlatformAdminWeb + '/config/commission/getInviterConfig',
+        method: 'get'
+    })
+}
+
 export function listConfigCommissionPic(query) {
     return request({
         url: url.game99PlatformAdminWeb + '/config/commission/listRecommendPic',
@@ -39,6 +46,14 @@ export function addConfigCommission(data) {
 export function updateConfigCommission(data) {
     return request({
         url: url.game99PlatformAdminWeb + '/config/commission',
+        method: 'put',
+        data: data
+    })
+}
+
+export function updateConfigInviter(data) {
+    return request({
+        url: url.game99PlatformAdminWeb + '/config/commission/updateInviterConfig',
         method: 'put',
         data: data
     })
