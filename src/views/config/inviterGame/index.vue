@@ -99,15 +99,12 @@
 
     <!--dialog -->
     <el-dialog title="编辑邀请者游戏配置" v-model="openConfig" width="700px" append-to-body>
-      <el-form ref="configRef" :model="formConfig" :rules="rulesConfig" label-width="280px" style="padding-bottom: 50px">
+      <el-form ref="configRef" :model="formConfig" :rules="rulesConfig" label-width="350px" style="padding-bottom: 50px">
         <el-form-item label="游戏初始奖金">
           <el-input v-model="formConfig.initialBonus"/>
         </el-form-item>
         <el-form-item label="需要达到的游戏目标奖金才能获得奖金">
           <el-input v-model="formConfig.goalBonus"/>
-        </el-form-item>
-        <el-form-item label="重置时的默认游戏机会">
-          <el-input v-model="formConfig.playCount"/>
         </el-form-item>
         <el-form-item label="随机游戏邀请人结果可以具有的最小奖励值" >
           <el-input v-model="formConfig.minimumPoints"/>
@@ -117,6 +114,12 @@
         </el-form-item>
         <el-form-item label="生成随机值时的增量步骤">
           <el-input v-model="formConfig.incrementPoints"/>
+        </el-form-item>
+        <el-form-item label="重置时的默认游戏机会">
+          <el-input v-model="formConfig.playCount"/>
+        </el-form-item>
+        <el-form-item label="当玩家成功邀请其他玩家时要添加到该玩家的游戏计数">
+          <el-input v-model="formConfig.bonusPlayCount"/>
         </el-form-item>
         <el-form-item label="赢得游戏的最低邀请人数">
           <el-input v-model="formConfig.minimumInvites"/>
@@ -205,6 +208,9 @@ const data = reactive({
       {required: true, message: '最大金额为必填项', trigger: 'blur'}
     ],
     playCount: [
+      {required: true, message: '最大金额为必填项', trigger: 'blur'}
+    ],
+    bonusPlayCount: [
       {required: true, message: '最大金额为必填项', trigger: 'blur'}
     ],
     minimumPoints: [
