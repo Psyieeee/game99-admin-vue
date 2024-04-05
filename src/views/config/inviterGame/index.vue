@@ -17,40 +17,65 @@
       </el-form-item>
     </el-form>
 
-<!--    <el-row :gutter="10" class="mb8">-->
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--            type="success"-->
-<!--            plain-->
-<!--            icon="Edit"-->
-<!--            size="small"-->
-<!--            :disabled="single"-->
-<!--            @click="handleUpdate"-->
-<!--            v-hasPermi="['config:inviterGame:update']"-->
-<!--        >修改-->
-<!--        </el-button>-->
-<!--      </el-col>-->
-<!--      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>-->
-<!--    </el-row>-->
+    <!--    button on the table for query-->
+    <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+        <el-button
+            v-hasPermi="['config:inviterGameCard:add']"
+            icon="Plus"
+            plain
+            size="small"
+            type="primary"
+            @click="handleAdd"
+        >新增
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+            v-hasPermi="['config:inviterGameCard:delete']"
+            :disabled="multiple"
+            icon="Delete"
+            plain
+            size="small"
+            type="danger"
+            @click="handleDelete"
+        >删除
+        </el-button>
+      </el-col>
+      <right-toolbar v-model="showSearch" @queryTable="getList"></right-toolbar>
+    </el-row>
 
-    <el-table stripe v-loading="loading" :data="configCommissionList" @selection-change="handleSelectionChange">
+    <el-table stripe v-loading="loading" :data="configInviterGameList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="代码" align="center"       prop="code"/>
-      <el-table-column label="名字" align="center"      prop="name"/>
-      <el-table-column label="价值" align="center"      prop="value"/>
-      <el-table-column label="数据类型" align="center"      prop="dataType"/>
-      <el-table-column align="center" label="状态"     prop="status">
+      <el-table-column label="初始金额" align="center" prop="initialAmount"/>
+      <el-table-column label="最终数额" align="center" prop="finalAmount"/>
+      <el-table-column label="会期" align="center" prop="duration"/>
+
+      <el-table-column label="最低邀请" align="center" prop="minimumInvites"/>
+      <el-table-column label="最高邀请" align="center" prop="maximumInvites"/>
+      <el-table-column label="每次邀请可获得的旋转数" align="center" prop="spinsPerInvite"/>
+      <el-table-column label="首次免费旋转" align="center" prop="initialSpinCount"/>
+
+      <el-table-column label="最低分数" align="center" prop="minimumPoints"/>
+      <el-table-column label="最高分" align="center" prop="maximumPoints"/>
+      <el-table-column label="步骤" align="center" prop="step"/>
+
+      <el-table-column align="center" label="状态" prop="status">
         <template #default="scope">
           <el-switch
               v-model="scope.row.status"
-              :active-value=1
-              :inactive-value=0
+              :active-value="true"
+              :inactive-value="false"
               @change="handleEffect(scope.row)"
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="更新人" align="center" prop="updatedBy"/>
-      <el-table-column label="更新时间" align="center" prop="updateTime"/>
+
+      <el-table-column label="创建者" align="center" prop="createBy"/>
+      <el-table-column label="更新日期" align="center" prop="updateBy"/>
+      <el-table-column label="创建于" align="center" prop="createAt"/>
+      <el-table-column label="更新于" align="center" prop="updateAt"/>
+
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" width="120">
         <template #default="scope">
           <el-button
@@ -59,7 +84,7 @@
               link
               size="small"
               type="primary"
-              @click="handleEdit(scope.row)"
+              @click="handleUpdate(scope.row)"
           >修改
           </el-button>
         </template>
@@ -75,77 +100,79 @@
     />
 
     <!-- 添加或修改 bonus 配置对话框 Add or modify bonus configuration dialog -->
-    <el-dialog :title="title" v-model="open" width="700px" append-to-body>
-      <el-form ref="commissionRef" :model="form" :rules="rules" label-width="120px" style="padding-bottom: 50px">
-        <el-form-item label="代码" prop="code">
-          <el-input v-model="form.code" placeholder="请输入验证码" disabled/>
-        </el-form-item>
-        <el-form-item label="姓名" prop="name">
-          <el-input v-model="form.name" placeholder="请输入姓名"/>
-        </el-form-item>
-        <el-form-item label="数据类型" prop="dataType">
-          <el-input v-model="form.dataType" placeholder="请输入数据类型" disabled/>
-        </el-form-item>
-        <el-form-item label="价值" prop="value">
-          <el-input v-model="form.value" placeholder="请输入值"/>
-        </el-form-item>
+    <el-dialog title="编辑邀请者游戏配置" v-model="open" width="700px" append-to-body>
+      <el-steps style="padding-bottom: 50px" :active="activeStep" finish-status="success">
+        <el-step title="步骤 1"/>
+        <el-step title="步骤 2"/>
+        <el-step title="步骤 3"/>
+      </el-steps>
+
+      <el-form ref="configRef" :model="form" style="padding-bottom: 50px" label-width="40%">
+
+        <div v-if="activeStep === 0">
+          <el-form-item label="初始金额" :error="errors.initialAmount">
+            <el-input-number v-model="form.initialAmount" controls-position="right"/>
+          </el-form-item>
+          <el-form-item label="最终数额" :error="errors.finalAmount" >
+            <el-input-number v-model="form.finalAmount" controls-position="right"/>
+          </el-form-item>
+          <el-form-item label="会期" :error="errors.duration">
+            <el-input-number v-model="form.duration" controls-position="right"/>
+          </el-form-item>
+        </div>
+        <div v-else-if="activeStep === 1">
+          <el-form-item label="最低邀请" :error="errors.minimumInvites">
+            <el-input-number v-model="form.minimumInvites" controls-position="right"/>
+          </el-form-item>
+          <el-form-item label="最高邀请" :error="errors.maximumInvites">
+            <el-input-number v-model="form.maximumInvites" controls-position="right"/>
+          </el-form-item>
+          <el-form-item label="每次邀请可获得的旋转数" :error="errors.spinsPerInvite">
+            <el-input-number v-model="form.spinsPerInvite" controls-position="right"/>
+          </el-form-item>
+          <el-form-item label="首次免费旋转" :error="errors.initialSpinCount">
+            <el-input-number v-model="form.initialSpinCount" controls-position="right"/>
+          </el-form-item>
+        </div>
+
+        <div v-else-if="activeStep === 2">
+          <el-form-item label="最低分数" :error="errors.minimumPoints">
+            <el-input-number v-model="form.minimumPoints" controls-position="right"/>
+          </el-form-item>
+          <el-form-item label="最高分" :error="errors.maximumPoints">
+            <el-input-number v-model="form.maximumPoints" controls-position="right"/>
+          </el-form-item>
+          <el-form-item label="步骤" :error="errors.step">
+            <el-input-number v-model="form.step" controls-position="right"/>
+          </el-form-item>
+        </div>
+
+        <div v-else-if="activeStep === 3">
+          <el-input v-model="sampleList" rows="4" readonly style="width: 80%"></el-input>
+          <el-button @click="test" v-if="activeStep > 0" type="warning" style="margin-left: 10px">Test</el-button>
+        </div>
       </el-form>
+
       <div slot="footer" class="dialog-footer" style="float: right;margin-top: -20px">
+        <el-button @click="previousStep" v-if="activeStep > 0">上一步</el-button>
+        <el-button @click="nextStep" v-if="activeStep < 3">下一个</el-button>
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
-      </div>
-    </el-dialog>
-
-
-    <!--dialog -->
-    <el-dialog title="编辑邀请者游戏配置" v-model="openConfig" width="700px" append-to-body>
-      <el-form ref="configRef" :model="formConfig" :rules="rulesConfig" label-width="350px" style="padding-bottom: 50px">
-        <el-form-item label="游戏初始奖金">
-          <el-input v-model="formConfig.initialBonus"/>
-        </el-form-item>
-        <el-form-item label="需要达到的游戏目标奖金才能获得奖金">
-          <el-input v-model="formConfig.goalBonus"/>
-        </el-form-item>
-        <el-form-item label="随机游戏邀请人结果可以具有的最小奖励值" >
-          <el-input v-model="formConfig.minimumPoints"/>
-        </el-form-item>
-        <el-form-item label="随机游戏邀请人结果可以拥有的最大奖励值">
-          <el-input v-model="formConfig.maximumPoints"/>
-        </el-form-item>
-        <el-form-item label="生成随机值时的增量步骤">
-          <el-input v-model="formConfig.incrementPoints"/>
-        </el-form-item>
-        <el-form-item label="重置时的默认游戏机会">
-          <el-input v-model="formConfig.playCount"/>
-        </el-form-item>
-        <el-form-item label="当玩家成功邀请其他玩家时要添加到该玩家的游戏计数">
-          <el-input v-model="formConfig.bonusPlayCount"/>
-        </el-form-item>
-        <el-form-item label="赢得游戏的最低邀请人数">
-          <el-input v-model="formConfig.minimumInvites"/>
-        </el-form-item>
-        <el-form-item label="赢得游戏的最多邀请次数">
-          <el-input v-model="formConfig.maximumInvites"/>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer" style="float: right;margin-top: -20px">
-        <el-button type="primary" @click="submitConfigForm">确 定</el-button>
-        <el-button @click="cancelConfig">取 消</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
-<script setup name="configCommission">
+<script setup name="configInviterGame">
 import {
-  listConfigCommission,
-  getConfigCommission,
-  delConfigCommission,
-  addConfigCommission,
-  updateConfigCommission,
+  list,
+  get,
+  add,
+  update,
   changeStatus,
-  getInviterConfig, updateConfigInviter
-} from '@/api/config/commission.js'
+  remove,
+  getSampleList
+} from '@/api/config/inviterGame.js'
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {useRouter} from "vue-router";
 
@@ -155,14 +182,13 @@ const {proxy} = getCurrentInstance();
 // 选中数组 ids array
 const ids = ref([]);
 // bonus文件存储服务配置表格数据
-const configCommissionList = ref([]);
+const configInviterGameList = ref([]);
 
 //signal data type
 // 弹出层标题
 const title = ref("");
 const total = ref(0);
 const bonusTestTitle = ref("测试图片上传");
-
 
 //boolean types
 // 遮罩层
@@ -178,6 +204,10 @@ const open = ref(false);
 
 const openConfig = ref(false);
 
+const activeStep = ref(0)
+
+const sampleList = ref( "" );
+
 const data = reactive({
   // 查询参数
   queryParams: {
@@ -190,69 +220,93 @@ const data = reactive({
   },
   // 表单参数
   form: {},
-  formConfig: {},
-  // 表单校验
-  rules: {
-    name: [
-      {required: true, message: '需要最小金额', trigger: 'blur'}
-    ],
-    value: [
-      {required: true, message: '最大金额为必填项', trigger: 'blur'}
-    ],
-  },
-  rulesConfig: {
-    initialBonus: [
-      {required: true, message: '需要最小金额', trigger: 'blur'}
-    ],
-    goalBonus: [
-      {required: true, message: '最大金额为必填项', trigger: 'blur'}
-    ],
-    playCount: [
-      {required: true, message: '最大金额为必填项', trigger: 'blur'}
-    ],
-    bonusPlayCount: [
-      {required: true, message: '最大金额为必填项', trigger: 'blur'}
-    ],
-    minimumPoints: [
-      {required: true, message: '最大金额为必填项', trigger: 'blur'}
-    ],
-    maximumPoints: [
-      {required: true, message: '最大金额为必填项', trigger: 'blur'}
-    ],
-    incrementPoints: [
-      {required: true, message: '最大金额为必填项', trigger: 'blur'}
-    ],
-    minimumInvites: [
-      {required: true, message: '最大金额为必填项', trigger: 'blur'}
-    ],
-    maximumInvites: [
-      {required: true, message: '最大金额为必填项', trigger: 'blur'}
-    ],
-  }
+  errors: {}
 });
-const {queryParams, formConfig, form, rules, rulesConfig} = toRefs(data);
+const {queryParams, form, rules, errors} = toRefs(data);
 
+function previousStep() {
+  if( activeStep.value > 0 ) {
+    activeStep.value--;
+  }
+}
+
+function test() {
+  getSampleList( form.value ).then( response => {
+    sampleList.value = response.data;
+  } );
+}
+
+function nextStep() {
+  resetErrors();
+
+  switch( activeStep.value ) {
+    case 0:
+      if( form.value.initialAmount >= form.value.finalAmount ) {
+        errors.value.finalAmount = "The final amount must be larger than the initial amount";
+        return;
+      }
+
+      break;
+    case 1:
+      if( form.value.minimumInvites >= form.value.maximumInvites ) {
+        errors.value.maximumInvites = "The maximum invites must be larger than the minimum amount";
+        return;
+      }
+
+      break;
+    case 2:
+      const targetSum = form.value.finalAmount - form.value.initialAmount;
+      const minSpins = form.value.initialSpinCount * 1 + form.value.minimumInvites * form.value.spinsPerInvite;
+      const maxSpins = form.value.initialSpinCount * 1 + form.value.maximumInvites * form.value.spinsPerInvite;
+      const minPossibleChoice = targetSum / maxSpins;
+      const maxPossibleChoice = targetSum / minSpins;
+
+      console.log("***")
+      console.log( targetSum );
+      console.log( minSpins );
+      console.log( maxSpins );
+      console.log( form.value );
+
+      if( form.value.minimumPoints < minPossibleChoice || form.value.minimumPoints >= maxPossibleChoice ) {
+        errors.value.minimumPoints = "The minimum points exceeds the possible range of " + minPossibleChoice + " to " + maxPossibleChoice;
+        return;
+      }
+
+      if( form.value.maximumPoints <= minPossibleChoice || form.value.maximumPoints > maxPossibleChoice ) {
+        errors.value.maximumPoints = "The maximum points exceeds the possible range of " + minPossibleChoice + " to " + maxPossibleChoice;
+        return;
+      }
+
+      if( form.value.minimumPoints >= form.value.maximumPoints ) {
+        errors.value.maximumPoints = "The maximum points must be larger than the minimum points";
+        return;
+      }
+
+      const quotient = (form.value.maximumPoints - form.value.minimumPoints) / form.value.step;
+
+      if( Math.ceil( quotient ) !== quotient ) {
+        errors.value.step = "The step must add perfectly to the maximum point";
+        return;
+      }
+      break;
+  }
+
+  if( activeStep.value < 3 ) {
+    activeStep.value++;
+  }
+}
 
 /** 查询bonus服务配置列表 Query the bonus  service configuration list */
 function getList() {
   loading.value = true
   queryParams.value.type = 'inviter_game'
-  listConfigCommission(queryParams.value).then(response => {
-    configCommissionList.value = response.data
+  list().then(response => {
+    configInviterGameList.value = response.data
     if (response.total) {
       total.value = response.total
     }
     loading.value = false
   })
-}
-
-function getInviteGameConfig() {
-  loading.value = true
-  getInviterConfig().then(response => {
-    formConfig.value = response.data
-    openConfig.value = true
-  })
-  loading.value = false
 }
 
 /** 取消按钮 cancel button */
@@ -261,23 +315,31 @@ function cancel() {
   reset()
 }
 
-function cancelConfig() {
-  openConfig.value = false
+function resetErrors() {
+  errors.value = { };
 }
-
 
 /** 表单重置 Form reset */
 function reset() {
+  resetErrors();
   form.value = {
     id: null,
-    minAmount: null,
-    maxAmount: null,
-    bonus: null,
-    multiplier: null,
-    status: 0,
+    initialAmount: null,
+    finalAmount: null,
+    duration: null,
+    minimumInvites: null,
+    maximumInvites: null,
+    spinsPerInvite: null,
+    initialSpinCount: null,
+    minimumPoints: null,
+    maximumPoints: null,
+    step: null,
+    status: null,
     updatedBy: null,
     updateTime: null
   }
+  activeStep.value = 0;
+  sampleList.value = ""
   proxy.resetForm('commissionRef')
 }
 
@@ -287,7 +349,6 @@ function handleQuery() {
   // queryParams.pageNum = 1
   getList()
 }
-
 
 /** 重置按钮操作 Reset button action*/
 function resetQuery() {
@@ -311,24 +372,10 @@ function handleAdd() {
   title.value = '添加佣金配置'
 }
 
-
-function handleEdit(row) {
-  switch(row.code) {
-    case "INVITER_GAME_CYCLE_DURATION":
-    case "INVITER_GAME_PRIZE":
-    case "INVITER_GAME_SHOW":
-      handleUpdate(row)
-      break;
-    default:
-      getInviteGameConfig()
-  }
-}
-
 /** 修改按钮操作 Modify button action*/
 function handleUpdate(row) {
   reset()
-  const id = row.id || ids.value
-  getConfigCommission(id).then(response => {
+  get(row.id).then(response => {
     form.value = response.data
     open.value = true
     title.value = '编辑佣金配置'
@@ -337,33 +384,21 @@ function handleUpdate(row) {
 
 /** 提交按钮 submit button*/
 function submitForm() {
-  proxy.$refs['commissionRef'].validate(valid => {
+  proxy.$refs['configRef'].validate(valid => {
     if (valid) {
       if (form.value.id != null) {
-        updateConfigCommission(form.value).then(() => {
+        update(form.value).then(() => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
         })
       } else {
-        addConfigCommission(form.value).then(() => {
+        add(form.value).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
         })
       }
-    }
-  })
-}
-
-function submitConfigForm() {
-  proxy.$refs['configRef'].validate(valid => {
-    if (valid) {
-      updateConfigInviter(formConfig.value).then(() => {
-        proxy.$modal.msgSuccess('修改成功')
-        openConfig.value = false
-        getList()
-      })
     }
   })
 }
@@ -376,7 +411,7 @@ function handleDelete(row) {
     cancelButtonText: "取消",
     type: "warning"
   }).then(function () {
-    return delConfigCommission(id);
+    return remove(id);
   }).then(() => {
     getList();
     proxy.$modal.msgSuccess("删除成功");
@@ -389,7 +424,7 @@ function handleEffect(row) {
     cancelButtonText: '取消',
     type: 'warning'
   }).then(function () {
-    return changeStatus(row.id, row.status)
+    return changeStatus( row.id, row.status )
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess('修改状态成功')
