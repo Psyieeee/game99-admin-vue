@@ -149,10 +149,6 @@
             <el-input v-model="sampleList" readonly style="width: 70%"></el-input> <br>
             <el-button @click="test" type="warning" style="margin-left: 10px">Test</el-button>
           </el-form-item>
-          <el-form-item>
-
-          </el-form-item>
-
         </div>
       </el-form>
 
@@ -247,66 +243,66 @@ function nextStep() {
   switch( activeStep.value ) {
     case 0:
       if( isEmpty( form.value.initialAmount ) ) {
-        errors.value.initialAmount = "The initial amount cannot be empty";
+        errors.value.initialAmount = "初始金额不能为空";
         return;
       }
 
       if( isEmpty( form.value.finalAmount ) ) {
-        errors.value.finalAmount = "The final amount cannot be empty";
+        errors.value.finalAmount = "最终金额不能为空";
         return;
       }
 
       if( isEmpty( form.value.duration ) ) {
-        errors.value.duration = "The duration cannot be empty";
+        errors.value.duration = "持续时间不能为空";
         return;
       }
 
       if( form.value.initialAmount >= form.value.finalAmount ) {
-        errors.value.finalAmount = "The final amount must be larger than the initial amount";
+        errors.value.finalAmount = "最终金额必须大于初始金额";
         return;
       }
 
       break;
     case 1:
       if( isEmpty( form.value.minimumInvites ) ) {
-        errors.value.minimumInvites = "The minimum invites cannot be empty";
+        errors.value.minimumInvites = "最小邀请不能为空";
         return;
       }
 
       if( isEmpty( form.value.maximumInvites ) ) {
-        errors.value.maximumInvites = "The maximum invites cannot be empty";
+        errors.value.maximumInvites = "最大邀请不能为空";
         return;
       }
 
       if( isEmpty( form.value.spinsPerInvite ) ) {
-        errors.value.spinsPerInvite = "The spins per invite cannot be empty";
+        errors.value.spinsPerInvite = "每次邀请的旋转次数不能为空";
         return;
       }
 
       if( isEmpty( form.value.initialSpinCount ) ) {
-        errors.value.initialSpinCount = "The initial free spins cannot be empty";
+        errors.value.initialSpinCount = "初始免费旋转不能为空";
         return;
       }
 
       if( form.value.minimumInvites >= form.value.maximumInvites ) {
-        errors.value.maximumInvites = "The maximum invites must be larger than the minimum amount";
+        errors.value.maximumInvites = "最大邀请金额必须大于最小邀请金额";
         return;
       }
 
       break;
     case 2:
       if( isEmpty( form.value.minimumPoints ) ) {
-        errors.value.minimumPoints = "The minimum points cannot be empty";
+        errors.value.minimumPoints = "最小点数不能为空";
         return;
       }
 
       if( isEmpty( form.value.maximumPoints ) ) {
-        errors.value.maximumPoints = "The maximum points cannot be empty";
+        errors.value.maximumPoints = "最高分不能为空";
         return;
       }
 
       if( isEmpty( form.value.step ) ) {
-        errors.value.step = "The step cannot be empty";
+        errors.value.step = "步骤不能为空";
         return;
       }
 
@@ -317,24 +313,24 @@ function nextStep() {
       const maxPossibleChoice = targetSum / minSpins;
 
       if( form.value.minimumPoints < minPossibleChoice || form.value.minimumPoints >= maxPossibleChoice ) {
-        errors.value.minimumPoints = "The minimum points exceeds the possible range of " + minPossibleChoice + " to " + maxPossibleChoice;
+        errors.value.minimumPoints = "最小点数超出" + minPossibleChoice + "至" + maxPossibleChoice + "的可能范围";
         return;
       }
 
       if( form.value.maximumPoints <= minPossibleChoice || form.value.maximumPoints > maxPossibleChoice ) {
-        errors.value.maximumPoints = "The maximum points exceeds the possible range of " + minPossibleChoice + " to " + maxPossibleChoice;
+        errors.value.maximumPoints = "最高分超出了" + minPossibleChoice + "至" + maxPossibleChoice + "分的可能范围";
         return;
       }
 
       if( form.value.minimumPoints >= form.value.maximumPoints ) {
-        errors.value.maximumPoints = "The maximum points must be larger than the minimum points";
+        errors.value.maximumPoints = "最高分必须大于最低分";
         return;
       }
 
       const quotient = (form.value.maximumPoints - form.value.minimumPoints) / form.value.step;
 
       if( Math.ceil( quotient ) !== quotient ) {
-        errors.value.step = "The step must add perfectly to the maximum point";
+        errors.value.step = "步长必须与最大点完全相加";
         return;
       }
       break;
