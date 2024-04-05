@@ -309,8 +309,16 @@ function nextStep() {
       const targetSum = form.value.finalAmount - form.value.initialAmount;
       const minSpins = form.value.initialSpinCount * 1 + form.value.minimumInvites * form.value.spinsPerInvite;
       const maxSpins = form.value.initialSpinCount * 1 + form.value.maximumInvites * form.value.spinsPerInvite;
-      const minPossibleChoice = ( targetSum / maxSpins ).toFixed( 3 );
-      const maxPossibleChoice = ( targetSum / minSpins ).toFixed( 3 );
+      let minPossibleChoice = targetSum / maxSpins;
+      let maxPossibleChoice = targetSum / minSpins;
+
+      if( Math.floor( minPossibleChoice ) !== minPossibleChoice ) {
+        minPossibleChoice = minPossibleChoice.toFixed( 3 ) * 1;
+      }
+
+      if( Math.floor( maxPossibleChoice ) !== maxPossibleChoice ) {
+        maxPossibleChoice = maxPossibleChoice.toFixed( 3 ) * 1;
+      }
 
       if( form.value.minimumPoints < minPossibleChoice || form.value.minimumPoints >= maxPossibleChoice ) {
         errors.value.minimumPoints = "最小点数超出" + minPossibleChoice + "至" + maxPossibleChoice + "的可能范围";
