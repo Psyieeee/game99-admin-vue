@@ -37,15 +37,15 @@
 
     <el-table stripe v-loading="loading" :data="configInviterGameList">
       <el-table-column label="初始金额" align="center" prop="initialAmount"/>
-      <el-table-column label="最终金额" align="center" prop="finalAmount"/>  // 58.5 - 60  -》 per invite -> 3times : 5per - 15times play
-      <el-table-column label="有效时间" align="center" prop="duration"/>
+      <el-table-column label="最终金额" align="center" prop="finalAmount"/>
+      <el-table-column label="有效时间（小时)" align="center" prop="duration" />
 
-      <el-table-column label="最少邀请人数" align="center" prop="minimumInvites"/>  // min -3peson- 9times pay - max -10
+      <el-table-column label="最少邀请人数" align="center" prop="minimumInvites"/>
       <el-table-column label="最多邀请人数" align="center" prop="maximumInvites"/>
-      <el-table-column label="每次邀请可获得的次数" align="center" prop="spinsPerInvite"/>
+      <el-table-column label="每次邀请可获得的次数" align="center" prop="spinsPerInvite" min-width="150"/>
       <el-table-column label="首次免费次数" align="center" prop="initialSpinCount"/>
 
-      <el-table-column label="随机获取最低金额" align="center" prop="minimumPoints"/>  /// 0.05 ---- 0.1
+      <el-table-column label="随机获取最低金额" align="center" prop="minimumPoints"/>
       <el-table-column label="随机获取最高金额" align="center" prop="maximumPoints"/>
       <el-table-column label="步数" align="center" prop="step"/>
 
