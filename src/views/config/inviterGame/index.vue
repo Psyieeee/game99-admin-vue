@@ -37,17 +37,17 @@
 
     <el-table stripe v-loading="loading" :data="configInviterGameList">
       <el-table-column label="初始金额" align="center" prop="initialAmount"/>
-      <el-table-column label="最终数额" align="center" prop="finalAmount"/>
-      <el-table-column label="会期" align="center" prop="duration"/>
+      <el-table-column label="最终金额" align="center" prop="finalAmount"/>  // 58.5 - 60  -》 per invite -> 3times : 5per - 15times play
+      <el-table-column label="有效时间" align="center" prop="duration"/>
 
-      <el-table-column label="最低邀请" align="center" prop="minimumInvites"/>
-      <el-table-column label="最高邀请" align="center" prop="maximumInvites"/>
-      <el-table-column label="每次邀请可获得的旋转数" align="center" prop="spinsPerInvite"/>
-      <el-table-column label="首次免费旋转" align="center" prop="initialSpinCount"/>
+      <el-table-column label="最少邀请人数" align="center" prop="minimumInvites"/>  // min -3peson- 9times pay - max -10
+      <el-table-column label="最多邀请人数" align="center" prop="maximumInvites"/>
+      <el-table-column label="每次邀请可获得的次数" align="center" prop="spinsPerInvite"/>
+      <el-table-column label="首次免费次数" align="center" prop="initialSpinCount"/>
 
-      <el-table-column label="最低分数" align="center" prop="minimumPoints"/>
-      <el-table-column label="最高分" align="center" prop="maximumPoints"/>
-      <el-table-column label="步骤" align="center" prop="step"/>
+      <el-table-column label="随机获取最低金额" align="center" prop="minimumPoints"/>  /// 0.05 ---- 0.1
+      <el-table-column label="随机获取最高金额" align="center" prop="maximumPoints"/>
+      <el-table-column label="步数" align="center" prop="step"/>
 
       <el-table-column align="center" label="状态" prop="status">
         <template #default="scope">
@@ -61,9 +61,9 @@
       </el-table-column>
 
       <el-table-column label="创建者" align="center" prop="createBy"/>
-      <el-table-column label="更新日期" align="center" prop="updateBy"/>
-      <el-table-column label="创建于" align="center" prop="createAt"/>
-      <el-table-column label="更新于" align="center" prop="updateAt"/>
+      <el-table-column label="操作者更新日期" align="center" prop="updateBy"/>
+      <el-table-column label="创建日期" align="center" prop="createAt"/>
+      <el-table-column label="更新时间" align="center" prop="updateAt"/>
 
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" width="120">
         <template #default="scope">
@@ -97,7 +97,7 @@
     />
 
     <!-- 添加或修改 bonus 配置对话框 Add or modify bonus configuration dialog -->
-    <el-dialog title="编辑邀请者游戏配置" v-model="open" width="700px" append-to-body>
+    <el-dialog title="编辑游戏配置规则" v-model="open" width="700px" append-to-body>
       <el-steps style="padding-bottom: 50px" :active="activeStep" finish-status="success">
         <el-step title="步骤 1"/>
         <el-step title="步骤 2"/>
@@ -110,51 +110,51 @@
           <el-form-item label="初始金额" :error="errors.initialAmount">
             <el-input-number v-model="form.initialAmount" controls-position="right" :min="0"/>
           </el-form-item>
-          <el-form-item label="最终数额" :error="errors.finalAmount">
+          <el-form-item label="最终金额" :error="errors.finalAmount">
             <el-input-number v-model="form.finalAmount" controls-position="right" :min="0.01"/>
           </el-form-item>
-          <el-form-item label="持续时间（小时" :error="errors.duration">
+          <el-form-item label="有效时间（小时)" :error="errors.duration">
             <el-input-number v-model="form.duration" controls-position="right" :min="1" step-strictly/>
           </el-form-item>
         </div>
         <div v-else-if="activeStep === 1">
-          <el-form-item label="最低邀请" :error="errors.minimumInvites">
+          <el-form-item label="最少邀请人数" :error="errors.minimumInvites">
             <el-input-number v-model="form.minimumInvites" controls-position="right" :min="1" step-strictly/>
           </el-form-item>
-          <el-form-item label="最高邀请" :error="errors.maximumInvites" :min="2">
+          <el-form-item label="最多邀请人数" :error="errors.maximumInvites" :min="2">
             <el-input-number v-model="form.maximumInvites" controls-position="right" step-strictly/>
           </el-form-item>
-          <el-form-item label="每次邀请可获得的旋转数" :error="errors.spinsPerInvite">
+          <el-form-item label="每次邀请可获得的次数" :error="errors.spinsPerInvite">
             <el-input-number v-model="form.spinsPerInvite" controls-position="right" :min="1" step-strictly/>
           </el-form-item>
-          <el-form-item label="首次免费旋转" :error="errors.initialSpinCount">
+          <el-form-item label="首次免费次数" :error="errors.initialSpinCount">
             <el-input-number v-model="form.initialSpinCount" controls-position="right" :min="0" step-strictly/>
           </el-form-item>
         </div>
 
         <div v-else-if="activeStep === 2">
-          <el-form-item label="最低分数" :error="errors.minimumPoints">
+          <el-form-item label="随机获取最低金额" :error="errors.minimumPoints">
             <el-input-number v-model="form.minimumPoints" controls-position="right" :min="0.01" :step="0.01" step-strictly/>
           </el-form-item>
-          <el-form-item label="最高分" :error="errors.maximumPoints">
+          <el-form-item label="随机获取最高金额" :error="errors.maximumPoints">
             <el-input-number v-model="form.maximumPoints" controls-position="right" :min="0.02" :step="0.01" step-strictly/>
           </el-form-item>
-          <el-form-item label="步骤" :error="errors.step">
+          <el-form-item label="步数" :error="errors.step">
             <el-input-number v-model="form.step" controls-position="right" :min="0.01" :step="0.01" step-strictly/>
           </el-form-item>
         </div>
 
         <div v-else-if="activeStep === 3">
-          <el-form-item label="奖励顺序" label-width="20%">
+          <el-form-item label="测试奖励顺序" label-width="20%">
             <el-input v-model="sampleList" readonly style="width: 70%"></el-input> <br>
-            <el-button @click="test" type="warning" style="margin-left: 10px">Test</el-button>
+            <el-button @click="test" type="warning" style="margin-left: 10px">测试结果</el-button>
           </el-form-item>
         </div>
       </el-form>
 
       <div slot="footer" class="dialog-footer" style="float: right;margin-top: -20px">
         <el-button @click="previousStep" v-if="activeStep > 0">上一步</el-button>
-        <el-button @click="nextStep" v-if="activeStep < 3">下一个</el-button>
+        <el-button @click="nextStep" v-if="activeStep < 3">下一步</el-button>
         <el-button type="primary" @click="submitForm" v-if="activeStep === 3">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
