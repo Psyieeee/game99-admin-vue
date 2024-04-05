@@ -111,52 +111,52 @@
 
         <div v-if="activeStep === 0">
           <el-form-item label="初始金额" :error="errors.initialAmount">
-            <el-input-number v-model="form.initialAmount" controls-position="right"/>
+            <el-input-number v-model="form.initialAmount" controls-position="right" :min="0"/>
           </el-form-item>
-          <el-form-item label="最终数额" :error="errors.finalAmount" >
-            <el-input-number v-model="form.finalAmount" controls-position="right"/>
+          <el-form-item label="最终数额" :error="errors.finalAmount">
+            <el-input-number v-model="form.finalAmount" controls-position="right" :min="0.01"/>
           </el-form-item>
-          <el-form-item label="会期" :error="errors.duration">
-            <el-input-number v-model="form.duration" controls-position="right"/>
+          <el-form-item label="持续时间（小时" :error="errors.duration">
+            <el-input-number v-model="form.duration" controls-position="right" :min="1" step-strictly/>
           </el-form-item>
         </div>
         <div v-else-if="activeStep === 1">
           <el-form-item label="最低邀请" :error="errors.minimumInvites">
-            <el-input-number v-model="form.minimumInvites" controls-position="right"/>
+            <el-input-number v-model="form.minimumInvites" controls-position="right" :min="1" step-strictly/>
           </el-form-item>
-          <el-form-item label="最高邀请" :error="errors.maximumInvites">
-            <el-input-number v-model="form.maximumInvites" controls-position="right"/>
+          <el-form-item label="最高邀请" :error="errors.maximumInvites" :min="2">
+            <el-input-number v-model="form.maximumInvites" controls-position="right" step-strictly/>
           </el-form-item>
           <el-form-item label="每次邀请可获得的旋转数" :error="errors.spinsPerInvite">
-            <el-input-number v-model="form.spinsPerInvite" controls-position="right"/>
+            <el-input-number v-model="form.spinsPerInvite" controls-position="right" :min="1" step-strictly/>
           </el-form-item>
           <el-form-item label="首次免费旋转" :error="errors.initialSpinCount">
-            <el-input-number v-model="form.initialSpinCount" controls-position="right"/>
+            <el-input-number v-model="form.initialSpinCount" controls-position="right" min="0" step-strictly/>
           </el-form-item>
         </div>
 
         <div v-else-if="activeStep === 2">
           <el-form-item label="最低分数" :error="errors.minimumPoints">
-            <el-input-number v-model="form.minimumPoints" controls-position="right"/>
+            <el-input-number v-model="form.minimumPoints" controls-position="right" :min="0.01" :step="0.01" step-strictly/>
           </el-form-item>
           <el-form-item label="最高分" :error="errors.maximumPoints">
-            <el-input-number v-model="form.maximumPoints" controls-position="right"/>
+            <el-input-number v-model="form.maximumPoints" controls-position="right" :min="0.02" :step="0.01" step-strictly/>
           </el-form-item>
           <el-form-item label="步骤" :error="errors.step">
-            <el-input-number v-model="form.step" controls-position="right"/>
+            <el-input-number v-model="form.step" controls-position="right" :min="1" step-strictly/>
           </el-form-item>
         </div>
 
         <div v-else-if="activeStep === 3">
           <el-input v-model="sampleList" rows="4" readonly style="width: 80%"></el-input>
-          <el-button @click="test" v-if="activeStep > 0" type="warning" style="margin-left: 10px">Test</el-button>
+          <el-button @click="test" type="warning" style="margin-left: 10px">Test</el-button>
         </div>
       </el-form>
 
       <div slot="footer" class="dialog-footer" style="float: right;margin-top: -20px">
         <el-button @click="previousStep" v-if="activeStep > 0">上一步</el-button>
         <el-button @click="nextStep" v-if="activeStep < 3">下一个</el-button>
-        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button type="primary" @click="submitForm" v-if="activeStep === 3">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
@@ -236,11 +236,30 @@ function test() {
   } );
 }
 
+function isNullOrUndefined( value ) {
+  return value === null || value === undefined;
+}
+
 function nextStep() {
   resetErrors();
 
   switch( activeStep.value ) {
     case 0:
+      if( isNullOrUndefined( form.value.initialAmount ) ) {
+        errors.value.initialAmount = "The initial amount cannot be empty";
+        return;
+      }
+
+      if( isNullOrUndefined( form.value.finalAmount ) ) {
+        errors.value.finalAmount = "The final amount cannot be empty";
+        return;
+      }
+
+      if( isNullOrUndefined( form.value.duration ) ) {
+        errors.value.duration = "The duration cannot be empty";
+        return;
+      }
+
       if( form.value.initialAmount >= form.value.finalAmount ) {
         errors.value.finalAmount = "The final amount must be larger than the initial amount";
         return;
@@ -248,6 +267,26 @@ function nextStep() {
 
       break;
     case 1:
+      if( isNullOrUndefined( form.value.minimumInvites ) ) {
+        errors.value.minimumInvites = "The minimum invites cannot be empty";
+        return;
+      }
+
+      if( isNullOrUndefined( form.value.maximumInvites ) ) {
+        errors.value.maximumInvites = "The maximum invites cannot be empty";
+        return;
+      }
+
+      if( isNullOrUndefined( form.value.spinsPerInvite ) ) {
+        errors.value.spinsPerInvite = "The spins per invite cannot be empty";
+        return;
+      }
+
+      if( isNullOrUndefined( form.value.initialSpinCount ) ) {
+        errors.value.initialSpinCount = "The initial free spins cannot be empty";
+        return;
+      }
+
       if( form.value.minimumInvites >= form.value.maximumInvites ) {
         errors.value.maximumInvites = "The maximum invites must be larger than the minimum amount";
         return;
@@ -255,17 +294,26 @@ function nextStep() {
 
       break;
     case 2:
+      if( isNullOrUndefined( form.value.minimumPoints ) ) {
+        errors.value.minimumPoints = "The minimum points cannot be empty";
+        return;
+      }
+
+      if( isNullOrUndefined( form.value.maximumPoints ) ) {
+        errors.value.maximumPoints = "The maximum points cannot be empty";
+        return;
+      }
+
+      if( isNullOrUndefined( form.value.step ) ) {
+        errors.value.step = "The step cannot be empty";
+        return;
+      }
+
       const targetSum = form.value.finalAmount - form.value.initialAmount;
       const minSpins = form.value.initialSpinCount * 1 + form.value.minimumInvites * form.value.spinsPerInvite;
       const maxSpins = form.value.initialSpinCount * 1 + form.value.maximumInvites * form.value.spinsPerInvite;
       const minPossibleChoice = targetSum / maxSpins;
       const maxPossibleChoice = targetSum / minSpins;
-
-      console.log("***")
-      console.log( targetSum );
-      console.log( minSpins );
-      console.log( maxSpins );
-      console.log( form.value );
 
       if( form.value.minimumPoints < minPossibleChoice || form.value.minimumPoints >= maxPossibleChoice ) {
         errors.value.minimumPoints = "The minimum points exceeds the possible range of " + minPossibleChoice + " to " + maxPossibleChoice;
@@ -419,6 +467,11 @@ function handleDelete(row) {
 }
 
 function handleEffect(row) {
+  if( row.status === false ) {
+    row.status = true;
+    return;
+  }
+
   proxy.$modal.confirm('确保您要激活的配置配置编号为' + row.id + '"的状态吗?', '警告', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
