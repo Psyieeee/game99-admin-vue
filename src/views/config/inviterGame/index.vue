@@ -1,27 +1,26 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="名称" prop="name">
-        <el-input
-            v-model="queryParams.name"
-            placeholder="请输入名称"
-            clearable
-            :step="100"
-            size="small"
-            @keyup.enter="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="Search" size="small" @click="handleQuery">搜索</el-button>
-        <el-button icon="Refresh" size="small" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
+<!--    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">-->
+<!--      <el-form-item label="名称" prop="name">-->
+<!--        <el-input-->
+<!--            v-model="queryParams.name"-->
+<!--            placeholder="请输入名称"-->
+<!--            clearable-->
+<!--            :step="100"-->
+<!--            size="small"-->
+<!--            @keyup.enter="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item>-->
+<!--        <el-button type="primary" icon="Search" size="small" @click="handleQuery">搜索</el-button>-->
+<!--        <el-button icon="Refresh" size="small" @click="resetQuery">重置</el-button>-->
+<!--      </el-form-item>-->
+<!--    </el-form>-->
 
     <!--    button on the table for query-->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            v-hasPermi="['config:inviterGameCard:add']"
             icon="Plus"
             plain
             size="small"
@@ -31,22 +30,12 @@
         </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-            v-hasPermi="['config:inviterGameCard:delete']"
-            :disabled="multiple"
-            icon="Delete"
-            plain
-            size="small"
-            type="danger"
-            @click="handleDelete"
-        >删除
-        </el-button>
+
       </el-col>
       <right-toolbar v-model="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table stripe v-loading="loading" :data="configInviterGameList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center"/>
+    <el-table stripe v-loading="loading" :data="configInviterGameList">
       <el-table-column label="初始金额" align="center" prop="initialAmount"/>
       <el-table-column label="最终数额" align="center" prop="finalAmount"/>
       <el-table-column label="会期" align="center" prop="duration"/>
@@ -86,6 +75,14 @@
               type="primary"
               @click="handleUpdate(scope.row)"
           >修改
+          </el-button>
+          <el-button
+              icon="Delete"
+              link
+              size="small"
+              type="danger"
+              @click="handleDelete(scope.row)"
+          >删除
           </el-button>
         </template>
       </el-table-column>
@@ -148,8 +145,14 @@
         </div>
 
         <div v-else-if="activeStep === 3">
-          <el-input v-model="sampleList" rows="4" readonly style="width: 80%"></el-input>
-          <el-button @click="test" type="warning" style="margin-left: 10px">Test</el-button>
+          <el-form-item label="奖励顺序" label-width="20%">
+            <el-input v-model="sampleList" readonly style="width: 70%"></el-input> <br>
+            <el-button @click="test" type="warning" style="margin-left: 10px">Test</el-button>
+          </el-form-item>
+          <el-form-item>
+
+          </el-form-item>
+
         </div>
       </el-form>
 
@@ -179,8 +182,6 @@ import {useRouter} from "vue-router";
 const router = useRouter();
 const {proxy} = getCurrentInstance();
 
-// 选中数组 ids array
-const ids = ref([]);
 // bonus文件存储服务配置表格数据
 const configInviterGameList = ref([]);
 
@@ -236,8 +237,8 @@ function test() {
   } );
 }
 
-function isNullOrUndefined( value ) {
-  return value === null || value === undefined;
+function isEmpty( value ) {
+  return value === null || value === undefined || value === "";
 }
 
 function nextStep() {
@@ -245,17 +246,17 @@ function nextStep() {
 
   switch( activeStep.value ) {
     case 0:
-      if( isNullOrUndefined( form.value.initialAmount ) ) {
+      if( isEmpty( form.value.initialAmount ) ) {
         errors.value.initialAmount = "The initial amount cannot be empty";
         return;
       }
 
-      if( isNullOrUndefined( form.value.finalAmount ) ) {
+      if( isEmpty( form.value.finalAmount ) ) {
         errors.value.finalAmount = "The final amount cannot be empty";
         return;
       }
 
-      if( isNullOrUndefined( form.value.duration ) ) {
+      if( isEmpty( form.value.duration ) ) {
         errors.value.duration = "The duration cannot be empty";
         return;
       }
@@ -267,22 +268,22 @@ function nextStep() {
 
       break;
     case 1:
-      if( isNullOrUndefined( form.value.minimumInvites ) ) {
+      if( isEmpty( form.value.minimumInvites ) ) {
         errors.value.minimumInvites = "The minimum invites cannot be empty";
         return;
       }
 
-      if( isNullOrUndefined( form.value.maximumInvites ) ) {
+      if( isEmpty( form.value.maximumInvites ) ) {
         errors.value.maximumInvites = "The maximum invites cannot be empty";
         return;
       }
 
-      if( isNullOrUndefined( form.value.spinsPerInvite ) ) {
+      if( isEmpty( form.value.spinsPerInvite ) ) {
         errors.value.spinsPerInvite = "The spins per invite cannot be empty";
         return;
       }
 
-      if( isNullOrUndefined( form.value.initialSpinCount ) ) {
+      if( isEmpty( form.value.initialSpinCount ) ) {
         errors.value.initialSpinCount = "The initial free spins cannot be empty";
         return;
       }
@@ -294,17 +295,17 @@ function nextStep() {
 
       break;
     case 2:
-      if( isNullOrUndefined( form.value.minimumPoints ) ) {
+      if( isEmpty( form.value.minimumPoints ) ) {
         errors.value.minimumPoints = "The minimum points cannot be empty";
         return;
       }
 
-      if( isNullOrUndefined( form.value.maximumPoints ) ) {
+      if( isEmpty( form.value.maximumPoints ) ) {
         errors.value.maximumPoints = "The maximum points cannot be empty";
         return;
       }
 
-      if( isNullOrUndefined( form.value.step ) ) {
+      if( isEmpty( form.value.step ) ) {
         errors.value.step = "The step cannot be empty";
         return;
       }
@@ -347,7 +348,6 @@ function nextStep() {
 /** 查询bonus服务配置列表 Query the bonus  service configuration list */
 function getList() {
   loading.value = true
-  queryParams.value.type = 'inviter_game'
   list().then(response => {
     configInviterGameList.value = response.data
     if (response.total) {
@@ -387,8 +387,8 @@ function reset() {
     updateTime: null
   }
   activeStep.value = 0;
-  sampleList.value = ""
-  proxy.resetForm('commissionRef')
+  sampleList.value = null;
+  proxy.resetForm('configRef')
 }
 
 
@@ -403,14 +403,6 @@ function resetQuery() {
   proxy.resetForm('queryForm')
   handleQuery()
   loading.value =false
-}
-
-
-/**  多选框选中数据 Multi-select box select data */
-function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.id)
-  single.value = selection.length !== 1
-  multiple.value = !selection.length
 }
 
 /** 新增按钮操作 Add button action*/
@@ -432,6 +424,11 @@ function handleUpdate(row) {
 
 /** 提交按钮 submit button*/
 function submitForm() {
+  if( isEmpty( sampleList.value ) ) {
+    proxy.$modal.msgError( "请在提交前进行测试" );
+    return;
+  }
+
   proxy.$refs['configRef'].validate(valid => {
     if (valid) {
       if (form.value.id != null) {
@@ -453,7 +450,12 @@ function submitForm() {
 
 /** 删除按钮操作 delete button action*/
 function handleDelete(row) {
-  const id = row.id || ids.value;
+  if( row.status === true ) {
+    proxy.$modal.msgError( "无法删除活动配置" );
+    return;
+  }
+
+  const id = row.id;
   proxy.$modal.confirm('您是否确认删除这些数据?', "警告", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
@@ -482,6 +484,7 @@ function handleEffect(row) {
     getList()
     proxy.$modal.msgSuccess('修改状态成功')
   }).catch(() => {
+    row.status = !row.status
   })
 }
 
