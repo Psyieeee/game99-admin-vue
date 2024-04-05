@@ -59,7 +59,7 @@
               link
               size="small"
               type="primary"
-              @click="handleUpdate(scope.row)"
+              @click="handleEdit(scope.row)"
           >修改
           </el-button>
         </template>
@@ -95,11 +95,57 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+
+    <!--dialog -->
+    <el-dialog title="编辑邀请者游戏配置" v-model="openConfig" width="700px" append-to-body>
+      <el-form ref="configRef" :model="formConfig" :rules="rulesConfig" label-width="350px" style="padding-bottom: 50px">
+        <el-form-item label="游戏初始奖金">
+          <el-input v-model="formConfig.initialBonus"/>
+        </el-form-item>
+        <el-form-item label="需要达到的游戏目标奖金才能获得奖金">
+          <el-input v-model="formConfig.goalBonus"/>
+        </el-form-item>
+        <el-form-item label="随机游戏邀请人结果可以具有的最小奖励值" >
+          <el-input v-model="formConfig.minimumPoints"/>
+        </el-form-item>
+        <el-form-item label="随机游戏邀请人结果可以拥有的最大奖励值">
+          <el-input v-model="formConfig.maximumPoints"/>
+        </el-form-item>
+        <el-form-item label="生成随机值时的增量步骤">
+          <el-input v-model="formConfig.incrementPoints"/>
+        </el-form-item>
+        <el-form-item label="重置时的默认游戏机会">
+          <el-input v-model="formConfig.playCount"/>
+        </el-form-item>
+        <el-form-item label="当玩家成功邀请其他玩家时要添加到该玩家的游戏计数">
+          <el-input v-model="formConfig.bonusPlayCount"/>
+        </el-form-item>
+        <el-form-item label="赢得游戏的最低邀请人数">
+          <el-input v-model="formConfig.minimumInvites"/>
+        </el-form-item>
+        <el-form-item label="赢得游戏的最多邀请次数">
+          <el-input v-model="formConfig.maximumInvites"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer" style="float: right;margin-top: -20px">
+        <el-button type="primary" @click="submitConfigForm">确 定</el-button>
+        <el-button @click="cancelConfig">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script setup name="configCommission">
-import {listConfigCommission, getConfigCommission, delConfigCommission, addConfigCommission, updateConfigCommission, changeStatus} from '@/api/config/commission.js'
+import {
+  listConfigCommission,
+  getConfigCommission,
+  delConfigCommission,
+  addConfigCommission,
+  updateConfigCommission,
+  changeStatus,
+  getInviterConfig, updateConfigInviter
+} from '@/api/config/commission.js'
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {useRouter} from "vue-router";
 
@@ -130,6 +176,8 @@ const showSearch = ref(true);
 // 是否显示弹出层
 const open = ref(false);
 
+const openConfig = ref(false);
+
 const data = reactive({
   // 查询参数
   queryParams: {
@@ -140,10 +188,9 @@ const data = reactive({
     orderByColumn: 'status',
     isAsc: 'desc'
   },
-
-  bonusTestForm: {},
   // 表单参数
   form: {},
+  formConfig: {},
   // 表单校验
   rules: {
     name: [
@@ -152,9 +199,38 @@ const data = reactive({
     value: [
       {required: true, message: '最大金额为必填项', trigger: 'blur'}
     ],
+  },
+  rulesConfig: {
+    initialBonus: [
+      {required: true, message: '需要最小金额', trigger: 'blur'}
+    ],
+    goalBonus: [
+      {required: true, message: '最大金额为必填项', trigger: 'blur'}
+    ],
+    playCount: [
+      {required: true, message: '最大金额为必填项', trigger: 'blur'}
+    ],
+    bonusPlayCount: [
+      {required: true, message: '最大金额为必填项', trigger: 'blur'}
+    ],
+    minimumPoints: [
+      {required: true, message: '最大金额为必填项', trigger: 'blur'}
+    ],
+    maximumPoints: [
+      {required: true, message: '最大金额为必填项', trigger: 'blur'}
+    ],
+    incrementPoints: [
+      {required: true, message: '最大金额为必填项', trigger: 'blur'}
+    ],
+    minimumInvites: [
+      {required: true, message: '最大金额为必填项', trigger: 'blur'}
+    ],
+    maximumInvites: [
+      {required: true, message: '最大金额为必填项', trigger: 'blur'}
+    ],
   }
 });
-const {queryParams, bonusTestForm, form, rules} = toRefs(data);
+const {queryParams, formConfig, form, rules, rulesConfig} = toRefs(data);
 
 
 /** 查询bonus服务配置列表 Query the bonus  service configuration list */
@@ -170,10 +246,23 @@ function getList() {
   })
 }
 
+function getInviteGameConfig() {
+  loading.value = true
+  getInviterConfig().then(response => {
+    formConfig.value = response.data
+    openConfig.value = true
+  })
+  loading.value = false
+}
+
 /** 取消按钮 cancel button */
 function cancel() {
   open.value = false
   reset()
+}
+
+function cancelConfig() {
+  openConfig.value = false
 }
 
 
@@ -223,6 +312,18 @@ function handleAdd() {
 }
 
 
+function handleEdit(row) {
+  switch(row.code) {
+    case "INVITER_GAME_CYCLE_DURATION":
+    case "INVITER_GAME_PRIZE":
+    case "INVITER_GAME_SHOW":
+      handleUpdate(row)
+      break;
+    default:
+      getInviteGameConfig()
+  }
+}
+
 /** 修改按钮操作 Modify button action*/
 function handleUpdate(row) {
   reset()
@@ -251,6 +352,18 @@ function submitForm() {
           getList()
         })
       }
+    }
+  })
+}
+
+function submitConfigForm() {
+  proxy.$refs['configRef'].validate(valid => {
+    if (valid) {
+      updateConfigInviter(formConfig.value).then(() => {
+        proxy.$modal.msgSuccess('修改成功')
+        openConfig.value = false
+        getList()
+      })
     }
   })
 }
