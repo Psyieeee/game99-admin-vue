@@ -42,7 +42,7 @@
 
       <el-table-column label="最少邀请人数" align="center" prop="minimumInvites"/>
       <el-table-column label="最多邀请人数" align="center" prop="maximumInvites"/>
-      <el-table-column label="每次邀请可获得的次数" align="center" prop="spinsPerInvite" min-width="150"/>
+      <el-table-column label="每次邀请可获得的次数" align="center" prop="spinsPerInvite" min-width="180"/>
       <el-table-column label="首次免费次数" align="center" prop="initialSpinCount"/>
 
       <el-table-column label="随机获取最低金额" align="center" prop="minimumPoints"/>
@@ -59,11 +59,6 @@
           ></el-switch>
         </template>
       </el-table-column>
-
-      <el-table-column label="创建者" align="center" prop="createBy"/>
-      <el-table-column label="操作者更新日期" align="center" prop="updateBy"/>
-      <el-table-column label="创建日期" align="center" prop="createAt"/>
-      <el-table-column label="更新时间" align="center" prop="updateAt"/>
 
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" width="120">
         <template #default="scope">
