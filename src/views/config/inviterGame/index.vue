@@ -128,7 +128,7 @@
             <el-input-number v-model="form.spinsPerInvite" controls-position="right" :min="1" step-strictly/>
           </el-form-item>
           <el-form-item label="首次免费旋转" :error="errors.initialSpinCount">
-            <el-input-number v-model="form.initialSpinCount" controls-position="right" min="0" step-strictly/>
+            <el-input-number v-model="form.initialSpinCount" controls-position="right" :min="0" step-strictly/>
           </el-form-item>
         </div>
 
