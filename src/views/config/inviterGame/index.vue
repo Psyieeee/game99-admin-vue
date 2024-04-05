@@ -327,7 +327,7 @@ function nextStep() {
         return;
       }
 
-      const quotient = (form.value.maximumPoints - form.value.minimumPoints) / form.value.step;
+      const quotient = ( form.value.maximumPoints - form.value.minimumPoints ).toFixed( 2 ) / form.value.step;
 
       if( Math.ceil( quotient ) !== quotient ) {
         errors.value.step = "步长必须与最大点完全相加";
