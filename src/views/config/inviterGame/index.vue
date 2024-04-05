@@ -140,7 +140,7 @@
             <el-input-number v-model="form.maximumPoints" controls-position="right" :min="0.02" :step="0.01" step-strictly/>
           </el-form-item>
           <el-form-item label="步骤" :error="errors.step">
-            <el-input-number v-model="form.step" controls-position="right" :min="1" step-strictly/>
+            <el-input-number v-model="form.step" controls-position="right" :min="0.01" :step="0.01" step-strictly/>
           </el-form-item>
         </div>
 
