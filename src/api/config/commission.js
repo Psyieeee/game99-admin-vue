@@ -68,9 +68,9 @@ export function changeStatus(id, status) {
 }
 
 // 删除【请填写功能名称】
-export function delConfigCommission(bonusCode) {
+export function delConfigCommission(ids) {
     return request({
-        url: url.game99PlatformAdminWeb + '/config/commission/' + bonusCode,
+        url: url.game99PlatformAdminWeb + '/config/commission/' + ids,
         method: 'delete'
     })
 }
