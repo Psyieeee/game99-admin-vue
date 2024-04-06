@@ -33,6 +33,18 @@
 <!--      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>-->
 <!--    </el-row>-->
 
+          <el-col :span="1.5">
+            <el-button
+                type="primary"
+                plain
+                icon="Plus"
+                size="small"
+                @click="handleAdd"
+                v-hasPermi="['config:commission:add']"
+            >新增
+            </el-button>
+          </el-col>
+
     <el-table stripe v-loading="loading" :data="configCommissionList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="代码" align="center"       prop="code"/>
