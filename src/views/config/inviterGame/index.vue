@@ -134,7 +134,7 @@
           <el-form-item label="随机获取最高金额" :error="errors.maximumPoints">
             <el-input-number v-model="form.maximumPoints" controls-position="right" :min="0.02" :step="0.01" step-strictly/>
           </el-form-item>
-          <el-form-item label="步数" :error="errors.step">
+          <el-form-item label="每次增加金额" :error="errors.step">
             <el-input-number v-model="form.step" controls-position="right" :min="0.01" :step="0.01" step-strictly/>
           </el-form-item>
         </div>
