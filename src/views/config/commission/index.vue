@@ -20,6 +20,17 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
+            type="primary"
+            plain
+            icon="Plus"
+            size="small"
+            @click="handleAdd"
+            v-hasPermi="['config:commission:add']"
+        >新增
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
             type="success"
             plain
             icon="Edit"
@@ -30,20 +41,8 @@
         >修改
         </el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-            type="primary"
-            plain
-            icon="Plus"
-            size="small"
-            @click="handleAdd"
-            v-hasPermi="['config:commission:add']"
-        >新增
-        </el-button>
-      </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
-    
 
     <el-table stripe v-loading="loading" :data="configCommissionList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
@@ -88,7 +87,7 @@
 
     <!-- 添加或修改 bonus 配置对话框 Add or modify bonus configuration dialog -->
     <el-dialog :title="title" v-model="open" width="700px" append-to-body>
-      <el-form ref="commissionRef" :model="form" :rules="rules" label-width="120px" style="padding-bottom: 50px">
+      <el-form ref="commissionRef" :model="form" :rules="rules" label-width="100px" style="padding-bottom: 50px">
         <el-form-item label="代码" prop="code">
           <el-input v-model="form.code" placeholder="请输入验证码"/>
         </el-form-item>
@@ -96,7 +95,14 @@
           <el-input v-model="form.name" placeholder="请输入姓名"/>
         </el-form-item>
         <el-form-item label="数据类型" prop="dataType">
-          <el-input v-model="form.dataType" placeholder="请输入数据类型"/>
+          <el-select v-model="form.dataType" placeholder="请输入数据类型">
+            <el-option
+                v-for="type in dataTypes"
+                :key="type.value"
+                :label="type.value"
+                :value="type.value"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="价值" prop="value">
           <el-input v-model="form.value" placeholder="请输入值"/>
@@ -141,6 +147,26 @@ const multiple = ref(true);
 const showSearch = ref(true);
 // 是否显示弹出层
 const open = ref(false);
+
+const dataTypes = ref([
+  {
+    value: 'STRING',
+    label: 'STRING'
+  },
+  {
+    value: 'BOOLEAN',
+    label: 'BOOLEAN'
+  },
+  {
+    value: 'INTEGER',
+    label: 'INTEGER'
+  },
+  {
+    value: 'DECIMAL',
+    label: 'DECIMAL'
+  }]
+)
+
 
 const data = reactive({
   // 查询参数
