@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" >
+    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
       <el-form-item label="类型" prop="type">
         <el-select v-model="queryParams.type" placeholder="类型" clearable>
           <el-option
@@ -11,24 +11,24 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="邀请码"  prop="inviterCode">
+      <el-form-item label="排除邀请码" prop="inviterCode">
         <el-input
             v-model="queryParams.inviterCode"
-            placeholder="邀请码"
+            placeholder="排除掉的邀请码"
             clearable
             @keyup.enter="getList"
         />
       </el-form-item>
-      <el-form-item label="装置" prop="device">
-        <el-select v-model="queryParams.device" placeholder="装置" clearable>
-          <el-option label="网站" :value=0></el-option>
-          <el-option label="手机登录" :value=1></el-option>
+      <el-form-item label="设备类型" prop="device">
+        <el-select v-model="queryParams.device" placeholder="设备类型" clearable>
+          <el-option label="网页端" :value=0></el-option>
+          <el-option label="手机端" :value=1></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="状态" clearable>
-          <el-option label="不活跃的" :value=0></el-option>
-          <el-option label="积极的" :value=1></el-option>
+      <el-form-item label="派奖状态" prop="status">
+        <el-select v-model="queryParams.status" placeholder="派奖状态" clearable>
+          <el-option label="激活" :value="1"></el-option>
+          <el-option label="停用" :value="0"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -37,48 +37,21 @@
       </el-form-item>
     </el-form>
 
-    <!--    button on the table for query-->
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-            v-hasPermi="['settings:bonus:add']"
-            icon="Plus"
-            plain
-            size="small"
-            type="primary"
-            @click="handleAdd"
-        >新增
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-            v-hasPermi="['settings:bonus:delete']"
-            :disabled="multiple"
-            icon="Delete"
-            plain
-            size="small"
-            type="danger"
-            @click="handleDelete"
-        >删除
-        </el-button>
-      </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
-
     <!--    display data in table -->
     <el-table v-loading="loading" :data="recordList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="赠送金额" width="180" prop="money" />
-      <el-table-column align="center" label="类型" min-width="180" prop="type">
-        <template #default="scope">{{types.find((e) => e.value === scope.row.type).label}}</template>
+      <el-table-column align="center" label="赠送金额" min-width="120" prop="money"/>
+      <el-table-column align="center" label="类型" min-width="120" prop="type">
+        <template #default="scope">{{ types.find((e) => e.value === scope.row.type).label }}</template>
       </el-table-column>
-      <el-table-column align="center" label="基金目的地" width="180" prop="destination" :formatter="formatterDestination"/>
-      <el-table-column align="center" label="倍数" width="180" prop="multiplier" />
+      <el-table-column align="center" label="奖励方式" width="180" prop="destination"
+                       :formatter="formatterDestination"/>
+      <el-table-column align="center" label="赠送打码倍数" width="110" prop="multiplier"/>
 
-      <el-table-column align="center" label="设备安装要求" min-width="180" prop="count" />
-      <el-table-column align="center" label="注册时间要求" min-width="180" prop="effectiveTime" />
-      <el-table-column label="装置" align="center" prop="device" :formatter="formatterDevice"/>
-      <el-table-column align="center" label="显示图标" width="180" prop="displayIcon">
+      <el-table-column align="center" label="安装设备数量" min-width="100" prop="count"/>
+      <el-table-column align="center" label="注册时间要求" min-width="120" prop="effectiveTime"/>
+      <el-table-column label="设备类型" align="center" prop="device" :formatter="formatterDevice"/>
+      <el-table-column align="center" label="显示状态" width="90" prop="displayIcon">
         <template #default="scope">
           <el-switch
               v-model="scope.row.displayIcon"
@@ -88,7 +61,7 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="状态" width="180" prop="status">
+      <el-table-column align="center" label="派奖状态" width="180" prop="status">
         <template #default="scope">
           <el-switch
               v-model="scope.row.status"
@@ -98,8 +71,9 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="描述" width="180" prop="description" />
-      <el-table-column align="center" label="邀请码" width="180" prop="inviterCode" />
+      <el-table-column align="center" label="翻译键" width="180" prop="description"/>
+      <el-table-column align="center" label="排除邀请码" width="180" prop="inviterCode"/>
+      <el-table-column align="center" label="排序" width="90" prop="sort"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <el-button
@@ -108,14 +82,6 @@
               size="small"
               type="primary"
               @click="handleUpdate(scope.row)">修改
-          </el-button>
-          <el-button
-              v-hasPermi="['settings:bonus:delete']"
-              icon="Delete" link
-              size="small"
-              style="color: #e05e5e"
-              type="danger"
-              @click="handleDelete(scope.row)">删除
           </el-button>
         </template>
       </el-table-column>
@@ -126,11 +92,8 @@
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="600px" :rules="rules">
       <el-form ref="queryForm" :model="form" :rules="rules" label-width="120px">
-        <el-form-item label="赠送金額" prop="money">
-          <el-input type="number" v-model="form.money" placeholder="赠送金額"/>
-        </el-form-item>
         <el-form-item label="类型" prop="type">
-          <el-select v-model="form.type" clearable placeholder="类型">
+          <el-select v-model="form.type" clearable placeholder="类型" :disabled="true">
             <el-option
                 v-for="type in types"
                 :key="type.value"
@@ -139,17 +102,27 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="性别">
+        <el-form-item label="设备类型" prop="device" width="100px">
+          <el-select v-model="form.device" width="100px" :disabled="true">
+            <el-option label="网页端" :value=0></el-option>
+            <el-option label="手机端" :value=1></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="赠送金額" prop="money">
+          <el-input type="number" v-model="form.money" placeholder="赠送金額"/>
+        </el-form-item>
+        <el-form-item label="奖励方式">
           <el-radio-group v-model="form.destination" @change="handleDestinationChange()">
             <el-radio label="ACCOUNT">账户</el-radio>
             <el-radio label="BONUS">积分</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="赠送金额倍数" prop="multiplier">
-          <el-input type="number" v-model="form.multiplier" placeholder="赠送金额倍数" :disabled="form.destination==='BONUS'"/>
+        <el-form-item label="赠送打码倍数" prop="multiplier">
+          <el-input type="number" v-model="form.multiplier" placeholder="赠送打码倍数"
+                    :disabled="form.destination==='BONUS'"/>
         </el-form-item>
-        <el-form-item label="设备数量" prop="count">
-          <el-input type="number" v-model="form.count" placeholder="设备数量"/>
+        <el-form-item label="安装设备数量" prop="count">
+          <el-input type="number" v-model="form.count" placeholder="安装设备数量"/>
         </el-form-item>
         <el-form-item label="生效日期和时间" prop="effectiveTime">
           <el-date-picker
@@ -160,29 +133,15 @@
               value-format="YYYY-MM-DD hh:mm:ss"
           />
         </el-form-item>
-        <el-form-item label="描述" prop="description">
-          <el-input v-model="form.description" placeholder="描述" type="textarea"/>
+        <el-form-item label="翻译键" prop="description">
+          <el-input v-model="form.description" placeholder="翻译键" type="textarea"/>
         </el-form-item>
-        <el-form-item label="显示图标" prop="displayIcon">
-          <el-switch v-model="form.displayIcon"
-                     :active-value=1
-                     :inactive-value=0
-          />
+        <el-form-item label="排除邀请码" prop="inviterCode">
+          <el-input v-model="form.inviterCode" placeholder="此处填写邀请码,该邀请码不赠送,使用','(英文逗号)分割"
+                    type="text"/>
         </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-switch v-model="form.status"
-                     :active-value=1
-                     :inactive-value=0
-          />
-        </el-form-item>
-        <el-form-item label="邀请码" prop="inviterCode">
-          <el-input v-model="form.inviterCode" placeholder="此处填写邀请码,该邀请码不赠送" type="text"/>
-        </el-form-item>
-        <el-form-item label="装置" prop="device" width="100px">
-          <el-select v-model="form.device" placeholder="选择设备" width="100px">
-            <el-option label="网站" :value=0></el-option>
-            <el-option label="手机登录" :value=1></el-option>
-          </el-select>
+        <el-form-item label="排序" prop="inviterCode">
+          <el-input v-model="form.sort" placeholder="排序" type="number"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -224,7 +183,7 @@ const data = reactive({
 
   rules: {
     type: [
-      {required: true, message: '无效的值', trigger: 'blur'}
+      {required: true, message: '请选择类型', trigger: 'blur'}
     ],
     money: [
       {required: true, message: '无效的设备', trigger: 'blur'}
@@ -257,7 +216,15 @@ const types = ref([
   },
   {
     value: 'BIND_GOOGLE_BONUS',
-    label: '绑谷歌'
+    label: '绑定谷歌'
+  },
+  {
+    value: 'BIND_GOOGLE_EMAIL_BONUS',
+    label: '绑定谷歌和电子邮件'
+  },
+  {
+    value: 'BIND_DEVICE_BONUS',
+    label: '绑定设备号(游客登录)'
   }
 ])
 
@@ -382,6 +349,7 @@ function toggleSwitchDisplay(row) {
     row.displayIcon = row.displayIcon === 0 ? 1 : 0
   })
 }
+
 function resetQuery() {
   proxy.resetForm('queryRef')
   getList()
@@ -397,8 +365,8 @@ function formatterDestination(row) {
   }
 }
 
-function handleDestinationChange(){
-  if ( form.value.destination === 'BONUS') {
+function handleDestinationChange() {
+  if (form.value.destination === 'BONUS') {
     form.value.multiplier = 0;
   }
 }
@@ -406,9 +374,9 @@ function handleDestinationChange(){
 function formatterDevice(row) {
   switch (row.device) {
     case 0 :
-      return "网站";
+      return "网页端";
     case 1 :
-      return "手机登录";
+      return "手机端";
     default  :
       return "";
   }
