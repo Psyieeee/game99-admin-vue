@@ -30,20 +30,20 @@
         >修改
         </el-button>
       </el-col>
+      <el-col :span="1.5">
+        <el-button
+            type="primary"
+            plain
+            icon="Plus"
+            size="small"
+            @click="handleAdd"
+            v-hasPermi="['config:commission:add']"
+        >新增
+        </el-button>
+      </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
-
-          <el-col :span="1.5">
-            <el-button
-                type="primary"
-                plain
-                icon="Plus"
-                size="small"
-                @click="handleAdd"
-                v-hasPermi="['config:commission:add']"
-            >新增
-            </el-button>
-          </el-col>
+    
 
     <el-table stripe v-loading="loading" :data="configCommissionList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
@@ -90,13 +90,13 @@
     <el-dialog :title="title" v-model="open" width="700px" append-to-body>
       <el-form ref="commissionRef" :model="form" :rules="rules" label-width="120px" style="padding-bottom: 50px">
         <el-form-item label="代码" prop="code">
-          <el-input v-model="form.code" placeholder="请输入验证码" disabled/>
+          <el-input v-model="form.code" placeholder="请输入验证码"/>
         </el-form-item>
         <el-form-item label="姓名" prop="name">
           <el-input v-model="form.name" placeholder="请输入姓名"/>
         </el-form-item>
         <el-form-item label="数据类型" prop="dataType">
-          <el-input v-model="form.dataType" placeholder="请输入数据类型" disabled/>
+          <el-input v-model="form.dataType" placeholder="请输入数据类型"/>
         </el-form-item>
         <el-form-item label="价值" prop="value">
           <el-input v-model="form.value" placeholder="请输入值"/>
