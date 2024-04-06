@@ -116,8 +116,8 @@
           <el-form-item label="最少邀请人数" :error="errors.minimumInvites">
             <el-input-number v-model="form.minimumInvites" controls-position="right" :min="1" step-strictly/>
           </el-form-item>
-          <el-form-item label="最多邀请人数" :error="errors.maximumInvites" :min="2">
-            <el-input-number v-model="form.maximumInvites" controls-position="right" step-strictly/>
+          <el-form-item label="最多邀请人数" :error="errors.maximumInvites">
+            <el-input-number v-model="form.maximumInvites" controls-position="right" :min="2" step-strictly/>
           </el-form-item>
           <el-form-item label="每次邀请可获得的次数" :error="errors.spinsPerInvite">
             <el-input-number v-model="form.spinsPerInvite" controls-position="right" :min="1" step-strictly/>
@@ -247,16 +247,15 @@ function nextStep() {
         return;
       }
 
-      if( isEmpty( form.value.duration ) ) {
-        errors.value.duration = "持续时间不能为空";
-        return;
-      }
-
       if( form.value.initialAmount >= form.value.finalAmount ) {
         errors.value.finalAmount = "最终金额必须大于初始金额";
         return;
       }
 
+      if( isEmpty( form.value.duration ) ) {
+        errors.value.duration = "持续时间不能为空";
+        return;
+      }
       break;
     case 1:
       if( isEmpty( form.value.minimumInvites ) ) {
@@ -269,6 +268,11 @@ function nextStep() {
         return;
       }
 
+      if( form.value.minimumInvites >= form.value.maximumInvites ) {
+        errors.value.maximumInvites = "最大邀请金额必须大于最小邀请金额";
+        return;
+      }
+
       if( isEmpty( form.value.spinsPerInvite ) ) {
         errors.value.spinsPerInvite = "每次邀请的旋转次数不能为空";
         return;
@@ -278,12 +282,6 @@ function nextStep() {
         errors.value.initialSpinCount = "初始免费旋转不能为空";
         return;
       }
-
-      if( form.value.minimumInvites >= form.value.maximumInvites ) {
-        errors.value.maximumInvites = "最大邀请金额必须大于最小邀请金额";
-        return;
-      }
-
       break;
     case 2:
       if( isEmpty( form.value.minimumPoints ) ) {
@@ -296,37 +294,37 @@ function nextStep() {
         return;
       }
 
-      if( isEmpty( form.value.step ) ) {
-        errors.value.step = "步骤不能为空";
+      if( form.value.minimumPoints >= form.value.maximumPoints ) {
+        errors.value.maximumPoints = "最高分必须大于最低分";
         return;
       }
 
       const targetSum = form.value.finalAmount - form.value.initialAmount;
       const minSpins = form.value.initialSpinCount * 1 + form.value.minimumInvites * form.value.spinsPerInvite;
       const maxSpins = form.value.initialSpinCount * 1 + form.value.maximumInvites * form.value.spinsPerInvite;
-      let minPossibleChoice = targetSum / maxSpins;
-      let maxPossibleChoice = targetSum / minSpins;
+      let minPossibleChoiceTmp = targetSum / maxSpins;
+      let maxPossibleChoiceTmp = targetSum / minSpins;
 
-      if( Math.floor( minPossibleChoice ) !== minPossibleChoice ) {
-        minPossibleChoice = minPossibleChoice.toFixed( 3 ) * 1;
+      if( Math.floor( minPossibleChoiceTmp ) !== minPossibleChoiceTmp ) {
+        minPossibleChoiceTmp = minPossibleChoiceTmp.toFixed( 3 ) * 1;
       }
 
-      if( Math.floor( maxPossibleChoice ) !== maxPossibleChoice ) {
-        maxPossibleChoice = maxPossibleChoice.toFixed( 3 ) * 1;
+      if( Math.floor( maxPossibleChoiceTmp ) !== maxPossibleChoiceTmp ) {
+        maxPossibleChoiceTmp = maxPossibleChoiceTmp.toFixed( 3 ) * 1;
       }
 
-      if( form.value.minimumPoints < minPossibleChoice || form.value.minimumPoints >= maxPossibleChoice ) {
-        errors.value.minimumPoints = "最小点数超出" + minPossibleChoice + "至" + maxPossibleChoice + "的可能范围";
+      if( form.value.minimumPoints < minPossibleChoiceTmp || form.value.minimumPoints >= maxPossibleChoiceTmp ) {
+        errors.value.minimumPoints = "最小点数超出" + minPossibleChoiceTmp + "至" + maxPossibleChoiceTmp + "的可能范围";
         return;
       }
 
-      if( form.value.maximumPoints <= minPossibleChoice || form.value.maximumPoints > maxPossibleChoice ) {
-        errors.value.maximumPoints = "最高分超出了" + minPossibleChoice + "至" + maxPossibleChoice + "分的可能范围";
+      if( form.value.maximumPoints <= minPossibleChoiceTmp || form.value.maximumPoints > maxPossibleChoiceTmp ) {
+        errors.value.maximumPoints = "最高分超出了" + minPossibleChoiceTmp + "至" + maxPossibleChoiceTmp + "分的可能范围";
         return;
       }
 
-      if( form.value.minimumPoints >= form.value.maximumPoints ) {
-        errors.value.maximumPoints = "最高分必须大于最低分";
+      if( isEmpty( form.value.step ) ) {
+        errors.value.step = "步骤不能为空";
         return;
       }
 
