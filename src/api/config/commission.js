@@ -10,6 +10,13 @@ export function listConfigCommission(query) {
     })
 }
 
+export function getInviterConfig() {
+    return request({
+        url: url.game99PlatformAdminWeb + '/config/commission/getInviterConfig',
+        method: 'get'
+    })
+}
+
 export function listConfigCommissionPic(query) {
     return request({
         url: url.game99PlatformAdminWeb + '/config/commission/listRecommendPic',
@@ -44,6 +51,14 @@ export function updateConfigCommission(data) {
     })
 }
 
+export function updateConfigInviter(data) {
+    return request({
+        url: url.game99PlatformAdminWeb + '/config/commission/updateInviterConfig',
+        method: 'put',
+        data: data
+    })
+}
+
 // 修改状态
 export function changeStatus(id, status) {
     return request({
@@ -53,9 +68,9 @@ export function changeStatus(id, status) {
 }
 
 // 删除【请填写功能名称】
-export function delConfigCommission(bonusCode) {
+export function delConfigCommission(ids) {
     return request({
-        url: url.game99PlatformAdminWeb + '/config/commission/' + bonusCode,
+        url: url.game99PlatformAdminWeb + '/config/commission/' + ids,
         method: 'delete'
     })
 }

@@ -210,7 +210,7 @@ function getList() {
 
 /** 取消按钮 cancel button */
 function cancel() {
-  open.value = falsed
+  open.value = false
   reset()
 }
 
