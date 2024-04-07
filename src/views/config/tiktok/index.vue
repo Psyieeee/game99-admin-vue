@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
-      <el-form-item label="本我" prop="id">
+      <el-form-item label="ID" prop="id">
         <el-input
             v-model="queryParams.id"
             placeholder="请输入 ID"
@@ -45,7 +45,7 @@
 
     <el-table stripe v-loading="loading" :data="tiktokList" @selection-change="handleSelectionChange" >
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="本我" align="center"      prop="id" sortable="custom"/>
+      <el-table-column label="ID" align="center"      prop="id" sortable="custom"/>
       <el-table-column label="频道编码" align="center"      prop="channelCode" sortable="custom"/>
       <el-table-column label="像素码" align="center"      prop="pixelCode" sortable="custom"/>
       <el-table-column label="授权令牌" align="center"      prop="authToken" sortable="custom"/>

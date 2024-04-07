@@ -152,11 +152,11 @@ const languages = ref([
     label: '简体中文'
   },
   {
-    value: 'hk',
+    value: 'tw',
     label: '中文（香港）'
   },
   {
-    value: 'in',
+    value: 'id',
     label: '印尼语'
   },
   {
