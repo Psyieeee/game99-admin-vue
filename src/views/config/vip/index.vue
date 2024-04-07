@@ -24,7 +24,11 @@
        <el-table-column label="救援奖金率" prop="rescueBonusRate" align="center"/>
        <el-table-column label="vip奖金类型" prop="missionRewardTypeTranslated" align="center"/>
        <el-table-column label="vip倍数" prop="multiplier" align="center"/>
-       <el-table-column label="救援类型" prop="rescueBonusType" align="center"/>
+       <el-table-column label="救援类型" align="center" prop="rescueBonusType">
+         <template #default="scope">
+           <dict-tag :options="transfer_to" :value="scope.row.rescueBonusType"/>
+         </template>
+       </el-table-column>
        <el-table-column label="救援彩金倍数" prop="rescueBonusMultiplier" align="center"/>
        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="120">
          <template #default="scope">
@@ -241,6 +245,7 @@ const data = reactive({
   }
 });
 const {queryParams,form,rules} = toRefs(data);
+const {transfer_to} = proxy.useDict("transfer_to");
 
 /**
  * 查询会员VIP配置列表

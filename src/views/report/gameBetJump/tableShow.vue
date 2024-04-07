@@ -66,7 +66,6 @@ function list() {
   listByGamePepole(queryParams.value).then((res) => {
     tableData.value = res.data;
     total.value = res.total
-    open.value = true;
     loading.value = false;
   })
 }
@@ -96,6 +95,7 @@ defineExpose({
 });
 
 function setParam(params) {
+  open.value = true;
   queryParams.value = params;
   list()
 }

@@ -53,8 +53,8 @@
     <!--    display data in table -->
     <el-table v-loading="loading" :data="inviterGameCardList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="歌曲名称" min-width="180" prop="name"/>
-      <el-table-column :show-overflow-tooltip="true" align="center" label="网址" min-width="180" prop="icon">
+<!--      <el-table-column align="center" label="歌曲名称" min-width="180" prop="name"/>-->
+      <el-table-column :show-overflow-tooltip="true" align="center" label="图片" min-width="180" prop="icon">
         <template #default="scope">
           <div>
             <a
@@ -71,7 +71,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="歌曲名称" min-width="180" prop="points"/>
+<!--      <el-table-column align="center" label="歌曲名称" min-width="180" prop="points"/>-->
       <el-table-column align="center" label="状态" prop="status">
         <template #default="scope">
           <el-switch
@@ -120,16 +120,16 @@
       <el-form ref="inviterGameCardRef" :model="form" :rules="rules" label-width="120px">
         <div class="el-row">
           <div class="el-col-lg-12">
-            <el-form-item label="歌曲名称" prop="name" style="min-width: 290px">
-              <el-input
-                  v-model="form.name"
-                  clearable
-                  placeholder="请输入歌曲名称"
-              />
-            </el-form-item>
-            <el-form-item label="积分" prop="points">
-              <el-input-number :step="0.01" v-model="form.points" placeholder="请输入点数"/>
-            </el-form-item>
+<!--            <el-form-item label="歌曲名称" prop="name" style="min-width: 290px">-->
+<!--              <el-input-->
+<!--                  v-model="form.name"-->
+<!--                  clearable-->
+<!--                  placeholder="请输入歌曲名称"-->
+<!--              />-->
+<!--            </el-form-item>-->
+<!--            <el-form-item label="积分" prop="points">-->
+<!--              <el-input-number :step="0.01" v-model="form.points" placeholder="请输入点数"/>-->
+<!--            </el-form-item>-->
             <el-form-item v-hasPermi="['config:inviterGameCard:edit']" label="活跃" prop="status">
               <template #default="scope">
                 <el-switch
