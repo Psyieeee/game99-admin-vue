@@ -69,7 +69,7 @@ import { recordList, addRecord, updateRecord, changeStatus, getRecord, deleteRec
 const jumpTypes =[
   {
     value: 'VIP',
-    label: '贵宾'
+    label: 'VIP'
   },
   {
     value: 'DAILY_BONUS',
@@ -89,11 +89,11 @@ const jumpTypes =[
   },
   {
     value: 'INVITER',
-    label: '邀请人'
+    label: '推广'
   },
   {
     value: 'EXTERNAL',
-    label: '外部'
+    label: '跳转外部浏览器'
   }
 ]
 
@@ -111,7 +111,7 @@ const TEXT      = {
   ANNOUNCEMENT_EDIT: '更新公告',
   ANNOUNCEMENT_ADD:  '添加公告',
   LABEL_ACTION:      'action',
-  LABEL_JUMP_TYPE:   '跳跃式',
+  LABEL_JUMP_TYPE:   '跳转指向',
   LABEL_CONTENT:     '内容',
   LABEL_STATUS:      '状态',
   LABEL_DEVICE:      '设备类型',
@@ -119,10 +119,10 @@ const TEXT      = {
   LABEL_SUBMIT:      '确 定',
   LABEL_CANCEL:      '取 消',
   LABEL_TITLE:       '标题',
-  LABEL_IMAGE:       '照片',
+  LABEL_IMAGE:       '图片',
   LABEL_ADD:         '新增',
-  LABEL_EDIT:        '新增',
-  LABEL_SORT:        '分类',
+  LABEL_EDIT:        '编辑',
+  LABEL_SORT:        '显示排序',
   LABEL_DEL:         '删除',
   PROP_JUMP_TYPE:    'jumpType',
   PROP_CONTENT:      'content',
@@ -152,8 +152,8 @@ const TEXT      = {
   DEL_SUCCESS:       '已成功删除',
   EDIT_SUCCESS:      '修改成功',
   ADD_SUCCESS:       '新增成功',
-  INVALID_TITLE:     '需要标题',
-  INVALID_CONTENT:   '所需内容',
+  INVALID_TITLE:     '请填写标题',
+  INVALID_CONTENT:   '请填写内容',
   EDIT_FAILED:       '修改',
   ACTIVE:            '启用',
 }
