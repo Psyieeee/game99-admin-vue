@@ -216,14 +216,15 @@ function handleDelete(row) {
 
 function toggleStatusSwitch(row) {
   try {
+    loading.value = true;
     proxy.$confirm(TEXT.CONFIRM_WARNING, {
       confirmButtonText: TEXT.LABEL_CONFIRM,
       cancelButtonText: TEXT.LABEL_CANCEL
     }).then(()=>{
-      loading.value = true;
-      changeStatus(row.id, row.status);
-      proxy.$modal.msgSuccess(TEXT.EDIT_SUCCESS);
+      return changeStatus(row.id, row.status);
+    }).then(()=>{
       getList();
+      proxy.$modal.msgSuccess(TEXT.EDIT_SUCCESS);
     }).catch(()=> row.status = !row.status);
   } catch (error) {
     if (error !== TEXT.CANCEL) {
