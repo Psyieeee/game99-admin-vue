@@ -208,7 +208,7 @@ function reset() {
     image: null,
     content: null,
     status: 0,
-    device: 1,
+    device: null,
     jumpType: jumpTypes[0].value,
     sort: null
   }
