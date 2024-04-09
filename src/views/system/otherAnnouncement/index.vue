@@ -11,6 +11,7 @@
             <img :src="scope.row.image" class="image-preview">
           </template>
         </el-table-column>
+        <el-table-column v-else-if="field.prop === TEXT.PROP_JUMP_TYPE"   :label="field.label" :prop="field.prop" :align="field.align" :formatter="getTranslatedJumpType"/>
         <el-table-column v-else-if="field.prop === TEXT.PROP_STATUS"   :label="field.label" :prop="field.prop" :align="field.align">
           <template #default="scope">
             <el-switch v-model="scope.row.status" :active-value=1 :inactive-value=0 @click="toggleStatusSwitch(scope.row)"/>
@@ -30,9 +31,9 @@
         <el-form-item :label="TEXT.LABEL_TITLE" :prop="TEXT.PROP_TITLE">
             <el-input v-model="form.title" :placeholder="TEXT.PLACEHOLDER_TITLE" />
           </el-form-item>
-        <el-form-item :label="TEXT.LABEL_JUMP_TYPE">
+        <el-form-item :label="TEXT.LABEL_JUMP_TYPE" :prop="TEXT.PROP_JUMP_TYPE">
           <el-select v-model="form.jumpType">
-            <el-option v-for="type in jumpTypes" :key="type" :label="type" :value="type"/>
+            <el-option v-for="type in jumpTypes" :key="type.value" :label="type.label" :value="type.value"/>
           </el-select>
         </el-form-item>
         <el-form-item :label="TEXT.LABEL_CONTENT" :prop="TEXT.PROP_CONTENT">
@@ -65,7 +66,37 @@
 import { reactive, ref, toRefs } from "vue";
 import { recordList, addRecord, updateRecord, changeStatus, getRecord, deleteRecord } from "@/api/system/otherAnnouncement.js";
 
-const jumpTypes = ["VIP", "DAILY_BONUS", "FUND" ,"RECHARGE","BIND_PHONE" , "INVITER", "EXTERNAL"]
+const jumpTypes =[
+  {
+    value: 'VIP',
+    label: '贵宾'
+  },
+  {
+    value: 'DAILY_BONUS',
+    label: '每日奖金'
+  },
+  {
+    value: 'FUND',
+    label: '基金'
+  },
+  {
+    value: 'RECHARGE',
+    label: '充值'
+  },
+  {
+    value: 'BIND_PHONE',
+    label: '绑定手机'
+  },
+  {
+    value: 'INVITER',
+    label: '邀请人'
+  },
+  {
+    value: 'EXTERNAL',
+    label: '外部'
+  }
+]
+
 const {proxy}   = getCurrentInstance();
 const openForm  = ref(false);
 const multiple  = ref(true);
@@ -178,7 +209,7 @@ function reset() {
     content: null,
     status: 0,
     device: 1,
-    jumpType: jumpTypes[0],
+    jumpType: jumpTypes[0].value,
     sort: null
   }
   proxy.resetForm(TEXT.REF_NAME);
@@ -255,6 +286,11 @@ function formatterDevice(row) {
     default  :
       return "";
   }
+}
+
+function getTranslatedJumpType(row) {
+  const type = jumpTypes.find(type => type.value === row.jumpType);
+  return type ? type.label : null;
 }
 
 getList()
