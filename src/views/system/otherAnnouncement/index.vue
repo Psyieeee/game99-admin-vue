@@ -16,6 +16,7 @@
             <el-switch v-model="scope.row.status" :active-value=1 :inactive-value=0 @click="toggleStatusSwitch(scope.row)"/>
           </template>
         </el-table-column>
+        <el-table-column v-else-if="field.prop === TEXT.PROP_DEVICE"   :label="field.label" :prop="field.prop" :align="field.align" :formatter="formatterDevice"/>
         <el-table-column v-else                                        :label="field.label" :prop="field.prop" :align="field.align"/>
       </template>
       <el-table-column :align="TEXT.CENTER" class-name="small-padding fixed-width" :fixed="TEXT.RIGHT" :label="TEXT.LABEL_ACTION" min-width="100">
@@ -42,6 +43,12 @@
         </el-form-item>
         <el-form-item :label="TEXT.LABEL_STATUS" :prop="TEXT.PROP_STATUS">
           <el-switch v-model="form.status" :active-value=1 :inactive-value=0 />
+        </el-form-item>
+        <el-form-item :label="TEXT.LABEL_DEVICE" :prop="TEXT.PROP_DEVICE" >
+          <el-select v-model="form.device" width="100px">
+            <el-option label="网页端" :value=0></el-option>
+            <el-option label="手机端" :value=1></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item :label="TEXT.LABEL_SORT" :prop="TEXT.PROP_SORT">
           <el-input v-model="form.sort" style="width: 100px"/>
@@ -76,9 +83,10 @@ const TEXT      = {
   LABEL_JUMP_TYPE:   '跳跃式',
   LABEL_CONTENT:     '内容',
   LABEL_STATUS:      '状态',
+  LABEL_DEVICE:      '设备类型',
   LABEL_CONFIRM:     '确定',
-  LABEL_SUBMIT:      '提交',
-  LABEL_CANCEL:      '取消',
+  LABEL_SUBMIT:      '确 定',
+  LABEL_CANCEL:      '取 消',
   LABEL_TITLE:       '标题',
   LABEL_IMAGE:       '照片',
   LABEL_ADD:         '新增',
@@ -88,6 +96,7 @@ const TEXT      = {
   PROP_JUMP_TYPE:    'jumpType',
   PROP_CONTENT:      'content',
   PROP_STATUS:       'status',
+  PROP_DEVICE:       'device',
   PROP_TITLE:        'title',
   PROP_IMAGE:        'image',
   PROP_SORT:         'sort',
@@ -123,8 +132,8 @@ const ACTION_BUTTON = {
   DEL:  { label: TEXT.LABEL_DEL,  icon: TEXT.DELETE,  size: TEXT.SMALL, type: TEXT.DANGER,  permission: TEXT.PERMISSION_DEL,  handler: handleDelete },
 }
 const FOOTER_BUTTON = {
-  SUBMIT: { label: TEXT.LABEL_SUBMIT, icon: null,    size: TEXT.SMALL, type: TEXT.SUCCESS, handler: submitForm },
-  CANCEL: { label: TEXT.LABEL_CANCEL, icon: null,         size: TEXT.SMALL, type: TEXT.PRIMARY, handler: () => openForm.value = false },
+  SUBMIT: { label: TEXT.LABEL_SUBMIT, icon: null,    size: TEXT.SMALL, type: TEXT.PRIMARY, handler: submitForm },
+  CANCEL: { label: TEXT.LABEL_CANCEL, icon: null,         size: TEXT.SMALL, handler: () => openForm.value = false },
 }
 const HOME_BUTTON   = {
   ADD: { label: TEXT.LABEL_ADD, icon: TEXT.PLUS,   size: TEXT.SMALL, type: TEXT.PRIMARY, permission: TEXT.PERMISSION_ADD, handler: handleAdd },
@@ -136,6 +145,7 @@ const TABLE         = {
   CONTENT:   { label: TEXT.LABEL_CONTENT,   prop: TEXT.PROP_CONTENT,   align: TEXT.CENTER },
   JUMP_TYPE: { label: TEXT.LABEL_JUMP_TYPE, prop: TEXT.PROP_JUMP_TYPE, align: TEXT.CENTER },
   STATUS:    { label: TEXT.LABEL_STATUS,    prop: TEXT.PROP_STATUS,    align: TEXT.CENTER },
+  DEVICE:    { label: TEXT.LABEL_DEVICE,    prop: TEXT.PROP_DEVICE,    align: TEXT.CENTER },
   SORT:      { label: TEXT.LABEL_SORT,      prop: TEXT.PROP_SORT,      align: TEXT.CENTER },
 }
 const data          = reactive({
@@ -167,6 +177,7 @@ function reset() {
     image: null,
     content: null,
     status: 0,
+    device: 1,
     jumpType: jumpTypes[0],
     sort: null
   }
@@ -232,6 +243,17 @@ function toggleStatusSwitch(row) {
     }
   } finally {
     loading.value = false;
+  }
+}
+
+function formatterDevice(row) {
+  switch (row.device) {
+    case 0 :
+      return "网页端";
+    case 1 :
+      return "手机端";
+    default  :
+      return "";
   }
 }
 
