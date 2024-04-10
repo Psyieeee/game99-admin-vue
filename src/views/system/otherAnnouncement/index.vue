@@ -83,10 +83,12 @@
         <el-form-item :label="TEXT.LABEL_SORT" :prop="TEXT.PROP_SORT">
           <el-input v-model="form.sort" style="width: 100px"/>
         </el-form-item>
-        <el-form-item :label="TEXT.LABEL_IMAGE_SIZE" :prop="TEXT.PROP_IMAGE_SIZE">
-          <el-radio v-model="form.imageSize" label="1">{{ TEXT.LABEL_IMAGE_SIZE_LARGE }}</el-radio>
-          <el-radio v-model="form.imageSize" label="2">{{ TEXT.LABEL_IMAGE_SIZE_MEDIUM }}</el-radio>
-          <el-radio v-model="form.imageSize" label="3">{{ TEXT.LABEL_IMAGE_SIZE_SMALL }}</el-radio>
+        <el-form-item :label="TEXT.LABEL_IMAGE_SIZE" :prop="TEXT.PROP_IMAGE_SIZE" >
+          <el-radio-group v-model="form.imageSize">
+            <el-radio v-model="form.imageSize" :label=1 >{{ TEXT.LABEL_IMAGE_SIZE_LARGE }}</el-radio>
+            <el-radio v-model="form.imageSize" :label=2 >{{ TEXT.LABEL_IMAGE_SIZE_MEDIUM }}</el-radio>
+            <el-radio v-model="form.imageSize" :label=3 >{{ TEXT.LABEL_IMAGE_SIZE_SMALL }}</el-radio>
+          </el-radio-group>
         </el-form-item>
       </el-form>
       <div :slot="TEXT.FOOTER" class="dialog-footer">
