@@ -11,16 +11,14 @@
             <img :src="scope.row.image" class="image-preview">
           </template>
         </el-table-column>
-        <el-table-column v-else-if="field.prop === TEXT.PROP_IMAGE_SIZE"   :label="field.label" :prop="field.prop" :align="field.align">
-          <template #default="scope">
-            {{getImageSize(scope.row.imageSize)}}
-          </template>
-        </el-table-column>
+        <el-table-column v-else-if="field.prop === TEXT.PROP_JUMP_TYPE"   :label="field.label" :prop="field.prop" :align="field.align" :formatter="getTranslatedJumpType"/>
         <el-table-column v-else-if="field.prop === TEXT.PROP_STATUS"   :label="field.label" :prop="field.prop" :align="field.align">
           <template #default="scope">
             <el-switch v-model="scope.row.status" :active-value=1 :inactive-value=0 @click="toggleStatusSwitch(scope.row)"/>
           </template>
         </el-table-column>
+        <el-table-column v-else-if="field.prop === TEXT.PROP_DEVICE"   :label="field.label" :prop="field.prop" :align="field.align" :formatter="formatterDevice"/>
+        <el-table-column v-else-if="field.prop === TEXT.PROP_IMAGE_SIZE"   :label="field.label" :prop="field.prop" :align="field.align" :formatter="formatterImageSize"/>
         <el-table-column v-else                                        :label="field.label" :prop="field.prop" :align="field.align"/>
       </template>
       <el-table-column :align="TEXT.CENTER" class-name="small-padding fixed-width" :fixed="TEXT.RIGHT" :label="TEXT.LABEL_ACTION" min-width="100">
@@ -35,9 +33,9 @@
         <el-form-item :label="TEXT.LABEL_TITLE" :prop="TEXT.PROP_TITLE">
             <el-input v-model="form.title" :placeholder="TEXT.PLACEHOLDER_TITLE" />
           </el-form-item>
-        <el-form-item :label="TEXT.LABEL_JUMP_TYPE">
+        <el-form-item :label="TEXT.LABEL_JUMP_TYPE" :prop="TEXT.PROP_JUMP_TYPE">
           <el-select v-model="form.jumpType">
-            <el-option v-for="type in jumpTypes" :key="type" :label="type" :value="type"/>
+            <el-option v-for="type in jumpTypes" :key="type.value" :label="type.label" :value="type.value"/>
           </el-select>
         </el-form-item>
         <el-form-item :label="TEXT.LABEL_CONTENT" :prop="TEXT.PROP_CONTENT">
@@ -48,6 +46,12 @@
         </el-form-item>
         <el-form-item :label="TEXT.LABEL_STATUS" :prop="TEXT.PROP_STATUS">
           <el-switch v-model="form.status" :active-value=1 :inactive-value=0 />
+        </el-form-item>
+        <el-form-item :label="TEXT.LABEL_DEVICE" :prop="TEXT.PROP_DEVICE" >
+          <el-select v-model="form.device" width="100px">
+            <el-option label="网页端" :value=0></el-option>
+            <el-option label="手机端" :value=1></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item :label="TEXT.LABEL_SORT" :prop="TEXT.PROP_SORT">
           <el-input v-model="form.sort" style="width: 100px"/>
@@ -69,7 +73,37 @@
 import { reactive, ref, toRefs } from "vue";
 import { recordList, addRecord, updateRecord, changeStatus, getRecord, deleteRecord } from "@/api/system/otherAnnouncement.js";
 
-const jumpTypes = ["VIP", "DAILY_BONUS", "FUND" ,"RECHARGE","BIND_PHONE" , "INVITER", "EXTERNAL"]
+const jumpTypes =[
+  {
+    value: 'VIP',
+    label: 'VIP'
+  },
+  {
+    value: 'DAILY_BONUS',
+    label: '每日奖金'
+  },
+  {
+    value: 'FUND',
+    label: '基金'
+  },
+  {
+    value: 'RECHARGE',
+    label: '充值'
+  },
+  {
+    value: 'BIND_PHONE',
+    label: '绑定手机'
+  },
+  {
+    value: 'INVITER',
+    label: '推广'
+  },
+  {
+    value: 'EXTERNAL',
+    label: '跳转外部浏览器'
+  }
+]
+
 const {proxy}   = getCurrentInstance();
 const openForm  = ref(false);
 const multiple  = ref(true);
@@ -84,14 +118,15 @@ const TEXT      = {
   ANNOUNCEMENT_EDIT: '更新公告',
   ANNOUNCEMENT_ADD:  '添加公告',
   LABEL_ACTION:      'action',
-  LABEL_JUMP_TYPE:   '跳跃式',
+  LABEL_JUMP_TYPE:   '跳转指向',
   LABEL_CONTENT:     '内容',
   LABEL_STATUS:      '状态',
+  LABEL_DEVICE:      '设备类型',
   LABEL_CONFIRM:     '确定',
-  LABEL_SUBMIT:      '提交',
-  LABEL_CANCEL:      '取消',
+  LABEL_SUBMIT:      '确 定',
+  LABEL_CANCEL:      '取 消',
   LABEL_TITLE:       '标题',
-  LABEL_IMAGE:       '照片',
+  LABEL_IMAGE:       '图片',
   LABEL_ADD:         '新增',
   LABEL_EDIT:        '新增',
   LABEL_SORT:        '分类',
@@ -103,6 +138,7 @@ const TEXT      = {
   PROP_JUMP_TYPE:    'jumpType',
   PROP_CONTENT:      'content',
   PROP_STATUS:       'status',
+  PROP_DEVICE:       'device',
   PROP_TITLE:        'title',
   PROP_IMAGE:        'image',
   PROP_SORT:         'sort',
@@ -128,8 +164,8 @@ const TEXT      = {
   DEL_SUCCESS:       '已成功删除',
   EDIT_SUCCESS:      '修改成功',
   ADD_SUCCESS:       '新增成功',
-  INVALID_TITLE:     '需要标题',
-  INVALID_CONTENT:   '所需内容',
+  INVALID_TITLE:     '请填写标题',
+  INVALID_CONTENT:   '请填写内容',
   EDIT_FAILED:       '修改',
   ACTIVE:            '启用',
 }
@@ -139,8 +175,8 @@ const ACTION_BUTTON = {
   DEL:  { label: TEXT.LABEL_DEL,  icon: TEXT.DELETE,  size: TEXT.SMALL, type: TEXT.DANGER,  permission: TEXT.PERMISSION_DEL,  handler: handleDelete },
 }
 const FOOTER_BUTTON = {
-  SUBMIT: { label: TEXT.LABEL_SUBMIT, icon: null,    size: TEXT.SMALL, type: TEXT.SUCCESS, handler: submitForm },
-  CANCEL: { label: TEXT.LABEL_CANCEL, icon: null,         size: TEXT.SMALL, type: TEXT.PRIMARY, handler: () => openForm.value = false },
+  SUBMIT: { label: TEXT.LABEL_SUBMIT, icon: null,    size: TEXT.SMALL, type: TEXT.PRIMARY, handler: submitForm },
+  CANCEL: { label: TEXT.LABEL_CANCEL, icon: null,         size: TEXT.SMALL, handler: () => openForm.value = false },
 }
 const HOME_BUTTON   = {
   ADD: { label: TEXT.LABEL_ADD, icon: TEXT.PLUS,   size: TEXT.SMALL, type: TEXT.PRIMARY, permission: TEXT.PERMISSION_ADD, handler: handleAdd },
@@ -152,6 +188,7 @@ const TABLE         = {
   CONTENT:   { label: TEXT.LABEL_CONTENT,   prop: TEXT.PROP_CONTENT,   align: TEXT.CENTER },
   JUMP_TYPE: { label: TEXT.LABEL_JUMP_TYPE, prop: TEXT.PROP_JUMP_TYPE, align: TEXT.CENTER },
   STATUS:    { label: TEXT.LABEL_STATUS,    prop: TEXT.PROP_STATUS,    align: TEXT.CENTER },
+  DEVICE:    { label: TEXT.LABEL_DEVICE,    prop: TEXT.PROP_DEVICE,    align: TEXT.CENTER },
   SORT:      { label: TEXT.LABEL_SORT,      prop: TEXT.PROP_SORT,      align: TEXT.CENTER },
   IMAGE_SIZE:{ label: TEXT.LABEL_IMAGE_SIZE,prop: TEXT.PROP_IMAGE_SIZE,align: TEXT.CENTER },
 }
@@ -177,10 +214,17 @@ function handleSelectionChange(selection) {
   multiple.value = !selection.length;
 }
 
-function getImageSize(imageSize) {
-  if (imageSize === 1) return TEXT.LABEL_IMAGE_SIZE_LARGE;
-  if (imageSize === 2) return TEXT.LABEL_IMAGE_SIZE_MEDIUM;
-  if (imageSize === 3) return TEXT.LABEL_IMAGE_SIZE_SMALL;
+function formatterImageSize(row) {
+  switch (row.imageSize) {
+    case 1 :
+      return TEXT.LABEL_IMAGE_SIZE_LARGE;
+    case 2 :
+      return TEXT.LABEL_IMAGE_SIZE_MEDIUM;
+    case 3 :
+      return TEXT.LABEL_IMAGE_SIZE_SMALL;
+    default  :
+      return "";
+  }
 }
 
 function reset() {
@@ -191,7 +235,8 @@ function reset() {
     imageSize: null,
     content: null,
     status: 0,
-    jumpType: jumpTypes[0],
+    device: null,
+    jumpType: jumpTypes[0].value,
     sort: null
   }
   proxy.resetForm(TEXT.REF_NAME);
@@ -240,14 +285,15 @@ function handleDelete(row) {
 
 function toggleStatusSwitch(row) {
   try {
+    loading.value = true;
     proxy.$confirm(TEXT.CONFIRM_WARNING, {
       confirmButtonText: TEXT.LABEL_CONFIRM,
       cancelButtonText: TEXT.LABEL_CANCEL
     }).then(()=>{
-      loading.value = true;
-      changeStatus(row.id, row.status);
-      proxy.$modal.msgSuccess(TEXT.EDIT_SUCCESS);
+      return changeStatus(row.id, row.status);
+    }).then(()=>{
       getList();
+      proxy.$modal.msgSuccess(TEXT.EDIT_SUCCESS);
     }).catch(()=> row.status = !row.status);
   } catch (error) {
     if (error !== TEXT.CANCEL) {
@@ -256,6 +302,22 @@ function toggleStatusSwitch(row) {
   } finally {
     loading.value = false;
   }
+}
+
+function formatterDevice(row) {
+  switch (row.device) {
+    case 0 :
+      return "网页端";
+    case 1 :
+      return "手机端";
+    default  :
+      return "";
+  }
+}
+
+function getTranslatedJumpType(row) {
+  const type = jumpTypes.find(type => type.value === row.jumpType);
+  return type ? type.label : null;
 }
 
 getList()
