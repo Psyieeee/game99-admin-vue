@@ -11,6 +11,11 @@
             <img :src="scope.row.image" class="image-preview">
           </template>
         </el-table-column>
+        <el-table-column v-else-if="field.prop === TEXT.PROP_IMAGE_SIZE"   :label="field.label" :prop="field.prop" :align="field.align">
+          <template #default="scope">
+            {{getImageSize(scope.row.imageSize)}}
+          </template>
+        </el-table-column>
         <el-table-column v-else-if="field.prop === TEXT.PROP_STATUS"   :label="field.label" :prop="field.prop" :align="field.align">
           <template #default="scope">
             <el-switch v-model="scope.row.status" :active-value=1 :inactive-value=0 @click="toggleStatusSwitch(scope.row)"/>
@@ -24,6 +29,7 @@
         </template>
       </el-table-column>
     </el-table>
+
     <el-dialog v-model="openForm" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px; padding-right: 20px" width="800px" >
       <el-form :ref="TEXT.REF_NAME" :model="form" :rules="rules" label-width="100px">
         <el-form-item :label="TEXT.LABEL_TITLE" :prop="TEXT.PROP_TITLE">
@@ -45,6 +51,11 @@
         </el-form-item>
         <el-form-item :label="TEXT.LABEL_SORT" :prop="TEXT.PROP_SORT">
           <el-input v-model="form.sort" style="width: 100px"/>
+        </el-form-item>
+        <el-form-item :label="TEXT.LABEL_IMAGE_SIZE" :prop="TEXT.PROP_IMAGE_SIZE">
+          <el-radio v-model="form.imageSize" label="1">{{ TEXT.LABEL_IMAGE_SIZE_LARGE }}</el-radio>
+          <el-radio v-model="form.imageSize" label="2">{{ TEXT.LABEL_IMAGE_SIZE_MEDIUM }}</el-radio>
+          <el-radio v-model="form.imageSize" label="3">{{ TEXT.LABEL_IMAGE_SIZE_SMALL }}</el-radio>
         </el-form-item>
       </el-form>
       <div :slot="TEXT.FOOTER" class="dialog-footer">
@@ -84,6 +95,10 @@ const TEXT      = {
   LABEL_ADD:         '新增',
   LABEL_EDIT:        '新增',
   LABEL_SORT:        '分类',
+  LABEL_IMAGE_SIZE:  '图像大小',
+  LABEL_IMAGE_SIZE_LARGE:  '大',
+  LABEL_IMAGE_SIZE_MEDIUM:  '中型',
+  LABEL_IMAGE_SIZE_SMALL:  '小型',
   LABEL_DEL:         '删除',
   PROP_JUMP_TYPE:    'jumpType',
   PROP_CONTENT:      'content',
@@ -91,6 +106,7 @@ const TEXT      = {
   PROP_TITLE:        'title',
   PROP_IMAGE:        'image',
   PROP_SORT:         'sort',
+  PROP_IMAGE_SIZE:   'imageSize',
   PLACEHOLDER_TITLE: '需要标题',
   IMG_PATH:          'otherAnnouncementImage',
   REF_NAME:          'formAddUpdate',
@@ -137,6 +153,7 @@ const TABLE         = {
   JUMP_TYPE: { label: TEXT.LABEL_JUMP_TYPE, prop: TEXT.PROP_JUMP_TYPE, align: TEXT.CENTER },
   STATUS:    { label: TEXT.LABEL_STATUS,    prop: TEXT.PROP_STATUS,    align: TEXT.CENTER },
   SORT:      { label: TEXT.LABEL_SORT,      prop: TEXT.PROP_SORT,      align: TEXT.CENTER },
+  IMAGE_SIZE:{ label: TEXT.LABEL_IMAGE_SIZE,prop: TEXT.PROP_IMAGE_SIZE,align: TEXT.CENTER },
 }
 const data          = reactive({
   queryParams: {},
@@ -160,11 +177,18 @@ function handleSelectionChange(selection) {
   multiple.value = !selection.length;
 }
 
+function getImageSize(imageSize) {
+  if (imageSize === 1) return TEXT.LABEL_IMAGE_SIZE_LARGE;
+  if (imageSize === 2) return TEXT.LABEL_IMAGE_SIZE_MEDIUM;
+  if (imageSize === 3) return TEXT.LABEL_IMAGE_SIZE_SMALL;
+}
+
 function reset() {
   form.value = {
     id: null,
     title: null,
     image: null,
+    imageSize: null,
     content: null,
     status: 0,
     jumpType: jumpTypes[0],
