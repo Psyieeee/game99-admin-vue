@@ -1,5 +1,32 @@
 <template>
   <div class="app-container">
+    <el-form :model="queryParams" ref="queryRef" :inline="true" label-width="68px">
+      <el-form-item :label="TEXT.PROP_TITLE" prop="title">
+        <el-input
+            v-model="queryParams.title"
+            :placeholder="TEXT.PROP_TITLE"
+            clearable
+            @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item :label="TEXT.PROP_DEVICE" prop="device">
+        <el-select v-model="queryParams.device" :placeholder="TEXT.PROP_DEVICE" clearable>
+          <el-option :label="TEXT.LABEL_DEVICE_WEB" :value="0"></el-option>
+          <el-option :label="TEXT.LABEL_DEVICE_MOBILE" :value="1"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="类型" prop="status">
+        <el-select v-model="queryParams.status" :placeholder="TEXT.PROP_STATUS" clearable>
+            <el-option :label="TEXT.LABEL_STATUS_ENABLED" :value="1"></el-option>
+            <el-option :label="TEXT.LABEL_STATUS_DISABLED" :value="0"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+      </el-form-item>
+    </el-form>
+
     <el-row style="display: inline">
         <el-button v-for=" button in Object.values(HOME_BUTTON)" :icon="button.icon" :size="button.size" :type="button.type" v-hasPermi="[button.permission]" @click="button.handler">{{ button.label }}</el-button>
     </el-row>
@@ -121,7 +148,11 @@ const TEXT      = {
   LABEL_JUMP_TYPE:   '跳转指向',
   LABEL_CONTENT:     '内容',
   LABEL_STATUS:      '状态',
+  LABEL_STATUS_ENABLED:'启用',
+  LABEL_STATUS_DISABLED:'禁用',
   LABEL_DEVICE:      '设备类型',
+  LABEL_DEVICE_WEB:  '网页端',
+  LABEL_DEVICE_MOBILE:'手机端',
   LABEL_CONFIRM:     '确定',
   LABEL_SUBMIT:      '确 定',
   LABEL_CANCEL:      '取 消',
@@ -307,12 +338,22 @@ function toggleStatusSwitch(row) {
 function formatterDevice(row) {
   switch (row.device) {
     case 0 :
-      return "网页端";
+      return TEXT.LABEL_DEVICE_WEB;
     case 1 :
-      return "手机端";
+      return TEXT.LABEL_DEVICE_MOBILE;
     default  :
       return "";
   }
+}
+
+function handleQuery() {
+  // queryParams.value.pageNum = 1;
+  getList();
+}
+
+function resetQuery() {
+  proxy.resetForm("queryRef");
+  getList();
 }
 
 function getTranslatedJumpType(row) {
