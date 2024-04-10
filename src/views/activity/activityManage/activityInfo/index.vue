@@ -137,7 +137,7 @@
       </el-table-column>
       <el-table-column label="内部跳转类型" align="center" prop="internalJumpType"  min-width="120"/>
       <el-table-column label="活动跳跃类型" align="center" prop="eventJumpType"  min-width="120"/>
-        
+
 <!--      <el-table-column label="事件跳转状态" align="center" prop="eventJumpStatus"  min-width="120">-->
 <!--        <template #default="scope">-->
 <!--          <el-switch-->

@@ -24,7 +24,8 @@ export function reportBettingMembersCount(query) {
     return request({
         url: url.game99PlatformAdminWeb + '/report/reportPlamGames/countBettingMembers',
         method: 'get',
-        params: query
+        params: query,
+        timeout: 60000
     })
 }
 
