@@ -233,12 +233,12 @@ const data = reactive({
     code: [
       {required: true, message: '无效的值', trigger: 'blur'}
     ],
-    name: [
-      {required: true, message: '无效的值', trigger: 'blur'}
-    ],
-    content: [
-      {required: true, message: '无效的值', trigger: 'blur'}
-    ],
+    // name: [
+    //   {required: true, message: '无效的值', trigger: 'blur'}
+    // ],
+    // content: [
+    //   {required: true, message: '无效的值', trigger: 'blur'}
+    // ],
     device: [
       {required: true, message: '无效的值', trigger: 'blur'}
     ]
