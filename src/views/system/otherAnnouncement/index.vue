@@ -140,6 +140,10 @@ const jumpTypes =[
   {
     value: 'EXTERNAL',
     label: '跳转外部浏览器'
+  },
+  {
+    value: 'PINDUODUO',
+    label: '拼多多'
   }
 ]
 
