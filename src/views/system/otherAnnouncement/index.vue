@@ -1,9 +1,36 @@
 <template>
   <div class="app-container">
+    <el-form :model="queryParams" ref="queryRef" :inline="true" label-width="68px">
+      <el-form-item :label="TEXT.LABEL_TITLE" prop="title">
+        <el-input
+            v-model="queryParams.title"
+            :placeholder="TEXT.LABEL_TITLE"
+            clearable
+            @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item :label="TEXT.LABEL_DEVICE" prop="device">
+        <el-select v-model="queryParams.device" :placeholder="TEXT.LABEL_DEVICE" clearable>
+          <el-option :label="TEXT.LABEL_DEVICE_WEB" :value="0"></el-option>
+          <el-option :label="TEXT.LABEL_DEVICE_MOBILE" :value="1"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="类型" prop="status">
+        <el-select v-model="queryParams.status" :placeholder="TEXT.PROP_STATUS" clearable>
+          <el-option :label="TEXT.LABEL_STATUS_ENABLED" :value="1"></el-option>
+          <el-option :label="TEXT.LABEL_STATUS_DISABLED" :value="0"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+      </el-form-item>
+    </el-form>
+
     <el-row style="display: inline">
-        <el-button v-for=" button in Object.values(HOME_BUTTON)" :icon="button.icon" :size="button.size" :type="button.type" v-hasPermi="[button.permission]" @click="button.handler">{{ button.label }}</el-button>
+      <el-button v-for=" button in Object.values(HOME_BUTTON)" :icon="button.icon" :size="button.size" :type="button.type" v-hasPermi="[button.permission]" @click="button.handler">{{ button.label }}</el-button>
     </el-row>
-    <el-table v-loading="loading" :data="tableList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="tableList" @selection-change="handleSelectionChange" :default-sort="{ prop: 'device', order: 'ascending'}">
       <el-table-column :align="TEXT.CENTER" :type="TEXT.SELECTION" width="60"/>
       <template v-for="field in Object.values(TABLE)">
         <el-table-column v-if="field.prop === TEXT.PROP_IMAGE" :label="field.label" :prop="field.prop" :align="field.align">
@@ -18,7 +45,8 @@
           </template>
         </el-table-column>
         <el-table-column v-else-if="field.prop === TEXT.PROP_DEVICE"   :label="field.label" :prop="field.prop" :align="field.align" :formatter="formatterDevice"/>
-        <el-table-column v-else                                        :label="field.label" :prop="field.prop" :align="field.align"/>
+        <el-table-column v-else-if="field.prop === TEXT.PROP_IMAGE_SIZE"   :label="field.label" :prop="field.prop" :align="field.align" :formatter="formatterImageSize"/>
+        <el-table-column v-else                                        :label="field.label" :prop="field.prop" :align="field.align" sortable />
       </template>
       <el-table-column :align="TEXT.CENTER" class-name="small-padding fixed-width" :fixed="TEXT.RIGHT" :label="TEXT.LABEL_ACTION" min-width="100">
         <template #default="scope">
@@ -26,11 +54,22 @@
         </template>
       </el-table-column>
     </el-table>
+
+    <pagination
+        v-show="total"
+        :total="total"
+        :page-sizes="[20,50,100]"
+        v-model:page="queryParams.pageNum"
+        v-model:limit="queryParams.pageSize"
+        @pagination="getList"
+    />
+
+
     <el-dialog v-model="openForm" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px; padding-right: 20px" width="800px" >
       <el-form :ref="TEXT.REF_NAME" :model="form" :rules="rules" label-width="100px">
         <el-form-item :label="TEXT.LABEL_TITLE" :prop="TEXT.PROP_TITLE">
-            <el-input v-model="form.title" :placeholder="TEXT.PLACEHOLDER_TITLE" />
-          </el-form-item>
+          <el-input v-model="form.title" :placeholder="TEXT.PLACEHOLDER_TITLE" />
+        </el-form-item>
         <el-form-item :label="TEXT.LABEL_JUMP_TYPE" :prop="TEXT.PROP_JUMP_TYPE">
           <el-select v-model="form.jumpType">
             <el-option v-for="type in jumpTypes" :key="type.value" :label="type.label" :value="type.value"/>
@@ -54,6 +93,13 @@
         <el-form-item :label="TEXT.LABEL_SORT" :prop="TEXT.PROP_SORT">
           <el-input v-model="form.sort" style="width: 100px"/>
         </el-form-item>
+        <el-form-item :label="TEXT.LABEL_IMAGE_SIZE" :prop="TEXT.PROP_IMAGE_SIZE" >
+          <el-radio-group v-model="form.imageSize">
+            <el-radio v-model="form.imageSize" :label=1 >{{ TEXT.LABEL_IMAGE_SIZE_LARGE }}</el-radio>
+            <el-radio v-model="form.imageSize" :label=2 >{{ TEXT.LABEL_IMAGE_SIZE_MEDIUM }}</el-radio>
+            <el-radio v-model="form.imageSize" :label=3 >{{ TEXT.LABEL_IMAGE_SIZE_SMALL }}</el-radio>
+          </el-radio-group>
+        </el-form-item>
       </el-form>
       <div :slot="TEXT.FOOTER" class="dialog-footer">
         <el-button v-for=" field in Object.values(FOOTER_BUTTON)" :icon="field.icon" :size="field.size" :type="field.type" @click="field.handler">{{ field.label }}</el-button>
@@ -69,7 +115,7 @@ import { recordList, addRecord, updateRecord, changeStatus, getRecord, deleteRec
 const jumpTypes =[
   {
     value: 'VIP',
-    label: '贵宾'
+    label: 'VIP'
   },
   {
     value: 'DAILY_BONUS',
@@ -77,11 +123,11 @@ const jumpTypes =[
   },
   {
     value: 'FUND',
-    label: '基金'
+    label: '敷援彩金'
   },
   {
     value: 'RECHARGE',
-    label: '充值'
+    label: '首次存款'
   },
   {
     value: 'BIND_PHONE',
@@ -89,11 +135,11 @@ const jumpTypes =[
   },
   {
     value: 'INVITER',
-    label: '邀请人'
+    label: '推广'
   },
   {
     value: 'EXTERNAL',
-    label: '外部'
+    label: '跳转外部浏览器'
   }
 ]
 
@@ -103,26 +149,35 @@ const multiple  = ref(true);
 const loading   = ref(true);
 const tableList = ref([]);
 const idList    = ref([]);
-const title     = ref('');
+const total     = ref(0);
+const title     = ref("");
 const TEXT      = {
   PERMISSION_DEL:    'other:announcement:content:delete',
   PERMISSION_EDIT:   'other:announcement:content:edit',
   PERMISSION_ADD:    'other:announcement:content:add',
   ANNOUNCEMENT_EDIT: '更新公告',
   ANNOUNCEMENT_ADD:  '添加公告',
-  LABEL_ACTION:      'action',
-  LABEL_JUMP_TYPE:   '跳跃式',
+  LABEL_ACTION:      '操作',
+  LABEL_JUMP_TYPE:   '跳转指向',
   LABEL_CONTENT:     '内容',
   LABEL_STATUS:      '状态',
+  LABEL_STATUS_ENABLED:'启用',
+  LABEL_STATUS_DISABLED:'禁用',
   LABEL_DEVICE:      '设备类型',
+  LABEL_DEVICE_WEB:  '网页端',
+  LABEL_DEVICE_MOBILE:'手机端',
   LABEL_CONFIRM:     '确定',
   LABEL_SUBMIT:      '确 定',
   LABEL_CANCEL:      '取 消',
   LABEL_TITLE:       '标题',
-  LABEL_IMAGE:       '照片',
+  LABEL_IMAGE:       '图片',
   LABEL_ADD:         '新增',
-  LABEL_EDIT:        '新增',
-  LABEL_SORT:        '分类',
+  LABEL_EDIT:        '修改',
+  LABEL_SORT:        '排序',
+  LABEL_IMAGE_SIZE:  '图像大小',
+  LABEL_IMAGE_SIZE_LARGE:  '大',
+  LABEL_IMAGE_SIZE_MEDIUM:  '中型',
+  LABEL_IMAGE_SIZE_SMALL:  '小型',
   LABEL_DEL:         '删除',
   PROP_JUMP_TYPE:    'jumpType',
   PROP_CONTENT:      'content',
@@ -131,6 +186,7 @@ const TEXT      = {
   PROP_TITLE:        'title',
   PROP_IMAGE:        'image',
   PROP_SORT:         'sort',
+  PROP_IMAGE_SIZE:   'imageSize',
   PLACEHOLDER_TITLE: '需要标题',
   IMG_PATH:          'otherAnnouncementImage',
   REF_NAME:          'formAddUpdate',
@@ -152,8 +208,8 @@ const TEXT      = {
   DEL_SUCCESS:       '已成功删除',
   EDIT_SUCCESS:      '修改成功',
   ADD_SUCCESS:       '新增成功',
-  INVALID_TITLE:     '需要标题',
-  INVALID_CONTENT:   '所需内容',
+  INVALID_TITLE:     '请填写标题',
+  INVALID_CONTENT:   '请填写内容',
   EDIT_FAILED:       '修改',
   ACTIVE:            '启用',
 }
@@ -178,9 +234,13 @@ const TABLE         = {
   STATUS:    { label: TEXT.LABEL_STATUS,    prop: TEXT.PROP_STATUS,    align: TEXT.CENTER },
   DEVICE:    { label: TEXT.LABEL_DEVICE,    prop: TEXT.PROP_DEVICE,    align: TEXT.CENTER },
   SORT:      { label: TEXT.LABEL_SORT,      prop: TEXT.PROP_SORT,      align: TEXT.CENTER },
+  IMAGE_SIZE:{ label: TEXT.LABEL_IMAGE_SIZE,prop: TEXT.PROP_IMAGE_SIZE,align: TEXT.CENTER },
 }
 const data          = reactive({
-  queryParams: {},
+  queryParams: {
+    pageNum: 1,
+    pageSize: 20
+  },
   form: {},
   rules: {
     title: { required: true, message: TEXT.INVALID_TITLE, trigger: TEXT.TRIG_BLUR },
@@ -191,6 +251,7 @@ const { queryParams, form, rules } = toRefs(data);
 function getList() {
   loading.value = true;
   recordList(queryParams.value).then(response => {
+    total.value = response.total;
     tableList.value = response.data;
     loading.value = false;
   });
@@ -201,11 +262,25 @@ function handleSelectionChange(selection) {
   multiple.value = !selection.length;
 }
 
+function formatterImageSize(row) {
+  switch (row.imageSize) {
+    case 1 :
+      return TEXT.LABEL_IMAGE_SIZE_LARGE;
+    case 2 :
+      return TEXT.LABEL_IMAGE_SIZE_MEDIUM;
+    case 3 :
+      return TEXT.LABEL_IMAGE_SIZE_SMALL;
+    default  :
+      return "";
+  }
+}
+
 function reset() {
   form.value = {
     id: null,
     title: null,
     image: null,
+    imageSize: null,
     content: null,
     status: 0,
     device: null,
@@ -249,11 +324,11 @@ function handleDelete(row) {
     cancelButtonText:  TEXT.LABEL_CANCEL,
     type: TEXT.WARNING
   })
-  .then(()=> deleteRecord(ids))
-  .then(()=> {
-    getList();
-    proxy.$modal.msgSuccess(TEXT.DEL_SUCCESS)
-  })
+      .then(()=> deleteRecord(ids))
+      .then(()=> {
+        getList();
+        proxy.$modal.msgSuccess(TEXT.DEL_SUCCESS)
+      })
 }
 
 function toggleStatusSwitch(row) {
@@ -280,12 +355,22 @@ function toggleStatusSwitch(row) {
 function formatterDevice(row) {
   switch (row.device) {
     case 0 :
-      return "网页端";
+      return TEXT.LABEL_DEVICE_WEB;
     case 1 :
-      return "手机端";
+      return TEXT.LABEL_DEVICE_MOBILE;
     default  :
       return "";
   }
+}
+
+function handleQuery() {
+  queryParams.pageNum = 1;
+  getList();
+}
+
+function resetQuery() {
+  proxy.resetForm("queryRef");
+  getList();
 }
 
 function getTranslatedJumpType(row) {
