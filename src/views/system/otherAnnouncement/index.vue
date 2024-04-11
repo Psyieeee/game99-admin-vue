@@ -67,7 +67,7 @@
 
     <el-dialog v-model="openForm" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px; padding-right: 20px" width="800px" >
       <el-form :ref="TEXT.REF_NAME" :model="form" :rules="rules" label-width="100px">
-        <el-form-item :label="TEXT.LABEL_TITLE" :prop="TEXT.PROP_TITLE">
+        <el-form-item :label="TEXT.LABEL_TITLE" :prop="TEXT.PROP_TITLE" v-if="form.jumpType !== 'INVITER'">
           <el-input v-model="form.title" :placeholder="TEXT.PLACEHOLDER_TITLE" />
         </el-form-item>
         <el-form-item :label="TEXT.LABEL_JUMP_TYPE" :prop="TEXT.PROP_JUMP_TYPE">
@@ -75,10 +75,10 @@
             <el-option v-for="type in jumpTypes" :key="type.value" :label="type.label" :value="type.value"/>
           </el-select>
         </el-form-item>
-        <el-form-item :label="TEXT.LABEL_CONTENT" :prop="TEXT.PROP_CONTENT">
+        <el-form-item :label="TEXT.LABEL_CONTENT" :prop="TEXT.PROP_CONTENT" v-if="form.jumpType !== 'INVITER'">
           <textarea style="height: 100px; width: 640px; margin-top: 5px" v-model="form.content"/>
         </el-form-item>
-        <el-form-item :label="TEXT.LABEL_IMAGE" :prop="TEXT.PROP_IMAGE">
+        <el-form-item :label="TEXT.LABEL_IMAGE" :prop="TEXT.PROP_IMAGE" v-if="form.jumpType !== 'INVITER'">
           <image-upload v-model="form.image" :path="TEXT.IMG_PATH"/>
         </el-form-item>
         <el-form-item :label="TEXT.LABEL_STATUS" :prop="TEXT.PROP_STATUS">
@@ -93,7 +93,7 @@
         <el-form-item :label="TEXT.LABEL_SORT" :prop="TEXT.PROP_SORT">
           <el-input v-model="form.sort" style="width: 100px"/>
         </el-form-item>
-        <el-form-item :label="TEXT.LABEL_IMAGE_SIZE" :prop="TEXT.PROP_IMAGE_SIZE" >
+        <el-form-item :label="TEXT.LABEL_IMAGE_SIZE" :prop="TEXT.PROP_IMAGE_SIZE" v-if="form.jumpType !== 'INVITER'">
           <el-radio-group v-model="form.imageSize">
             <el-radio v-model="form.imageSize" :label=1 >{{ TEXT.LABEL_IMAGE_SIZE_LARGE }}</el-radio>
             <el-radio v-model="form.imageSize" :label=2 >{{ TEXT.LABEL_IMAGE_SIZE_MEDIUM }}</el-radio>
