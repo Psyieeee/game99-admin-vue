@@ -9,7 +9,7 @@
               icon="Download"
               size="small"
               @click="handleExport"
-          > export
+          > 导出
           </el-button>
         </el-col>
         <!--        <right-toolbar v-model="showSearch" @queryTable="list"></right-toolbar>-->
@@ -25,7 +25,7 @@
             :total="total"
             v-model:page="queryParams.pageNum"
             v-model:limit="queryParams.pageSize"
-            :page-sizes="[20,50,100]"
+            :page-sizes="[100,200,300]"
             @pagination="list"
         />
 
@@ -56,6 +56,7 @@ const data = reactive({
   totalData: {
     total: 0,
   },
+  pageSize: 100,
   backupDateTimeRange: null
 });
 const {queryParams, totalData} = toRefs(data);
@@ -83,7 +84,7 @@ function handleExport() {
   }).then(function () {
     return exportReportChildPlamGames(queryParams.value)
   }).then(response => {
-    this.downloadExcel(response, '出款银行列表')
+    proxy.downloadExcel(response, '出款银行列表')
   }).catch(() => {
   })
 }
