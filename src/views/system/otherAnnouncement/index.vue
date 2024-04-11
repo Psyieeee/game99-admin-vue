@@ -30,7 +30,7 @@
     <el-row style="display: inline">
         <el-button v-for=" button in Object.values(HOME_BUTTON)" :icon="button.icon" :size="button.size" :type="button.type" v-hasPermi="[button.permission]" @click="button.handler">{{ button.label }}</el-button>
     </el-row>
-    <el-table v-loading="loading" :data="tableList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="tableList" @selection-change="handleSelectionChange" :default-sort="{ prop: 'device', order: 'ascending'}">
       <el-table-column :align="TEXT.CENTER" :type="TEXT.SELECTION" width="60"/>
       <template v-for="field in Object.values(TABLE)">
         <el-table-column v-if="field.prop === TEXT.PROP_IMAGE" :label="field.label" :prop="field.prop" :align="field.align">
@@ -46,7 +46,7 @@
         </el-table-column>
         <el-table-column v-else-if="field.prop === TEXT.PROP_DEVICE"   :label="field.label" :prop="field.prop" :align="field.align" :formatter="formatterDevice"/>
         <el-table-column v-else-if="field.prop === TEXT.PROP_IMAGE_SIZE"   :label="field.label" :prop="field.prop" :align="field.align" :formatter="formatterImageSize"/>
-        <el-table-column v-else                                        :label="field.label" :prop="field.prop" :align="field.align"/>
+        <el-table-column v-else                                        :label="field.label" :prop="field.prop" :align="field.align" sortable />
       </template>
       <el-table-column :align="TEXT.CENTER" class-name="small-padding fixed-width" :fixed="TEXT.RIGHT" :label="TEXT.LABEL_ACTION" min-width="100">
         <template #default="scope">
@@ -54,6 +54,16 @@
         </template>
       </el-table-column>
     </el-table>
+
+    <pagination
+        v-show="total"
+        :total="total"
+        :page-sizes="[20,50,100]"
+        v-model:page="queryParams.pageNum"
+        v-model:limit="queryParams.pageSize"
+        @pagination="getList"
+    />
+
 
     <el-dialog v-model="openForm" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px; padding-right: 20px" width="800px" >
       <el-form :ref="TEXT.REF_NAME" :model="form" :rules="rules" label-width="100px">
@@ -113,11 +123,11 @@ const jumpTypes =[
   },
   {
     value: 'FUND',
-    label: '基金'
+    label: '敷援彩金'
   },
   {
     value: 'RECHARGE',
-    label: '充值'
+    label: '首次存款'
   },
   {
     value: 'BIND_PHONE',
@@ -139,14 +149,15 @@ const multiple  = ref(true);
 const loading   = ref(true);
 const tableList = ref([]);
 const idList    = ref([]);
-const title     = ref('');
+const total     = ref(0);
+const title     = ref("");
 const TEXT      = {
   PERMISSION_DEL:    'other:announcement:content:delete',
   PERMISSION_EDIT:   'other:announcement:content:edit',
   PERMISSION_ADD:    'other:announcement:content:add',
   ANNOUNCEMENT_EDIT: '更新公告',
   ANNOUNCEMENT_ADD:  '添加公告',
-  LABEL_ACTION:      'action',
+  LABEL_ACTION:      '操作',
   LABEL_JUMP_TYPE:   '跳转指向',
   LABEL_CONTENT:     '内容',
   LABEL_STATUS:      '状态',
@@ -161,8 +172,8 @@ const TEXT      = {
   LABEL_TITLE:       '标题',
   LABEL_IMAGE:       '图片',
   LABEL_ADD:         '新增',
-  LABEL_EDIT:        '新增',
-  LABEL_SORT:        '分类',
+  LABEL_EDIT:        '修改',
+  LABEL_SORT:        '排序',
   LABEL_IMAGE_SIZE:  '图像大小',
   LABEL_IMAGE_SIZE_LARGE:  '大',
   LABEL_IMAGE_SIZE_MEDIUM:  '中型',
@@ -226,7 +237,10 @@ const TABLE         = {
   IMAGE_SIZE:{ label: TEXT.LABEL_IMAGE_SIZE,prop: TEXT.PROP_IMAGE_SIZE,align: TEXT.CENTER },
 }
 const data          = reactive({
-  queryParams: {},
+  queryParams: {
+    pageNum: 1,
+    pageSize: 20
+  },
   form: {},
   rules: {
     title: { required: true, message: TEXT.INVALID_TITLE, trigger: TEXT.TRIG_BLUR },
@@ -237,6 +251,7 @@ const { queryParams, form, rules } = toRefs(data);
 function getList() {
   loading.value = true;
   recordList(queryParams.value).then(response => {
+    total.value = response.total;
     tableList.value = response.data;
     loading.value = false;
   });
@@ -349,7 +364,7 @@ function formatterDevice(row) {
 }
 
 function handleQuery() {
-  // queryParams.value.pageNum = 1;
+  queryParams.pageNum = 1;
   getList();
 }
 
