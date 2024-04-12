@@ -1,15 +1,54 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
+      <el-form-item label="代码" prop="code" style="width: 350px">
+        <el-input
+            v-model="queryParams.code"
+            placeholder="请输入代码"
+            clearable
+            size="small"
+            @keyup.enter="handleQuery"
+        />
+      </el-form-item>
       <el-form-item label="名称" prop="name">
         <el-input
             v-model="queryParams.name"
             placeholder="请输入名称"
             clearable
-            :step="100"
             size="small"
+            style="width: 400px"
             @keyup.enter="handleQuery"
         />
+      </el-form-item>
+      <el-form-item label="数据类型" prop="dataType" style="margin-left: 10px; width: 180px">
+        <el-select size="small" v-model="queryParams.dataType" placeholder="请输入数据类型">
+          <el-option
+              v-for="type in dataTypes"
+              :key="type.value"
+              :label="type.value"
+              :value="type.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="状态" prop="status" style="margin-left: 10px; width: 150px">
+        <el-select size="small" v-model="queryParams.status" placeholder="请选择状态">
+          <el-option label="活跃" value="1"/>
+          <el-option label="不活跃" value="0"/>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="日期" prop="updateTime" size="small">
+        <el-date-picker type="datetimerange"
+                        v-model="updateTime"
+                        format="YYYY-MM-DD HH:mm:ss"
+                        value-format="YYYY-MM-DD HH:mm:ss"
+                        :style="{width: '95%'}"
+                        start-placeholder="开始时间"
+                        end-placeholder="开始时间"
+                        range-separator="至"
+                        clearable
+                        :default-time="getDefaultTime()"
+                        :shortcuts="proxy.pickerDateTimeShortcuts">
+        </el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" size="small" @click="handleQuery">搜索</el-button>
@@ -120,6 +159,7 @@
 import {listConfigCommission, getConfigCommission, delConfigCommission, addConfigCommission, updateConfigCommission, changeStatus} from '@/api/config/commission.js'
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {useRouter} from "vue-router";
+import {getDefaultTime} from "@/utils/dateUtils.js";
 
 const router = useRouter();
 const {proxy} = getCurrentInstance();
@@ -190,16 +230,18 @@ const data = reactive({
     value: [
       {required: true, message: '最大金额为必填项', trigger: 'blur'}
     ],
-  }
+  },
+
+  updateTime: []
 });
-const {queryParams, bonusTestForm, form, rules} = toRefs(data);
+const {queryParams, bonusTestForm, form, rules, updateTime} = toRefs(data);
 
 
 /** 查询bonus服务配置列表 Query the bonus  service configuration list */
 function getList() {
   loading.value = true
   queryParams.value.type = 'inviter'
-  listConfigCommission(queryParams.value).then(response => {
+  listConfigCommission(proxy.addDateRange(queryParams.value, updateTime.value)).then(response => {
     configCommissionList.value = response.data
     if (response.total) {
       total.value = response.total
@@ -240,7 +282,9 @@ function handleQuery() {
 
 /** 重置按钮操作 Reset button action*/
 function resetQuery() {
-  proxy.resetForm('queryForm')
+  loading.value =true
+  updateTime.value = []
+  proxy.resetForm('queryRef')
   handleQuery()
   loading.value =false
 }
