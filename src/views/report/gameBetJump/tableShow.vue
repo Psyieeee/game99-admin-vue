@@ -15,16 +15,16 @@
         <!--        <right-toolbar v-model="showSearch" @queryTable="list"></right-toolbar>-->
       </el-row>
       <el-row :gutter="10" class="mb8">
-        <el-table :data="tableData" style="width: 100%;" v-loading="loading">
+        <el-table :data="tableShowData" style="width: 100%;" v-loading="loading">
           <el-table-column property="agentchild" label="会员ID" header-align="center" align="center"/>
           <el-table-column property="gamecell" label="有效下注" header-align="center" align="center"/>
           <el-table-column property="gameprofit" label="盈利" header-align="center" align="center"/>
         </el-table>
         <pagination
-            v-show="total"
-            :total="total"
-            v-model:page="queryParams.pageNum"
-            v-model:limit="queryParams.pageSize"
+            v-show="tableShowTotal"
+            :total="tableShowTotal"
+            v-model:page="tableShowQueryParams.pageNum"
+            v-model:limit="tableShowQueryParams.pageSize"
             :page-sizes="[100,200,300]"
             @pagination="list"
         />
@@ -43,30 +43,30 @@ import {exportReportChildPlamGames, listByGamePepole} from "@/api/report/gameBet
 
 const {proxy} = getCurrentInstance();
 const router = useRouter();
-const tableData = ref([]);
+const tableShowData = ref([]);
 const open = ref(false);
 const showSearch = ref(true);
 const loading = ref(false);
 const showPages = ref(false);
-const total = ref(0);
+const tableShowTotal = ref(0);
 
 /** data reactive */
 const data = reactive({
-  queryParams: {},
+  tableShowQueryParams: {},
   totalData: {
     total: 0,
   },
   pageSize: 100,
   backupDateTimeRange: null
 });
-const {queryParams, totalData} = toRefs(data);
+const {tableShowQueryParams, totalData} = toRefs(data);
 
 
 function list() {
   loading.value = true
-  listByGamePepole(queryParams.value).then((res) => {
-    tableData.value = res.data;
-    total.value = res.total
+  listByGamePepole(tableShowQueryParams.value).then((res) => {
+    tableShowData.value = res.data;
+    tableShowTotal.value = res.total
     loading.value = false;
   })
 }
@@ -82,7 +82,7 @@ function handleExport() {
     cancelButtonText: "取 消",
     type: 'warning'
   }).then(function () {
-    return exportReportChildPlamGames(queryParams.value)
+    return exportReportChildPlamGames(tableShowQueryParams.value)
   }).then(response => {
     proxy.downloadExcel(response, '出款银行列表')
   }).catch(() => {
@@ -97,7 +97,7 @@ defineExpose({
 
 function setParam(params) {
   open.value = true;
-  queryParams.value = params;
+  tableShowQueryParams.value = params;
   list()
 }
 
