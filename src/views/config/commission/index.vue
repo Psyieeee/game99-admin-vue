@@ -6,22 +6,20 @@
             v-model="queryParams.code"
             placeholder="请输入代码"
             clearable
-            size="small"
             @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="名称" prop="name">
+      <el-form-item label="名称" prop="name" style="margin-left: 10px; ">
         <el-input
             v-model="queryParams.name"
             placeholder="请输入名称"
             clearable
-            size="small"
             style="width: 400px"
             @keyup.enter="handleQuery"
         />
       </el-form-item>
       <el-form-item label="数据类型" prop="dataType" style="margin-left: 10px; width: 180px">
-        <el-select size="small" v-model="queryParams.dataType" placeholder="请输入数据类型">
+        <el-select v-model="queryParams.dataType" placeholder="请输入数据类型">
           <el-option
               v-for="type in dataTypes"
               :key="type.value"
@@ -31,12 +29,12 @@
         </el-select>
       </el-form-item>
       <el-form-item label="状态" prop="status" style="margin-left: 10px; width: 150px">
-        <el-select size="small" v-model="queryParams.status" placeholder="请选择状态">
+        <el-select v-model="queryParams.status" placeholder="请选择状态">
           <el-option label="活跃" value="1"/>
           <el-option label="不活跃" value="0"/>
         </el-select>
       </el-form-item>
-      <el-form-item label="日期" prop="updateTime" size="small">
+      <el-form-item label="日期" prop="updateTime" style="margin-left: 10px; ">
         <el-date-picker type="datetimerange"
                         v-model="updateTime"
                         format="YYYY-MM-DD HH:mm:ss"
@@ -51,8 +49,8 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="Search" size="small" @click="handleQuery">搜索</el-button>
-        <el-button icon="Refresh" size="small" @click="resetQuery">重置</el-button>
+        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
 
