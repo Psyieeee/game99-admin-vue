@@ -45,7 +45,6 @@
           </template>
         </el-table-column>
         <el-table-column v-else-if="field.prop === TEXT.PROP_DEVICE"   :label="field.label" :prop="field.prop" :align="field.align" :formatter="formatterDevice"/>
-        <el-table-column v-else-if="field.prop === TEXT.PROP_IMAGE_SIZE"   :label="field.label" :prop="field.prop" :align="field.align" :formatter="formatterImageSize"/>
         <el-table-column v-else                                        :label="field.label" :prop="field.prop" :align="field.align" sortable />
       </template>
       <el-table-column :align="TEXT.CENTER" class-name="small-padding fixed-width" :fixed="TEXT.RIGHT" :label="TEXT.LABEL_ACTION" min-width="100">
@@ -95,13 +94,6 @@
         </el-form-item>
         <el-form-item :label="TEXT.LABEL_SORT" :prop="TEXT.PROP_SORT">
           <el-input v-model="form.sort" style="width: 100px"/>
-        </el-form-item>
-        <el-form-item :label="TEXT.LABEL_IMAGE_SIZE" :prop="TEXT.PROP_IMAGE_SIZE" v-if="form.jumpType !== 'INVITER'">
-          <el-radio-group v-model="form.imageSize">
-            <el-radio v-model="form.imageSize" :label=1 >{{ TEXT.LABEL_IMAGE_SIZE_LARGE }}</el-radio>
-            <el-radio v-model="form.imageSize" :label=2 >{{ TEXT.LABEL_IMAGE_SIZE_MEDIUM }}</el-radio>
-            <el-radio v-model="form.imageSize" :label=3 >{{ TEXT.LABEL_IMAGE_SIZE_SMALL }}</el-radio>
-          </el-radio-group>
         </el-form-item>
       </el-form>
       <div :slot="TEXT.FOOTER" class="dialog-footer">
@@ -182,10 +174,6 @@ const TEXT      = {
   LABEL_ADD:         '新增',
   LABEL_EDIT:        '修改',
   LABEL_SORT:        '排序',
-  LABEL_IMAGE_SIZE:  '图像大小',
-  LABEL_IMAGE_SIZE_LARGE:  '大',
-  LABEL_IMAGE_SIZE_MEDIUM:  '中型',
-  LABEL_IMAGE_SIZE_SMALL:  '小型',
   LABEL_DEL:         '删除',
   PROP_JUMP_TYPE:    'jumpType',
   PROP_URL:          'url',
@@ -195,7 +183,6 @@ const TEXT      = {
   PROP_TITLE:        'title',
   PROP_IMAGE:        'image',
   PROP_SORT:         'sort',
-  PROP_IMAGE_SIZE:   'imageSize',
   PLACEHOLDER_TITLE: '需要标题',
   IMG_PATH:          'otherAnnouncementImage',
   REF_NAME:          'formAddUpdate',
@@ -243,7 +230,6 @@ const TABLE         = {
   STATUS:    { label: TEXT.LABEL_STATUS,    prop: TEXT.PROP_STATUS,    align: TEXT.CENTER },
   DEVICE:    { label: TEXT.LABEL_DEVICE,    prop: TEXT.PROP_DEVICE,    align: TEXT.CENTER },
   SORT:      { label: TEXT.LABEL_SORT,      prop: TEXT.PROP_SORT,      align: TEXT.CENTER },
-  IMAGE_SIZE:{ label: TEXT.LABEL_IMAGE_SIZE,prop: TEXT.PROP_IMAGE_SIZE,align: TEXT.CENTER },
   URL:       { label: TEXT.LABEL_URL,       prop: TEXT.PROP_URL,          align: TEXT.CENTER }
 }
 const data          = reactive({
@@ -271,19 +257,6 @@ function getList() {
 function handleSelectionChange(selection) {
   idList.value   = selection.map(item => item.id);
   multiple.value = !selection.length;
-}
-
-function formatterImageSize(row) {
-  switch (row.imageSize) {
-    case 1 :
-      return TEXT.LABEL_IMAGE_SIZE_LARGE;
-    case 2 :
-      return TEXT.LABEL_IMAGE_SIZE_MEDIUM;
-    case 3 :
-      return TEXT.LABEL_IMAGE_SIZE_SMALL;
-    default  :
-      return "";
-  }
 }
 
 function reset() {
