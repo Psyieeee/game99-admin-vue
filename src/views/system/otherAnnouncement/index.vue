@@ -234,6 +234,7 @@ const TABLE         = {
 }
 const data          = reactive({
   queryParams: {
+    orderByColumn : 'sort',
     pageNum: 1,
     pageSize: 20
   },
@@ -351,6 +352,7 @@ function formatterDevice(row) {
 
 function handleQuery() {
   queryParams.pageNum = 1;
+  queryParams.orderByColumn = 'sort'
   getList();
 }
 
