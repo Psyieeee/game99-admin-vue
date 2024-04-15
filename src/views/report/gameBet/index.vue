@@ -213,12 +213,17 @@ function handleExport() {
 }
 
 function jump(begindate, gameplame) {
-  let startDate = queryParams.value.dateTimeRange ? queryParams.value.dateTimeRange[0] : null;
-  let endDate = queryParams.value.dateTimeRange ? queryParams.value.dateTimeRange[1] : null;
+  const params  = queryParams.value;
+  let startDate = params.dateTimeRange ? params.dateTimeRange[0] : null;
+  let endDate   = params.dateTimeRange ? params.dateTimeRange[1] : null;
+
   proxy.$router.push({
-    path: '/report/gameBetJump', query: {
-      startDate: startDate, endDate: endDate,
-      begindate: begindate, gameplame: gameplame
+    path: '/report/gameBetJump',
+    query: {
+      startDate: startDate,
+      endDate: endDate,
+      begindate: begindate,
+      gameplame: gameplame
     }
   });
 }

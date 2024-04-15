@@ -71,7 +71,7 @@
 <script name="GameBetJump" setup>
 
 
-import {getCurrentInstance, reactive, ref, toRefs} from "vue";
+import {getCurrentInstance, onMounted, reactive, ref, toRefs} from "vue";
 import {
     getTodayEndTime,
     getTodayStartTime,
@@ -108,6 +108,13 @@ const {queryParams, backupDateTimeRange} = toRefs(data);
 //     init();
 // })
 
+onActivated(()=>{
+  init();
+})
+
+window.addEventListener('popstate', function(event) {
+  gameBetChildList.value = null
+});
 
 function init() {
     if (proxy.$route.query.gameplame != null) {
@@ -118,9 +125,6 @@ function init() {
     }
     getList();
 }
-
-
-
 
 /** list data */
 function getList() {
@@ -141,8 +145,9 @@ function getList() {
   listGameChildBet(queryParams.value).then(res => {
     gameBetChildList.value = res.data;
     total.value            = res.total;
+  }).then(()=>{
+    loading.value = false;
   });
-  loading.value = false;
 }
 
 /** 搜索按钮操作 handle search query*/
@@ -176,17 +181,23 @@ function setQueryParams() {
 }
 
 function handleClickBetCount(row) {
-  queryParams.value.begindate  = queryParams.value.dateTimeRange[0];
-  queryParams.value.endDate    = queryParams.value.dateTimeRange[1];
-  queryParams.value.agentchild = row.agentchild
-  queryParams.value.gamepepole = row.gamepepole;
-  queryParams.value.gameagent  = row.gameagent;
-  queryParams.value.gameUuid   = row.gameUuid;
-  proxy.$refs["tableShow"].setParam(queryParams);
+  const params = queryParams.value;
+  const newQueryParams = {
+    begindate: params.dateTimeRange[0],
+    endDate: params.dateTimeRange[1],
+    agentchild: row.agentchild,
+    gamepepole: row.gamepepole,
+    gameagent: row.gameagent,
+    gameUuid: row.gameUuid,
+    pageNum: 1,
+    pageSize: 10,
+    pageTotal: 0,
+  }
+
+  proxy.$refs["tableShow"].setParam(newQueryParams);
 }
 
 init()
-// getList()
 </script>
 
 <style scoped>
