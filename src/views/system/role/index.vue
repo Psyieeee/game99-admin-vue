@@ -251,6 +251,7 @@
 <script setup name="Role">
 import {addRole, changeRoleStatus, delRole, getRole, listRole, updateRole} from "@/api/system/role";
 import {roleMenuTreeselect, treeselect as menuTreeselect} from "@/api/system/menu";
+import {url} from "@/utils/url";
 
 const router = useRouter();
 const {proxy} = getCurrentInstance();
@@ -336,7 +337,7 @@ function handleDelete(row) {
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download("system/role/export", {
+  proxy.download(url.game99AdminWeb + "/system/role/export", {
     ...queryParams.value,
   }, `role_${new Date().getTime()}.xlsx`);
 }
