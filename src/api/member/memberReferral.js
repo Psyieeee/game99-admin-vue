@@ -2,18 +2,18 @@ import {url} from "@/utils/url";
 import request from "@/utils/request";
 
 /** 查询列表 list data*/
-export function memberReferralListData(data){
+export function memberReferralListData(params){
     return request({
         url:url.game99PlatformAdminWeb+"/member/memberReferral/summary",
-        method:'get',
-        params:data
+        method:'post',
+        data:params
     })
 }
 
-export function memberReferralReport(data){
+export function memberReferralReport(query){
     return request({
         url:url.game99PlatformAdminWeb+"/member/memberReferral/listReport",
-        method:'get',
-        params:data
+        method:'post',
+        data:query
     })
 }
