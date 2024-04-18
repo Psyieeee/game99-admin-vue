@@ -240,7 +240,6 @@ const data          = reactive({
   },
   form: {},
   rules: {
-    title: { required: true, message: TEXT.INVALID_TITLE, trigger: TEXT.TRIG_BLUR },
     device: { required: true, message: TEXT.INVALID_TITLE, trigger: TEXT.TRIG_BLUR },
   }
 });
