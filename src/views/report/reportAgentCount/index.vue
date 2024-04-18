@@ -68,7 +68,7 @@
             size="small"
             type="danger"
             @click="handleDelete"
-        >删除频道代码
+        >删除邀请码
         </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
