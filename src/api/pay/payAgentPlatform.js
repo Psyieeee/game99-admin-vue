@@ -51,7 +51,7 @@ export function payAgentPlatformById(id){
  */
 export function addPayAgentPlatform(data){
     return request({
-        url:url.game99PayAdminWeb+"/pay/payAgentPlatform/",
+        url:url.game99PayAdminWeb+"/pay/payAgentPlatform",
         method:'post',
         data:data
     })
@@ -63,7 +63,7 @@ export function addPayAgentPlatform(data){
  */
 export function updatePayAgentPlatform(data){
     return request({
-        url:url.game99PayAdminWeb+"/pay/payAgentPlatform/",
+        url:url.game99PayAdminWeb+"/pay/payAgentPlatform",
         method:'put',
         data:data
     })

@@ -52,7 +52,7 @@ export function activityQuestTypeByID(id){
  */
 export function addActivityQuestType(data){
     return request({
-        url:url.game99PlatformAdminWeb+"/activity/activityQuestType/",
+        url:url.game99PlatformAdminWeb+"/activity/activityQuestType",
         method:'post',
         data:data
     })
@@ -63,7 +63,7 @@ export function addActivityQuestType(data){
  */
 export function updateActivityQuestType(data){
     return request({
-        url:url.game99PlatformAdminWeb+"/activity/activityQuestType/",
+        url:url.game99PlatformAdminWeb+"/activity/activityQuestType",
         method:'put',
         data:data
     })
