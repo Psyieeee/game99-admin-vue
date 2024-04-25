@@ -118,7 +118,7 @@ const jumpTypes =[
   },
   {
     value: 'FUND',
-    label: '敷援彩金'
+    label: '救援彩金'
   },
   {
     value: 'RECHARGE',
@@ -178,7 +178,7 @@ const TEXT      = {
   PROP_JUMP_TYPE:    'jumpType',
   PROP_URL:          'url',
   PROP_CONTENT:      'content',
-  PROP_STATUS:       'status',
+  PROP_STATUS:       '状态',
   PROP_DEVICE:       'device',
   PROP_TITLE:        'title',
   PROP_IMAGE:        'image',

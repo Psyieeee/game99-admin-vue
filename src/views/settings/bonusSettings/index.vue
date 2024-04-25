@@ -47,8 +47,14 @@
       <el-table-column align="center" label="奖励方式" width="180" prop="destination"
                        :formatter="formatterDestination"/>
       <el-table-column align="center" label="赠送打码倍数" width="110" prop="multiplier"/>
-
-      <el-table-column align="center" label="安装设备数量" min-width="100" prop="count"/>
+      <el-table-column align="center" label="安装软件数量" min-width="100" prop="count"/>
+      <el-table-column align="center" label="163限制" min-width="100" prop="isLimitYun163">
+        <template #default="scope">
+          <dict-tag :options="sys_effect_type" :value="scope.row.isLimitYun163"/>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="安装设备限制" min-width="100" prop="limitDeviceNum"/>
+      <el-table-column align="center" label="注册IP限制" min-width="100" prop="limitRegipNum"/>
       <el-table-column align="center" label="注册时间要求" min-width="120" prop="effectiveTime"/>
       <el-table-column label="设备类型" align="center" prop="device" :formatter="formatterDevice"/>
       <el-table-column align="center" label="显示状态" width="90" prop="displayIcon">
@@ -81,6 +87,7 @@
               icon="Edit" link
               size="small"
               type="primary"
+              :disabled="btnUpdateEnable"
               @click="handleUpdate(scope.row)">修改
           </el-button>
         </template>
@@ -121,8 +128,24 @@
           <el-input type="number" v-model="form.multiplier" placeholder="赠送打码倍数"
                     :disabled="form.destination==='BONUS'"/>
         </el-form-item>
-        <el-form-item label="安装设备数量" prop="count">
-          <el-input type="number" v-model="form.count" placeholder="安装设备数量"/>
+        <el-form-item label="安装软件数量" prop="count">
+          <el-input type="number" v-model="form.count" placeholder="安装软件数量"/>
+        </el-form-item>
+        <el-form-item label="163限制" prop="isLimitYun163">
+          <el-select v-model="form.isLimitYun163" placeholder="是否限制163">
+            <el-option
+                v-for="dict in sys_effect_type"
+                :key="dict.value"
+                :label="dict.label"
+                :value="(/true/).test(dict.value)"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="安装设备限制" prop="limitDeviceNum">
+          <el-input type="number" v-model="form.limitDeviceNum" placeholder="安装设备限制"/>
+        </el-form-item>
+        <el-form-item label="注册IP限制" prop="limitRegipNum">
+          <el-input type="number" v-model="form.limitRegipNum" placeholder="注册IP限制"/>
         </el-form-item>
         <el-form-item label="生效日期和时间" prop="effectiveTime">
           <el-date-picker
@@ -166,6 +189,9 @@ import {
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 
 const {proxy} = getCurrentInstance();
+const {sys_effect_type} = proxy.useDict('sys_effect_type');
+
+console.log(sys_effect_type)
 
 const recordList = ref([]);
 const ids = ref([]);
@@ -174,6 +200,7 @@ const loading = ref(true);
 const multiple = ref(true);
 const open = ref(false);
 const showSearch = ref(true);
+const btnUpdateEnable = ref(false);
 const data = reactive({
   /** 查询参数 query params*/
   queryParams: {},
@@ -283,11 +310,15 @@ function submitForm() {
 
 /** handle update data */
 function handleUpdate(row) {
+  btnUpdateEnable.value = true
   getRecord(row.id).then(response => {
     form.value = response.data;
+    open.value = true
+    title.value = '更新奖金设置'
+    btnUpdateEnable.value = false
+  }).catch(function () {
+    btnUpdateEnable.value = false
   });
-  open.value = true
-  title.value = '更新奖金设置'
 }
 
 /**  删除按钮操作 handle delete */
