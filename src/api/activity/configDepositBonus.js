@@ -51,3 +51,10 @@ export function deleteConfigDepositBonus(ids){
         method:'delete'
     })
 }
+
+export function changeStatusConfigDepositBonus(id, status) {
+    return request({
+        url: url.game99PlatformAdminWeb + "/config/configDepositBonus/changeStatus/" + id + "/" + status,
+        method: 'put'
+    })
+}

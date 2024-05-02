@@ -75,7 +75,7 @@
     <!-- 添加或修改公司入款银行列表对话框 Add or modify company deposit bank list dialog-->
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="600px" :rules="rules">
-      <el-form ref="queryForm" :model="form" :rules="rules" label-width="100px">
+      <el-form ref="queryForm" :model="form" :rules="rules" label-width="110px">
         <el-form-item label="最小存款金额" prop="minMoney">
           <el-input type="number" v-model="form.minMoney" placeholder="最小存款金额"/>
         </el-form-item>

@@ -35,24 +35,27 @@
     <!-- Add new config Deposit Bonus -->
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="600px" :rules="rules">
-      <el-form ref="queryForm" :model="form" :rules="rules" label-width="100px">
+      <el-form ref="queryForm" :model="form" :rules="rules" label-width="110px">
         <el-form-item label="日程" prop="schedule">
-          <el-input v-model="form.schedule" placeholder="日程"/>
+          <el-input type="number" v-model="form.schedule" placeholder="日程"/>
         </el-form-item>
         <el-form-item label="最大奖金" prop="maxBonus">
-          <el-input v-model="form.maxBonus" placeholder="最大奖金"/>
+          <el-input type="number" v-model="form.maxBonus" placeholder="最大奖金"/>
         </el-form-item>
         <el-form-item label="乘数" prop="multiplier">
-          <el-input v-model="form.multiplier" placeholder="乘数"/>
+          <el-input type="number" v-model="form.multiplier" placeholder="乘数"/>
         </el-form-item>
         <el-form-item label="奖金乘数" prop="bonusMultiplier">
-          <el-input v-model="form.bonusMultiplier" placeholder="奖金乘数"/>
+          <el-input type="number" v-model="form.bonusMultiplier" placeholder="奖金乘数"/>
         </el-form-item>
         <el-form-item label="限制时间" prop="limitHour">
-          <el-input v-model="form.limitHour" placeholder="限制时间"/>
+          <el-input type="number" v-model="form.limitHour" placeholder="限制时间"/>
         </el-form-item>
         <el-form-item label="地位" prop="status">
-          <el-input v-model="form.status" placeholder="地位"/>
+          <el-switch v-model="form.status"
+                     :active-value=1
+                     :inactive-value=0
+          />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -71,7 +74,16 @@
       <el-table-column label="乘数" align="center" prop="multiplier" width="250px"/>
       <el-table-column label="奖金乘数" align="center" prop="bonusMultiplier" width="150px"/>
       <el-table-column label="限制时间" align="center" prop="limitHour" width="150px"/>
-      <el-table-column label="地位" align="center" prop="status" width="150px"/>
+      <el-table-column label="地位" align="center" prop="status" width="150px">
+        <template #default="scope">
+          <el-switch
+              v-model="scope.row.status"
+              :active-value=1
+              :inactive-value=0
+              @click="toggleSwitch(scope.row)">
+          </el-switch>
+        </template>
+      </el-table-column>
 
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
@@ -114,10 +126,11 @@
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {getDefaultTime, pickerDateTimeShortcuts} from "@/utils/dateUtils";
 import {
-  addConfigDepositBonus, deleteConfigDepositBonus, getConfigDepositBonusInfo,
+  addConfigDepositBonus, changeStatusConfigDepositBonus, deleteConfigDepositBonus, getConfigDepositBonusInfo,
   getConfigDepositBonusList, updateConfigDepositBonus
 } from "@/api/activity/configDepositBonus";
 import {getRecord} from "@/api/settings/loginMethod.js";
+import {changeStatus} from "@/api/activity/configLoginBonus.js";
 
 const {proxy} = getCurrentInstance();
 
@@ -201,6 +214,28 @@ function handleAdd() {
   resetQuery()
   open.value = true
   title.value = "添加配置存款奖金"
+}
+
+function toggleSwitch(row) {
+  const text = row.status === 1 ? '启用' : '停用'
+  proxy.$confirm('确认要' + text + '"?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消'
+  }).then(function () {
+    let status;
+    loading.value = true
+    status = changeStatusConfigDepositBonus(row.id, row.status);
+    if (status) {
+      return status
+    }
+  }).then(() => {
+    loading.value = false
+    proxy.$modal.msgSuccess(text + '成功')
+    getList()
+  }).catch(function () {
+    loading.value = false
+    row.status = row.status === 0 ? 1 : 0
+  })
 }
 
 /*** handle UPDATE button*/
