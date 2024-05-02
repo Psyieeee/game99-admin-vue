@@ -1,5 +1,38 @@
 <template>
   <div class="app-container">
+    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" >
+      <el-form-item label="设备类型" prop="deviceType">
+        <el-select v-model="queryParams.deviceType" placeholder="设备类型">
+          <el-option label="网站" value=0></el-option>
+          <el-option label="手机登录" value=1></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="奖励方式" prop="destination">
+        <el-select v-model="queryParams.destination" placeholder="奖励方式">
+          <el-option label="账户" value='ACCOUNT'></el-option>
+          <el-option label="奖金" value='BONUS'></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="赠送打码倍数" prop="multiplier">
+        <el-input
+            v-model="queryParams.multiplier"
+            placeholder="赠送打码倍数"
+            clearable
+            @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="地位" prop="status">
+        <el-select v-model="queryParams.status" placeholder="地位">
+          <el-option label="激活" :value="1"></el-option>
+          <el-option label="停用" :value="0"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+      </el-form-item>
+    </el-form>
+
     <!--    button on the table for query-->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
@@ -25,7 +58,7 @@
         >删除
         </el-button>
       </el-col>
-      <right-toolbar @queryTable="getList"></right-toolbar>
+      <right-toolbar @queryTable="getList" v-model:showSearch="showSearch"></right-toolbar>
     </el-row>
 
     <!--    display data in table -->
@@ -141,7 +174,7 @@ import {
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 
 const {proxy} = getCurrentInstance();
-
+const showSearch = ref(true);
 const recordList = ref([]);
 const ids = ref([]);
 const title = ref('');
@@ -288,6 +321,16 @@ function formatterDestination(row) {
     default  :
       return "";
   }
+}
+
+function handleQuery() {
+  getList()
+}
+
+function resetQuery() {
+  proxy.resetForm('queryRef')
+  handleQuery()
+  loading.value = false
 }
 
 getList()
