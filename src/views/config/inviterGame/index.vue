@@ -47,7 +47,6 @@
 
       <el-table-column label="随机获取最低金额" align="center" prop="minimumPoints"/>
       <el-table-column label="随机获取最高金额" align="center" prop="maximumPoints"/>
-      <el-table-column label="步数" align="center" prop="step"/>
 
       <el-table-column align="center" label="状态" prop="status">
         <template #default="scope">
@@ -134,15 +133,12 @@
           <el-form-item label="随机获取最高金额" :error="errors.maximumPoints">
             <el-input-number v-model="form.maximumPoints" controls-position="right" :min="0.02" :step="0.01" step-strictly/>
           </el-form-item>
-          <el-form-item label="每次增加金额" :error="errors.step">
-            <el-input-number v-model="form.step" controls-position="right" :min="0.01" :step="0.01" step-strictly/>
-          </el-form-item>
         </div>
 
         <div v-else-if="activeStep === 3">
           <el-form-item label="测试奖励顺序" label-width="20%">
             <el-input v-model="sampleList" readonly style="width: 70%"></el-input> <br>
-            <el-button @click="test" type="warning" style="margin-left: 10px">测试结果</el-button>
+            <el-button @click="test" type="warning" style="margin-left: 10px" v-loading="loadingSampleList" >测试结果</el-button>
           </el-form-item>
         </div>
       </el-form>
@@ -185,6 +181,7 @@ const bonusTestTitle = ref("测试图片上传");
 //boolean types
 // 遮罩层
 const loading = ref(true);
+const loadingSampleList = ref(false);
 // 非单个禁用
 const single = ref(true);
 // 非多个禁用
@@ -223,8 +220,11 @@ function previousStep() {
 }
 
 function test() {
+  loadingSampleList.value = true;
   getSampleList( form.value ).then( response => {
     sampleList.value = response.data;
+  } ).finally( () => {
+    loadingSampleList.value = false;
   } );
 }
 
@@ -323,17 +323,6 @@ function nextStep() {
         return;
       }
 
-      if( isEmpty( form.value.step ) ) {
-        errors.value.step = "步骤不能为空";
-        return;
-      }
-
-      const quotient = ( form.value.maximumPoints - form.value.minimumPoints ).toFixed( 2 ) / form.value.step;
-
-      if( Math.ceil( quotient ) !== quotient ) {
-        errors.value.step = "步长必须与最大点完全相加";
-        return;
-      }
       break;
   }
 
@@ -378,7 +367,6 @@ function reset() {
     initialSpinCount: null,
     minimumPoints: null,
     maximumPoints: null,
-    step: null,
     status: null,
     updatedBy: null,
     updateTime: null
