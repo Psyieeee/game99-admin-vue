@@ -42,15 +42,18 @@
 
       <!--      Filter by Bonus status-->
       <el-form-item label="地位" prop="status">
-        <el-input
+        <el-select
             v-model="queryParams.status"
-            placeholder="请输入 地位"
-            type="number"
+            placeholder="地位"
             clearable
-            :step="100"
-            size="small"
-            @keyup.enter="handleQuery"
-        />
+        >
+          <el-option
+              v-for="item in statusOption"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+          />
+        </el-select>
       </el-form-item>
 
 
@@ -207,6 +210,15 @@ const showSearch = ref(true)
 
 const loading = ref(true)
 const open = ref(false)
+const statusOption =[
+  {
+    value: 0,
+    label: '不活跃'
+  },{
+    value: 1,
+    label: '积极的'
+  }
+];
 
 const data = reactive({
   /**查询参数 */
