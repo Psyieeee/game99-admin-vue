@@ -5,15 +5,15 @@ import request from "@/utils/request";
 export function memberReferralListData(data){
     return request({
         url:url.game99PlatformAdminWeb+"/member/memberReferral/summary",
-        method:'get',
-        params:data
+        method:'post',
+        data:data
     })
 }
 
 export function memberReferralReport(data){
     return request({
         url:url.game99PlatformAdminWeb+"/member/memberReferral/listReport",
-        method:'get',
-        params:data
+        method:'post',
+        data:data
     })
 }

@@ -173,7 +173,7 @@ import {list} from "@/api/monitor/operlog";
 
 const {proxy} = getCurrentInstance();
 const {sys_oper_type, sys_common_status} = proxy.useDict("sys_oper_type", "sys_common_status");
-
+import {url} from "@/utils/url";
 const operlogList = ref([]);
 const open = ref(false);
 const loading = ref(true);
@@ -252,7 +252,7 @@ function handleView(row) {
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download("monitor/operlog/export", {
+  proxy.download(url.game99AdminWeb + "/monitor/operlog/export", {
     ...queryParams.value,
   }, `config_${new Date().getTime()}.xlsx`);
 }

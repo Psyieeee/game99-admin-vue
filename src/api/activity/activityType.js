@@ -51,7 +51,7 @@ export function activityTypeExport(query){
  */
 export function addActivityTypeData(data){
     return request({
-        url:url.game99PlatformAdminWeb+"/activity/activityType/",
+        url:url.game99PlatformAdminWeb+"/activity/activityType",
         method:'post',
         data:data
     })
@@ -62,7 +62,7 @@ export function addActivityTypeData(data){
  */
 export function updateActivityType(data){
     return request({
-        url:url.game99PlatformAdminWeb+"/activity/activityType/",
+        url:url.game99PlatformAdminWeb+"/activity/activityType",
         method:'put',
         data:data
     })

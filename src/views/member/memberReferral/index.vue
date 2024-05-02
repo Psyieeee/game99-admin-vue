@@ -1,6 +1,17 @@
 <template>
   <div class="app-container">
-    <el-form v-show="showSearch" :rules="rules"  ref="queryRef" :inline="true" :model="queryParams">
+    <div v-loading="totalLoading">
+      <el-button type="primary" @click="copy1">ID 计数 {{ memberReferralList.referralCount.id || 0 }}</el-button>
+      <el-button type="success" @click="copy2">邀请者编号计数 {{ memberReferralList.referralCount.inviterId || 0 }}</el-button>
+      <el-button type="warning" @click="copy3">推荐奖金今日计数 {{ memberReferralList.referralCount.referralBonusToday || 0 }}</el-button>
+      <el-button type="primary" @click="copy4">推荐奖金总数 {{ memberReferralList.referralCount.referralBonusTotal || 0 }}</el-button>
+      <el-button type="success" @click="copy5">今日登记人数 {{ memberReferralList.referralCount.todayRegistered || 0 }}</el-button>
+      <el-button type="warning" @click="copy6">注册总数 {{ memberReferralList.referralCount.totalRegistered || 0 }}</el-button>
+      <el-button type="primary" icon="Search" size="small" @click="getCount()" style="margin-left: 20px">
+        统计查询
+      </el-button>
+    </div>
+    <el-form v-show="showSearch" :rules="rules"  ref="queryRef" :inline="true" :model="queryParams" style="margin-top: 20px">
       <el-form-item class="input-wd25" label="会员ID">
         <el-input
             v-model="queryParams.account"
@@ -24,15 +35,6 @@
       </el-form-item>
     </el-form>
 
-    <el-descriptions :column="3" border>
-      <el-descriptions-item label="我的身份证" align="center">{{ memberReferralList.id }}</el-descriptions-item>
-      <el-descriptions-item label="推荐" align="center" >{{ memberReferralList.inviterId }}</el-descriptions-item>
-      <el-descriptions-item label="今日注册" align="center">{{ memberReferralList.todayRegistered }}</el-descriptions-item>
-      <el-descriptions-item label="注册总数" align="center">{{ memberReferralList.totalRegistered }}</el-descriptions-item>
-      <el-descriptions-item label="今日奖金" align="center">{{ memberReferralList.referralBonusToday }}</el-descriptions-item>
-      <el-descriptions-item label="奖金总额" align="center">{{ memberReferralList.referralBonusTotal }}</el-descriptions-item>
-    </el-descriptions>
-    <el-divider/>
     <div class="app-container">
       <el-table v-loading="loading" :data="memberReferralList.referralDetails">
         <el-table-column align="center" label="成员 ID" prop="inviterId"/>
@@ -80,27 +82,18 @@ import {
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 const {proxy} = getCurrentInstance()
 
-const platformTypeList = ref([])
 const memberReferralList = ref({
-  id: null,
-  inviterId: null,
-  todayRegistered: null,
-  totalRegistered: null,
-  referralBonusToday: null,
-  referralBonusTotal: null,
+  referralCount:[],
   referralDetails: []
 })
-const gameTypeList = ref([])
 
 const loading = ref(false)
 const bonuses = ref(false)
 const referralReport = ref([])
 const open = ref(false)
-
 const ids = ref([]);
 const total = ref(0);
 const title = ref('');
-
 /** 非单个禁用 */
 const single = ref(true)
 /** 非多个禁用 */
@@ -108,15 +101,19 @@ const multiple = ref(true)
 /** 显示搜索条件 */
 const showSearch = ref(true)
 
+const totalLoading = ref(false);
+
 const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 20,
     orderByColumn: 'time',
     isAsc: 'desc',
+    username: '',
     account: '',
     startDate: '',
-    endDate:''
+    endDate:'',
+    vip:''
   },
   rules: {
     account: [
@@ -131,28 +128,42 @@ const data = reactive({
     effect: 1
   }
 });
-const {queryParams, rules, form, scheduleForm, schedule} = toRefs(data)
+const { queryParams, rules, form, scheduleForm, schedule} = toRefs(data)
 
 /**
  * 查询游戏字典列表 list of data
  */
 
 function getList() {
-  loading.value = true
+  loading.value = true;
 
-  if(data.queryParams.startDate != ''){
-    toLocalDate()
+  if (data.queryParams.startDate !== '') {
+    toLocalDate();
   }
 
-  memberReferralListData(queryParams.value).then(res => {
-    loading.value = false
-    memberReferralList.value = res.data
-  })
-
   memberReferralReport(queryParams.value).then(res2 => {
-    memberReferralList.value.referralDetails = res2.data
-    total.value = res2.total
-  })
+    memberReferralList.value.referralDetails = res2.data;
+    total.value = res2.total;
+  });
+
+  memberReferralListData(queryParams.value).then(res => {
+    loading.value = false;
+    memberReferralList.value.referralCount = res.data;
+    console.log( memberReferralList.value.referralCount )
+  });
+}
+
+function getCount(){
+  totalLoading.value = true;
+  if (data.queryParams.startDate !== '') {
+    toLocalDate();
+  }
+console.log( queryParams.value )
+  memberReferralListData(queryParams.value).then(res => {
+    totalLoading.value = false;
+    memberReferralList.value.referralCount = res.data;
+    console.log( memberReferralList.value.referralCount )
+  });
 }
 
 /** 搜索按钮操作 handle query*/
@@ -193,4 +204,35 @@ function toLocalDate(){
   data.queryParams.startDate = year + '-' + month + '-' + day;
 }
 
+
+function copy1() {
+  copyCommand(memberReferralList.value.referralCount.id)
+}
+function copy2() {
+  copyCommand(memberReferralList.value.referralCount.inviterId)
+}
+function copy3() {
+  copyCommand(memberReferralList.value.referralCount.referralBonusToday)
+}
+function copy4() {
+  copyCommand(memberReferralList.value.referralCount.referralBonusTotal)
+}
+function copy5() {
+  copyCommand(memberReferralList.value.referralCount.todayRegistered)
+}
+function copy6() {
+  copyCommand(memberReferralList.value.referralCount.totalRegistered)
+}
+
+function copyCommand(value) {
+  navigator.clipboard.writeText(value)
+      .then(() => {
+        proxy.$modal.msgSuccess('复制成功');
+      })
+      .catch(err => {
+        console.error('复制失败:', err);
+      });
+}
+
+getList()
 </script>

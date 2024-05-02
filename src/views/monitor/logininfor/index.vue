@@ -101,7 +101,7 @@ import {list} from "@/api/monitor/logininfor";
 
 const {proxy} = getCurrentInstance();
 const {sys_common_status} = proxy.useDict("sys_common_status");
-
+import {url} from "@/utils/url";
 const logininforList = ref([]);
 const loading = ref(true);
 const showSearch = ref(true);
@@ -166,7 +166,7 @@ function handleSortChange(column, prop, order) {
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download("monitor/logininfor/export", {
+  proxy.download(url.game99AdminWeb + "/monitor/logininfor/export", {
     ...queryParams.value,
   }, `config_${new Date().getTime()}.xlsx`);
 }
