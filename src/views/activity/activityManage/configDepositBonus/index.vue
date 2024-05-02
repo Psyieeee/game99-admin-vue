@@ -6,6 +6,7 @@
         <el-input
             v-model="queryParams.id"
             placeholder="请输入 ID"
+            type="number"
             clearable
             :step="100"
             size="small"
@@ -18,6 +19,7 @@
         <el-input
             v-model="queryParams.multiplier"
             placeholder="请输入 乘数"
+            type="number"
             clearable
             :step="100"
             size="small"
@@ -30,6 +32,7 @@
         <el-input
             v-model="queryParams.bonusMultiplier"
             placeholder="请输入 奖金乘数"
+            type="number"
             clearable
             :step="100"
             size="small"
@@ -42,6 +45,7 @@
         <el-input
             v-model="queryParams.status"
             placeholder="请输入 地位"
+            type="number"
             clearable
             :step="100"
             size="small"
