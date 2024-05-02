@@ -1,6 +1,59 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+      <!--      Filter by ID-->
+      <el-form-item label="ID" prop="id">
+        <el-input
+            v-model="queryParams.id"
+            placeholder="请输入 ID"
+            clearable
+            :step="100"
+            size="small"
+            @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+
+      <!--      Filter by multiplier-->
+      <el-form-item label="乘数" prop="multiplier">
+        <el-input
+            v-model="queryParams.multiplier"
+            placeholder="请输入 乘数"
+            clearable
+            :step="100"
+            size="small"
+            @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+
+      <!--      Filter by Bonus multiplier-->
+      <el-form-item label="奖金乘数" prop="bonusMultiplier">
+        <el-input
+            v-model="queryParams.bonusMultiplier"
+            placeholder="请输入 奖金乘数"
+            clearable
+            :step="100"
+            size="small"
+            @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+
+      <!--      Filter by Bonus status-->
+      <el-form-item label="地位" prop="status">
+        <el-input
+            v-model="queryParams.status"
+            placeholder="请输入 地位"
+            clearable
+            :step="100"
+            size="small"
+            @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+
+
+      <el-form-item>
+        <el-button type="primary" icon="Search" size="small" @click="handleQuery">搜索</el-button>
+        <el-button icon="Refresh" size="small" @click="resetQuery">重置</el-button>
+      </el-form-item>
     </el-form>
 
     <!--    CRUD OPERATION-->
@@ -207,6 +260,7 @@ function resetQuery() {
     status: null
   }
   proxy.resetForm("queryForm");
+  getList();
 }
 
 /*** handle ADD button*/
