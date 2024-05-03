@@ -299,29 +299,29 @@ function nextStep() {
         return;
       }
 
-      const targetSum = form.value.finalAmount - form.value.initialAmount;
-      const minSpins = form.value.initialSpinCount * 1 + form.value.minimumInvites * form.value.spinsPerInvite;
-      const maxSpins = form.value.initialSpinCount * 1 + form.value.maximumInvites * form.value.spinsPerInvite;
-      let minPossibleChoiceTmp = targetSum / maxSpins;
-      let maxPossibleChoiceTmp = targetSum / minSpins;
-
-      if( Math.floor( minPossibleChoiceTmp ) !== minPossibleChoiceTmp ) {
-        minPossibleChoiceTmp = minPossibleChoiceTmp.toFixed( 3 ) * 1;
-      }
-
-      if( Math.floor( maxPossibleChoiceTmp ) !== maxPossibleChoiceTmp ) {
-        maxPossibleChoiceTmp = maxPossibleChoiceTmp.toFixed( 3 ) * 1;
-      }
-
-      if( form.value.minimumPoints < minPossibleChoiceTmp || form.value.minimumPoints >= maxPossibleChoiceTmp ) {
-        errors.value.minimumPoints = "最小点数超出" + minPossibleChoiceTmp + "至" + maxPossibleChoiceTmp + "的可能范围";
-        return;
-      }
-
-      if( form.value.maximumPoints <= minPossibleChoiceTmp || form.value.maximumPoints > maxPossibleChoiceTmp ) {
-        errors.value.maximumPoints = "最高分超出了" + minPossibleChoiceTmp + "至" + maxPossibleChoiceTmp + "分的可能范围";
-        return;
-      }
+      // const targetSum = form.value.finalAmount - form.value.initialAmount;
+      // const minSpins = form.value.initialSpinCount * 1 + form.value.minimumInvites * form.value.spinsPerInvite;
+      // const maxSpins = form.value.initialSpinCount * 1 + form.value.maximumInvites * form.value.spinsPerInvite;
+      // let minPossibleChoiceTmp = targetSum / maxSpins;
+      // let maxPossibleChoiceTmp = targetSum / minSpins;
+      //
+      // if( Math.floor( minPossibleChoiceTmp ) !== minPossibleChoiceTmp ) {
+      //   minPossibleChoiceTmp = minPossibleChoiceTmp.toFixed( 3 ) * 1;
+      // }
+      //
+      // if( Math.floor( maxPossibleChoiceTmp ) !== maxPossibleChoiceTmp ) {
+      //   maxPossibleChoiceTmp = maxPossibleChoiceTmp.toFixed( 3 ) * 1;
+      // }
+      //
+      // if( form.value.minimumPoints < minPossibleChoiceTmp || form.value.minimumPoints >= maxPossibleChoiceTmp ) {
+      //   errors.value.minimumPoints = "最小点数超出" + minPossibleChoiceTmp + "至" + maxPossibleChoiceTmp + "的可能范围";
+      //   return;
+      // }
+      //
+      // if( form.value.maximumPoints <= minPossibleChoiceTmp || form.value.maximumPoints > maxPossibleChoiceTmp ) {
+      //   errors.value.maximumPoints = "最高分超出了" + minPossibleChoiceTmp + "至" + maxPossibleChoiceTmp + "分的可能范围";
+      //   return;
+      // }
 
       break;
   }
