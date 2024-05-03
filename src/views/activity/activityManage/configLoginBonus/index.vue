@@ -137,19 +137,20 @@
         <el-form-item label="过期时间" prop="limitHour">
           <el-input type="number" v-model="form.limitHour" placeholder="过期时间（小时）"/>
         </el-form-item>
-        <el-form-item label="奖励方式" prop="destination">
-          <el-select v-model="form.destination" placeholder="奖励方式">
-            <el-option label="账户" value='ACCOUNT'></el-option>
-            <el-option label="奖金" value='BONUS'></el-option>
-          </el-select>
+        <el-form-item label="奖励方式">
+          <el-radio-group v-model="form.destination" @change="handleDestinationChange()">
+            <el-radio label="ACCOUNT">账户</el-radio>
+            <el-radio label="BONUS">积分</el-radio>
+          </el-radio-group>
         </el-form-item>
         <el-form-item label="赠送打码倍数" prop="multiplier">
           <el-input type="number" v-model="form.multiplier" placeholder="赠送打码倍数"/>
         </el-form-item>
-        <el-form-item label="地位" prop="status">
+        <el-form-item label="状态" prop="status">
           <el-switch v-model="form.status"
                      :active-value=1
                      :inactive-value=0
+                     :disabled="isUpdate"
           />
         </el-form-item>
       </el-form>
@@ -181,6 +182,7 @@ const title = ref('');
 const loading = ref(true);
 const multiple = ref(true);
 const open = ref(false);
+const isUpdate = ref(false);
 const data = reactive({
   /** 查询参数 query params*/
   queryParams: {},
@@ -228,6 +230,7 @@ function reset() {
 
 /** handle add new data */
 function handleAdd() {
+  isUpdate.value = false
   reset()
   open.value = true
   title.value = '添加配置登录奖励'
@@ -256,6 +259,7 @@ function submitForm() {
 
 /** handle update data */
 function handleUpdate(row) {
+  isUpdate.value = true;
   getRecord(row.id).then(response => {
     form.value = response.data;
   });
@@ -331,6 +335,12 @@ function resetQuery() {
   proxy.resetForm('queryRef')
   handleQuery()
   loading.value = false
+}
+
+function handleDestinationChange() {
+  if (form.value.destination === 'BONUS') {
+    form.value.multiplier = 0;
+  }
 }
 
 getList()

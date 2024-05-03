@@ -115,6 +115,7 @@
           <el-switch v-model="form.status"
                      :active-value=1
                      :inactive-value=0
+                     :disabled=isUpdate
           />
         </el-form-item>
       </el-form>
@@ -134,7 +135,7 @@
       <el-table-column label="乘数" align="center" prop="multiplier" width="250px"/>
       <el-table-column label="奖金乘数" align="center" prop="bonusMultiplier" width="150px"/>
       <el-table-column label="限制时间" align="center" prop="limitHour" width="150px"/>
-      <el-table-column label="地位" align="center" prop="status" width="150px">
+      <el-table-column label="状态" align="center" prop="status" width="150px">
         <template #default="scope">
           <el-switch
               v-model="scope.row.status"
@@ -210,6 +211,7 @@ const showSearch = ref(true)
 
 const loading = ref(true)
 const open = ref(false)
+const isUpdate = ref(false)
 const statusOption =[
   {
     value: 0,
@@ -281,6 +283,7 @@ function resetQuery() {
 
 /*** handle ADD button*/
 function handleAdd() {
+  isUpdate.value = false
   resetQuery()
   open.value = true
   title.value = "添加配置存款奖金"
@@ -310,6 +313,7 @@ function toggleSwitch(row) {
 
 /*** handle UPDATE button*/
 function handleUpdate(row) {
+  isUpdate.value = true;
   getConfigDepositBonusInfo(row.id).then(response => {
     form.value = response.data;
   });
