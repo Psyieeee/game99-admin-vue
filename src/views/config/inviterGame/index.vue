@@ -304,6 +304,7 @@ function nextStep() {
       const maxPossiblePoints = targetSum - maxSpins * form.value.minimumPoints;
       if( form.value.maximumPoints > maxPossiblePoints ) {
           errors.value.maximumPoints = "最高金额应低于 " + maxPossiblePoints;
+          return;
       }
 
       // const minSpins = form.value.initialSpinCount * 1 + form.value.minimumInvites * form.value.spinsPerInvite;
