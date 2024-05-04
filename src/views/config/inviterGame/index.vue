@@ -299,7 +299,13 @@ function nextStep() {
         return;
       }
 
-      // const targetSum = form.value.finalAmount - form.value.initialAmount;
+      const targetSum = form.value.finalAmount - form.value.initialAmount;
+      const maxSpins = form.value.initialSpinCount * 1 + form.value.maximumInvites * form.value.spinsPerInvite;
+      const maxPossiblePoints = targetSum - maxSpins * form.value.minimumPoints;
+      if( form.value.maximumPoints > maxPossiblePoints ) {
+          errors.value.maximumPoints = "最高金额应低于 " + maxPossiblePoints;
+      }
+
       // const minSpins = form.value.initialSpinCount * 1 + form.value.minimumInvites * form.value.spinsPerInvite;
       // const maxSpins = form.value.initialSpinCount * 1 + form.value.maximumInvites * form.value.spinsPerInvite;
       // let minPossibleChoiceTmp = targetSum / maxSpins;
