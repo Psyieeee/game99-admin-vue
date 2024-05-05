@@ -1,21 +1,21 @@
 <template>
   <div class="app-container">
-<!--    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">-->
-<!--      <el-form-item label="名称" prop="name">-->
-<!--        <el-input-->
-<!--            v-model="queryParams.name"-->
-<!--            placeholder="请输入名称"-->
-<!--            clearable-->
-<!--            :step="100"-->
-<!--            size="small"-->
-<!--            @keyup.enter="handleQuery"-->
-<!--        />-->
-<!--      </el-form-item>-->
-<!--      <el-form-item>-->
-<!--        <el-button type="primary" icon="Search" size="small" @click="handleQuery">搜索</el-button>-->
-<!--        <el-button icon="Refresh" size="small" @click="resetQuery">重置</el-button>-->
-<!--      </el-form-item>-->
-<!--    </el-form>-->
+    <!--    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">-->
+    <!--      <el-form-item label="名称" prop="name">-->
+    <!--        <el-input-->
+    <!--            v-model="queryParams.name"-->
+    <!--            placeholder="请输入名称"-->
+    <!--            clearable-->
+    <!--            :step="100"-->
+    <!--            size="small"-->
+    <!--            @keyup.enter="handleQuery"-->
+    <!--        />-->
+    <!--      </el-form-item>-->
+    <!--      <el-form-item>-->
+    <!--        <el-button type="primary" icon="Search" size="small" @click="handleQuery">搜索</el-button>-->
+    <!--        <el-button icon="Refresh" size="small" @click="resetQuery">重置</el-button>-->
+    <!--      </el-form-item>-->
+    <!--    </el-form>-->
 
     <!--    button on the table for query-->
     <el-row :gutter="10" class="mb8">
@@ -38,7 +38,7 @@
     <el-table stripe v-loading="loading" :data="configInviterGameList">
       <el-table-column label="初始金额" align="center" prop="initialAmount"/>
       <el-table-column label="最终金额" align="center" prop="finalAmount"/>
-      <el-table-column label="有效时间（小时)" align="center" prop="duration" />
+      <el-table-column label="有效时间（小时)" align="center" prop="duration"/>
 
       <el-table-column label="最少邀请人数" align="center" prop="minimumInvites"/>
       <el-table-column label="最多邀请人数" align="center" prop="maximumInvites"/>
@@ -47,6 +47,12 @@
 
       <el-table-column label="随机获取最低金额" align="center" prop="minimumPoints"/>
       <el-table-column label="随机获取最高金额" align="center" prop="maximumPoints"/>
+      <el-table-column label="云163限制" align="center" prop="limitYun163">
+        <template #default="scope">
+          <dict-tag :options="sys_effect_type" :value="scope.row.limitYun163"/>
+        </template>
+      </el-table-column>
+      <el-table-column label="设备数量限制" align="center" prop="limitDeviceNum"/>
 
       <el-table-column align="center" label="状态" prop="status">
         <template #default="scope">
@@ -96,6 +102,8 @@
         <el-step title="步骤 1"/>
         <el-step title="步骤 2"/>
         <el-step title="步骤 3"/>
+        <el-step title="步骤 4"/>
+        <el-step title="步骤 5"/>
       </el-steps>
 
       <el-form ref="configRef" :model="form" style="padding-bottom: 50px" label-width="40%">
@@ -128,25 +136,42 @@
 
         <div v-else-if="activeStep === 2">
           <el-form-item label="随机获取最低金额" :error="errors.minimumPoints">
-            <el-input-number v-model="form.minimumPoints" controls-position="right" :min="0.01" :step="0.01" step-strictly/>
+            <el-input-number v-model="form.minimumPoints" controls-position="right" :min="0.01" :step="0.01"
+                             step-strictly/>
           </el-form-item>
           <el-form-item label="随机获取最高金额" :error="errors.maximumPoints">
-            <el-input-number v-model="form.maximumPoints" controls-position="right" :min="0.02" :step="0.01" step-strictly/>
+            <el-input-number v-model="form.maximumPoints" controls-position="right" :min="0.02" :step="0.01"
+                             step-strictly/>
           </el-form-item>
         </div>
 
         <div v-else-if="activeStep === 3">
+          <el-form-item label="云163限制" :error="errors.limitYun163">
+            <el-switch
+                v-model="form.limitYun163"
+                :active-value="true"
+                :inactive-value="false">
+            </el-switch>
+          </el-form-item>
+          <el-form-item label="设备数量限制" :error="errors.limitDeviceNum">
+            <el-input-number v-model="form.limitDeviceNum" controls-position="right" step-strictly/>
+          </el-form-item>
+        </div>
+
+        <div v-else-if="activeStep === 4">
           <el-form-item label="测试奖励顺序" label-width="20%">
-            <el-input v-model="sampleList" readonly style="width: 70%"></el-input> <br>
-            <el-button @click="test" type="warning" style="margin-left: 10px" v-loading="loadingSampleList" >测试结果</el-button>
+            <el-input v-model="sampleList" readonly style="width: 70%"></el-input>
+            <br>
+            <el-button @click="test" type="warning" style="margin-left: 10px" v-loading="loadingSampleList">测试结果
+            </el-button>
           </el-form-item>
         </div>
       </el-form>
 
       <div slot="footer" class="dialog-footer" style="float: right;margin-top: -20px">
         <el-button @click="previousStep" v-if="activeStep > 0">上一步</el-button>
-        <el-button @click="nextStep" v-if="activeStep < 3">下一步</el-button>
-        <el-button type="primary" @click="submitForm" v-if="activeStep === 3">确 定</el-button>
+        <el-button @click="nextStep" v-if="activeStep < 4">下一步</el-button>
+        <el-button type="primary" @click="submitForm" v-if="activeStep === 4">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
@@ -168,6 +193,7 @@ import {useRouter} from "vue-router";
 
 const router = useRouter();
 const {proxy} = getCurrentInstance();
+const {sys_effect_type} = proxy.useDict('sys_effect_type');
 
 // bonus文件存储服务配置表格数据
 const configInviterGameList = ref([]);
@@ -176,7 +202,6 @@ const configInviterGameList = ref([]);
 // 弹出层标题
 const title = ref("");
 const total = ref(0);
-const bonusTestTitle = ref("测试图片上传");
 
 //boolean types
 // 遮罩层
@@ -195,7 +220,7 @@ const openConfig = ref(false);
 
 const activeStep = ref(0)
 
-const sampleList = ref( "" );
+const sampleList = ref("");
 
 const data = reactive({
   // 查询参数
@@ -214,126 +239,109 @@ const data = reactive({
 const {queryParams, form, rules, errors} = toRefs(data);
 
 function previousStep() {
-  if( activeStep.value > 0 ) {
+  if (activeStep.value > 0) {
     activeStep.value--;
   }
 }
 
 function test() {
   loadingSampleList.value = true;
-  getSampleList( form.value ).then( response => {
+  getSampleList(form.value).then(response => {
     sampleList.value = response.data;
-  } ).finally( () => {
+  }).finally(() => {
     loadingSampleList.value = false;
-  } );
+  });
 }
 
-function isEmpty( value ) {
+function isEmpty(value) {
   return value === null || value === undefined || value === "";
 }
 
 function nextStep() {
   resetErrors();
 
-  switch( activeStep.value ) {
+  switch (activeStep.value) {
     case 0:
-      if( isEmpty( form.value.initialAmount ) ) {
+      if (isEmpty(form.value.initialAmount)) {
         errors.value.initialAmount = "初始金额不能为空";
         return;
       }
 
-      if( isEmpty( form.value.finalAmount ) ) {
+      if (isEmpty(form.value.finalAmount)) {
         errors.value.finalAmount = "最终金额不能为空";
         return;
       }
 
-      if( form.value.initialAmount >= form.value.finalAmount ) {
+      if (form.value.initialAmount >= form.value.finalAmount) {
         errors.value.finalAmount = "最终金额必须大于初始金额";
         return;
       }
 
-      if( isEmpty( form.value.duration ) ) {
+      if (isEmpty(form.value.duration)) {
         errors.value.duration = "持续时间不能为空";
         return;
       }
       break;
     case 1:
-      if( isEmpty( form.value.minimumInvites ) ) {
+      if (isEmpty(form.value.minimumInvites)) {
         errors.value.minimumInvites = "最小邀请不能为空";
         return;
       }
 
-      if( isEmpty( form.value.maximumInvites ) ) {
+      if (isEmpty(form.value.maximumInvites)) {
         errors.value.maximumInvites = "最大邀请不能为空";
         return;
       }
 
-      if( form.value.minimumInvites >= form.value.maximumInvites ) {
+      if (form.value.minimumInvites >= form.value.maximumInvites) {
         errors.value.maximumInvites = "最大邀请金额必须大于最小邀请金额";
         return;
       }
 
-      if( isEmpty( form.value.spinsPerInvite ) ) {
+      if (isEmpty(form.value.spinsPerInvite)) {
         errors.value.spinsPerInvite = "每次邀请的旋转次数不能为空";
         return;
       }
 
-      if( isEmpty( form.value.initialSpinCount ) ) {
+      if (isEmpty(form.value.initialSpinCount)) {
         errors.value.initialSpinCount = "初始免费旋转不能为空";
         return;
       }
       break;
     case 2:
-      if( isEmpty( form.value.minimumPoints ) ) {
+      if (isEmpty(form.value.minimumPoints)) {
         errors.value.minimumPoints = "最小点数不能为空";
         return;
       }
 
-      if( isEmpty( form.value.maximumPoints ) ) {
+      if (isEmpty(form.value.maximumPoints)) {
         errors.value.maximumPoints = "最高分不能为空";
         return;
       }
 
-      if( form.value.minimumPoints >= form.value.maximumPoints ) {
+      if (form.value.minimumPoints >= form.value.maximumPoints) {
         errors.value.maximumPoints = "最高分必须大于最低分";
         return;
       }
 
       const targetSum = form.value.finalAmount - form.value.initialAmount;
-      const maxSpins = form.value.initialSpinCount * 1 + form.value.maximumInvites * form.value.spinsPerInvite;
-      const maxPossiblePoints = targetSum - maxSpins * form.value.minimumPoints;
-      if( form.value.maximumPoints > maxPossiblePoints ) {
-          errors.value.maximumPoints = "最高金额应低于 " + maxPossiblePoints;
-          return;
+      const spinCount = form.value.maximumInvites + form.value.initialSpinCount;
+      const maxMoney = targetSum - (form.value.minimumPoints * spinCount);
+      const minMoney = (targetSum / spinCount).toFixed(2);
+      if (maxMoney < form.value.maximumPoints || minMoney > form.value.maximumPoints) {
+        errors.value.maximumPoints = "最高金额应低于 " + maxMoney + ", 高于" + minMoney;
+        return;
       }
-
-      // const minSpins = form.value.initialSpinCount * 1 + form.value.minimumInvites * form.value.spinsPerInvite;
-      // const maxSpins = form.value.initialSpinCount * 1 + form.value.maximumInvites * form.value.spinsPerInvite;
-      // let minPossibleChoiceTmp = targetSum / maxSpins;
-      // let maxPossibleChoiceTmp = targetSum / minSpins;
-      //
-      // if( Math.floor( minPossibleChoiceTmp ) !== minPossibleChoiceTmp ) {
-      //   minPossibleChoiceTmp = minPossibleChoiceTmp.toFixed( 3 ) * 1;
-      // }
-      //
-      // if( Math.floor( maxPossibleChoiceTmp ) !== maxPossibleChoiceTmp ) {
-      //   maxPossibleChoiceTmp = maxPossibleChoiceTmp.toFixed( 3 ) * 1;
-      // }
-      //
-      // if( form.value.minimumPoints < minPossibleChoiceTmp || form.value.minimumPoints >= maxPossibleChoiceTmp ) {
-      //   errors.value.minimumPoints = "最小点数超出" + minPossibleChoiceTmp + "至" + maxPossibleChoiceTmp + "的可能范围";
-      //   return;
-      // }
-      //
-      // if( form.value.maximumPoints <= minPossibleChoiceTmp || form.value.maximumPoints > maxPossibleChoiceTmp ) {
-      //   errors.value.maximumPoints = "最高分超出了" + minPossibleChoiceTmp + "至" + maxPossibleChoiceTmp + "分的可能范围";
-      //   return;
-      // }
-
+      break;
+    case 3:
+      if (isEmpty(form.value.limitDeviceNum)) {
+        errors.value.limitDeviceNum = "设备数量限制不能为空";
+        return;
+      }
       break;
   }
 
-  if( activeStep.value < 3 ) {
+  if (activeStep.value < 4) {
     activeStep.value++;
   }
 }
@@ -357,7 +365,7 @@ function cancel() {
 }
 
 function resetErrors() {
-  errors.value = { };
+  errors.value = {};
 }
 
 /** 表单重置 Form reset */
@@ -394,7 +402,7 @@ function handleQuery() {
 function resetQuery() {
   proxy.resetForm('queryForm')
   handleQuery()
-  loading.value =false
+  loading.value = false
 }
 
 /** 新增按钮操作 Add button action*/
@@ -416,8 +424,8 @@ function handleUpdate(row) {
 
 /** 提交按钮 submit button*/
 function submitForm() {
-  if( isEmpty( sampleList.value ) ) {
-    proxy.$modal.msgError( "请在提交前进行测试" );
+  if (isEmpty(sampleList.value)) {
+    proxy.$modal.msgError("请在提交前进行测试");
     return;
   }
 
@@ -442,8 +450,8 @@ function submitForm() {
 
 /** 删除按钮操作 delete button action*/
 function handleDelete(row) {
-  if( row.status === true ) {
-    proxy.$modal.msgError( "无法删除活动配置" );
+  if (row.status === true) {
+    proxy.$modal.msgError("无法删除活动配置");
     return;
   }
 
@@ -461,7 +469,7 @@ function handleDelete(row) {
 }
 
 function handleEffect(row) {
-  if( row.status === false ) {
+  if (row.status === false) {
     row.status = true;
     return;
   }
@@ -471,7 +479,7 @@ function handleEffect(row) {
     cancelButtonText: '取消',
     type: 'warning'
   }).then(function () {
-    return changeStatus( row.id, row.status )
+    return changeStatus(row.id, row.status)
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess('修改状态成功')
