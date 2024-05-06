@@ -96,8 +96,8 @@
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="600px" :rules="rules">
       <el-form ref="queryForm" :model="form" :rules="rules" label-width="110px">
-        <el-form-item label="日程" prop="schedule">
-          <el-input type="number" v-model="form.schedule" placeholder="日程"/>
+        <el-form-item label="日程" prop="schedule" :error="errorSchedule">
+          <el-input type="number" v-model="form.schedule" placeholder="日程" @input="resetError"/>
         </el-form-item>
         <el-form-item label="最大奖金" prop="maxBonus">
           <el-input type="number" v-model="form.maxBonus" placeholder="最大奖金"/>
@@ -205,6 +205,7 @@ const showSearch = ref(true)
 const loading = ref(true)
 const open = ref(false)
 const isUpdate = ref(false)
+const errorSchedule = ref("");
 const statusOption =[
   {
     value: 0,
@@ -261,6 +262,7 @@ function handleQuery() {
 
 /** 搜索按钮操作 handle query*/
 function resetQuery() {
+  resetError();
   form.value = {
     id: null,
     schedule: null,
@@ -306,6 +308,7 @@ function toggleSwitch(row) {
 
 /*** handle UPDATE button*/
 function handleUpdate(row) {
+  resetQuery();
   isUpdate.value = true;
   getConfigDepositBonusInfo(row.id).then(response => {
     form.value = response.data;
@@ -325,12 +328,16 @@ function submitForm() {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
+        }).catch(function (){
+          errorSchedule.value = "时间表已存在";
         })
       } else {
         addConfigDepositBonus(form.value).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
+        }).catch(function () {
+          errorSchedule.value = "时间表已存在";
         })
       }
     }
@@ -351,6 +358,10 @@ function handleDelete(row) {
     getList()
     proxy.$modal.msgSuccess('删除成功')
   })
+}
+
+function resetError() {
+  errorSchedule.value = "";
 }
 
 getList()
