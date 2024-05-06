@@ -111,13 +111,6 @@
         <el-form-item label="限制时间" prop="limitHour">
           <el-input type="number" v-model="form.limitHour" placeholder="限制时间"/>
         </el-form-item>
-        <el-form-item label="地位" prop="status">
-          <el-switch v-model="form.status"
-                     :active-value=1
-                     :inactive-value=0
-                     :disabled=isUpdate
-          />
-        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>

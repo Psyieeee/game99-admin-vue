@@ -70,7 +70,16 @@
       <el-table-column label="最大派送金额" prop="maxBonus" align="center" width="180"/>
       <el-table-column align="center" label="设备类型" min-width="180" prop="deviceType" :formatter="formatterDev"/>
       <el-table-column label="设备数量限制" prop="limitDeviceNum" align="center" width="180"/>
-      <el-table-column label="云163限制" prop="limitYun163" align="center" width="180"/>
+      <el-table-column label="云163限制" prop="limitYun163" align="center" width="180">
+        <template #default="scope">
+          <el-switch
+              v-model="scope.row.limitYun163"
+              :active-value=1
+              :inactive-value=0
+              @click="toggleYunSwitch(scope.row)">
+          </el-switch>
+        </template>
+      </el-table-column>
       <el-table-column label="过期时间（小时）" prop="limitHour" align="center" width="180"/>
       <el-table-column label="奖励方式" prop="destination" align="center" width="180" :formatter="formatterDestination"/>
       <el-table-column label="赠送打码倍数" prop="multiplier" align="center" width="180"/>
@@ -130,10 +139,6 @@
         <el-form-item label="设备数量限制" prop="limitDeviceNum">
           <el-input type="number" v-model="form.limitDeviceNum" placeholder="设备数量限制"/>
         </el-form-item>
-        <el-form-item label="云163限制" prop="limitYun163">
-          <el-input type="number" v-model="form.limitYun163" placeholder="云163限制"/>
-        </el-form-item>
-
         <el-form-item label="过期时间" prop="limitHour">
           <el-input type="number" v-model="form.limitHour" placeholder="过期时间（小时）"/>
         </el-form-item>
@@ -144,14 +149,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="赠送打码倍数" prop="multiplier">
-          <el-input type="number" v-model="form.multiplier" placeholder="赠送打码倍数"/>
-        </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-switch v-model="form.status"
-                     :active-value=1
-                     :inactive-value=0
-                     :disabled="isUpdate"
-          />
+          <el-input type="number" v-model="form.multiplier" placeholder="赠送打码倍数" :disabled="isBonus"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -170,7 +168,7 @@ import {
   addRecord,
   updateRecord,
   getRecord,
-  changeStatus
+  changeStatus, changeLimitYun163
 } from "@/api/activity/configLoginBonus";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 
@@ -183,6 +181,8 @@ const loading = ref(true);
 const multiple = ref(true);
 const open = ref(false);
 const isUpdate = ref(false);
+const isBonus = ref(false);
+const multiplier = ref(0);
 const data = reactive({
   /** 查询参数 query params*/
   queryParams: {},
@@ -191,6 +191,34 @@ const data = reactive({
   form: {},
 
   rules: {
+    maxMoney: [
+      {
+        type: 'number',
+        asyncValidator: (rule, value) => {
+          return new Promise((resolve, reject) => {
+            if (value < form.value.minMoney) {
+              reject('应大于最小值');  // reject with error message
+            } else {
+              resolve();
+            }
+          });
+        },
+      }
+    ],
+    maxBonus: [
+      {
+        type: 'number',
+        asyncValidator: (rule, value) => {
+          return new Promise((resolve, reject) => {
+            if (value < form.value.minBonus) {
+              reject('应大于最小值');
+            } else {
+              resolve();
+            }
+          });
+        },
+      }
+    ],
     deviceType: [
       {required: true, message: '无效的值', trigger: 'blur'}
     ],
@@ -201,7 +229,6 @@ const data = reactive({
       {required: true, message: '无效的设备', trigger: 'blur'}
     ]
   },
-
 });
 const {queryParams, form, rules} = toRefs(data);
 
@@ -260,8 +287,10 @@ function submitForm() {
 /** handle update data */
 function handleUpdate(row) {
   isUpdate.value = true;
+  isBonus.value = row.destination === "BONUS";
   getRecord(row.id).then(response => {
     form.value = response.data;
+    multiplier.value = response.data.multiplier;
   });
   open.value = true
   title.value = '编辑配置登录奖励'
@@ -304,6 +333,27 @@ function toggleSwitch(row) {
     row.status = row.status === 0 ? 1 : 0
   })
 }
+function toggleYunSwitch(row) {
+  const text = row.limitYun163 === 1 ? '启用' : '停用'
+  proxy.$confirm('确认要' + text + '?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消'
+  }).then(function () {
+    let status;
+    loading.value = true
+    status = changeLimitYun163(row.id, row.limitYun163);
+    if (status) {
+      return status
+    }
+  }).then(() => {
+    loading.value = false
+    proxy.$modal.msgSuccess(text + '成功')
+    getList()
+  }).catch(function () {
+    loading.value = false
+    row.limitYun163 = row.limitYun163 === 0 ? 1 : 0
+  })
+}
 
 function formatterDev(row) {
   switch (row.deviceType) {
@@ -338,9 +388,8 @@ function resetQuery() {
 }
 
 function handleDestinationChange() {
-  if (form.value.destination === 'BONUS') {
-    form.value.multiplier = 0;
-  }
+  isBonus.value = form.value.destination === 'BONUS';
+  form.value.multiplier = isBonus.value ? 0 : multiplier.value;
 }
 
 getList()

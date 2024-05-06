@@ -45,3 +45,10 @@ export function changeStatus(id, status) {
         method: 'put'
     })
 }
+
+export function changeLimitYun163(id, limitYun163) {
+    return request({
+        url: url.game99PlatformAdminWeb + "/configLoginBonus/changeLimitYun163/" + id + "/" + limitYun163,
+        method: 'put'
+    })
+}
