@@ -3,7 +3,7 @@ import {url} from "@/utils/url";
 
 export function memberTierListData(query){
     return request({
-        url:url.game99PlatformAdminWeb+"/member/memberTier/list/",
+        url:url.game99PlatformAdminWeb+"/member/memberTier/list",
         method:'get',
         params:query
     })

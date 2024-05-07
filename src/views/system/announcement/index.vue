@@ -31,10 +31,10 @@
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column label="标题" prop="title" align="center"/>
       <el-table-column label="内容" prop="content" align="center" width="950"/>
-      <el-table-column label="类型" prop="type" align="center" width="950"/>
       <el-table-column label="状态" prop="status" align="center" width="80">
         <template #default="scope">
           <el-switch
+              :disabled="scope.row.title === 'MAINTAIN'"
               v-model="scope.row.status"
               :active-value=1
               :inactive-value=0
@@ -48,12 +48,13 @@
               v-model="scope.row.homePrompt"
               :active-value=1
               :inactive-value=0
-              :disabled="!scope.row.status"
+              :disabled="scope.row.title === 'MAINTAIN'"
               @click="!scope.row.status ? null : toggleSwitch('homePrompt', scope.row)">
-          >
+            >
           </el-switch>
         </template>
       </el-table-column>
+      <el-table-column label="排序" align="center" prop="sort" width="80"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="100">
         <template #default="scope">
           <el-button
@@ -77,39 +78,32 @@
 
 
     <!-- 添加或修改记录 Add or modify records-->
-    <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
-               width="400">
+    <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px; padding-right: 20px"
+               width="800px" >
       <el-form ref="formAddUpdate" :model="form" :rules="rules" label-width="100px">
-        <div class="centered-form">
+        <div>
           <el-form-item label="标题" prop="title">
             <el-input v-model="form.title" placeholder="标题"/>
           </el-form-item>
           <el-form-item label="内容" prop="content">
-            <el-input v-model="form.content" placeholder="内容" type="textarea"/>
+            <el-input v-model="form.content" placeholder="内容" type="textarea" rows="15"/>
           </el-form-item>
-          <el-form-item label="类型" prop="type">
-            <el-select v-model="form.type" placeholder="类型" clearable>
-              <el-option
-                  v-for="type in announcementTypeList"
-                  :key="type.name"
-                  :label="type.name"
-                  :value="type.name"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="状态" prop="status">
+          <el-form-item v-if="form.title !== 'MAINTAIN'" label="状态" prop="status">
             <el-switch v-model="form.status"
                        :active-value=1
                        :inactive-value=0
                        @click="toggleStatusForm(form)"
             />
           </el-form-item>
-          <el-form-item label="弹框开关" prop="homePrompt">
+          <el-form-item v-if="form.title !== 'MAINTAIN'" label="弹框开关" prop="homePrompt">
             <el-switch v-model="form.homePrompt"
                        :active-value=1
                        :inactive-value=0
                        :disabled="!form.status"
             />
+          </el-form-item>
+          <el-form-item label="排序" prop="sort">
+            <el-input v-model="form.sort" placeholder="请输入排序" type="number"/>
           </el-form-item>
         </div>
       </el-form>
@@ -134,15 +128,11 @@ import {
   deleteRecord,
   changeHomePrompt,
 } from "@/api/system/announcement";
-import {
-  announcementList
-} from "@/api/system/announcementType";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 const {proxy} = getCurrentInstance();
 
 
 const tableList = ref([]);
-const announcementTypeList = ref([]);
 const ids = ref([]);
 const title = ref('');
 const loading = ref(true);
@@ -156,9 +146,27 @@ const data = reactive({
   /** 表单参数 form parameter*/
   form: {},
   rules: {
-    name: [
+    provideTimesLimit: [
       {required: true, message: '无效的值', trigger: 'blur'}
     ],
+    perDayTimesLimit: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    totalAmount: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    perDayAmount: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    memberMinMoney: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    afterRegisterTime: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ],
+    sort: [
+      {required: true, message: '无效的值', trigger: 'blur'}
+    ]
   }
 
 });
@@ -175,7 +183,6 @@ function getList() {
 
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id);
-  console.log( "selection " + !selection.length)
   multiple.value = !selection.length;
 }
 
@@ -185,10 +192,10 @@ function reset() {
     title: null,
     content: null,
     author: null,
-    type: null,
     status: 1,
     homePrompt: 1,
-    displayTime: null
+    displayTime: null,
+    sort: null
   }
   proxy.resetForm('formAddUpdate');
 }
@@ -247,6 +254,9 @@ function handleDelete(row) {
 
 
 function toggleSwitch(label, row) {
+  if(row.title === 'MAINTAIN') {
+    return;
+  }
   let rowValue = label==="status" ?  row.status : row.homePrompt;
   const text = rowValue === 1 ? '启用' : '停用'
   proxy.$confirm('确认要' + text + '"?', '警告', {
@@ -283,14 +293,7 @@ function toggleStatusForm (form) {
   }
 }
 
-function getAnnouncementTypeList() {
-  announcementList().then(res => {
-    announcementTypeList.value = res.data
-  })
-}
-
-getAnnouncementTypeList();
-getList();
+getList()
 </script>
 
 <style>
