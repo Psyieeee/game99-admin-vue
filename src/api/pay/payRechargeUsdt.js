@@ -40,7 +40,7 @@ export function payRechargeUsdtById(id) {
 /**  add new usdt data*/
 export function addPayRechargeUsdt(data) {
     return request({
-        url: url.game99PayAdminWeb + '/pay/payRechargeUsdt/',
+        url: url.game99PayAdminWeb + '/pay/payRechargeUsdt',
         method: 'post',
         data:data
     })
@@ -49,7 +49,7 @@ export function addPayRechargeUsdt(data) {
 /** update usdt data*/
 export function updatePayRechargeUsdt(data) {
     return request({
-        url: url.game99PayAdminWeb + '/pay/payRechargeUsdt/',
+        url: url.game99PayAdminWeb + '/pay/payRechargeUsdt',
         method: 'put',
         data:data
     })

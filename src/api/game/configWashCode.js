@@ -21,7 +21,7 @@ export function getConfigWashCodeInfo(id) {
 // 新增游戏类型
 export function addConfigWashCode(data) {
     return request({
-        url: url.game99GameAdminWeb + '/game/configWashCode/',
+        url: url.game99GameAdminWeb + '/game/configWashCode',
         method: 'post',
         data: data
     })
@@ -30,7 +30,7 @@ export function addConfigWashCode(data) {
 // 修改游戏类型
 export function updateConfigWashCode(data) {
     return request({
-        url: url.game99GameAdminWeb + '/game/configWashCode/',
+        url: url.game99GameAdminWeb + '/game/configWashCode',
         method: 'put',
         data: data
     })
