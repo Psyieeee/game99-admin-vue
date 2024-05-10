@@ -72,6 +72,7 @@
       <el-table-column label="最大金额" align="center"    prop="maxAmount"/>
       <el-table-column label="赠送百分比" align="center" prop="bonus"/>
       <el-table-column label="打码倍数" align="center" prop="multiplier"/>
+      <el-table-column label="版本" align="center" prop="version"/>
       <el-table-column label="装置" align="center" prop="device" :formatter="formatterDevice"/>
       <el-table-column align="center" label="状态"     prop="status">
         <template #default="scope">
@@ -137,6 +138,12 @@
           <el-select v-model="form.device" placeholder="选择设备" width="100px">
             <el-option label="网站" :value=0></el-option>
             <el-option label="手机登录" :value=1></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="版本" prop="version" width="100px" style="padding-right: 90px">
+          <el-select v-model="form.version" placeholder="选择版本" width="100px">
+            <el-option label="版本 1" :value=1></el-option>
+            <el-option label="版本 2" :value=2></el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -340,7 +347,7 @@ function handleEffect(row) {
     cancelButtonText: '取消',
     type: 'warning'
   }).then(function () {
-    return changeStatus(row.id, row.status)
+    return changeStatus(row.id, row.status, row.version)
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess('修改状态成功')
