@@ -624,7 +624,6 @@
 <script name="ActivityInfo" setup>
 import {url} from "@/utils/url";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
-import html2canvas from 'html2canvas';
 import {getActivityTypeAllList} from "@/api/activity/activityType";
 import WangEditor from "@/components/WangEditor";
 import {
@@ -761,7 +760,7 @@ const fileInput = ref(null);
 const activityUploadIconParam = ref({type: '', field: ''})
 const eventIds = ref([19,20]);
 
-const jumpTypes = [ "VIP", "DAILY_BONUS", "FUND" ,"RECHARGE","BIND_PHONE" , "INVITER"]
+const jumpTypes = [ "VIP", "DAILY_BONUS", "FUND" ,"RECHARGE","BIND_PHONE" , "INVITER" , "LOGIN_BONUS", "DEPOSIT_BONUS"]
 
 const {queryParams,form,rules, configurations, createBanner} = toRefs(data);
 const {activityInfo_status} = proxy.useDict("activityInfo_status");
