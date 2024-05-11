@@ -243,6 +243,7 @@ import {
 import {listAllPayChannel} from "@/api/pay/payChannel";
 import {getDefaultTime, pickerDateTimeShortcuts} from "@/utils/dateUtils";
 import DictTag from "@/components/DictTag";
+import {listPayRechargeUsdtAll} from "@/api/pay/payRechargeUsdt.js";
 
 const {proxy} = getCurrentInstance();
 
@@ -434,7 +435,7 @@ function listCount() {
 }
 
 function channelNameList() {
-  memberRechargeUsdtList(queryParams.value).then(res => {
+  listPayRechargeUsdtAll().then(res => {
     channelNameOptions.value = res.data
   })
 }
