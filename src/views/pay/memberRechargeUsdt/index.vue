@@ -434,7 +434,7 @@ function listCount() {
 }
 
 function channelNameList() {
-  memberRechargeUsdtList().then(res => {
+  memberRechargeUsdtList(queryParams.value).then(res => {
     channelNameOptions.value = res.data
   })
 }
