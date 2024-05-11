@@ -45,9 +45,9 @@ export function updateConfigBonus(data) {
 }
 
 // 修改状态
-export function changeStatus(id, status, version) {
+export function changeStatus(id, status) {
     return request({
-        url: url.game99PayAdminWeb + '/config/bonus/changeStatus/' + id + "/" + status + "/" + version,
+        url: url.game99PayAdminWeb + '/config/bonus/changeStatus/' + id + "/" + status,
         method: 'put'
     })
 }
