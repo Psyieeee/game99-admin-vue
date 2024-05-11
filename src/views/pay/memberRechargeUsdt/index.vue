@@ -43,9 +43,9 @@
             style="width: 240px">
           <el-option
               v-for="channelName in channelNameOptions"
-              :key="channelName.name"
-              :label="channelName.name"
-              :value="channelName.name"/>
+              :key="channelName.channelName"
+              :label="channelName.channelName"
+              :value="channelName.channelName"/>
         </el-select>
       </el-form-item>
       <el-form-item prop="status">
@@ -434,7 +434,7 @@ function listCount() {
 }
 
 function channelNameList() {
-  listAllPayChannel().then(res => {
+  memberRechargeUsdtList().then(res => {
     channelNameOptions.value = res.data
   })
 }
