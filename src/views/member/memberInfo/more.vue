@@ -357,6 +357,7 @@
         <el-button
             type="primary"
             v-show="index===13"
+            v-hasPermi="['member:memberInfo:updateInviterCode']"
             @click="updateInviterCode()">
           确 定
         </el-button>

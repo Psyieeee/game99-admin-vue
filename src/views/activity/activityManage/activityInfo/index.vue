@@ -438,8 +438,8 @@
               <el-form-item label="跳转类型" prop="type">
                 <el-radio-group v-model="form.type" @change="handleTypeChange()">
                   <el-radio label="0">活动详情</el-radio>
-                  <el-radio label="1">内部浏览器</el-radio>
-                  <el-radio label="2">外部浏览器</el-radio>
+                  <el-radio label="1">外部浏览器</el-radio>
+                  <el-radio label="2">WebView</el-radio>
                   <el-radio label="3">事件跳转状态</el-radio>
                 </el-radio-group>
               </el-form-item>
@@ -624,6 +624,7 @@
 <script name="ActivityInfo" setup>
 import {url} from "@/utils/url";
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
+import html2canvas from 'html2canvas';
 import {getActivityTypeAllList} from "@/api/activity/activityType";
 import WangEditor from "@/components/WangEditor";
 import {

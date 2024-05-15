@@ -72,7 +72,6 @@
         <div class="font">手工上分金额: {{ parseFloat(dataInfo.手动增加金额).toFixed(0) }}</div>
         <div class="font">平台赠送金额: {{ parseFloat(dataInfo.平台赠送金额).toFixed(0) }}</div>
         <div class="font">充值总金额: {{ parseFloat(totalRecharge || 0).toFixed(0) }}</div>
-        <div class="font">提现次数: {{ dataInfo.会员提现次数 }}</div>
         <div class="font">提现金额: {{ parseFloat(dataInfo.会员提现金额).toFixed(0) }}</div>
       </div>
     </div>
