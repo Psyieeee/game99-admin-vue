@@ -334,7 +334,7 @@ function toggleSwitch(row) {
   })
 }
 function toggleYunSwitch(row) {
-  const text = row.limitYun163 === 1 ? '启用' : '停用'
+  const text = row.limitYun163 === true ? '启用' : '停用'
   proxy.$confirm('确认要' + text + '?', '警告', {
     confirmButtonText: '确定',
     cancelButtonText: '取消'
@@ -351,7 +351,7 @@ function toggleYunSwitch(row) {
     getList()
   }).catch(function () {
     loading.value = false
-    row.limitYun163 = row.limitYun163 === 0 ? 1 : 0
+    row.limitYun163 = row.limitYun163 === false ? true : false
   })
 }
 
