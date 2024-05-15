@@ -74,8 +74,8 @@
         <template #default="scope">
           <el-switch
               v-model="scope.row.limitYun163"
-              :active-value=1
-              :inactive-value=0
+              :active-value=true
+              :inactive-value=false
               @click="toggleYunSwitch(scope.row)">
           </el-switch>
         </template>
