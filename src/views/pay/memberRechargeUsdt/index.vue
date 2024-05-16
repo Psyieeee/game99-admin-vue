@@ -523,7 +523,12 @@ function handleUpdateRefuse(row) {
     inputErrorMessage: '审核拒绝备注不能为空',
   }).then(({value}) => {
     const id = row.rechargeOrderNo
-    memberRechargeUsdtRefuseById(id, value).then(response => {
+
+    const remarks = {
+      "remark" : value
+    }
+
+    memberRechargeUsdtRefuseById(id, remarks).then(response => {
       proxy.$modal.msgSuccess("审核拒绝成功");
       getList();
     });
