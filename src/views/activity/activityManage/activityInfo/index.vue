@@ -464,27 +464,31 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item label="跳转状态" v-if="form.type !== 2">
-              <el-switch
-                  :disabled="form.effect"
-                  v-model="form.jumpStatus"
-                  :active-value="true"
-                  :inactive-value="false">
-              </el-switch>
-            </el-form-item>
+            <div v-if="form.type !== '2'">
+              <el-form-item label="跳转状态">
+                <el-switch
+                    :disabled="form.effect"
+                    v-model="form.jumpStatus"
+                    :active-value="true"
+                    :inactive-value="false">
+                </el-switch>
+              </el-form-item>
 
-            <el-form-item v-if="form.type !== 2 && form.jumpStatus" label="内部跳转类型">
-              <el-select
-                  filterable
-                  v-model="form.internalJumpType"
-                  style="width: 240px">
-                <el-option
-                    v-for="jumpType in jumpTypes"
-                    :key="jumpType"
-                    :label="jumpType"
-                    :value="jumpType"/>
-              </el-select>
-            </el-form-item>
+              <el-form-item v-if="form.jumpStatus" label="内部跳转类型">
+                <el-select
+                    filterable
+                    v-model="form.internalJumpType"
+                    style="width: 240px">
+                  <el-option
+                      v-for="jumpType in jumpTypes"
+                      :key="jumpType"
+                      :label="jumpType"
+                      :value="jumpType"/>
+                </el-select>
+              </el-form-item>
+            </div>
+
+
 
 <!--            <el-form-item label="事件跳转状态">-->
 <!--              <el-switch-->
