@@ -351,7 +351,7 @@ function toggleYunSwitch(row) {
     getList()
   }).catch(function () {
     loading.value = false
-    row.limitYun163 = row.limitYun163 === false ? true : false
+    row.limitYun163 = row.limitYun163 === false
   })
 }
 
