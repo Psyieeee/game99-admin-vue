@@ -464,27 +464,29 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item label="跳转状态">
-              <el-switch
-                  :disabled="form.effect"
-                  v-model="form.jumpStatus"
-                  :active-value="true"
-                  :inactive-value="false">
-              </el-switch>
-            </el-form-item>
+            <div v-if="form.type !== 2">
+              <el-form-item label="跳转状态">
+                <el-switch
+                    :disabled="form.effect"
+                    v-model="form.jumpStatus"
+                    :active-value="true"
+                    :inactive-value="false">
+                </el-switch>
+              </el-form-item>
 
-            <el-form-item v-if="form.jumpStatus" label="内部跳转类型">
-              <el-select
-                  filterable
-                  v-model="form.internalJumpType"
-                  style="width: 240px">
-                <el-option
-                    v-for="jumpType in jumpTypes"
-                    :key="jumpType"
-                    :label="jumpType"
-                    :value="jumpType"/>
-              </el-select>
-            </el-form-item>
+              <el-form-item v-if="form.jumpStatus" label="内部跳转类型">
+                <el-select
+                    filterable
+                    v-model="form.internalJumpType"
+                    style="width: 240px">
+                  <el-option
+                      v-for="jumpType in jumpTypes"
+                      :key="jumpType"
+                      :label="jumpType"
+                      :value="jumpType"/>
+                </el-select>
+              </el-form-item>
+            </div>
 
 <!--            <el-form-item label="事件跳转状态">-->
 <!--              <el-switch-->
@@ -761,7 +763,7 @@ const fileInput = ref(null);
 const activityUploadIconParam = ref({type: '', field: ''})
 const eventIds = ref([19,20]);
 
-const jumpTypes = [ "VIP", "DAILY_BONUS", "FUND" ,"RECHARGE","BIND_PHONE" , "INVITER" , "LOGIN_BONUS", "DEPOSIT_BONUS"]
+const jumpTypes = [ "VIP", "DAILY_BONUS", "FUND" ,"RECHARGE","BIND_PHONE" , "INVITER" ]
 
 const {queryParams,form,rules, configurations, createBanner} = toRefs(data);
 const {activityInfo_status} = proxy.useDict("activityInfo_status");
