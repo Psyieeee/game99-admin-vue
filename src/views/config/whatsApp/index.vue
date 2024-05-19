@@ -50,7 +50,7 @@
     <el-table v-loading="loading" :data="recordList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
       <el-table-column label="ID" prop="id" align="center" width="180"/>
-      <el-table-column label="访问令牌" prop="accessToken" align="center" width="180"/>
+<!--      <el-table-column label="访问令牌" prop="accessToken" align="center" width="180"/>-->
       <el-table-column label="电话号码" prop="phoneNumberId" align="center" width="180"/>
       <el-table-column label="模板名称" prop="templateName" align="center" width="180"/>
       <el-table-column label="语言" prop="language" :formatter="codeToLanguageMapper" align="center" min-width="180"/>
