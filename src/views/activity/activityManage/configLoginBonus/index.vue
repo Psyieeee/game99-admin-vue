@@ -160,7 +160,7 @@
   </div>
 </template>
 
-<script setup>
+<script name="configLoginBonus" setup>
 
 import {
   listRecord,

@@ -175,7 +175,7 @@
   </div>
 </template>
 
-<script setup>
+<script name="configDepositBonus" setup>
 
 import {getCurrentInstance, reactive, ref, toRefs} from "vue";
 import {getDefaultTime, pickerDateTimeShortcuts} from "@/utils/dateUtils";
