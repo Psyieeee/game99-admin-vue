@@ -173,9 +173,9 @@
               :disabled="form.id != null"
           >
             <el-option v-for="dict in pay_type"
-                :key="dict.label"
-                :label="dict.label"
-                :value="Number.parseInt(dict.value)"
+                       :key="dict.label"
+                       :label="dict.label"
+                       :value="Number.parseInt(dict.value)"
             />
           </el-select>
         </el-form-item>
@@ -268,7 +268,7 @@ const data = reactive({
     status: null,
     isOnline: null,
     type: null,
-    rate:null,
+    rate: null,
     deviceType: null,
     createBy: null,
     updateBy: null,
@@ -286,7 +286,7 @@ const data = reactive({
     code: [
       {required: true, message: '编码不能为空', trigger: 'blur'}
     ],
-    rate:[
+    rate: [
       {required: true, message: '不能为空', trigger: 'blur'}
     ],
     indexes: [
@@ -321,7 +321,7 @@ function reset() {
     status: 0,
     isOnline: null,
     type: null,
-    rate:null,
+    rate: null,
     createBy: null,
     createTime: null,
     updateBy: null,
@@ -367,14 +367,15 @@ function submitForm() {
     if (form.value.id != null) {
       if (form.value.deviceTypes != null) {
         form.value.deviceType = form.value.deviceTypes.join(',')
-        updatePayType(form.value).then(response => {
-          proxy.$modal.msgSuccess('修改成功')
-          open.value = false
-          getList()
-        })
       }
+      updatePayType(form.value).then(response => {
+        proxy.$modal.msgSuccess('修改成功')
+        open.value = false
+        getList()
+      })
+
     } else {
-      if (deviceTypes.value != null && deviceTypes.value !== "") {
+      if (form.value.deviceTypes != null && form.value.deviceTypes !== "") {
         form.deviceType = deviceTypes.value.join(',')
       }
       form.value.recommend = false;
