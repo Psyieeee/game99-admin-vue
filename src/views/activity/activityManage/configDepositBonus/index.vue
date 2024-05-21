@@ -111,6 +111,9 @@
         <el-form-item label="限制时间" prop="limitHour">
           <el-input type="number" v-model="form.limitHour" placeholder="限制时间"/>
         </el-form-item>
+        <el-form-item label="Condition" prop="content">
+          <WangEditor v-model="form.termsConditions" style="max-width: 680px" image-path="ConfigDepositBonus" />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -185,6 +188,7 @@ import {
 } from "@/api/activity/configDepositBonus";
 import {getRecord} from "@/api/settings/loginMethod.js";
 import {changeStatus} from "@/api/activity/configLoginBonus.js";
+import WangEditor from "@/components/WangEditor/index.vue";
 
 const {proxy} = getCurrentInstance();
 
@@ -227,7 +231,8 @@ const data = reactive({
     multiplier: null,
     bonusMultiplier: null,
     limitHour: null,
-    status: null
+    status: null,
+    termsConditions: ''
   },
   form: {},
 
@@ -332,6 +337,8 @@ function submitForm() {
           errorSchedule.value = "时间表已存在";
         })
       } else {
+        // Use a regular expression to extract text while preserving newlines (Save only Text. Symbol not included)
+        form.value.termsConditions = form.value.termsConditions.replace(/<\/?[^>]+(>|$)/g, "\n").trim();
         addConfigDepositBonus(form.value).then(() => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
