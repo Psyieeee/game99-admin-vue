@@ -141,7 +141,7 @@
           </el-switch>
         </template>
       </el-table-column>
-
+      <el-table-column label="Term & Condition" align="center" prop="termsConditions" width="250px"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <!--      UPDATE config deposit bonus details-->
@@ -253,10 +253,19 @@ function handleSelectionChange(selection) {
 function getList() {
   loading.value = true
   getConfigDepositBonusList(queryParams.value).then((res) => {
-    configDepositBonusList.value = res.data
+    // Remove HTML tags from termsConditions field in each item
+    configDepositBonusList.value = res.data.map(item => ({
+      ...item,
+      termsConditions: stripHtmlTags(item.termsConditions),
+    }));
     total.value = res.total
     loading.value = false
   })
+}
+
+function stripHtmlTags(str) {
+  if (!str) return '';
+  return str.replace(/<\/?[^>]+(>|$)/g, '');
 }
 
 /** 搜索按钮操作 handle query*/
