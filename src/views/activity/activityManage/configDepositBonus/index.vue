@@ -96,17 +96,17 @@
     <el-dialog v-model="open" :close-on-click-modal="false" :title="title" append-to-body style="padding-bottom: 20px"
                width="600px" :rules="rules">
       <el-form ref="queryForm" :model="form" :rules="rules" label-width="110px">
-        <el-form-item label="日程" prop="schedule" :error="errorSchedule">
-          <el-input type="number" v-model="form.schedule" placeholder="日程" @input="resetError"/>
+        <el-form-item label="日程天数" prop="schedule" :error="errorSchedule">
+          <el-input type="number" v-model="form.schedule" placeholder="日程天数" @input="resetError"/>
         </el-form-item>
         <el-form-item label="最大奖金" prop="maxBonus">
           <el-input type="number" v-model="form.maxBonus" placeholder="最大奖金"/>
         </el-form-item>
-        <el-form-item label="乘数" prop="multiplier">
-          <el-input type="number" v-model="form.multiplier" placeholder="乘数"/>
+        <el-form-item label="打码倍数" prop="multiplier">
+          <el-input type="number" v-model="form.multiplier" placeholder="打码倍数"/>
         </el-form-item>
-        <el-form-item label="奖金乘数" prop="bonusMultiplier">
-          <el-input type="number" v-model="form.bonusMultiplier" placeholder="奖金乘数"/>
+        <el-form-item label="奖金倍数" prop="bonusMultiplier">
+          <el-input type="number" v-model="form.bonusMultiplier" placeholder="奖金倍数"/>
         </el-form-item>
         <el-form-item label="限制时间" prop="limitHour">
           <el-input type="number" v-model="form.limitHour" placeholder="限制时间"/>
@@ -131,7 +131,7 @@
       <el-table-column label="乘数" align="center" prop="multiplier" width="250px"/>
       <el-table-column label="奖金乘数" align="center" prop="bonusMultiplier" width="150px"/>
       <el-table-column label="限制时间" align="center" prop="limitHour" width="150px"/>
-      <el-table-column label="状态" align="center" prop="status" width="150px">
+      <el-table-column label="开关" align="center" prop="status" width="150px">
         <template #default="scope">
           <el-switch
               v-model="scope.row.status"
