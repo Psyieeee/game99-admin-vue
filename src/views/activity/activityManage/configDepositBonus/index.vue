@@ -141,7 +141,7 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="Term & Condition" align="center" prop="termsConditions" width="250px"/>
+      <el-table-column label="条款及条件" align="center" prop="termsConditions" width="250px"/>
       <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" min-width="150">
         <template #default="scope">
           <!--      UPDATE config deposit bonus details-->
